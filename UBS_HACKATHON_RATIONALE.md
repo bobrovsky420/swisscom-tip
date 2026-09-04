@@ -2,13 +2,11 @@
 
 ## Executive View
 
-Assuming the internal UBS challenge is primarily about predicting a client's likely next transaction from historical client/transaction data, I would choose the Swiss Trusted Information challenge for the hackathon.
-
-Not because transaction prediction has lower business value. It may have very high direct value to UBS.
-
-The reason is that the Trusted Information challenge creates a **broader reusable technology asset, has materially lower hackathon execution risk, demonstrates more architectural innovation, avoids dependence on confidential data, and remains directly applicable to UBS after the event.**
+Assuming the internal UBS challenge is primarily about predicting a client's likely next transaction from historical client/transaction data, the Swiss Trusted Information challenge is the stronger **hackathon** bet—not because transaction prediction lacks business value, but because TIP creates a broader reusable technology asset, has lower execution risk, uses real non-confidential data, is easier to evaluate visibly, and remains directly reusable inside UBS.
 
 > **Transaction prediction optimizes one banking use case. Trusted Information creates infrastructure from which many banking use cases can be built.**
+
+The final hackathon demo is also deliberately neutral: the team uses **OpenCode as the reference MCP client**, an Admin Control Plane to expose the knowledge lifecycle, and a structured Swiss Arrival Checklist to prove the platform is not merely a chatbot.
 
 ---
 
@@ -17,7 +15,7 @@ The reason is that the Trusted Information challenge creates a **broader reusabl
 | Dimension | Trusted Information Platform | Client transaction prediction |
 |---|---:|---:|
 | Hackathon feasibility | Very high | Medium |
-| Data accessibility | Very high | Low/medium |
+| Real data accessibility | Very high | Low/medium |
 | Confidential-data dependency | Low | Very high |
 | Demo clarity | Very high | Medium |
 | Architectural breadth | Very high | Medium |
@@ -25,336 +23,326 @@ The reason is that the Trusted Information challenge creates a **broader reusabl
 | Reuse inside UBS | Very high | High |
 | Direct short-term UBS revenue potential | Medium | Very high |
 | Platform potential | Very high | Low/medium |
-| Apertus/GenAI relevance | Very high | Low/medium |
+| GenAI/Apertus relevance | Very high | Low/medium |
 | Open/public evaluation | High | Low |
 | Regulatory/privacy complexity during hackathon | Low | High |
-| Productization beyond the hackathon | Very high | Medium |
-| Differentiation from standard ML | High | Lower |
+| Productization beyond hackathon | Very high | Medium |
 | Ability to demonstrate end-to-end product | Very high | Data dependent |
 
 ---
 
-# 2. Transaction Prediction Starts with a Difficult Dependency: UBS Data
+# 2. Transaction Prediction Starts With a Difficult Dependency: UBS Data
 
-A transaction prediction solution depends heavily on:
+A credible transaction predictor depends on transaction history, customer history, product taxonomy, client segmentation, temporal features, channel activity and appropriate labels. These are proprietary and sensitive.
 
-```text
-transaction history
-customer history
-product taxonomy
-client segmentation
-temporal features
-channel activity
-appropriate labels
-```
+A hackathon team therefore risks spending much of the event on data access, anonymisation, quality, leakage, sampling, feature interpretation and label definition before the actual innovation becomes visible.
 
-The majority of these are proprietary and sensitive.
-
-A hackathon team must therefore spend significant effort on:
-
-```text
-data access
-anonymisation
-quality
-feature interpretation
-leakage
-sampling
-label definition
-validation
-```
-
-before the actual product idea becomes visible.
-
-With public Swiss information, useful real-world data exists immediately. The team can spend the hackathon building differentiating technology instead of negotiating with the dataset.
+TIP uses real public authoritative sources immediately. The team can demonstrate actual admin.ch/SEM and zh.ch sourcing, not synthetic approximations of the most important input data.
 
 ---
 
-# 3. Prediction Quality Is Hard to Demonstrate Convincingly in Two Days
+# 3. Prediction Quality Is Harder to Demonstrate in Two Days
 
-Suppose a model predicts:
-
-```text
-Client X:
-60% probability of FX transaction
-23% probability of transfer
-17% probability of securities trade
-```
-
-The immediate question is: **Is that good?**
-
-Answering properly requires:
+A result such as:
 
 ```text
-baseline comparison
-precision/recall
-business-value weighting
-time-window definition
-calibration
-historical backtesting
-segment analysis
+Client X
+60% FX transaction
+23% transfer
+17% securities trade
 ```
 
-Even an excellent score does not necessarily produce an exciting live demonstration.
+immediately raises: **is that good?**
 
-Trusted Information has visible success criteria:
+A convincing answer needs baselines, calibration, precision/recall, business-value weighting, historical backtesting and segment analysis.
+
+TIP has immediately visible tests:
 
 ```text
-Did it find the right authority?
-Did it understand Zurich jurisdiction?
-Did it cite the correct evidence?
-Did it detect that the source changed?
-Did the old answer automatically update?
-Did it correctly say unsupported?
-How many calls did it need?
+Did it use the right authority?
+Did it understand CH vs CH-ZH jurisdiction?
+Did it cite the exact evidence?
+Did it refuse unsupported knowledge?
+Did it detect a source change?
+Did it publish a new tested release?
+How many MCP calls were needed?
+Did the same release work in a non-chat application?
 ```
-
-Judges can see the value immediately.
 
 ---
 
-# 4. The Swiss Challenge Rewards Broad System Engineering
+# 4. The Demo Is Neutral and Reproducible
 
-Transaction prediction is fundamentally a prediction/recommendation problem.
-
-The Trusted Information challenge combines:
+The reference agent client is **OpenCode**, connected to TIP through standard MCP. This is strategically useful because the demo is not dependent on a proprietary assistant UI.
 
 ```text
-MCP
-APIs
+OpenCode + evaluation LLM
+          ↓
+standard MCP
+          ↓
+TIP
+          ↓
+published Knowledge Release
+```
+
+The tool call is made visible so judges can see that the model selected `swiss_information.resolve`, how many calls were required and what structured evidence TIP returned.
+
+The same Knowledge Release is then consumed through REST by the Swiss Arrival Checklist. This demonstrates protocol and UX independence.
+
+For UBS, this matters: the eventual consumer could be a banking portal, employee application, workflow engine or internal agent rather than the hackathon client.
+
+---
+
+# 5. The Challenge Rewards Broad System Engineering
+
+TIP combines:
+
+```text
+MCP / Streamable HTTP
+REST
+source scanning/crawling
+versioned storage
 retrieval
 structured data
 knowledge modelling
 Apertus
 multilingual processing
-authority
-temporal logic
+authority/applicability
 caching
 source monitoring
 evaluation
-CI/CD
-product APIs
+Knowledge CI/CD
 admin/control-plane UX
+structured application integration
 ```
 
-It is particularly suitable for a mixed team containing product, software engineering, data engineering, AI, architecture, UX and business analysis skills.
+This suits a mixed team of software, data, AI, architecture, product and UX engineers. Success does not depend on one prediction model.
 
 ---
 
-# 5. It Makes Better Use of Generative AI
+# 6. It Makes More Natural Use of Generative AI
 
-A client-transaction predictor may not need an LLM at all. Gradient boosting, sequence models, recommender systems or conventional ML may be more natural depending on the problem.
+A transaction predictor may be better served by gradient boosting, sequence models or recommender systems. Adding an LLM can be artificial.
 
-Trying to force an LLM into that architecture could feel artificial.
-
-Trusted Information gives a language model legitimate jobs:
+TIP gives Apertus legitimate semantic jobs:
 
 ```text
 document classification
-semantic enrichment
+concept extraction
 multilingual terminology
 semantic change detection
-ontology generation
-query interpretation
+applicability extraction
 evaluation generation
 evidence reranking
 explanation
 ```
 
-The LLM has a real architectural role while deterministic software handles deterministic operations.
+Deterministic software still owns deterministic operations.
 
 ---
 
-# 6. The Resulting Technology Is Directly Reusable at UBS
+# 7. The Resulting Technology Maps Directly to UBS
 
 After the hackathon, replace:
 
 ```text
-swiss-public
+admin.ch + zh.ch
 ```
 
 with:
 
 ```text
-EMIR
+EUR-Lex / EMIR
+ESMA
 FINMA
-MiFID
 DORA
+MiFID
 AML regulation
-UBS policy
+UBS policies
 UBS procedures
 ```
 
-The core engine remains largely unchanged.
+The pipeline remains:
 
-A first UBS Information Product could be **EMIR Applicability**:
+```text
+Source Registry
+→ Scanner/Fetcher
+→ immutable snapshots
+→ semantic compilation
+→ Evidence Objects
+→ evaluation
+→ Knowledge Release
+→ MCP / REST / portal
+```
+
+This is platform reuse, not merely code reuse.
+
+---
+
+# 8. Example UBS Information Product: EMIR Applicability
+
+A formal application should use typed inputs rather than chat:
 
 ```text
 Legal entity
 Counterparty classification
 Instrument
 Execution date
+Trading venue
+Notional
 Jurisdiction
-        ↓
-Trusted Information Platform
-        ↓
-Reporting requirement
-Clearing requirement
-Margin requirement
-Evidence
 ```
 
-Another could be **Regulatory Impact**:
+and return:
 
 ```text
-New regulation
-      ↓
-semantic change
-      ↓
-affected UBS policy
-      ↓
-affected process
-      ↓
-affected application
-      ↓
-owners / actions
+Reporting     REQUIRED / NOT REQUIRED / REVIEW
+Clearing      REQUIRED / NOT REQUIRED / REVIEW
+Margin        REQUIRED / NOT REQUIRED / REVIEW
+Evidence      regulation + guidance + internal policy
+Trust         applicability + source versions + confidence
 ```
 
-This potentially addresses large ongoing operating and compliance costs.
+The same TIP runtime that serves OpenCode in the hackathon can serve a UBS portal through REST or an internal agent through MCP.
 
 ---
 
-# 7. It Is Useful Far Beyond Compliance
+# 9. Example UBS Information Product: Regulatory Impact
 
-The same UBS platform could power several domains.
+```text
+New regulatory publication
+        ↓
+Source watcher
+        ↓
+semantic change
+        ↓
+Authority / dependency graph
+        ↓
+affected UBS policy
+        ↓
+affected process
+        ↓
+affected application
+        ↓
+owners / actions
+```
 
-## Client Portal
+This turns Knowledge CI/CD into regulatory change intelligence.
 
-Authoritative information about products, fees, tax implications, payment rules, documentation and market rules.
+---
 
-## Relationship Manager Tools
+# 10. Reuse Beyond Compliance
 
-Combine public information, bank policy and product knowledge.
+The same platform can support:
 
-## Operations
-
-Procedures and exception handling.
-
-## Legal
-
-Regulatory and contractual evidence retrieval.
-
-## Technology
-
-Internal architecture and operational policies.
-
-## Employee Assistants
-
-Policy-aware information without every team building a separate RAG implementation.
+- **Client portals:** current product, fee, tax and documentation information.
+- **Relationship managers:** public rules + product knowledge + internal policy.
+- **Operations:** procedures and exception handling.
+- **Legal:** regulatory and contractual evidence.
+- **Technology:** architecture and operational policy.
+- **Employee tools:** policy-aware information without every team building its own RAG stack.
 
 Transaction prediction is substantially narrower.
 
 ---
 
-# 8. It Creates a Reusable Strategic Asset Rather Than a Single Model
+# 11. It Creates a Strategic Asset Rather Than a Single Model
 
-A transaction model generally resembles:
+Transaction prediction:
 
 ```text
-UBS data
-   ↓
-UBS model
-   ↓
-UBS prediction
+UBS data → UBS model → UBS prediction
 ```
 
-Its value depends heavily on the dataset for which it was trained.
-
-Trusted Information resembles:
+TIP:
 
 ```text
-platform
-   ↓
+Reusable platform
+      ↓
 domain configuration
-   ↓
+      ↓
+Knowledge Spaces
+      ↓
 Information Products
+      ↓
+MCP / REST / applications
 ```
 
-The asset is therefore the platform itself.
-
-The team can switch domains:
-
-```text
-Swiss Public
-   ↓
-EMIR
-   ↓
-FINMA
-   ↓
-UBS policy
-```
-
-without redesigning the system.
+The platform can move from Swiss Public to EMIR to FINMA to UBS policy without redesigning the core.
 
 ---
 
-# 9. Lower Privacy and Conduct Risk During a Hackathon
+# 12. Lower Privacy and Conduct Risk During the Hackathon
 
-Transaction prediction can quickly move into sensitive areas involving:
+Transaction prediction can immediately involve profiling, fairness, suitability, client consent, data minimisation, sales conduct and model governance.
 
-```text
-profiling
-fairness
-suitability
-client consent
-data minimisation
-explainability
-sales conduct
-model governance
-```
+These are important production issues but poor dependencies for a short hackathon.
 
-Those are solvable production problems but poor dependencies for a short hackathon.
-
-The Swiss public-information challenge requires no confidential user data, so the team can demonstrate a complete real system without synthetic versions of the most important inputs.
+The Swiss challenge allows a complete real implementation with authoritative public sources and no confidential production client data.
 
 ---
 
-# 10. It Is Easier to Showcase Externally
+# 13. The Architecture Itself Is Reusable at UBS
 
-A powerful demo can use questions that everyone understands:
+| Hackathon Module | UBS Reuse |
+|---|---|
+| Source Registry | Regulators + approved internal sources |
+| Scanner/Crawler | Monitor regulators/internal repositories |
+| Snapshot Store | Immutable regulatory/policy versions |
+| Apertus Enrichment | Classification, concepts, semantic changes |
+| Evidence Compiler | Regulatory evidence objects |
+| Retrieval | Authority/applicability-aware evidence retrieval |
+| Knowledge CI/CD | Continuous regulatory knowledge releases |
+| MCP Runtime | Agent integration such as OpenCode during development |
+| REST Runtime | Banking portal and workflow integration |
+| Admin Control Plane | Compliance/knowledge operations |
+| Evaluation | Grounding and regression tests |
 
-> How do I register after moving to Zurich?
-
-> Can I keep cats in my rented apartment?
-
-Then the same architecture can be shown as:
-
-> Does this EMIR rule apply to this transaction?
-
-This makes the platform understandable to technical and non-technical audiences. A next-transaction prediction model is naturally more bank-specific.
+The neutral OpenCode demo reinforces this reuse story: OpenCode is only one client, not a dependency of the platform.
 
 ---
 
-# 11. It Demonstrates Product Thinking, Not Just AI Modelling
+# 14. It Is Easier to Showcase Externally
 
-The project requires deciding:
+The hackathon story is understandable without banking expertise:
+
+1. show real admin.ch/SEM and zh.ch sources;
+2. compile them into a tested Knowledge Release;
+3. ask a Swiss question in OpenCode;
+4. show the exact MCP tool call and citations;
+5. show explicit unsupported handling;
+6. change a controlled source mirror;
+7. watch the knowledge rebuild and republish;
+8. repeat the query with the new release;
+9. show the same release in a structured Arrival Checklist.
+
+This is visually stronger than a model-quality metric alone.
+
+---
+
+# 15. It Demonstrates Product Thinking, Not Just AI Modelling
+
+The project forces decisions about:
 
 ```text
 who publishes information
-who consumes it
-how it remains current
+what counts as authoritative
+how sources are acquired
+how information remains current
+how applicability is modelled
 how trust is communicated
-how APIs are structured
-how applications integrate it
-how it is monetised
+how clients integrate it
+how the platform is operated
+how it can be monetised
 ```
 
-The result can potentially become SaaS, a private enterprise platform, MCP service, API platform, information marketplace or managed regulatory service rather than remaining a feature inside one UBS application.
+The result can become SaaS, a private enterprise platform, MCP/REST service, managed regulatory service or marketplace foundation.
 
 ---
 
-# 12. Strong Direct UBS Economic Case
+# 16. Strong Direct UBS Economic Case
 
-The platform can reduce:
+TIP can reduce:
 
 ```text
 manual regulatory research
@@ -367,7 +355,7 @@ incorrect interpretation
 time-to-implement regulatory changes
 ```
 
-The key enterprise extension is:
+The high-value enterprise chain is:
 
 ```text
 EXTERNAL AUTHORITY
@@ -383,106 +371,58 @@ PROCESS
 APPLICATION
 ```
 
-When the top of that chain changes, the platform can eventually identify downstream impact.
+When the top changes, TIP can eventually determine downstream impact.
 
 ---
 
-# 13. The Hackathon Architecture Itself Is Reusable at UBS
+# 17. Transaction Prediction Can Later Consume TIP
 
-The modular platform developed for Swiss information maps directly to enterprise banking:
-
-| Hackathon Module | UBS Reuse |
-|---|---|
-| Source Scanner/Crawler | Monitor regulators and internal repositories |
-| Snapshot Store | Immutable regulatory/policy versions |
-| Apertus Enrichment | Classification, concepts, semantic changes |
-| Evidence Compiler | Regulatory evidence objects |
-| Authority Graph | Regulation → guidance → UBS policy |
-| Knowledge CI/CD | Continuous regulatory knowledge releases |
-| Trusted Runtime | Banking portal/API/MCP integration |
-| Admin Control Plane | Compliance/knowledge operations |
-| Evaluation | Regulatory grounding and regression tests |
-
-This is a much stronger reuse story than merely porting a hackathon UI.
-
----
-
-# 14. Transaction Prediction Can Later Consume This Platform
-
-The two ideas are not mutually exclusive.
-
-Suppose UBS later has an excellent client-needs prediction engine:
+The ideas are complementary.
 
 ```text
-Client likely needs:
-international payment
+UBS Prediction Engine
+       ↓ predicts client need
+Trusted Information Platform
+       ↓ supplies current product/regulatory facts
+Client Portal
+       ↓
+ACTION
 ```
 
-That prediction alone is not enough to build the customer experience. The portal still needs current information about fees, currencies, cut-off times, regulation, product eligibility, documentation and available actions.
-
-The combined architecture becomes:
-
-```text
-         UBS Prediction Engine
-                  │
-           predicts intent
-                  │
-                  ▼
-      Trusted Information Platform
-                  │
-      current product/regulatory data
-                  │
-                  ▼
-             Client Portal
-                  │
-                  ▼
-                ACTION
-```
-
-Trusted Information can therefore complement future transaction prediction rather than compete with it.
+A prediction that a client may need an international payment still requires current fees, currencies, cut-offs, eligibility, documentation and regulation. TIP can supply that trusted context.
 
 ---
 
-# 15. Where the UBS Internal Challenge Is Stronger
+# 18. Where the UBS Internal Challenge Is Stronger
 
-There is one area where transaction prediction clearly wins:
+Transaction prediction clearly has one advantage:
 
 > **Direct proximity to UBS client revenue.**
 
-If UBS already has clean data, established modelling infrastructure, a clear business metric and an obvious deployment route, improving prediction of client needs could deliver measurable revenue quickly.
+If UBS already has clean data, a proven modelling environment, clear business metrics and an obvious deployment route, next-transaction prediction may deliver near-term revenue faster.
 
-Therefore the correct argument is not “the UBS challenge is worse.”
+The correct argument is therefore not that the UBS challenge is worse. It is:
 
-It is:
-
-> **For a short innovation hackathon, the Swiss Trusted Information challenge has a superior ratio of technical novelty, demoability, feasibility and reusable platform value.**
-
-For a production UBS initiative focused exclusively on near-term client monetisation, transaction prediction may reasonably rank higher.
+> **For a short innovation hackathon, TIP has a superior ratio of technical novelty, demoability, feasibility and reusable platform value.**
 
 ---
 
-# 16. Why Choose the Swiss Challenge
+# 19. Why Choose the Swiss Challenge
 
-It offers three wins simultaneously.
+It produces three simultaneous wins:
 
-## Hackathon Win
+**Hackathon:** real data, clear evaluation, visible end-to-end demo, neutral OpenCode MCP client, no confidential-data dependency.
 
-A highly demonstrable, testable and technically interesting solution with no dependency on confidential production data.
+**UBS:** reusable foundation for regulatory intelligence, enterprise knowledge and banking applications.
 
-## UBS Win
+**Broader innovation:** an architecture applicable to Swisscom, UBS, Swiss Re, government, mobility and consumer applications.
 
-A reusable foundation for regulatory intelligence, enterprise knowledge and banking applications.
-
-## Broader Innovation Win
-
-A platform architecture applicable to Swisscom, UBS, Swiss Re, government, mobility and consumer applications.
-
-The team is not simply solving:
+The team is not only solving:
 
 > **What will this customer do next?**
 
-It is building infrastructure for a harder and increasingly important question:
+It is building infrastructure for:
 
-> **When software or AI needs information to make a decision, how does it know what it can trust?**
+> **When software or AI needs information to make a decision, how does it know what it can trust—and how is that trusted information kept current?**
 
 That is a broader technology problem with a credible path back into UBS after the hackathon.
