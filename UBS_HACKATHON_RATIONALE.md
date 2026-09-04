@@ -6,7 +6,9 @@ Assuming the internal UBS challenge is primarily about predicting a client's lik
 
 > **Transaction prediction optimizes one banking use case. Trusted Information creates infrastructure from which many banking use cases can be built.**
 
-The final demo deliberately uses several independent clients: **OpenCode** for MCP, an **Admin Control Plane** for operations, a structured **Swiss Arrival Checklist** for non-chat authoritative use, and optionally a tiny **Flutter Swiss Hike** app to prove that the same headless platform can power an unrelated consumer experience.
+The final hackathon demo deliberately uses several independent clients: **OpenCode** for MCP, an **Admin Control Plane** for sourcing/build operations, a structured **Swiss Arrival Checklist** for non-chat authoritative use, and optionally a tiny **Flutter Swiss Hike** app to prove that the same headless platform can power an unrelated consumer experience.
+
+For hackathon scope, knowledge refresh is intentionally simple: **manual/on-demand full build of the configured source scope**. Scheduled monitoring, incremental refresh and autonomous Knowledge CI/CD remain part of the production architecture rather than the two-day critical path.
 
 ---
 
@@ -50,7 +52,7 @@ right authority?
 right CH vs CH-ZH jurisdiction?
 exact evidence/citations?
 unsupported knowledge refused?
-source change detected?
+full source build reproducible?
 new release tested and published?
 one efficient MCP call?
 same platform usable by a non-chat application?
@@ -74,9 +76,7 @@ published Knowledge Release
 
 The tool call is visible so judges can see `swiss_information.resolve`, call count and structured evidence.
 
-The same release is consumed through REST by the Swiss Arrival Checklist. This proves protocol and UX independence.
-
-If time permits, a Flutter Swiss Hike app calls a separate structured Information Product. This is intentionally not another chatbot: users select origin, date, duration, difficulty, travel limit and scenery preferences using normal mobile controls.
+The same release is consumed through REST by the Swiss Arrival Checklist. If time permits, a Flutter Swiss Hike app calls a separate structured Information Product using normal mobile controls.
 
 For UBS, the implication is direct: OpenCode is only a reference client. The eventual consumer can be a banking portal, transaction screen, workflow engine, compliance dashboard or internal agent.
 
@@ -84,9 +84,7 @@ For UBS, the implication is direct: OpenCode is only a reference client. The eve
 
 # 5. Why the Flutter Hike Stretch Demo Helps the UBS Story
 
-At first sight hiking is unrelated to banking. Architecturally, that is exactly why it is useful.
-
-The demo shows:
+At first sight hiking is unrelated to banking. Architecturally, that is why it is useful.
 
 ```text
 Swiss Arrival
@@ -113,25 +111,23 @@ Optional AI
 Typed Result + Trust
 ```
 
-This demonstrates genuine platform reuse rather than reuse of one Swiss-government chatbot.
-
-The hiking backend is deliberately mocked at provider boundaries for the hackathon: a small route dataset plus deterministic mock transport, weather and restaurant providers. Mock data is explicitly labelled DEMO/MOCK. The recommendation engine and Flutter app use the same provider interfaces that future real integrations would implement.
+The hiking backend is deliberately mocked at provider boundaries for the hackathon: a small route dataset plus deterministic mock transport, weather and restaurant providers. Mock data is explicitly labelled DEMO/MOCK.
 
 ---
 
 # 6. The Challenge Rewards Broad System Engineering
 
-TIP combines MCP/Streamable HTTP, REST, source scanning/crawling, versioned storage, retrieval, structured data, knowledge modelling, Apertus, multilingual processing, authority/applicability, capability abstraction, caching, source monitoring, evaluation, Knowledge CI/CD, admin UX and structured application integration.
+TIP combines MCP/Streamable HTTP, REST, source scanning/crawling, versioned storage, retrieval, structured data, knowledge modelling, Apertus, multilingual processing, authority/applicability, capability abstraction, evaluation, admin UX and structured application integration.
 
-It suits a mixed software/data/AI/architecture/product/UX team and does not depend on one prediction model.
+For the hackathon this is achieved without needing scheduler/worker infrastructure. The full architecture can later add source monitoring, semantic change analysis and incremental Knowledge CI/CD.
 
 ---
 
 # 7. It Makes Natural Use of Generative AI
 
-A transaction predictor may be better served by conventional ML. TIP gives Apertus legitimate semantic jobs: classification, concept extraction, multilingual terminology, semantic change detection, applicability extraction, evaluation generation, evidence reranking and fuzzy recommendation explanation.
+A transaction predictor may be better served by conventional ML. TIP gives Apertus legitimate semantic jobs: classification, concept extraction, multilingual terminology, applicability extraction, evidence reranking, candidate fact extraction and fuzzy recommendation explanation.
 
-Deterministic software still owns deterministic operations and constraints.
+In the production extension, Apertus can also support semantic change detection and impact analysis.
 
 ---
 
@@ -156,7 +152,7 @@ UBS policies
 UBS procedures
 ```
 
-The pipeline remains:
+The core pipeline remains:
 
 ```text
 Source Registry
@@ -197,18 +193,18 @@ Evidence      regulation + guidance + internal policy
 Trust         applicability + versions + confidence
 ```
 
-The same runtime concept that serves Flutter or Arrival Checklist can serve a UBS portal through REST, while internal agents can use MCP.
-
 ---
 
 # 10. UBS Information Product — Regulatory Impact
 
+This is a **production extension**, not required for the Swiss hackathon MVP:
+
 ```text
-New regulatory publication
+Scheduled regulator monitoring
         ↓
-Source watcher
+new / changed publication
         ↓
-semantic change
+semantic change analysis
         ↓
 Authority/dependency graph
         ↓
@@ -219,13 +215,13 @@ affected process/application
 owners/actions
 ```
 
-This turns Knowledge CI/CD into regulatory change intelligence.
+The manually triggered hackathon build proves the same source → compile → evidence → release foundation that this future capability would automate.
 
 ---
 
 # 11. Reuse Beyond Compliance
 
-TIP can support client portals, relationship-manager tools, operations, legal, technology and employee applications. The key advantage is that each consuming application does not build a separate crawler/RAG/freshness stack.
+TIP can support client portals, relationship-manager tools, operations, legal, technology and employee applications. The key advantage is that each consuming application does not build a separate crawler/RAG/evidence stack.
 
 Transaction prediction is substantially narrower.
 
@@ -264,41 +260,42 @@ The Swiss challenge supports a complete real implementation with authoritative p
 | Hackathon Module | UBS Reuse |
 |---|---|
 | Source Registry | Regulators + approved internal sources |
-| Scanner/Crawler | Monitor regulators/internal repositories |
+| Scanner/Crawler | Load regulator/internal repositories |
 | Snapshot Store | Immutable regulatory/policy versions |
-| Apertus Enrichment | Classification, concepts, semantic changes |
+| Apertus Enrichment | Classification, concepts, applicability |
 | Evidence Compiler | Regulatory evidence objects |
 | Retrieval | Authority/applicability-aware retrieval |
 | Capability interfaces | Transaction/product/internal-service adapters |
-| Knowledge CI/CD | Continuous regulatory releases |
+| Knowledge Releases | Versioned regulatory knowledge |
 | MCP Runtime | Internal agent integration |
 | REST Runtime | Banking portal/workflow integration |
 | Admin Control Plane | Compliance/knowledge operations |
 | Evaluation | Grounding and regression tests |
 
+Production extension: scheduled monitoring, incremental refresh, semantic diff and continuous regulatory Knowledge CI/CD.
+
 ---
 
 # 15. Easier to Showcase Externally
 
-The demo story is understandable without banking expertise:
+The hackathon story is understandable without banking expertise:
 
 1. show real admin.ch/SEM and zh.ch sources;
-2. compile them into a tested release;
-3. ask a Swiss question in OpenCode;
-4. show the exact MCP call and citations;
-5. show unsupported handling;
-6. change a controlled source mirror;
-7. watch rebuild/release;
-8. show the same release in Arrival Checklist;
-9. optionally show a completely different Flutter Hike app using typed REST.
+2. press **Build / Full Reload**;
+3. show immutable snapshots, Evidence Objects, tests and release;
+4. ask a Swiss question in OpenCode;
+5. show the exact MCP call and citations;
+6. show unsupported handling;
+7. show the same release in Arrival Checklist;
+8. optionally show a completely different Flutter Hike app using typed REST.
 
-The final step visually proves the team built infrastructure, not a Swiss-information chat UI.
+A second manual full build from a controlled fixture can demonstrate version replacement if useful, but autonomous source watching is not needed for the hackathon story.
 
 ---
 
 # 16. Product Thinking, Not Just AI Modelling
 
-The project forces decisions about authority, sourcing, acquisition, freshness, applicability, trust, integration, operations, provider abstractions, structured application contracts and monetisation.
+The project forces decisions about authority, sourcing, acquisition, applicability, trust, integration, operations, provider abstractions, structured application contracts and monetisation.
 
 The result can become SaaS, a private enterprise platform, MCP/REST service, managed regulatory service or marketplace foundation.
 
@@ -306,7 +303,7 @@ The result can become SaaS, a private enterprise platform, MCP/REST service, man
 
 # 17. Direct UBS Economic Case
 
-TIP can reduce manual regulatory research, duplicated RAG infrastructure, policy interpretation, regulatory change monitoring, impact-analysis effort, operational support and time-to-implement changes.
+TIP can reduce manual regulatory research, duplicated RAG infrastructure, policy interpretation, operational support and time-to-implement changes. With the production refresh layer added, it can additionally reduce regulatory monitoring and impact-analysis effort.
 
 High-value chain:
 
@@ -323,8 +320,6 @@ PROCESS
         ↓
 APPLICATION
 ```
-
-When the top changes, TIP can eventually determine downstream impact.
 
 ---
 
@@ -356,23 +351,21 @@ The correct argument is:
 
 # 20. Delivery Discipline
 
-The multi-client story must not create scope failure:
-
 ```text
-P0  admin.ch/zh.ch → storage → compiler → retrieval → MCP → OpenCode
+P0  admin.ch/zh.ch on-demand full build → storage → compiler → retrieval → MCP → OpenCode
 P1  Admin Control Plane
 P1  Swiss Arrival Checklist
 P2  Flutter Swiss Hike with mock provider interfaces
-P3  additional chatbot/MCP clients
+P3  scheduled/incremental refresh only if everything else is complete
 ```
 
-The Flutter app is valuable precisely because it is a small architectural proof, not another full product to finish during the hackathon.
+The removal of scheduler/continuous-refresh work from P0 makes the hackathon case stronger, not weaker: the team spends its time proving the information model, evidence quality and integrations.
 
 ---
 
 # 21. Why Choose the Swiss Challenge
 
-**Hackathon win:** real data, visible quality criteria, neutral MCP client, autonomous maintenance and multiple integration styles.
+**Hackathon win:** real data, visible quality criteria, neutral MCP client, repeatable on-demand builds and multiple integration styles.
 
 **UBS win:** reusable foundation for regulatory intelligence, enterprise knowledge and banking applications.
 
@@ -380,6 +373,6 @@ The Flutter app is valuable precisely because it is a small architectural proof,
 
 The team is building infrastructure for:
 
-> **When software or AI needs information to make a decision, how does it know what it can trust, how is that information kept current, and how can any application consume it?**
+> **When software or AI needs information to make a decision, how does it know what it can trust, and how can any application consume that trusted information?**
 
-That is a broader technology problem with a credible path back into UBS after the hackathon.
+Continuous autonomous maintenance remains an important production extension, but it does not need to be built to prove the core platform in two days.
