@@ -229,7 +229,25 @@ The claim should therefore be:
 
 ---
 
-# 13. Delivery Discipline
+# 13. Perceived Fairness and Independence
+
+There is also a softer strategic advantage in choosing an external challenge.
+
+If a UBS team competes on a UBS-sponsored challenge, other participants or observers may perceive that the team has an informational advantage through greater familiarity with the business domain, internal terminology, expected outcomes or stakeholder priorities—even when the competition and judging are entirely fair.
+
+This can also create an uncomfortable optics problem for judges: a winning UBS submission to a UBS challenge may require additional care to demonstrate that all teams competed on equivalent terms. Conversely, judges may be especially cautious about such an outcome because they want the competition to be seen as unquestionably fair. Neither effect should be assumed; the point is that the perception risk exists unnecessarily.
+
+Choosing the Swisscom challenge removes that issue. The UBS team competes on an external problem using the same public challenge description and public Swiss information available to other participants. A strong result therefore provides particularly clean evidence of the team's engineering, AI, architecture and product capabilities rather than privileged familiarity with the challenge domain.
+
+This is deliberately a **secondary consideration**, not a primary reason to choose the challenge:
+
+> **An external challenge provides a cleaner demonstration of independent capability and avoids unnecessary questions about informational advantage or perceived preferential treatment.**
+
+The rationale should not claim that the jury is biased or that UBS would be prevented from winning its own challenge. There is no basis for such a claim; the advantage is simply that the external challenge removes the optics question altogether.
+
+---
+
+# 14. Delivery Discipline
 
 ```text
 P0  admin.ch/zh.ch → on-demand build → retrieval → MCP → OpenCode
@@ -244,9 +262,9 @@ The platform vision is broad; the two-day implementation remains narrow.
 
 ---
 
-# 14. Conclusion
+# 15. Conclusion
 
-**Hackathon win:** real data, visible evaluation, no confidential-data dependency.  
+**Hackathon win:** real data, visible evaluation, no confidential-data dependency, and a clean external test of team capability.  
 **UBS win:** reusable foundation for regulatory/enterprise information products.  
 **Strategic win:** architecture can govern both public knowledge and licensed commercial/private Data Products.
 
