@@ -1,102 +1,75 @@
 # Swisscom Trusted Information Platform
 ## First-Round Pitch — Maximum 10 Minutes
 
-**Recommended format:** 7 slides, ~8 minutes presentation + ~2 minutes buffer/questions.  
-**Goal:** sell the idea and differentiation without overloading the first round with production-operations detail.
+**Format:** 7 slides, ~8:30 presentation + buffer.  
+**Goal:** sell the core hackathon idea and Swisscom potential without expanding MVP scope.
 
 ---
 
 # Slide 1 — The Idea
 ## From AI that talks to AI that knows what to trust
 
-### Swisscom Trusted Information Platform
-
-**A headless platform that turns authoritative and live information into trustworthy information services for any application.**
-
-Most AI systems are good at language but unreliable at knowing:
-
-- which source is authoritative;
-- where a rule applies;
-- whether information is current;
-- whether an answer can be defended.
+**Swisscom Trusted Information Platform** is a headless platform that turns authoritative and live information into trustworthy structured services for any application.
 
 > **AI is infrastructure, not the interface.**
 
-TIP can power a chatbot, mobile app, eGovernment portal or banking workflow.
+TIP can power myAI, a mobile app, eGovernment, a banking portal or an automated workflow.
 
-### Speaker notes — ~60 sec
-
-The hackathon asks for an MCP server for Swiss public information. We see a larger opportunity: solve trusted information once as reusable infrastructure. The product is not another chatbot or generic RAG UI.
+**Speaker note (~60s):** The hackathon asks for Swiss public information through MCP. We solve the underlying trusted-information problem as reusable infrastructure rather than another chatbot/RAG UI.
 
 ---
 
 # Slide 2 — Hackathon Proof: admin.ch + zh.ch
 
-We start deliberately small and authoritative:
+We deliberately start small and authoritative:
 
 ```text
-Swiss Confederation / admin.ch ecosystem
-                 +
-           Canton Zurich / zh.ch
+admin.ch / SEM
+      +
+Canton Zurich / zh.ch
 ```
 
 Demo scenario:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
-This requires complementary federal and cantonal evidence.
+This tests authority, jurisdiction and applicability rather than only semantic similarity.
 
-```text
-Swiss Confederation
-       ↓
-SEM / federal guidance
-       ↓
-Canton Zurich guidance
-       ↓
-user context
-```
-
-### Speaker notes — ~60 sec
-
-Rather than pretending to cover all Switzerland in two days, we prove a credible architecture with real official sources. The scenario tests authority, jurisdiction and applicability rather than only semantic matching.
+**Speaker note (~60s):** Real official data, focused coverage, credible foundation.
 
 ---
 
-# Slide 3 — Build Trusted Knowledge Once, Serve It Fast
+# Slide 3 — Build Trusted Knowledge, Then Serve It
 
-For the hackathon we intentionally keep operations simple:
+Hackathon MVP:
 
 ```text
 [ BUILD / FULL RELOAD ]
-          ↓
-admin.ch / zh.ch
-          ↓
-immutable source snapshots
-          ↓
+        ↓
+scan + fetch official sources
+        ↓
+immutable snapshots
+        ↓
 normalize + Apertus enrichment
-          ↓
+        ↓
 Evidence Objects
-          ↓
-index + tests
-          ↓
-Knowledge Release
-          ↓
+        ↓
+tests
+        ↓
+immutable Knowledge Release
+        ↓
 MCP / REST
 ```
 
-Normal user questions do **not** scrape government sites.
+Normal requests do **not** scrape government websites.
 
-> **Hackathon: repeatable full builds. Production: autonomous Knowledge CI/CD.**
+For the hackathon, builds are **on demand**. Scheduled/incremental Knowledge CI/CD remains in the production roadmap, not the MVP.
 
-### Speaker notes — ~75 sec
-
-We do not need a scheduler or continuous refresher to prove the platform. An administrator triggers a full build of the configured scope. The resulting local release is versioned and tested. Scheduled revalidation, semantic change detection and incremental refresh are part of the production design, not the hackathon critical path.
+**Speaker note (~75s):** This gives predictable latency, citations, auditability and source etiquette without spending two days building scheduling infrastructure.
 
 ---
 
 # Slide 4 — One Platform, Different Clients
-
-The demo uses three core surfaces:
 
 ```text
                     TIP
@@ -107,175 +80,125 @@ The demo uses three core surfaces:
      Plane          MCP          Checklist
 ```
 
-**Admin Control Plane**  
-Shows official sources, the Build/Full Reload action, snapshots, evidence, tests and releases.
+- **Admin Control Plane:** sources, build, evidence, tests, releases.
+- **OpenCode:** independent MCP integration and visible `swiss_information.resolve` call.
+- **Arrival Checklist:** formal fields → typed result; no chat prompt.
 
-**OpenCode**  
-Reference MCP client; shows the `swiss_information.resolve` call and evidence.
+Stretch only: **Flutter Swiss Hike** using 10–20 clearly labelled DEMO/MOCK routes plus mock transport/weather/places providers.
 
-**Swiss Arrival Checklist**  
-Formal inputs → structured result. No chat prompt.
+> **Same platform. No shared user interface.**
 
-### Speaker notes — ~75 sec
-
-OpenCode proves standard MCP integration, but the Arrival Checklist is equally important because it proves TIP is not chatbot infrastructure. Both consume the same published knowledge.
+**Speaker note (~75s):** OpenCode proves MCP; Arrival proves non-chat integration; Hike is only a stretch architecture proof.
 
 ---
 
-# Slide 5 — Search Returns Evidence, Not Answers
-
-Internally:
+# Slide 5 — Runtime: Search Returns Evidence, Not Answers
 
 ```text
 Request
   ↓
-Execution Plan
+Query Planner
   ↓
-filter by authority / jurisdiction / date
+Authority / jurisdiction / date filters
   ↓
-lexical + semantic + concept retrieval
+lexical + vector + concept search
   ↓
-2–5 best Evidence Objects
+2–5 Evidence Objects
   ↓
-resolve facts / conflicts
+Evidence / Rule Engine
   ↓
-Trust Envelope
+structured facts + Trust Envelope
+  ↓
+optional prose
 ```
 
-Only then does an LLM generate prose if the client needs prose.
+Apertus handles semantic uncertainty; deterministic software handles dates, hashes, numeric constraints and rules.
 
-Optional stretch proof: a small Flutter **Swiss Hike** app submits structured constraints and consumes typed results using 10–20 demo routes plus mocked transport/weather/places providers.
-
-### Speaker notes — ~75 sec
-
-This is deliberately not “vector search and let the LLM decide.” TIP knows why evidence applies. Hard facts and rules are resolved before optional natural-language generation. The hiking app, if time allows, demonstrates the same headless platform for a totally different consumer product.
+**Speaker note (~75s):** The LLM does not receive dozens of documents and improvise. TIP first establishes the evidence and facts.
 
 ---
 
-# Slide 6 — Why Swisscom?
-
-TIP connects businesses Swisscom already has:
+# Slide 6 — Why Swisscom? And Where the Business Can Go
 
 ```text
-                    EXPERIENCES
-          myAI / eGov / Banking / Apps
-                         │
-                         ▼
-             TRUSTED INFORMATION
-                   PLATFORM
-                         │
-              Knowledge │ Data
-                         │
-                         ▼
-                     APERTUS
-                         │
-                         ▼
-               SWISS AI PLATFORM
-                         │
-                         ▼
-             SWISS INFRASTRUCTURE
+myAI / eGov / Mobile / Banking / Enterprise
+                    ↓
+                  TIP
+                    ↓
+             Apertus / Swiss AI Platform
 ```
 
-Potential value:
+Direct value: API/MCP usage, SaaS, managed knowledge, enterprise deployments, regulatory intelligence and increased AI-platform consumption.
 
-- **myAI:** richer trustworthy Swiss information;
-- **eGovHub:** AI-ready knowledge for cantons and municipalities;
-- **Swiss AI Platform:** Apertus/inference consumption;
-- **Banking:** FINMA/EMIR/regulatory intelligence;
-- **Enterprise:** private Knowledge Spaces and Information Products.
+**Post-MVP marketplace opportunity:** trusted publishers can distribute **Data Products** through TIP.
 
-### Speaker notes — ~90 sec
+```text
+Government │ SIX-like data providers │ Companies │ Experts
+                         ↓
+                    Data Products
+                         ↓
+                    Swisscom TIP
+          hosting │ trust │ metering │ billing
+                         ↓
+                Apps / Enterprises / myAI
+```
 
-This is not an unrelated startup idea. TIP sits naturally between Swisscom's AI infrastructure and the applications that need reliable information. It creates direct SaaS/API opportunities while increasing the value of the underlying AI platform.
+Possible commercial models: revenue share per request, monthly/annual licensing, one-time licensing, publisher-hosted SaaS, or free/open government packs.
+
+**Important:** publisher onboarding, billing, metering and settlement are **not part of the hackathon MVP**.
+
+**Speaker note (~90s):** Swisscom can monetize consumption while publishers gain a machine-consumption distribution channel. Free public data can still drive hosting, SLA, inference and derived-product revenue.
 
 ---
 
-# Slide 7 — Start Small, Grow Into a Platform
+# Slide 7 — Start Focused, Build a Platform
 
 Hackathon:
 
 ```text
 admin.ch + zh.ch
        ↓
-on-demand full build
-       ↓
-Swiss Public release
+on-demand trusted Knowledge Release
        ↓
 OpenCode + Arrival Checklist
 ```
 
-Production evolution:
+Full product:
 
 ```text
-scheduled source monitoring
-incremental refresh
-semantic change analysis
-Knowledge CI/CD
-live capabilities
-consumer Information Products
-FINMA / EMIR / private enterprise knowledge
+Swiss Public │ Mobility │ Hiking │ Housing
+FINMA │ EMIR │ DORA │ Enterprise Knowledge
+                 +
+Publisher Data Product Marketplace
 ```
 
-### Closing
+Reusable core:
+
+```text
+Source │ Authority │ Applicability │ Evidence
+Version │ Trust │ Capability │ Information Product
+Data Product │ Entitlement │ Usage
+```
 
 > **Apertus provides semantic intelligence.**  
 > **TIP provides trusted information, context and orchestration.**  
-> **Swisscom provides infrastructure, sovereignty and distribution.**
+> **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-**We start with admin.ch and zh.ch—but we are building trustworthy information infrastructure for any application.**
-
-### Speaker notes — ~75 sec
-
-The key is disciplined scope. We prove the source → evidence → release → application path first. Autonomous refresh is a logical production extension once the core model is proven.
+**Speaker note (~75s):** The marketplace and autonomous refresh are the product vision, not two-day deliverables. The hackathon proves the foundation they need.
 
 ---
 
-# Optional 60-Second Live Demo
+# Timing
 
-1. Show Admin Control Plane with configured `admin.ch/SEM` + `zh.ch` and the latest successful full build.
-2. Briefly show the published release and test status.
-3. Switch to OpenCode.
-4. Ask the Zurich-arrival question.
-5. Show one `swiss_information.resolve` call returning federal + CH-ZH evidence.
-6. End on the Arrival Checklist for 5–10 seconds.
-
-Do **not** spend first-round time demonstrating automatic source refresh; it is explicitly production roadmap.
-
----
-
-# Timing Guide
-
-| Part | Target |
+| Slide | Target |
 |---|---:|
-| Slide 1 | 1:00 |
-| Slide 2 | 1:00 |
-| Slide 3 | 1:15 |
-| Slide 4 | 1:15 |
-| Slide 5 | 1:15 |
-| Slide 6 | 1:30 |
-| Slide 7 | 1:15 |
-| **Total slides** | **8:30** |
-| Buffer | **1:30** |
+| 1 | 1:00 |
+| 2 | 1:00 |
+| 3 | 1:15 |
+| 4 | 1:15 |
+| 5 | 1:15 |
+| 6 | 1:30 |
+| 7 | 1:15 |
+| **Total** | **8:30** |
 
----
-
-# What NOT to Put Into the First-Round Pitch
-
-Keep for technical/final discussions:
-
-- scheduler implementation;
-- semantic diff pipeline;
-- incremental refresh machinery;
-- PostgreSQL schema;
-- full crawler state machine;
-- every MCP schema;
-- detailed hiking mock JSON;
-- detailed UBS comparison;
-- full marketplace model.
-
-The jury should leave with four messages:
-
-1. **This solves the original Swiss public-information challenge.**
-2. **It creates versioned, testable trusted evidence instead of doing scrape-on-demand RAG.**
-3. **It is a headless platform, not another chatbot.**
-4. **It has a credible path into Swisscom's consumer, public-sector and enterprise businesses.**
+Keep detailed crawler design, database schemas, autonomous refresh, billing/settlement and marketplace workflows for later rounds/Q&A.
