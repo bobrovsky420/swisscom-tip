@@ -4,7 +4,7 @@
 
 # Swisscom Trusted Information Platform
 
-**Turning Switzerland's information into trustworthy infrastructure for applications and AI.**
+**Turning authoritative Swiss information into trustworthy infrastructure for applications and AI.**
 
 Most AI systems are excellent at language but unreliable at knowing what is current, authoritative or applicable. We solve that problem once, as infrastructure, rather than separately inside every chatbot and application.
 
@@ -12,188 +12,194 @@ Most AI systems are excellent at language but unreliable at knowing what is curr
 
 ## Slide 2 — The Original Challenge
 
-**Make authoritative Swiss public information accessible to AI assistants.**
+**Build an MCP server that makes authoritative public Swiss information accessible to AI assistants as effectively as possible.**
 
 The server must be:
 
-- correct;
-- current;
-- cited;
+- correct and grounded;
+- based on authoritative sources;
 - jurisdiction-aware;
-- efficient;
-- maintainable;
-- easy to integrate.
+- fresh and citable;
+- efficient in tool calls, tokens and latency;
+- reproducible and maintainable;
+- easy to integrate with standard MCP clients.
 
 Our insight:
 
-> **The hard problem is not search. It is trust and maintenance.**
-
-A useful system must know:
-
-```text
-Where does truth come from?
-Does it apply here?
-Is it current?
-What changed?
-Can the answer be defended?
-```
+> **The hard problem is not search. It is continuously turning authoritative sources into trusted, maintainable AI-ready information.**
 
 ---
 
-## Slide 3 — Don't Build Another Chatbot
+## Slide 3 — Our Hackathon Scope: admin.ch + zh.ch
 
-The common industry pattern is:
+We deliberately do **not** try to index all of Switzerland in two days.
 
-```text
-Chat
- ↓
-LLM
- ↓
-RAG
-```
-
-Our proposal:
+The MVP starts with two authoritative ecosystems:
 
 ```text
-PURPOSE-BUILT APPLICATION
-          │
-    structured intent
-          │
-          ▼
-TRUSTED INFORMATION PLATFORM
-          │
- Knowledge + Live Data
- + Context + Services
-          │
-          ▼
-    structured result
+Swiss Confederation / admin.ch ecosystem
+                 +
+           Canton Zurich / zh.ch
 ```
 
-> **AI is infrastructure, not the interface.**
-
-Chat is only one possible client.
-
----
-
-## Slide 4 — One Platform, Many Experiences
-
-The same platform can power:
-
-```text
-myAI
-municipality portal
-Swiss Arrival Checklist
-hiking mobile app
-photo scouting app
-housing application
-banking portal
-compliance workflow
-insurance platform
-```
-
-No application needs to build its own crawling, RAG, freshness, source ranking and provenance infrastructure.
-
----
-
-## Slide 5 — The Hackathon Demo: Federal + Zurich
-
-Use a real everyday scenario:
+Primary test scenario:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
-The platform combines:
-
-```text
-Swiss Confederation
-       │
-       ▼
-State Secretariat for Migration
-       │ federal context
-       ▼
-Canton Zurich
-       │ cantonal guidance
-       ▼
-Municipality
-```
-
-This demonstrates authority, jurisdiction, applicability and cross-source evidence rather than merely semantic search.
+This forces the system to combine federal context with cantonal guidance and demonstrate authority, jurisdiction and applicability rather than merely semantic similarity.
 
 ---
 
-## Slide 6 — We Show Where the Knowledge Comes From
+## Slide 4 — The Demo Starts With the Sources, Not the Question
 
-The demo starts before the question is asked.
+The first thing we show is the **Admin Control Plane**.
+
+```text
+Knowledge Space: Swiss Public
+
+Sources
+────────────────────────────────────
+SEM / admin.ch ecosystem    FEDERAL
+Canton Zurich / zh.ch       CANTONAL
+
+Status                      NOT BUILT
+Knowledge Release           —
+```
+
+We then build the Knowledge Space from the actual configured official sources.
+
+This makes sourcing a visible part of the product rather than a hidden preprocessing script.
+
+---
+
+## Slide 5 — Autonomous Source Acquisition
 
 ```text
 admin.ch / SEM + zh.ch
           ↓
-       Scanner
+     Source Registry
           ↓
-       Crawler
+        Scanner
           ↓
-       Fetcher
+        Crawler
           ↓
-  immutable snapshots
+        Fetcher
           ↓
-      Normalize
+ immutable raw snapshots
           ↓
- Apertus enrichment
-          ↓
-  Evidence Objects
+       Normalizer
 ```
 
-The audience sees authoritative information becoming an AI-ready Knowledge Release.
+The crawler operates only inside explicit trusted scopes.
+
+It does not blindly download all of `admin.ch` or `zh.ch`.
+
+The platform records:
+
+```text
+canonical source
+authority
+jurisdiction
+HTTP metadata
+content hash
+retrieval time
+raw immutable version
+```
 
 ---
 
-## Slide 7 — Stable Knowledge Is Compiled
+## Slide 6 — Stable Knowledge Is Compiled, Not Retrieved Per Question
 
-Normal MCP requests do **not** scrape government websites.
+Normal MCP requests do **not** scrape admin.ch or zh.ch.
 
 ```text
 Official source
       ↓
-versioned snapshot
+immutable snapshot
       ↓
-compiled knowledge
+normalized document
       ↓
-local search/index
+Apertus enrichment
       ↓
-MCP / REST
+Evidence Objects
+      ↓
+local indexes
+      ↓
+Knowledge Release
 ```
+
+The external government site remains the canonical authority.
+
+TIP stores a **verified, versioned operational representation** of that authority.
 
 Benefits:
 
 - low latency;
-- reproducibility;
+- reproducible answers;
 - auditability;
-- resilience;
+- resilience to source outages;
 - source etiquette;
-- lower token and network cost.
-
-The government remains the canonical authority; the platform maintains a verified operational representation.
+- fewer network and model calls.
 
 ---
 
-## Slide 8 — Different Questions Require Different Truth
+## Slide 7 — Apertus as the Knowledge Engineer
 
-**Authoritative**  
-“Can my landlord prohibit cats?” → law/government sources.
+Apertus is **not** the source of truth.
 
-**Live**  
-“What does tomorrow's train cost?” → transport provider/API.
+It adds semantic intelligence during knowledge compilation:
 
-**Recommendation**  
-“Which places are good for a first date?” → current places, reviews and preferences.
+```text
+classify documents
+extract concepts
+map multilingual terminology
+identify applicability candidates
+relate federal and cantonal evidence
+analyse semantic changes
+generate candidate evaluation tests
+rerank evidence
+```
 
-**Hybrid**  
-“Which hike fits tomorrow's conditions?” → routes + transport + weather + places + preference scoring.
+Deterministic software handles:
 
-The platform uses the correct evidence strategy for each information type.
+```text
+HTTP state
+hashes
+source identity
+date arithmetic
+numeric comparisons
+version consistency
+```
+
+> **Use AI for semantic uncertainty; software for deterministic certainty.**
 
 ---
 
-## Slide 9 — Autonomous Knowledge CI/CD
+## Slide 8 — From Documents to Evidence
+
+We do not simply split pages into arbitrary vector chunks.
+
+The compiler creates traceable **Evidence Objects**:
+
+```text
+Evidence
+────────────────────────
+Concept       residence.registration
+Authority     Canton Zurich
+Jurisdiction  CH-ZH
+Source        zh.ch / Arriving
+Version       22
+Retrieved     04.09.2026
+Content       original supporting passage
+```
+
+Every piece of evidence points back to the exact source snapshot and canonical government page.
+
+This is the basis for citations, auditability and historical reconstruction.
+
+---
+
+## Slide 9 — Knowledge CI/CD
 
 Knowledge should be maintained like software.
 
@@ -202,79 +208,205 @@ Authoritative source
        ↓
 change detected
        ↓
-Apertus understands change
+semantic change analysis
        ↓
-affected knowledge rebuilt
+affected evidence rebuilt
        ↓
-tests execute
+regression tests execute
        ↓
-new version published
+immutable Knowledge Release
+       ↓
+publish
 ```
 
-Routine updates require no human intervention. Humans review exceptions.
+Routine changes require no human intervention. Humans review exceptions or high-risk changes.
 
-> **This is not static RAG. It is continuously tested knowledge.**
+> **This is not static RAG. It is CI/CD for knowledge.**
 
 ---
 
-## Slide 10 — Apertus as the Knowledge Engineer
-
-Apertus is not the source of truth.
-
-Apertus provides semantic intelligence:
+## Slide 10 — The Runtime Uses a Published Release
 
 ```text
-classify documents
-extract concepts
-map multilingual terminology
-analyse semantic changes
-identify applicability candidates
-generate evaluation tests
-rerank evidence
-explain recommendations
+                 BUILD PLANE
+
+admin.ch + zh.ch
+       ↓
+compile + test
+       ↓
+swiss-public@17
+       ↓
+     PUBLISH
+
+────────────────────────────────────
+
+                 RUNTIME PLANE
+
+MCP request
+       ↓
+local metadata + lexical + vector retrieval
+       ↓
+1–5 Evidence Objects
+       ↓
+Trust Envelope
+       ↓
+MCP response
 ```
 
-Deterministic software handles dates, hashes, numeric constraints, HTTP state and source identity.
+A user query never sees a half-built knowledge base.
 
-> **Use AI for semantic uncertainty; software for deterministic certainty.**
+Runtime consumes one immutable published release.
 
 ---
 
-## Slide 11 — The Trust Envelope
+## Slide 11 — First Test: The Standard MCP Client
 
-Every result tells the application not only **what**, but **why it should trust it**.
+Ask through the same MCP-compatible client used by the hackathon evaluation:
+
+> **I am an EU citizen moving to Zurich for work. What do I need to do after arrival?**
+
+TIP should retrieve:
 
 ```text
-information type
+Federal SEM evidence
+        +
+Canton Zurich evidence
+        ↓
+CH-ZH applicability
+        ↓
+compact evidence bundle
+```
+
+The result includes:
+
+```text
 authority
-source
 jurisdiction
-applicability
-validity
-freshness
-knowledge version
+citations
+source versions
+Knowledge Release
 confidence
 limitations
 ```
 
-A legal rule is deliberately represented differently from a restaurant recommendation.
+The important point: **no admin.ch or zh.ch request occurs at query time.**
 
 ---
 
-## Slide 12 — Not Only MCP: Swiss Arrival Checklist
+## Slide 12 — Second Test: Know When We Don't Know
 
-The same Knowledge Release powers a formal application.
+Ask something outside compiled coverage, for example an exact local fee that was never sourced.
+
+The expected result is not the nearest semantically similar paragraph.
+
+It is:
+
+```text
+INSUFFICIENT_VERIFIED_EVIDENCE
+```
+
+or:
+
+```text
+OUT_OF_COVERAGE
+```
+
+with the missing jurisdiction/source identified where possible.
+
+> **Knowing the boundary of trusted knowledge is part of grounding quality.**
+
+---
+
+## Slide 13 — Third Test: Prove It Is Not Live Web Search
+
+After the Knowledge Release is published, temporarily disable upstream network access in the controlled demo environment.
+
+Run the same MCP query again.
+
+It still succeeds from the locally compiled release.
+
+This proves visibly:
+
+```text
+MCP ≠ web search
+MCP ≠ scrape-on-demand
+```
+
+The system serves versioned, previously verified evidence.
+
+---
+
+## Slide 14 — Fourth Test: Autonomous Freshness
+
+Use a controlled mirror of one ingested demo source.
+
+Simulate a substantive change:
+
+```text
+14 days
+   ↓
+8 days
+```
+
+The Source Watcher detects the changed content hash.
+
+Apertus classifies:
+
+```text
+Change           SUBSTANTIVE
+Concept          residence.registration_deadline
+Old value        14 days
+New value        8 days
+Impact           HIGH
+```
+
+The real admin.ch/zh.ch source is never modified; the mirror exists only to demonstrate the production update pipeline safely.
+
+---
+
+## Slide 15 — Watch the Knowledge Rebuild Itself
+
+The Admin Control Plane shows:
+
+```text
+Source version        22 → 23
+Evidence affected     2
+Evaluations affected  7
+
+        ↓
+Incremental compile
+        ↓
+Regression tests
+        ↓
+PASS
+        ↓
+swiss-public@18
+        ↓
+PRODUCTION
+```
+
+Ask the same MCP question again.
+
+It now consumes Release 18.
+
+This demonstrates freshness, autonomous maintenance, versioning, regression testing and operability in one sequence.
+
+---
+
+## Slide 16 — Not Another Chatbot: Swiss Arrival Checklist
+
+The exact same Knowledge Release also powers a formal application.
 
 Input:
 
 ```text
-Nationality          EU/EFTA
-Purpose              Employment
-Duration             >3 months
-Destination canton   Zurich
-Municipality         Zurich
-Arrival date         04.09.2026
-Work start            08.09.2026
+Nationality          [ EU/EFTA ▼ ]
+Purpose              [ Employment ▼ ]
+Duration             [ >3 months ▼ ]
+Destination canton   [ Zurich ▼ ]
+Municipality         [ Zurich ▼ ]
+Arrival date         [ 04.09.2026 ]
+Work start           [ 08.09.2026 ]
 ```
 
 Output:
@@ -282,115 +414,63 @@ Output:
 ```text
 Registration          REQUIRED
 Residence permit      REQUIRED
-Deadline              structured
-Evidence              federal + cantonal
-Trust                 HIGH
+Deadlines              structured
+Evidence               federal + cantonal
+Trust                  HIGH
 ```
 
 There is no natural-language prompt.
 
-This proves that the platform is information infrastructure, not chatbot infrastructure.
+> **AI is infrastructure, not the interface.**
 
 ---
 
-## Slide 13 — Information Products
-
-Developers can publish formal reusable capabilities.
-
-Examples:
+## Slide 17 — One Knowledge Release, Many Applications
 
 ```text
-Swiss Arrival Checklist
-Swiss Hike Finder
-Swiss Photo Scout
-Swiss Housing Advisor
-EMIR Applicability
-Regulatory Impact
+                   admin.ch + zh.ch
+                         ↓
+                  swiss-public@18
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+         MCP            REST           SDK
+          │              │              │
+          ▼              ▼              ▼
+        myAI      Arrival Checklist   eGov App
 ```
 
-Each combines:
+A future source change is compiled once and automatically becomes available to every downstream application after release promotion.
 
-```text
-Input Schema
-+
-Knowledge Spaces
-+
-Live Capabilities
-+
-Rules
-+
-Optional AI
-+
-Output Schema
-```
-
-The same product can be exposed through MCP, REST or an SDK.
+The application does not own a separate RAG pipeline.
 
 ---
 
-## Slide 14 — Admin Control Plane
+## Slide 18 — Different Information Requires Different Strategies
 
-The platform includes an operational GUI, not an end-user chatbot.
+The admin.ch/zh.ch demo proves the **compiled authoritative knowledge** path.
 
-It shows:
+The production platform additionally supports:
 
-```text
-Knowledge Spaces
-Sources
-Scanner/Crawler status
-Source versions
-Semantic changes
-Evidence
-Tests
-Knowledge Releases
-MCP/API integration
-```
+**Live**  
+Train fares, weather, disruptions → authoritative APIs.
 
-Without the Control Plane, a judge sees “question → answer”.
+**Private**  
+Lease, company policy → private Knowledge Spaces.
 
-With it, the judge sees the actual platform:
+**Recommendation**  
+First-date locations → places, reviews and preference scoring.
 
-```text
-official source
-→ snapshot
-→ evidence
-→ tests
-→ release
-→ application
-```
+**Derived**  
+Hiking/photo recommendations → structured data + live capabilities + deterministic constraints + AI ranking.
+
+The platform chooses the appropriate information strategy rather than treating everything as RAG.
 
 ---
 
-## Slide 15 — The Demo Moment
-
-1. Open the Admin Control Plane.
-2. Show real SEM/admin.ch and zh.ch sources.
-3. Build `swiss-public@17`.
-4. Show immutable snapshots and Evidence Objects.
-5. Ask the Swiss question through the standard MCP client.
-6. Receive federal + Zurich evidence, citations and jurisdiction.
-7. Open Swiss Arrival Checklist and obtain the same facts through structured inputs.
-8. Change a controlled source mirror: `14 days → 8 days`.
-9. Watch semantic change detection, rebuild and tests.
-10. Publish `swiss-public@18`.
-11. Repeat both clients; both now consume Release 18.
-
-**One knowledge change updates multiple applications.**
-
----
-
-## Slide 16 — Why This Belongs at Swisscom
+## Slide 19 — Why This Belongs at Swisscom
 
 Swisscom already owns adjacent layers:
-
-- Swiss AI infrastructure and managed inference;
-- Apertus availability;
-- myAI and consumer AI experiences;
-- eGovernment/eGovHub relationships;
-- banking and regulatory services;
-- Swiss infrastructure and trust positioning.
-
-TIP adds the missing reusable layer:
 
 ```text
                     EXPERIENCES
@@ -412,82 +492,96 @@ TIP adds the missing reusable layer:
              SWISS INFRASTRUCTURE
 ```
 
-Models provide intelligence. **TIP tells models and applications what to trust.**
+TIP adds the missing reusable layer between AI infrastructure and applications:
+
+> **What information can this application trust, and how do we keep it trustworthy?**
 
 ---
 
-## Slide 17 — Business Value for Swisscom
+## Slide 20 — Direct Swisscom Business Potential
 
-Potential direct revenue:
+The same technology can strengthen existing Swisscom propositions:
+
+```text
+myAI
+→ richer and more trustworthy Swiss information
+
+eGovHub
+→ managed AI-ready knowledge for cantons and municipalities
+
+Swiss AI Platform
+→ more Apertus and inference consumption
+
+Banking
+→ regulatory knowledge and change intelligence
+
+Enterprise AI
+→ private Knowledge Spaces and Information Products
+```
+
+Potential revenue:
 
 ```text
 Knowledge SaaS
 API / MCP consumption
-private enterprise tenants
 managed knowledge services
+private enterprise tenants
 premium Information Products
 regulatory intelligence
-marketplace commission
-integration services
-private deployment
-```
-
-Indirect value:
-
-```text
-Apertus inference
-Swiss AI Platform consumption
-eGovHub differentiation
-myAI utility
-banking services
-enterprise retention
+integration/private deployment
+future marketplace commission
 ```
 
 ---
 
-## Slide 18 — Consumer to Enterprise
+## Slide 21 — From Swiss Public to Enterprise Regulation
 
-Consumer Information Products:
+The architecture is domain-independent.
 
 ```text
-Swiss Public
-Hiking
-Cycling
-Photo Scout
-Housing
-Local Discovery
+SWISS PUBLIC
+admin.ch → zh.ch → municipality
 ```
 
-Enterprise Information Products:
+becomes:
 
 ```text
-FINMA
-EMIR
-DORA
-internal policies
-regulatory impact
+BANKING
+EMIR → RTS/ITS → ESMA guidance → bank policy
 ```
 
-Same platform primitives:
+or:
 
 ```text
-knowledge
-data
-context
-rules
-trust
-reasoning
-structured result
+INSURANCE
+regulation → supervisory guidance → company policy → product/process
+```
+
+Reusable primitives remain the same:
+
+```text
+Source
+Authority
+Applicability
+Evidence
+Version
+Knowledge Release
+Trust Envelope
+Knowledge CI/CD
 ```
 
 ---
 
-## Slide 19 — Beyond the Hackathon
+## Slide 22 — Beyond the Hackathon
 
 Today:
 
 ```text
-Swiss Public → MCP + Arrival Checklist
+admin.ch + zh.ch
+       ↓
+Swiss Public Knowledge Space
+       ↓
+MCP + Swiss Arrival Checklist
 ```
 
 Tomorrow:
@@ -508,18 +602,52 @@ Trusted Information Platform
 ANY APPLICATION
 ```
 
+The hackathon implementation is therefore useful by itself while proving a much larger reusable platform.
+
 ---
 
-## Slide 20 — Closing
+## Slide 23 — What the Demo Proves Against the Challenge Criteria
+
+```text
+GROUNDING
+→ official admin.ch/SEM + zh.ch evidence
+
+CITATIONS
+→ every Evidence Object traces to its source version
+
+JURISDICTION
+→ federal + CH-ZH applicability
+
+FRESHNESS
+→ autonomous source watcher + Knowledge CI/CD
+
+AGENT EFFICIENCY
+→ local compiled retrieval; small evidence bundles
+
+SOURCE ETIQUETTE
+→ no upstream crawl per user query
+
+OPERABILITY
+→ snapshots, tests, releases, rollback, Admin Control Plane
+
+INTEGRATION READINESS
+→ standard MCP + structured REST contract
+```
+
+The architecture is designed directly around the evaluation criteria rather than adding them after implementation.
+
+---
+
+## Slide 24 — Closing
 
 **LLMs should not have to know everything.**
 
-They—and ordinary applications—should know where trustworthy information comes from.
+Applications should know where trustworthy information comes from—and that information should remain current without every application maintaining its own crawler and RAG stack.
 
-> **Apertus provides intelligence.**  
-> **TIP provides truth, context and orchestration.**  
-> **Swisscom provides trust, infrastructure and distribution.**
+> **Apertus provides semantic intelligence.**  
+> **TIP provides trusted information, context and orchestration.**  
+> **Swisscom provides infrastructure, sovereignty and distribution.**
 
 # Swisscom Trusted Information Platform
 
-**Trustworthy information infrastructure for the AI economy.**
+**From admin.ch and zh.ch to continuously verified information infrastructure for any application.**
