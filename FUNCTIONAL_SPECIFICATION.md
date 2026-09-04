@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Functional & Solution Design Specification — V5
+## Functional & Solution Design Specification — V6
 
 **Working product name:** Swisscom Trusted Information Platform (TIP)  
 **Hackathon domain:** Swiss Public Information  
@@ -24,6 +24,8 @@ It is explicitly **not a chatbot**.
 
 The hackathon MVP focuses on real authoritative federal and Canton Zurich information. Content from the admin.ch ecosystem and zh.ch is acquired ahead of runtime, stored as immutable snapshots, normalized, enriched with Apertus where useful, indexed, evaluated and published as immutable Knowledge Releases. Runtime requests normally query those releases rather than scraping government sites.
 
+The runtime is deliberately more structured than ordinary RAG. A request is converted into an explicit **Execution Plan** describing intent, concepts, applicability, information class, required Knowledge Spaces/Capabilities and evidence budget. Retrieval then applies hard authority/jurisdiction/date filters before hybrid lexical/vector/concept search. The resulting Evidence Objects are reranked, facts are resolved by concept, overlaps and conflicts are handled explicitly, and a compact **Evidence Bundle + Trust Envelope** is returned. Natural-language generation is optional and happens only after the platform has established the evidence.
+
 The demo uses four surfaces, in priority order:
 
 1. **Admin Control Plane** — proves sourcing, ingestion, versioning, Knowledge CI/CD and operability.
@@ -31,7 +33,7 @@ The demo uses four surfaces, in priority order:
 3. **Swiss Arrival Checklist** — proves the same knowledge can power a formal non-chat application through REST.
 4. **Swiss Hike Flutter app (stretch)** — proves TIP can power a completely different consumer product using structured inputs, live-capability abstractions and recommendation logic.
 
-The hiking demo must not endanger the core hackathon delivery. It therefore uses a small deterministic mocked hiking dataset and mocked/cached capability responses rather than attempting to build a production Swiss hiking data platform in two days.
+The hiking demo must not endanger the core hackathon delivery. It uses a small deterministic mocked hiking dataset and mocked/cached capability responses rather than attempting to build a production Swiss hiking data platform in two days.
 
 ---
 
@@ -83,6 +85,8 @@ TIP solves a problem individual applications should not repeatedly solve themsel
 9. **MCP is an integration protocol, not the product architecture.**
 10. **The core remains model-independent, with Apertus first-class in the Swisscom deployment.**
 11. **Reference applications demonstrate the platform; they are not the platform itself.**
+12. **Search returns evidence, not answers.** Facts and rules are resolved from evidence before optional prose generation.
+13. **Minimum sufficient evidence.** Runtime should normally return 2–5 diverse, high-quality Evidence Objects rather than large context dumps.
 
 ---
 
@@ -142,6 +146,14 @@ Golden cases include direct registration questions, EU/EFTA employment context, 
                        DATA PLANE
                Published Knowledge Release
                          │
+                   Query Planner
+                         │
+             Retrieval / Capability Engine
+                         │
+                Evidence / Rule Engine
+                         │
+                  Result Assembler
+                         │
                ┌─────────┼──────────────┐
                ▼         ▼              ▼
               MCP       REST           SDK
@@ -187,6 +199,9 @@ The `/contracts` package is the first integration deliverable. Required types:
 - `EvidenceObject`
 - `SemanticChange`
 - `KnowledgeRelease`
+- `ExecutionPlan`
+- `CandidateFact`
+- `EvidenceBundle`
 - `RetrievalResult`
 - `TrustEnvelope`
 - `CapabilityDefinition`
@@ -225,7 +240,51 @@ Use Pydantic/JSON Schema and commit fixtures early so all workstreams can develo
 }
 ```
 
-## 8.3 TrustEnvelope
+## 8.3 ExecutionPlan
+
+```json
+{
+  "information_class": "AUTHORITATIVE",
+  "knowledge_spaces": ["swiss-public"],
+  "concepts": ["residence.registration", "residence.permit"],
+  "applicability": {
+    "jurisdiction": "CH-ZH",
+    "nationality_group": "EU_EFTA",
+    "purpose": "EMPLOYMENT"
+  },
+  "requested_date": "2026-09-04",
+  "retrieval_strategy": "HYBRID",
+  "max_evidence": 4
+}
+```
+
+## 8.4 EvidenceBundle
+
+```json
+{
+  "status": "SUPPORTED",
+  "applicability": {
+    "jurisdiction": "CH-ZH",
+    "nationality_group": "EU_EFTA",
+    "purpose": "EMPLOYMENT"
+  },
+  "facts": [
+    {
+      "concept": "residence.registration_deadline",
+      "value": 14,
+      "unit": "days",
+      "evidence": ["ev-sem-registration-17", "ev-zh-registration-22"]
+    }
+  ],
+  "evidence": ["ev-sem-registration-17", "ev-zh-registration-22"],
+  "trust": {
+    "knowledge_release": "swiss-public@2026.09.04.3",
+    "confidence": 0.98
+  }
+}
+```
+
+## 8.5 TrustEnvelope
 
 ```json
 {
@@ -315,10 +374,13 @@ Responsibilities:
 - multilingual terminology mapping;
 - authority/source relationship analysis;
 - Evidence Object compilation;
+- candidate fact extraction for important concepts;
 - semantic change analysis;
 - candidate evaluation generation.
 
 Apertus is not authoritative. Exact evidence remains linked to the source snapshot. High-risk numeric/date facts should be validated deterministically where practical.
+
+Frequently used stable facts such as deadlines, rates, thresholds, effective dates and boolean obligations SHOULD be extracted during compilation when confidence and validation permit. This reduces runtime model work while retaining the original evidence as the basis for every fact.
 
 Example semantic change:
 
@@ -340,198 +402,100 @@ Recommended stack:
 
 ```text
 PostgreSQL        sources, versions, documents, evidence,
-                  concepts, relationships, releases, evaluations
+                  concepts, candidate facts, relationships,
+                  releases, evaluations
 pgvector          semantic retrieval
 PostgreSQL FTS    lexical retrieval
 MinIO/filesystem  immutable raw snapshots
 Redis optional    hot/live cache
 ```
 
-Retrieval:
+Retrieval SHALL use hard filters before similarity search:
 
 ```text
-Applicability filter
+Published Knowledge Release
         ↓
-Authority / jurisdiction filter
+validity date
         ↓
-Lexical + vector retrieval
+jurisdiction / applicability
         ↓
-Merge / rerank
+authority / trust policy
         ↓
-1–5 Evidence Objects
+lexical + vector + concept retrieval
+        ↓
+merge / rerank
+        ↓
+diversity-aware selection
+        ↓
+2–5 Evidence Objects
 ```
+
+Ranking SHOULD combine multiple signals rather than raw embedding similarity:
+
+```text
+final_score =
+    lexical_relevance
+  + semantic_relevance
+  + concept_match
+  + authority_weight
+  + jurisdiction_specificity
+  + applicability_match
+  + temporal_validity
+  + source_quality
+```
+
+Weights are domain-configurable. Selection should avoid returning several near-duplicate passages from one page when complementary authoritative evidence exists.
 
 ---
 
 # 13. Module E — Trusted Information Runtime
 
-Responsibilities:
-
-- MCP and REST endpoints;
-- query/applicability interpretation;
-- retrieval orchestration;
-- Trust Envelope generation;
-- coverage/unsupported handling;
-- Information Product execution;
-- compact structured responses.
-
-Supported states:
+The runtime is split logically into four engines:
 
 ```text
-SUPPORTED
-PARTIALLY_SUPPORTED
-NEEDS_CONTEXT
-OUT_OF_COVERAGE
-INSUFFICIENT_VERIFIED_EVIDENCE
-CONFLICTING_EVIDENCE
-STALE
-```
-
-Runtime normally accesses only published releases or registered live Capabilities, never arbitrary web pages.
-
----
-
-# 14. MCP Contract and OpenCode
-
-MVP tools:
-
-- `swiss_information.resolve` — high-level resolution, normally one agent call.
-- `swiss_information.get_evidence` — expanded evidence by ID.
-- `swiss_information.get_coverage` — supported domains/jurisdictions.
-
-OpenCode is the reference MCP client. Repository setup should include `opencode.jsonc` configured for the local Streamable HTTP endpoint and a smoke-test sequence.
-
-The demo must make the tool invocation visible:
-
-```text
-OpenCode
+REQUEST
    ↓
-swiss_information.resolve
+1. Query Planner
    ↓
-TIP / swiss-public@17
+2. Retrieval / Capability Engine
    ↓
-SEM + zh.ch Evidence Objects
+3. Evidence & Rule Engine
+   ↓
+4. Result Assembler
 ```
 
-Only TIP should be enabled in the core evaluation profile to keep tool selection and context use clean.
+## 13.1 Query Planner
 
----
+The Query Planner converts input into an explicit `ExecutionPlan`.
 
-# 15. Module F — Admin Control Plane
+For natural-language MCP input, Apertus may extract intent, concepts and applicability. For structured Information Products such as Arrival Checklist or Swiss Hike, the input already contains most of this context and the LLM planning step can be skipped.
 
-The Admin GUI is required for the hackathon because it makes otherwise invisible differentiation visible.
+The planner determines:
 
-Minimum screens:
+- information class;
+- Knowledge Spaces and/or Capabilities;
+- concepts;
+- jurisdiction and applicability;
+- requested/effective date;
+- retrieval strategy;
+- evidence budget;
+- whether optional AI synthesis is needed.
 
-1. Dashboard
-2. Knowledge Spaces
-3. Source Registry
-4. Scanner/Crawler status
-5. Source detail and immutable versions
-6. Semantic changes
-7. Evidence Explorer
-8. Evaluations
-9. Knowledge Releases / rollback
-10. MCP/REST integration status
+## 13.2 Retrieval / Capability Engine
 
-Example dashboard:
+For AUTHORITATIVE requests, retrieve from the current published Knowledge Release. For LIVE requests, call registered provider Capabilities. For hybrid/derived products, execute the required combination.
 
-```text
-SWISS PUBLIC                       ● HEALTHY
-Production release                2026.09.04.3
-Sources                            43
-Evidence                           1,274
-Tests                              183 / 183 PASS
-Last scan                          11 min ago
-Changes today                      4
-Review required                    0
-```
+Authoritative retrieval uses metadata filters first, then lexical/vector/concept retrieval and reranking.
 
-The Admin GUI is the Control Plane, not an end-user chatbot.
+## 13.3 Evidence & Rule Engine
 
----
+This engine determines what the selected evidence actually establishes.
 
-# 16. Module G — Evaluation & Knowledge CI/CD
+It SHALL:
 
-Golden tests cover factual grounding, citations, jurisdiction, multilingual queries, unsupported cases, temporal/source-version behavior, response size, tool calls and latency.
-
-Release flow:
-
-```text
-Candidate knowledge
-      ↓
-Build immutable release
-      ↓
-Regression evaluation
-      ↓
-PASS ──→ publish
-FAIL ──→ reject/review
-```
-
-Controlled demo change:
-
-```text
-14 days → 8 days
-```
-
-Use a local/test mirror of an ingested source. Never modify or pretend to modify the official site. Demonstrate detect → semantic classify → rebuild → test → publish → clients consume new release.
-
----
-
-# 17. Reference Application 1 — Swiss Arrival Checklist
-
-Purpose: prove that the admin.ch/zh.ch Knowledge Release can power a formal non-chat application.
-
-Inputs:
-
-```text
-Nationality category
-Purpose of stay
-Employment duration
-Destination canton
-Municipality
-Arrival date
-Work start date
-```
-
-Example REST request:
-
-```json
-{
-  "nationality_group": "EU_EFTA",
-  "purpose": "EMPLOYMENT",
-  "employment_duration": "MORE_THAN_3_MONTHS",
-  "destination": {"canton": "CH-ZH", "municipality": "Zurich"},
-  "arrival_date": "2026-09-04",
-  "employment_start_date": "2026-09-08"
-}
-```
-
-Output is a typed checklist containing requirement status, deadlines, authorities, evidence IDs and Trust Envelope. No natural-language prompt is required.
-
----
-
-# 18. Reference Application 2 — Swiss Hike Flutter App (Stretch)
-
-## 18.1 Purpose
-
-Swiss Hike is a deliberately small mobile reference application demonstrating that TIP can power a completely different consumer product. It is **not part of the critical path** and must only be implemented after the admin.ch/zh.ch → Knowledge Release → OpenCode → Arrival Checklist path works end-to-end.
-
-It proves:
-
-- TIP is not chatbot-specific;
-- applications can submit formal structured intent;
-- TIP can combine stable data, live-capability abstractions and deterministic constraints;
-- Flutter/mobile clients consume the same headless REST platform;
-- AI can rank/explain fuzzy preferences without becoming the UI.
-
-## 18.2 UI
-
-```text
-┌────────────────────────────────────┐
-│ Swiss Hike                         │
-│                                    │
-│ Start        [ Zürich HB       ▼ ] │
-│ Date         [ Tomorrow        ▼ ] │
-│ Hiking time  [ 4h              ]   │
-│ Difficulty   [ Moderate        ▼ ] │
+- group candidate facts by concept;
+- combine corroborating evidence;
+- recognize specialization (for example federal rule + more specific cantonal guidance);
+- apply deterministic domain rules where available;
+- detect unresolved contradictions;
+- preserve evidence links for every resolved
