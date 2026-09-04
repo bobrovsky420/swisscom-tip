@@ -14,17 +14,15 @@ Most AI systems are excellent at language but unreliable at knowing what is curr
 
 **Build an MCP server that makes authoritative public Swiss information accessible to AI assistants as effectively as possible.**
 
-The server must be correct, authoritative, jurisdiction-aware, fresh, citable, efficient, maintainable and straightforward to integrate with standard MCP clients.
-
 Our insight:
 
 > **The hard problem is not search. It is continuously turning authoritative sources into trusted, maintainable AI-ready information.**
 
 ---
 
-## Slide 3 — Our Hackathon Scope: admin.ch + zh.ch
+## Slide 3 — Hackathon Scope: admin.ch + zh.ch
 
-We deliberately do **not** try to index all of Switzerland in two days.
+We deliberately do not try to index all Switzerland in two days.
 
 ```text
 Swiss Confederation / admin.ch ecosystem
@@ -36,11 +34,11 @@ Primary scenario:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
-This forces the system to combine federal context with cantonal guidance and demonstrate authority, jurisdiction and applicability rather than merely semantic similarity.
+This demonstrates authority, jurisdiction and applicability rather than merely semantic similarity.
 
 ---
 
-## Slide 4 — The Demo Starts With the Sources, Not the Question
+## Slide 4 — Demo Starts With the Sources
 
 The first screen is the **Admin Control Plane**:
 
@@ -49,12 +47,10 @@ Knowledge Space: Swiss Public
 
 SEM / admin.ch ecosystem    FEDERAL
 Canton Zurich / zh.ch       CANTONAL
-
 Status                      NOT BUILT
-Knowledge Release           —
 ```
 
-We build the Knowledge Space from actual configured official sources. Sourcing is visible product functionality, not a hidden preprocessing script.
+We build from configured official sources. Sourcing is visible product functionality, not a hidden script.
 
 ---
 
@@ -63,24 +59,18 @@ We build the Knowledge Space from actual configured official sources. Sourcing i
 ```text
 admin.ch / SEM + zh.ch
           ↓
-     Source Registry
+Source Registry → Scanner → Crawler → Fetcher
           ↓
-        Scanner
+immutable raw snapshots
           ↓
-        Crawler
-          ↓
-        Fetcher
-          ↓
- immutable raw snapshots
-          ↓
-       Normalizer
+Normalizer
 ```
 
-The crawler stays inside explicit trusted scopes and records canonical source, authority, jurisdiction, HTTP metadata, content hash, retrieval time and immutable raw version.
+TIP records canonical source, authority, jurisdiction, HTTP metadata, hashes, retrieval time and immutable versions.
 
 ---
 
-## Slide 6 — Stable Knowledge Is Compiled, Not Retrieved Per Question
+## Slide 6 — Stable Knowledge Is Compiled
 
 Normal MCP requests do **not** scrape admin.ch or zh.ch.
 
@@ -100,26 +90,26 @@ local indexes
 Knowledge Release
 ```
 
-Benefits: low latency, reproducibility, auditability, resilience, source etiquette and fewer network/model calls.
+Benefits: latency, reproducibility, auditability, resilience, source etiquette and lower network/model cost.
 
 ---
 
-## Slide 7 — Apertus as the Knowledge Engineer
+## Slide 7 — Apertus as Knowledge Engineer
 
-Apertus is **not** the source of truth. It adds semantic intelligence:
+Apertus is not the source of truth. It adds semantic intelligence:
 
 ```text
-classify documents
-extract concepts
-map multilingual terminology
-identify applicability
-relate federal/cantonal evidence
-analyse semantic changes
-generate candidate tests
-rerank evidence
+classification
+concept extraction
+multilingual terminology
+applicability
+federal/cantonal relationships
+semantic change analysis
+candidate test generation
+fuzzy reranking/explanation
 ```
 
-Software handles HTTP state, hashes, source identity, dates, numeric comparisons and version consistency.
+Software handles HTTP state, hashes, dates, numeric constraints and version consistency.
 
 > **Use AI for semantic uncertainty; software for deterministic certainty.**
 
@@ -127,7 +117,7 @@ Software handles HTTP state, hashes, source identity, dates, numeric comparisons
 
 ## Slide 8 — From Documents to Evidence
 
-The compiler creates traceable **Evidence Objects**, not arbitrary vector chunks:
+TIP creates traceable Evidence Objects, not arbitrary vector chunks:
 
 ```text
 Concept       residence.registration
@@ -135,11 +125,10 @@ Authority     Canton Zurich
 Jurisdiction  CH-ZH
 Source        zh.ch / Arriving
 Version       22
-Retrieved     04.09.2026
 Content       original supporting passage
 ```
 
-Every Evidence Object points to the exact source snapshot and canonical page.
+Every object traces to an exact immutable snapshot and canonical page.
 
 ---
 
@@ -161,89 +150,47 @@ immutable Knowledge Release
 publish
 ```
 
-Routine updates require no human intervention; exceptions or high-risk changes can require review.
-
 > **This is not static RAG. It is CI/CD for knowledge.**
 
 ---
 
-## Slide 10 — The Runtime Uses a Published Release
+## Slide 10 — OpenCode Is the Reference MCP Client
 
-```text
-BUILD PLANE
-admin.ch + zh.ch → compile → test → swiss-public@17 → PUBLISH
-
-DATA PLANE
-MCP → local retrieval → 1–5 Evidence Objects → Trust Envelope
-```
-
-A user never sees a half-built knowledge base. Runtime consumes one immutable published release.
-
----
-
-## Slide 11 — OpenCode Is Our Reference MCP Client
-
-For the hackathon we use **OpenCode** as the neutral reference client.
-
-Why:
-
-- it is MCP-compatible and close to the evaluation style described in the challenge;
-- it supports local MCP servers over stdio and remote servers over Streamable HTTP;
-- it keeps attention on **our MCP server**, not on a proprietary assistant UI;
-- it can expose TIP tools directly, making tool selection and call count visible.
-
-Repository configuration should allow:
-
-```text
-git clone
-→ docker compose up
-→ open OpenCode
-→ TIP MCP available
-```
-
-Only TIP should be enabled during the core evaluation to keep tool choice and context usage clean.
-
----
-
-## Slide 12 — Make the Tool Call Visible
-
-The audience should see the actual integration path:
+OpenCode provides a neutral MCP integration surface. We make the tool call visible:
 
 ```text
 User
-  ↓
+ ↓
 OpenCode + evaluation LLM
-  ↓
-swiss-tip_swiss_information_resolve
-  ↓
-TIP
-  ├─ Knowledge Release: swiss-public@17
-  ├─ Jurisdiction: CH-ZH
-  ├─ SEM evidence
-  └─ zh.ch evidence
-  ↓
-LLM response with citations
+ ↓
+swiss_information.resolve
+ ↓
+TIP / swiss-public@17
+ ├─ SEM evidence
+ └─ zh.ch evidence
+ ↓
+answer with citations
 ```
 
-This directly demonstrates MCP integration, tool-selection quality and agent efficiency.
+The repository should support `git clone → docker compose up → OpenCode → TIP available`.
 
 ---
 
-## Slide 13 — First Test: Grounded Federal + Zurich Answer
+## Slide 11 — Test 1: Grounded Federal + Zurich Answer
 
-Ask in OpenCode:
+Ask:
 
 > **I am an EU citizen moving to Zurich for work. What do I need to do after arrival?**
 
-TIP retrieves federal SEM evidence + Canton Zurich evidence, applies CH-ZH context and returns a compact evidence bundle with authority, jurisdiction, citations, source versions, Knowledge Release, confidence and limitations.
+TIP returns federal + Canton Zurich evidence, CH-ZH applicability, citations, source versions, Knowledge Release, confidence and limitations.
 
 **No admin.ch or zh.ch request occurs at query time.**
 
 ---
 
-## Slide 14 — Second Test: Know When We Don't Know
+## Slide 12 — Test 2: Know When We Don't Know
 
-Ask for an exact local fee that was never sourced.
+Ask for a local fact never sourced.
 
 Expected:
 
@@ -251,21 +198,15 @@ Expected:
 INSUFFICIENT_VERIFIED_EVIDENCE
 ```
 
-or:
-
-```text
-OUT_OF_COVERAGE
-```
-
-> **Knowing the boundary of trusted knowledge is part of grounding quality.**
+or `OUT_OF_COVERAGE`, rather than an invented nearest answer.
 
 ---
 
-## Slide 15 — Third Test: Prove It Is Not Live Web Search
+## Slide 13 — Test 3: Prove It Is Not Live Web Search
 
-After publishing the Knowledge Release, disable upstream network access in the controlled demo environment and repeat the OpenCode query.
+Disable upstream network access in the controlled environment and repeat the OpenCode query.
 
-It still succeeds from locally compiled evidence.
+It still succeeds from the published release.
 
 ```text
 MCP ≠ web search
@@ -274,19 +215,19 @@ MCP ≠ scrape-on-demand
 
 ---
 
-## Slide 16 — Fourth Test: Autonomous Freshness
+## Slide 14 — Test 4: Autonomous Freshness
 
-Use a controlled mirror of one ingested source and simulate:
+Use a controlled mirror and simulate:
 
 ```text
 14 days → 8 days
 ```
 
-The watcher detects the changed content hash. Apertus classifies the change as substantive, identifies `residence.registration_deadline`, and marks the impact high. The real official site is never modified.
+Watcher detects change → Apertus classifies it as substantive → affected evidence and tests are identified. The real official site is never modified.
 
 ---
 
-## Slide 17 — Watch the Knowledge Rebuild Itself
+## Slide 15 — Watch Knowledge Rebuild Itself
 
 ```text
 Source version        22 → 23
@@ -300,13 +241,13 @@ Regression tests PASS
 swiss-public@18 → PRODUCTION
 ```
 
-Repeat the OpenCode query: it now consumes Release 18.
+Repeat the OpenCode query; it now consumes Release 18.
 
 ---
 
-## Slide 18 — Not Another Chatbot: Swiss Arrival Checklist
+## Slide 16 — Not Another Chatbot: Swiss Arrival Checklist
 
-The same Knowledge Release powers a formal application:
+The same release powers a formal application:
 
 ```text
 Nationality          [ EU/EFTA ▼ ]
@@ -315,69 +256,184 @@ Duration             [ >3 months ▼ ]
 Destination canton   [ Zurich ▼ ]
 Municipality         [ Zurich ▼ ]
 Arrival date         [ 04.09.2026 ]
-Work start           [ 08.09.2026 ]
 ```
 
-Output is structured: registration requirement, permit requirement, deadlines, evidence and trust. There is no natural-language prompt.
+Output is a structured checklist of requirements, deadlines, evidence and trust. No prompt is required.
 
 > **AI is infrastructure, not the interface.**
 
 ---
 
-## Slide 19 — Three Demo Surfaces, Three Messages
+## Slide 17 — Stretch Demo: Swiss Hike on Flutter
+
+If the core demo is complete, pick up a phone and open a completely different application:
+
+```text
+Swiss Hike
+
+Start              Zürich HB
+Date               Tomorrow
+Hiking time        ~4h
+Difficulty         Moderate
+Travel             ≤90 min
+Scenery            Lake + Panorama
+Weather            Good
+Restaurant          Near finish
+
+[ FIND HIKES ]
+```
+
+No chat box. No hidden English prompt. The Flutter app sends a typed REST request to TIP.
+
+---
+
+## Slide 18 — We Do Not Build a Hiking Platform in Two Days
+
+The hiking app is an **architectural reference**, not a production hiking service.
+
+Use a tiny deterministic demo dataset:
+
+```text
+10–20 curated fictional/demo route records
++
+mocked transport times
++
+mocked weather scenarios
++
+mocked restaurant availability
+```
+
+Store under:
+
+```text
+demo/hiking/routes.json
+demo/hiking/transport.json
+demo/hiking/weather.json
+demo/hiking/restaurants.json
+```
+
+The data is explicitly marked **DEMO/MOCK** in the app and API. No fake data is presented as live or authoritative.
+
+---
+
+## Slide 19 — Hiking Shows the Information Product Pattern
+
+Flutter sends:
+
+```json
+{
+  "origin": "Zurich HB",
+  "date": "tomorrow",
+  "target_duration_minutes": 240,
+  "difficulty": "moderate",
+  "max_transport_minutes": 90,
+  "preferences": ["lake", "panorama"],
+  "good_weather": true,
+  "restaurant_near_end": true
+}
+```
+
+TIP executes:
+
+```text
+route candidates
+      +
+transport capability
+      +
+weather capability
+      +
+restaurant capability
+      ↓
+hard deterministic filters
+      ↓
+soft preference ranking
+      ↓
+structured route cards
+```
+
+This is the same platform abstraction applied to a DERIVED information product.
+
+---
+
+## Slide 20 — Mocking Strategy Still Preserves Architecture
+
+Mock at **provider boundaries**, not inside business logic.
+
+```text
+TransportProvider
+ ├─ MockTransportProvider      ← hackathon
+ └─ RealProviderAdapter        ← future
+
+WeatherProvider
+ ├─ MockWeatherProvider        ← hackathon
+ └─ RealProviderAdapter        ← future
+
+PlacesProvider
+ ├─ MockPlacesProvider         ← hackathon
+ └─ RealProviderAdapter        ← future
+```
+
+The recommendation engine and Flutter app do not know whether the provider is mocked or real.
+
+That means the demo code is a credible foundation rather than disposable hard-coded UI logic.
+
+---
+
+## Slide 21 — Four Surfaces, Four Messages
 
 ```text
 ADMIN CONTROL PLANE
-“Here is how trusted knowledge is built and maintained.”
+“How trusted information is built and maintained.”
 
 OPENCODE
-“Here is the standard MCP/agent integration.”
+“Standard MCP/agent integration.”
 
-SWISS ARRIVAL CHECKLIST
-“Here is the same platform powering a non-chat application.”
+ARRIVAL CHECKLIST
+“Structured non-chat authoritative application.”
+
+SWISS HIKE / FLUTTER
+“Same headless platform can power a consumer product.”
 ```
 
-Together they prevent TIP from being perceived as another chatbot or RAG demo.
+**Same platform. No shared user interface.**
 
 ---
 
-## Slide 20 — One Knowledge Release, Many Applications
+## Slide 22 — One Platform, Many Information Products
 
 ```text
-                   admin.ch + zh.ch
-                         ↓
-                  swiss-public@18
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-         MCP            REST           SDK
-          │              │              │
-          ▼              ▼              ▼
-      OpenCode/myAI   Arrival App     eGov App
+Trusted Information Platform
+        │
+        ├─ Swiss Public / Arrival
+        ├─ Swiss Hike
+        ├─ Swiss Photo Scout
+        ├─ Swiss Housing
+        ├─ FINMA
+        ├─ EMIR
+        └─ Regulatory Impact
 ```
 
-Compile once; consume everywhere.
+Each Information Product combines typed inputs, Knowledge Spaces, Capabilities, rules, optional AI and typed outputs.
 
 ---
 
-## Slide 21 — Different Information Requires Different Strategies
+## Slide 23 — Different Information Requires Different Strategies
 
-The demo proves compiled authoritative knowledge. Production TIP additionally supports:
-
-- **Live:** train fares, weather, disruptions → authoritative APIs.
+- **Authoritative:** admin.ch/zh.ch → compiled versioned knowledge.
+- **Live:** weather/fares/disruptions → provider APIs.
 - **Private:** lease/company policy → private Knowledge Spaces.
-- **Recommendation:** first-date locations → places/reviews/preferences.
-- **Derived:** hiking/photo recommendations → structured data + live capabilities + deterministic constraints + AI ranking.
+- **Recommendation:** places/reviews/preferences → discovery sources.
+- **Derived:** hiking/photo → structured data + live capabilities + constraints + ranking.
 
 Everything is not forced through RAG.
 
 ---
 
-## Slide 22 — Why This Belongs at Swisscom
+## Slide 24 — Why This Belongs at Swisscom
 
 ```text
                     EXPERIENCES
-          myAI / eGov / Banking / Apps
+       myAI / eGov / Mobile / Banking / Apps
                          │
                          ▼
              TRUSTED INFORMATION PLATFORM
@@ -398,11 +454,11 @@ TIP fills the missing layer: **what information can this application trust, and 
 
 ---
 
-## Slide 23 — Business Potential
+## Slide 25 — Business Potential
 
-TIP can strengthen myAI, eGovHub, Swiss AI Platform, banking services and enterprise AI.
+TIP can strengthen myAI, eGovHub, Swiss AI Platform, banking services and future consumer Information Products.
 
-Potential revenue:
+Potential value:
 
 ```text
 Knowledge SaaS
@@ -413,13 +469,12 @@ premium Information Products
 regulatory intelligence
 integration/private deployment
 future marketplace commission
+more Apertus/Swiss AI Platform consumption
 ```
-
-It also drives Apertus inference and Swiss AI Platform consumption.
 
 ---
 
-## Slide 24 — From Swiss Public to Enterprise Regulation
+## Slide 26 — From Swiss Public to Enterprise Regulation
 
 ```text
 SWISS PUBLIC
@@ -429,14 +484,14 @@ BANKING
 EMIR → RTS/ITS → ESMA guidance → bank policy
 
 INSURANCE
-regulation → supervisory guidance → company policy → product/process
+regulation → guidance → company policy → product/process
 ```
 
-Reusable primitives: Source, Authority, Applicability, Evidence, Version, Knowledge Release, Trust Envelope and Knowledge CI/CD.
+Reusable primitives: Source, Authority, Applicability, Evidence, Capability, Version, Knowledge Release, Trust Envelope and Knowledge CI/CD.
 
 ---
 
-## Slide 25 — Challenge Criteria
+## Slide 27 — Challenge Criteria
 
 ```text
 GROUNDING           official admin.ch/SEM + zh.ch evidence
@@ -446,12 +501,27 @@ FRESHNESS           source watcher + Knowledge CI/CD
 AGENT EFFICIENCY    one high-level MCP call; compact evidence
 SOURCE ETIQUETTE    no upstream crawl per query
 OPERABILITY         snapshots, tests, releases, rollback, Admin UI
-INTEGRATION         OpenCode + standard MCP + REST reference app
+INTEGRATION         OpenCode MCP + REST apps
+EXTENSIBILITY       Arrival + optional Flutter Hike reference apps
 ```
 
 ---
 
-## Slide 26 — Closing
+## Slide 28 — Delivery Priority
+
+```text
+P0  admin.ch/zh.ch → storage → compiler → retrieval → MCP → OpenCode
+P1  Admin Control Plane
+P1  Swiss Arrival Checklist
+P2  Flutter Swiss Hike with mock providers
+P3  additional MCP/chat clients
+```
+
+The stretch app must never put the core challenge solution at risk.
+
+---
+
+## Slide 29 — Closing
 
 **LLMs should not have to know everything. Applications should know where trustworthy information comes from.**
 
@@ -461,4 +531,4 @@ INTEGRATION         OpenCode + standard MCP + REST reference app
 
 # Swisscom Trusted Information Platform
 
-**From admin.ch and zh.ch to continuously verified information infrastructure for any application.**
+**From admin.ch and zh.ch to trustworthy information products for any application.**
