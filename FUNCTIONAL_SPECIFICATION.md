@@ -1,12 +1,12 @@
 # Swisscom Trusted Information Platform
-## Functional & Solution Design Specification — V3
+## Functional & Solution Design Specification — V4
 
-**Working product name:** Swisscom Trusted Information Platform  
-**Generic platform name:** Trusted Information Platform (TIP)  
+**Working product name:** Swisscom Trusted Information Platform (TIP)  
 **Hackathon domain:** Swiss Public Information  
-**Primary demo sources:** Swiss Confederation / admin.ch ecosystem and Canton Zurich / zh.ch  
-**Primary hackathon integration:** MCP  
-**Additional target interfaces:** REST API, SDK, Webhooks  
+**Primary demo sources:** Swiss Confederation / admin.ch ecosystem (including SEM) and Canton Zurich / zh.ch  
+**Reference MCP demo client:** OpenCode  
+**Primary hackathon transport:** MCP Streamable HTTP, with stdio optional for local development  
+**Additional interfaces:** REST API; SDK/Webhooks as roadmap  
 **Primary Swisscom semantic model:** Apertus  
 **Deployment model:** Headless platform; SaaS/private SaaS/on-prem capable
 
@@ -14,94 +14,87 @@
 
 # 1. Executive Summary
 
-Swisscom Trusted Information Platform is a headless platform that converts authoritative information, live data, enterprise data and digital services into trustworthy, structured Information Products consumable by applications.
+Swisscom Trusted Information Platform is a headless platform that converts authoritative information, live data, enterprise data and digital services into trustworthy, structured Information Products consumable by applications and AI agents.
 
-It is explicitly **not a chatbot**. Applications consume structured APIs or MCP tools and receive typed results containing facts, evidence, applicability, provenance, freshness, confidence and limitations.
+It is explicitly **not a chatbot**.
 
 > **AI is infrastructure, not the interface.**
 
-The first implementation addresses the hackathon challenge: make authoritative Swiss public information effectively accessible to AI systems.
+The hackathon implementation solves the original Swiss public-information MCP challenge with a deliberately focused scope: authoritative federal information from the admin.ch ecosystem and cantonal information from zh.ch. Stable authoritative information is acquired ahead of runtime, stored as immutable source snapshots, normalized, semantically enriched, indexed, tested and published as an immutable Knowledge Release. Runtime MCP calls normally query this compiled release rather than scraping government sites.
 
-The main demonstration uses real federal and Canton Zurich information to show the complete lifecycle:
+The reference MCP client for development and the final demo is **OpenCode**. The same Knowledge Release also powers a small structured **Swiss Arrival Checklist** through REST, proving that TIP is reusable information infrastructure rather than chatbot infrastructure.
+
+The main end-to-end demo is:
 
 ```text
-admin.ch / zh.ch
-       ↓
-source registration
-       ↓
-ingestion
-       ↓
-local versioned storage
-       ↓
-knowledge compilation
-       ↓
-Apertus enrichment
-       ↓
-tests
-       ↓
-published Knowledge Space
-       ↓
-MCP / REST
-       ↓
-AI client / structured application
+admin.ch / SEM + zh.ch
+        ↓
+Source Registry / Scanner / Crawler
+        ↓
+immutable snapshots
+        ↓
+normalization + Apertus enrichment
+        ↓
+Evidence Objects
+        ↓
+evaluation + Knowledge Release
+        ↓
+        ├───────────────┐
+        ▼               ▼
+OpenCode via MCP   Swiss Arrival Checklist via REST
 ```
 
-When an authoritative source changes, the platform detects the change, determines whether it is semantically meaningful, rebuilds affected knowledge, reruns evaluations and publishes a new immutable version.
-
-The same architecture can subsequently support Swiss Hiking, Swiss Cycling, Swiss Photo Scout, Swiss Housing, FINMA, EMIR, DORA, UBS internal policies and Swiss Re regulatory knowledge without redesigning the core platform.
+A controlled source-change simulation then demonstrates autonomous Knowledge CI/CD: detect → classify → rebuild → test → publish → both clients automatically consume the new release.
 
 ---
 
 # 2. Product Vision
 
-The platform answers:
+TIP answers a question that individual applications should not have to solve repeatedly:
 
 > **When an application needs information, what source should it trust, how should that source be accessed, how current is it, where does it apply, and how can the result be verified?**
 
 ```text
                          APPLICATIONS
 
-       myAI   Mobile App   eGov   Bank Portal   Agent
-          \       |         |         |          /
-                 MCP / REST / SDK
-                       │
-                       ▼
-        ┌───────────────────────────────┐
-        │ TRUSTED INFORMATION PLATFORM │
-        │ Knowledge                     │
-        │ Live capabilities             │
-        │ Context                       │
-        │ Rules                         │
-        │ Recommendations               │
-        │ Trust                         │
-        └───────────────┬───────────────┘
-                        │
-          ┌─────────────┼───────────────┐
-          ▼             ▼               ▼
-     Knowledge       Live APIs       Private data
-          │             │               │
-          └─────────────┼───────────────┘
-                        ▼
-                     Apertus
-               where semantically useful
-                        │
-                        ▼
-                STRUCTURED RESULT
+     OpenCode/myAI   Mobile App   eGov   Bank Portal   Agent
+             \          |          |         |          /
+                    MCP / REST / SDK
+                          │
+                          ▼
+        ┌────────────────────────────────┐
+        │ TRUSTED INFORMATION PLATFORM  │
+        │ Knowledge │ Live │ Context     │
+        │ Rules │ Recommendations │ Trust│
+        └────────────────┬───────────────┘
+                         │
+          ┌──────────────┼───────────────┐
+          ▼              ▼               ▼
+     Compiled         Live APIs       Private data
+     knowledge        & services      / policies
+          └──────────────┼───────────────┘
+                         ▼
+                      Apertus
+                where semantically useful
+                         │
+                         ▼
+                  STRUCTURED RESULT
 ```
 
 ---
 
 # 3. Core Product Principles
 
-1. **Stable information is compiled.** Laws, government guidance, regulatory requirements, administrative procedures and enterprise policies are fetched before runtime, stored, normalized, enriched, indexed, tested and versioned.
-2. **Live information is retrieved at runtime.** Train fares, weather, disruptions, availability and similar volatile facts use registered live Capabilities.
-3. **The external authority remains canonical.** Local storage is a verified, versioned operational representation of the source, not a replacement authority.
-4. **Deterministic logic handles deterministic problems.** Hashes, dates, numeric constraints, HTTP state and jurisdiction filters should not depend on an LLM.
-5. **Apertus handles semantic uncertainty.** Classification, concept extraction, multilingual mapping, semantic changes and explanations are appropriate AI tasks.
+1. **Stable information is compiled.** Laws, government guidance, administrative procedures and regulations are stored and indexed ahead of runtime.
+2. **Live information is retrieved live.** Weather, fares, disruptions and availability use registered Capabilities with appropriate caching.
+3. **The external authority remains canonical.** TIP stores a verified operational representation, not a replacement authority.
+4. **Deterministic logic handles deterministic problems.** HTTP state, hashes, dates, numeric comparisons and version consistency do not require an LLM.
+5. **Apertus handles semantic uncertainty.** Classification, concepts, multilingual mapping, semantic change and fuzzy ranking are appropriate AI tasks.
 6. **Autonomous by default, human review by exception.**
 7. **Structured output before generated prose.**
-8. **Every result communicates its epistemic status through a Trust Envelope.**
-9. **Model-independent core, Apertus-first Swisscom deployment.**
+8. **Every result carries a machine-readable Trust Envelope.**
+9. **MCP is an integration protocol, not the product architecture.**
+10. **The core remains model-independent, with Apertus first-class in the Swisscom deployment.**
 
 ---
 
@@ -110,201 +103,156 @@ The platform answers:
 | Class | Example | Default strategy |
 |---|---|---|
 | AUTHORITATIVE | What are the residence-registration requirements? | Compiled Knowledge Space |
-| LIVE | What does this train cost tomorrow? | Live Capability |
+| LIVE | What does tomorrow's train cost? | Live Capability |
 | PRIVATE | Does my lease permit cats? | Private Knowledge Space |
 | CONSENSUS | What are good first-date locations? | Discovery/recommendation sources |
 | DERIVED | Which hike best fits tomorrow's conditions? | Knowledge + capabilities + rules |
 | HISTORICAL | What rule applied in 2024? | Versioned source repository |
 
-A single Information Product may combine several classes.
-
 ---
 
-# 5. Main Hackathon Demo Scenario
+# 5. Main Hackathon Scenario
 
-The primary demo scenario is:
+The primary scenario is:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
-The scenario deliberately combines federal and cantonal information. Federal migration guidance supplies national work/residence context, while Canton Zurich supplies cantonal arrival and registration guidance.
+It deliberately requires complementary federal and cantonal evidence:
 
 ```text
 Swiss Confederation
-       │
-       ▼
-State Secretariat for Migration
-       │ federal rule/context
-       ▼
+       ↓
+State Secretariat for Migration (SEM)
+       ↓ federal context
 Canton Zurich
-       │ cantonal implementation/guidance
-       ▼
+       ↓ cantonal guidance
 Municipality
 ```
 
-The demo showcases federal versus cantonal jurisdiction, authority relationships, corroborating evidence, applicability, multilingual content, versioning and autonomous maintenance.
+Golden demo cases include:
 
-Golden demo queries should include:
-
-- Direct: “I moved to Zurich yesterday. When must I register?”
-- Contextual: “I'm an EU citizen moving to Zurich to start a job. What do I need to do after arrival?”
-- Jurisdictional: “Does the Canton Zurich guidance apply if I move to Geneva?”
-- Temporal: “What did the source say before its most recent update?”
-- Multilingual: “Ich ziehe nach Zürich. Wie lange habe ich Zeit, mich anzumelden?”
-- Unsupported: an exact municipal fee that has not been ingested.
+- direct registration deadline question;
+- EU/EFTA employee moving to Zurich;
+- jurisdiction mismatch such as Geneva;
+- German-language equivalent;
+- unsupported exact municipal fee;
+- source-version/history query;
+- controlled source-change regression.
 
 ---
 
-# 6. Top-Level Architecture
+# 6. Architecture: Control Plane and Data Plane
 
-The platform consists of four primary subsystems plus a Control Plane.
+TIP consists of a **Control Plane** that creates trustworthy knowledge and a **Data Plane** that serves published knowledge.
 
 ```text
-┌───────────────────────────────────────────────────────┐
-│ 1. SOURCE ACQUISITION & INGESTION                    │
-│ Registry → Scan → Crawl → Fetch → Snapshot → Normalize│
-└─────────────────────────┬─────────────────────────────┘
-                          ▼
-┌───────────────────────────────────────────────────────┐
-│ 2. KNOWLEDGE COMPILATION & CI/CD                     │
-│ Enrich → Evidence → Index → Evaluate → Release        │
-└─────────────────────────┬─────────────────────────────┘
-                          ▼
-┌───────────────────────────────────────────────────────┐
-│ 3. TRUSTED INFORMATION RUNTIME                       │
-│ Retrieve → Apply → Rank → Trust Envelope → Result     │
-└─────────────────────────┬─────────────────────────────┘
-                          ▼
-┌───────────────────────────────────────────────────────┐
-│ 4. INFORMATION PRODUCT & INTEGRATION LAYER           │
-│ MCP │ REST │ SDK │ Structured Applications │ Events   │
-└───────────────────────────────────────────────────────┘
+                     CONTROL PLANE
 
-                ┌──────────────────────┐
-                │ ADMIN CONTROL PLANE  │
-                │ observes & controls  │
-                │ subsystems 1–4       │
-                └──────────────────────┘
+ Admin GUI
+    │
+    ▼
+ Source Registry
+    ↓
+ Scanner / Crawler / Fetcher
+    ↓
+ Snapshot / Normalize
+    ↓
+ Apertus Enrichment
+    ↓
+ Evidence Compilation
+    ↓
+ Index / Evaluate / Release
+
+────────────────────────────────────────────
+
+                       DATA PLANE
+
+               Published Knowledge Release
+                         │
+               ┌─────────┼─────────┐
+               ▼         ▼         ▼
+              MCP       REST      SDK
+               │         │         │
+               ▼         ▼         ▼
+           OpenCode   Arrival    Other Apps
+                      Checklist
 ```
 
-The Admin Control Plane is separate from end-user applications and must not be required for runtime availability.
+The Admin GUI is not required for Data Plane availability.
 
 ---
 
-# 7. Hackathon Deployment Principle
+# 7. Hackathon Deployment Topology
 
-Module boundaries are logical, not mandatory microservice boundaries. For a two-day hackathon use a modular monorepo with a few runnable processes:
+Logical modules should not become unnecessary microservices during a two-day event. Recommended topology:
 
 ```text
-Process 1: API + MCP Runtime
-Process 2: Knowledge Worker (scanner/crawler/ingestion/compiler)
-Process 3: Admin Backend
-Process 4: Admin Web UI
-Storage: PostgreSQL + pgvector + MinIO/local object storage
+Process 1  API + MCP Runtime
+Process 2  Knowledge Worker
+           scanner/crawler/fetcher/compiler/evaluation
+Process 3  Admin Backend
+Process 4  Admin Web UI
+
+PostgreSQL + pgvector
+MinIO or local object storage
+Optional Redis
 ```
 
-This permits parallel development without introducing unnecessary distributed-system complexity.
+Everything should run through a reproducible `docker compose up` workflow.
 
 ---
 
-# 8. Shared Contract Layer
+# 8. Shared Contracts
 
-The first integration artifact is `/contracts`. All modules depend on stable shared schemas.
-
-Primary contracts:
+The `/contracts` package is the first integration deliverable. Required shared types:
 
 - `SourceDefinition`
+- `DiscoveredResource`
 - `SourceSnapshot`
 - `NormalizedDocument`
 - `EvidenceObject`
 - `SemanticChange`
 - `KnowledgeRelease`
+- `RetrievalResult`
 - `TrustEnvelope`
 - `InformationProductRequest`
 - `InformationProductResult`
 
-Use JSON Schema or Pydantic models and commit fixtures early so downstream teams can develop without waiting for upstream modules.
+Use Pydantic/JSON Schema and commit fixtures early.
 
-## 8.1 SourceDefinition
+## 8.1 EvidenceObject
 
 ```json
 {
-  "source_id": "sem-working-switzerland",
-  "publisher": "State Secretariat for Migration",
-  "canonical_url": "https://www.sem.admin.ch/sem/en/home/overview-arbeit.html",
+  "evidence_id": "ev-zh-registration-22",
+  "source_id": "zh-arriving",
+  "source_version": 22,
   "authority": {
-    "level": "federal",
-    "jurisdiction": "CH",
-    "trust": "AUTHORITATIVE"
+    "publisher": "Canton Zurich",
+    "level": "cantonal"
   },
-  "topics": ["migration", "employment", "residence"],
-  "discovery": {"follow_links": true, "max_depth": 2},
-  "refresh": {"strategy": "CHANGE_DETECTION"}
-}
-```
-
-## 8.2 SourceSnapshot
-
-```json
-{
-  "snapshot_id": "snap-123",
-  "source_id": "sem-working-switzerland",
-  "retrieved_at": "2026-09-04T08:30:00Z",
-  "content_type": "text/html",
-  "etag": "...",
-  "last_modified": "...",
-  "content_hash": "sha256:...",
-  "storage_uri": "sources/sem-working-switzerland/17/raw.html"
-}
-```
-
-Snapshots are immutable.
-
-## 8.3 NormalizedDocument
-
-```json
-{
-  "document_id": "sem-working-switzerland:v17",
-  "source_snapshot": "snap-123",
-  "title": "Working in Switzerland",
-  "language": "en",
-  "sections": [
-    {"id": "eu-efta-work", "heading": "...", "text": "..."}
-  ]
-}
-```
-
-## 8.4 EvidenceObject
-
-```json
-{
-  "evidence_id": "ev-sem-registration-17",
-  "source_id": "sem-working-switzerland",
-  "source_version": 17,
-  "authority": {
-    "publisher": "State Secretariat for Migration",
-    "level": "federal"
-  },
-  "jurisdiction": "CH",
-  "concepts": ["residence.registration", "residence.registration_deadline"],
+  "jurisdiction": "CH-ZH",
+  "concepts": [
+    "residence.registration",
+    "residence.registration_deadline"
+  ],
   "applicability": {
-    "nationality_group": "EU_EFTA",
-    "purpose": "employment"
+    "destination_canton": "CH-ZH"
   },
-  "content": "...original supporting passage...",
+  "content": "original supporting passage",
   "canonical_url": "...",
   "retrieved_at": "..."
 }
 ```
 
-An Evidence Object must be traceable to an exact source snapshot.
+Every Evidence Object must trace to an immutable source snapshot.
 
-## 8.5 KnowledgeRelease
+## 8.2 KnowledgeRelease
 
 ```json
 {
   "knowledge_space": "swiss-public",
   "release": "2026.09.04.3",
-  "created_at": "...",
   "source_versions": {
     "sem-working-switzerland": 17,
     "zh-arriving": 22
@@ -315,7 +263,7 @@ An Evidence Object must be traceable to an exact source snapshot.
 }
 ```
 
-## 8.6 TrustEnvelope
+## 8.3 TrustEnvelope
 
 ```json
 {
@@ -334,25 +282,18 @@ An Evidence Object must be traceable to an exact source snapshot.
 
 ---
 
-# 9. Module A — Domain Configuration & Shared Contracts
+# 9. Module A — Domain Configuration & Contracts
 
-**Responsibility:** define the common domain model and Swiss Public configuration.
+**Owner:** one developer/workstream.
 
-Owned components:
-
-```text
-/contracts
-/domains/swiss-public
-```
-
-Deliverables:
+Responsibilities:
 
 - shared schemas;
-- source configuration format;
-- concept identifiers;
-- applicability vocabulary;
-- Swiss Public domain definition;
-- realistic fixtures.
+- Swiss Public domain configuration;
+- source definitions;
+- concept vocabulary;
+- applicability dimensions;
+- fixtures for all downstream modules.
 
 Example concepts:
 
@@ -364,7 +305,7 @@ employment.start
 health.insurance
 ```
 
-The module must provide fixtures immediately so Runtime, Retrieval and Admin teams can work before the crawler is complete.
+Other teams must be able to develop entirely from fixtures before the real ingestion pipeline is ready.
 
 ---
 
@@ -374,18 +315,18 @@ The module must provide fixtures immediately so Runtime, Retrieval and Admin tea
 
 Components:
 
-- Source Registry
-- Scanner
-- Crawler
-- Scheduler
-- Fetcher
-- Snapshot Manager
-- Change Detector
-- Normalizer
+```text
+Source Registry
+Scanner
+Crawler
+Scheduler
+Fetcher
+Snapshot Manager
+Change Detector
+Normalizer
+```
 
 ## 10.1 Source Registry
-
-Stores trusted roots, authority metadata, jurisdiction, crawl policy and refresh policy.
 
 Example:
 
@@ -402,7 +343,7 @@ sources:
       mode: change_detection
       fallback_interval: 24h
 
-  - id: zh-new-arrival
+  - id: zh-arriving
     publisher: Canton Zurich
     canonical_url: https://www.zh.ch/de/migration-integration/willkommen/english/arriving.html
     authority_level: cantonal
@@ -416,13 +357,11 @@ sources:
 
 ## 10.2 Scanner
 
-Determines what content exists within a trusted source using sitemap discovery, HTML links, RSS/Atom, known APIs and manual registration.
-
-The Scanner discovers resources but does not necessarily download every page.
+Discovers candidate resources using sitemaps, links, feeds, known APIs and manually registered pages. It does not automatically download every discovered page.
 
 ## 10.3 Crawler
 
-Traverses approved source relationships under explicit scope rules.
+Traverses only approved scopes:
 
 ```yaml
 discovery:
@@ -437,64 +376,41 @@ exclude:
   - "*.zip"
 ```
 
-The platform must not blindly download all of `zh.ch`.
+AI may suggest candidate sources but must never silently promote an external domain to authoritative status.
 
 ## 10.4 Fetcher
 
-Handles HTTP requests, timeouts, retries, rate limits, redirects, content types, ETag and Last-Modified.
+Handles HTTP requests, redirects, retries, timeouts, rate limits, content type, ETag and Last-Modified.
 
 ## 10.5 Snapshot Manager
 
-Stores immutable raw versions in object/file storage and metadata in PostgreSQL.
+Stores raw HTML/PDF/JSON immutably. Metadata belongs in PostgreSQL; raw bytes belong in object/file storage.
 
-```text
-sources/
-  sem-working-switzerland/
-     001/raw.html
-     002/raw.html
-  zh-arriving/
-     001/raw.html
-     002/raw.html
-```
+Raw versions support audit, historical queries, rebuilds, semantic diff, rollback and future model upgrades.
 
-Raw snapshots enable audit, historical queries, semantic diff, rebuilds, model upgrades and rollback.
+## 10.6 Change Detection
 
-## 10.6 Change Detector
-
-Use cheap deterministic checks before AI:
+Use the cheapest mechanism first:
 
 ```text
 ETag / Last-Modified
-       ↓
+        ↓
 raw content hash
-       ↓
+        ↓
 normalized content hash
-       ↓
+        ↓
 structural/text diff
-       ↓
+        ↓
 Apertus semantic analysis
 ```
 
-If normalized content is unchanged: zero Apertus calls and zero recompilation.
+Unchanged normalized content produces zero Apertus calls and zero recompilation.
 
-## 10.7 Normalizer
-
-Converts source-specific content into `NormalizedDocument`, removing navigation, cookie banners, repeated page furniture and tracking while preserving headings, lists, tables, meaningful links and language.
-
-## 10.8 Acquisition State Machine
+## 10.7 Acquisition States
 
 ```text
-DISCOVERED
-    ↓
-ELIGIBLE
-    ↓
-FETCHED
-    ↓
-SNAPSHOTTED
-    ↓
-NORMALIZED
-    ↓
-READY_FOR_COMPILATION
+DISCOVERED → ELIGIBLE → FETCHED → SNAPSHOTTED
+           → NORMALIZED → READY_FOR_COMPILATION
 ```
 
 Exception states:
@@ -507,16 +423,147 @@ REVIEW_REQUIRED
 REJECTED
 ```
 
-The Admin GUI exposes these states.
-
 ---
 
 # 11. Module C — Knowledge Compiler & Apertus Enrichment
 
-**Responsibility:** transform normalized documents into retrieval-ready knowledge.
+Responsibilities:
 
-Components:
+- document classification;
+- concept extraction;
+- applicability extraction;
+- multilingual terminology mapping;
+- authority/source relationship analysis;
+- Evidence Object compilation;
+- semantic change analysis;
+- candidate evaluation generation.
 
-- document classifier;
-- concept extractor;
-- applicability extractor
+Apertus is not authoritative. It enriches and interprets content while preserving the exact source evidence.
+
+Deterministic extraction should validate high-risk values such as dates and numeric thresholds where practical.
+
+Example semantic change:
+
+```json
+{
+  "change_type": "SUBSTANTIVE",
+  "affected_concepts": ["residence.registration_deadline"],
+  "old_value": {"value": 14, "unit": "days"},
+  "new_value": {"value": 8, "unit": "days"},
+  "impact": "HIGH"
+}
+```
+
+---
+
+# 12. Module D — Storage, Indexing & Retrieval
+
+Recommended hackathon storage:
+
+```text
+PostgreSQL
+  sources
+  source_versions
+  documents
+  evidence
+  concepts
+  relationships
+  knowledge_releases
+  evaluations
+
+pgvector              semantic retrieval
+PostgreSQL FTS        lexical retrieval
+MinIO/filesystem      immutable raw snapshots
+Redis (optional)      hot/live cache
+```
+
+Retrieval pipeline:
+
+```text
+Applicability filter
+        ↓
+Authority / jurisdiction filter
+        ↓
+Lexical + vector retrieval
+        ↓
+Merge / rerank
+        ↓
+1–5 Evidence Objects
+```
+
+Internal retrieval contract:
+
+```text
+retrieve(query, concepts, jurisdiction,
+         applicability, release, limit)
+```
+
+---
+
+# 13. Module E — Trusted Information Runtime
+
+Responsibilities:
+
+- MCP endpoint;
+- REST endpoint;
+- query/applicability interpretation;
+- retrieval orchestration;
+- Trust Envelope generation;
+- coverage/unsupported handling;
+- compact response construction.
+
+Runtime must normally access only a published Knowledge Release, not upstream government websites.
+
+Supported statuses:
+
+```text
+SUPPORTED
+PARTIALLY_SUPPORTED
+NEEDS_CONTEXT
+OUT_OF_COVERAGE
+INSUFFICIENT_VERIFIED_EVIDENCE
+CONFLICTING_EVIDENCE
+STALE
+```
+
+---
+
+# 14. MCP Contract
+
+Recommended MVP tools:
+
+## `swiss_information.resolve`
+
+Primary high-level tool. It should internally perform most retrieval so the agent usually needs one MCP call.
+
+Example input:
+
+```json
+{
+  "question": "I am an EU citizen moving to Zurich for work. What do I need to do after arrival?",
+  "language": "en",
+  "context": {}
+}
+```
+
+Example output:
+
+```json
+{
+  "status": "SUPPORTED",
+  "applicability": {"jurisdiction": "CH-ZH"},
+  "evidence": ["ev-sem-registration-17", "ev-zh-registration-22"],
+  "trust": {
+    "knowledge_release": "swiss-public@2026.09.04.3",
+    "confidence": 0.98
+  }
+}
+```
+
+## `swiss_information.get_evidence`
+
+Fetch expanded evidence by ID when required.
+
+## `swiss_information.get_coverage`
+
+Describe supported jurisdictions/topics and help the
