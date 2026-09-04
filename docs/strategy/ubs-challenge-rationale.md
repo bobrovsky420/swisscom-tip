@@ -1,5 +1,5 @@
 # Why We Should Choose the Swisscom TIP Challenge
-## Short rationale for the UBS hackathon team
+## Challenge-selection rationale for the UBS hackathon team
 
 **Published challenge descriptions used for this comparison:**
 

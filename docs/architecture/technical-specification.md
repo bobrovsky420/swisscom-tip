@@ -1,8 +1,8 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification — V1
+## Technical & Solution Architecture Specification — V2
 
 **Hackathon:** Swiss Grounding MCP<br>
-**Product and functional specification:** [`FUNCTIONAL_SPECIFICATION.md`](FUNCTIONAL_SPECIFICATION.md)<br>
+**Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
 **Preferred semantic model:** Apertus<br>
 **Model strategy:** pluggable and model-independent<br>
 **Example MCP client:** OpenCode
@@ -87,6 +87,7 @@ The runtime data plane reads only published releases. A failed build must not in
 
 | Concern | Recommended implementation | Notes |
 |---|---|---|
+| Backend language | Python | One backend language for ingestion, retrieval, evaluation, MCP and REST |
 | Metadata, evidence, facts, releases and tests | PostgreSQL | Single durable operational store |
 | Semantic retrieval | pgvector | Replaceable vector-store adapter |
 | Lexical retrieval | PostgreSQL full-text search | Avoids another search service for the MVP |
@@ -100,11 +101,287 @@ These are implementation recommendations, not challenge requirements. A simpler 
 
 ---
 
-# 5. Semantic Model Strategy
+# 5. Backend Language Comparison and Decision
+
+**Decision class: Team MVP choice with long-term architectural implications**
+
+## 5.1 Decision drivers
+
+The relevant decision is not which language can implement an MCP server; both Python and TypeScript can. The decision should optimize the difficult parts of TIP:
+
+- heterogeneous website, document and dataset ingestion;
+- normalization and evidence compilation;
+- semantic processing and Apertus experimentation;
+- hybrid lexical/vector retrieval;
+- grounding and evaluation workflows;
+- typed MCP and REST contracts;
+- delivery speed during the hackathon;
+- a credible evolution path to the target product.
+
+The official MCP SDK catalogue currently classifies both Python and TypeScript as Tier 1. Both support MCP servers and clients, local and remote transports, and protocol-level type safety. MCP capability is therefore not a reason to prefer one over the other. See the [official MCP SDK list](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/docs/2026-07-28/sdk.mdx).
+
+## 5.2 Comparison
+
+| Criterion | Python | JavaScript/TypeScript | Assessment for TIP |
+|---|---|---|---|
+| MCP support | Official SDK, FastMCP, structured output, standard transports and Pydantic types | Official SDK, typed tools, Standard Schema/Zod and standard transports | Equivalent for the required server |
+| Source acquisition | Strong HTTP, parsing, PDF, document and data-processing ecosystem | Excellent HTTP and browser automation ecosystem | Python has the advantage for heterogeneous documents |
+| Semantic and AI work | Native ecosystem for embeddings, NLP, evaluation and local models | Strong for remote model APIs | Python has the advantage |
+| Apertus | Direct Transformers integration and local-model path | Normally accessed through an inference API | Python has the advantage if experimentation extends beyond HTTP calls |
+| Contract modelling | Pydantic runtime validation and JSON Schema generation | Strong compile-time types plus runtime validation with Zod or another Standard Schema provider | TypeScript is stricter at compile time; both are suitable at system boundaries |
+| PostgreSQL and pgvector | Psycopg, SQLAlchemy, asyncpg and official pgvector integration | node-postgres and broad ORM/query-builder support with official pgvector integration | Equivalent for this design |
+| Concurrent network I/O | `asyncio`/AnyIO are well suited to I/O-bound acquisition and service work | Node's event loop is excellent for high-concurrency I/O | Equivalent for hackathon load |
+| CPU-heavy parsing or local inference | Direct access to native data/ML libraries and process workers | CPU work must be kept off the Node event loop | Python has the advantage |
+| Evaluation and experimentation | Strong testing, notebooks and analytical tooling | Capable general testing ecosystem | Python has the advantage for grounding experiments |
+| Web frontend reuse | Requires generated TypeScript types or clients | Can share language and selected schema code with web clients | TypeScript has the advantage |
+| End-to-end hackathon simplicity | One language covers ingestion, AI, retrieval, MCP and REST | Excellent if all models are remote and the team is TypeScript-first | Python has the advantage when team skill is comparable |
+| Future control-plane development | Suitable with FastAPI and generated OpenAPI | Attractive for web-heavy control planes and BFFs | Slight TypeScript advantage, but not decisive for the core |
+
+Supporting implementation facts:
+
+- The [official Python MCP SDK](https://github.com/modelcontextprotocol/python-sdk/blob/main/docs/get-started/installation.md) uses Pydantic for protocol models and schema validation, AnyIO for asynchronous execution, and supports standard HTTP and stdio use cases.
+- The [official TypeScript MCP server guide](https://github.com/modelcontextprotocol/typescript-sdk/blob/main/docs/get-started/first-server.md) provides typed tool registration, schema validation and stdio/HTTP operation.
+- FastAPI can generate JSON Schema, OpenAPI and interactive documentation from Pydantic models, allowing Python contracts to generate TypeScript clients rather than being maintained twice. See the [FastAPI request-model documentation](https://fastapi.tiangolo.com/tutorial/body/).
+- The official pgvector ecosystem supports both [Python](https://github.com/pgvector/pgvector-python) and [Node.js/TypeScript](https://github.com/pgvector/pgvector-node), so vector storage does not determine the language.
+- Apertus has direct support through the Python Transformers ecosystem; see the [Apertus Transformers documentation](https://huggingface.co/docs/transformers/model_doc/apertus).
+
+## 5.3 Decision
+
+Python is selected for the hackathon backend because TIP's primary complexity lies in source and document acquisition, semantic processing, retrieval and evaluation. The official Python MCP SDK provides the required protocol capability, while Python gives the clearest path to Apertus and the broader AI/data ecosystem.
+
+The implementation boundary is:
+
+```text
+PYTHON — P0 BACKEND
+source acquisition
+normalization and evidence compilation
+retrieval and deterministic rules
+semantic-model providers
+evaluation
+MCP server
+REST API
+
+TYPESCRIPT — OPTIONAL P1 CLIENTS
+Admin Control Plane
+Arrival Checklist web client
+
+FLUTTER — OPTIONAL P2 CLIENT
+Swiss Hike
+```
+
+REST types and clients for TypeScript applications are generated from the Python OpenAPI contract. Frontends do not import database models or internal domain objects.
+
+## 5.4 Conditions that justify TypeScript instead
+
+TypeScript remains a valid alternative if the implementation team is materially more productive in TypeScript and all of the following hold:
+
+- sources are primarily HTML or JSON rather than difficult document formats;
+- Apertus and embedding models are consumed only through remote HTTP APIs;
+- the web control plane is a major part of the judged delivery;
+- shared frontend development speed outweighs local AI experimentation.
+
+The P0 backend must not be split into a Python ingestion service and a TypeScript MCP gateway. That would add deployment, failure and contract boundaries without improving the judged outcome.
+
+---
+
+# 6. Proposed Python Repository Structure
+
+**Decision class: Team MVP choice designed for target-product evolution**
+
+The repository uses a Python `src` layout and a modular monolith. `tip` is the Python import namespace (`import tip`), not an architectural layer. The Admin UI and demo applications are consumers of the backend rather than owners of grounding logic.
+
+```text
+Hackathon2026/
+├── README.md
+├── LICENSE
+├── NOTICE
+├── pyproject.toml
+├── uv.lock
+├── .env.example
+├── .gitignore
+├── compose.yaml
+│
+├── docs/
+│   ├── product/
+│   │   └── product-functional-specification.md
+│   ├── architecture/
+│   │   ├── technical-specification.md
+│   │   └── decisions/
+│   │       └── 0001-python-modular-monolith.md
+│   ├── challenge/
+│   │   ├── coverage-and-limitations.md
+│   │   ├── evaluation-plan.md
+│   │   └── operations.md
+│   ├── strategy/
+│   │   └── ubs-challenge-rationale.md
+│   └── pitch/
+│       ├── first-round-10min.md
+│       └── full-presentation.md
+│
+├── config/
+│   ├── sources/
+│   │   ├── sem.yaml
+│   │   └── zh.yaml
+│   ├── products/
+│   │   └── swiss-arrival-checklist.yaml
+│   └── evaluation/
+│       ├── thresholds.yaml
+│       └── test-cases.yaml
+│
+├── src/
+│   └── tip/
+│       ├── __init__.py
+│       ├── config.py
+│       │
+│       ├── domain/
+│       │   ├── __init__.py
+│       │   ├── sources.py
+│       │   ├── evidence.py
+│       │   ├── releases.py
+│       │   ├── trust.py
+│       │   ├── coverage.py
+│       │   └── information_products.py
+│       │
+│       ├── application/
+│       │   ├── __init__.py
+│       │   ├── build/
+│       │   │   ├── full_reload.py
+│       │   │   └── publish_release.py
+│       │   ├── resolution/
+│       │   │   ├── plan_query.py
+│       │   │   ├── resolve.py
+│       │   │   └── assemble_result.py
+│       │   ├── evaluation/
+│       │   │   └── run_evaluation.py
+│       │   └── ports/
+│       │       ├── source_provider.py
+│       │       ├── repositories.py
+│       │       ├── search.py
+│       │       ├── semantic_model.py
+│       │       └── capability_provider.py
+│       │
+│       ├── infrastructure/
+│       │   ├── sources/
+│       │   │   ├── http_fetcher.py
+│       │   │   ├── sem.py
+│       │   │   └── zh.py
+│       │   ├── persistence/
+│       │   │   ├── postgres/
+│       │   │   └── snapshot_store/
+│       │   ├── search/
+│       │   │   ├── postgres_fts.py
+│       │   │   └── pgvector.py
+│       │   ├── models/
+│       │   │   ├── apertus.py
+│       │   │   └── fallback.py
+│       │   └── capabilities/
+│       │
+│       ├── interfaces/
+│       │   ├── mcp/
+│       │   │   ├── server.py
+│       │   │   └── tools/
+│       │   │       ├── resolve.py
+│       │   │       ├── get_evidence.py
+│       │   │       └── get_coverage.py
+│       │   ├── rest/
+│       │   │   ├── app.py
+│       │   │   └── routes/
+│       │   └── cli/
+│       │       ├── main.py
+│       │       ├── build.py
+│       │       ├── serve.py
+│       │       └── evaluate.py
+│       │
+│       └── observability/
+│           ├── logging.py
+│           └── metrics.py
+│
+├── schemas/
+│   ├── mcp/
+│   ├── domain/
+│   └── rest/
+│
+├── migrations/
+│   └── versions/
+│
+├── tests/
+│   ├── unit/
+│   │   ├── domain/
+│   │   └── application/
+│   ├── integration/
+│   │   ├── sources/
+│   │   ├── persistence/
+│   │   └── search/
+│   ├── contract/
+│   │   └── mcp/
+│   ├── end_to_end/
+│   └── fixtures/
+│
+├── evaluation/
+│   ├── golden/
+│   ├── grounding/
+│   ├── efficiency/
+│   ├── freshness/
+│   └── reports/
+│
+├── apps/
+│   ├── admin-control-plane/
+│   ├── arrival-checklist/
+│   └── swiss-hike/
+│
+├── data/
+│   ├── demo/
+│   │   └── hiking/
+│   └── runtime/
+│
+└── docker/
+    ├── server.Dockerfile
+    └── entrypoint.sh
+```
+
+## 6.1 Package boundaries
+
+- `domain` contains Pydantic models, enums, value objects and deterministic domain rules. It imports neither MCP nor infrastructure implementations.
+- `application` contains use cases and orchestration.
+- `application/ports` contains Python protocols required by application logic.
+- `infrastructure` implements source, persistence, search, model and capability ports.
+- `interfaces` exposes application use cases through MCP, REST and CLI.
+- `schemas` contains generated public JSON Schema and OpenAPI artifacts; canonical definitions remain in Python.
+- `evaluation` contains challenge cases and generated reports; `tests` contains software verification.
+- `apps` contains P1/P2 clients and cannot implement separate grounding rules.
+- `data/runtime` and `evaluation/reports` are generated and Git-ignored.
+
+Suggested Python command entry points:
+
+```toml
+[project.scripts]
+tip = "tip.interfaces.cli.main:main"
+tip-mcp = "tip.interfaces.mcp.server:main"
+tip-api = "tip.interfaces.rest.app:main"
+```
+
+## 6.2 Hackathon implementation order
+
+The P0 implementation path is:
+
+```text
+config and domain contracts
+→ application build use cases
+→ source and persistence adapters
+→ application resolution use cases
+→ MCP interface
+→ grounding and integration evaluation
+```
+
+REST, the Admin Control Plane, Arrival Checklist and Swiss Hike remain P1/P2 consumers of the same application layer.
+
+---
+
+# 7. Semantic Model Strategy
 
 **Decision class: Team MVP choice with a product-enabling provider boundary**
 
-## 5.1 Preferred provider
+## 7.1 Preferred provider
 
 Apertus is the preferred semantic model for the hackathon because it supports the Swiss and sovereign-AI positioning and gives the team an opportunity to evaluate it on multilingual Swiss information.
 
@@ -117,7 +394,7 @@ Suitable uses include:
 - evidence reranking;
 - optional explanations after evidence has been established.
 
-## 5.2 Model independence
+## 7.2 Model independence
 
 All semantic operations must use a `SemanticModelProvider` interface. The implementation may use another compatible LLM or embedding model when Apertus is unavailable, unsuitable for a task, or outperformed in evaluation.
 
@@ -139,7 +416,7 @@ Provider changes require regression evaluation before publishing a release.
 
 ---
 
-# 6. Core Components
+# 8. Core Components
 
 ```text
 SourceRegistry
@@ -166,7 +443,7 @@ Optional Admin and demo clients consume the same service interfaces. They must n
 
 ---
 
-# 7. Shared Contracts
+# 9. Shared Contracts
 
 MVP contracts:
 
@@ -203,7 +480,7 @@ Every persisted contract includes a schema version. Published releases reference
 
 ---
 
-# 8. Source Registry and Acquisition
+# 10. Source Registry and Acquisition
 
 A `SourceDefinition` contains at least:
 
@@ -253,7 +530,7 @@ Scheduled and incremental Knowledge CI/CD is a target-product capability, not pa
 
 ---
 
-# 9. Snapshot and Release Model
+# 11. Snapshot and Release Model
 
 Raw source responses are stored as immutable, content-addressed `SourceSnapshot`s with:
 
@@ -274,7 +551,7 @@ Only a release that passes the configured evaluation gate can become the active 
 
 ---
 
-# 10. Storage and Retrieval
+# 12. Storage and Retrieval
 
 Recommended storage layout:
 
@@ -303,7 +580,7 @@ Ranking may combine semantic relevance, lexical relevance, concept match, source
 
 ---
 
-# 11. Runtime Processing
+# 13. Runtime Processing
 
 ```text
 REQUEST
@@ -332,7 +609,7 @@ Optional prose is generated only after structured facts, statuses and evidence h
 
 ---
 
-# 12. MCP Contract and Client Compatibility
+# 14. MCP Contract and Client Compatibility
 
 Initial tools:
 
@@ -360,7 +637,7 @@ The repository must document:
 
 ---
 
-# 13. REST Interface
+# 15. REST Interface
 
 REST is a secondary adapter over the same runtime used by MCP. It must not contain separate grounding logic.
 
@@ -368,7 +645,7 @@ Structured Information Products submit typed `InformationProductRequest`s and re
 
 ---
 
-# 14. Admin Control Plane
+# 16. Admin Control Plane
 
 **Decision class: Product-validation extension (P1)**
 
@@ -388,7 +665,7 @@ The UI is not required for MCP runtime availability.
 
 ---
 
-# 15. Evaluation and Operability
+# 17. Evaluation and Operability
 
 Automated evaluation covers the challenge dimensions:
 
@@ -417,7 +694,7 @@ MCP tool calls and response size
 
 ---
 
-# 16. Security and Repository Hygiene
+# 18. Security and Repository Hygiene
 
 - Secrets and credentials must never be committed.
 - Required test access is provided through a secure channel.
@@ -430,7 +707,7 @@ MCP tool calls and response size
 
 ---
 
-# 17. Structured Demo Implementations
+# 19. Structured Demo Implementations
 
 **Decision class: Product-validation extensions**
 
@@ -468,7 +745,7 @@ All mock data must be visibly labelled `DEMO/MOCK`.
 
 ---
 
-# 18. Implementation Workstreams
+# 20. Implementation Workstreams
 
 | Priority | Workstream | Scope |
 |---|---|---|
@@ -487,7 +764,7 @@ No hackathon workstream is required to implement scheduled/incremental builds or
 
 ---
 
-# 19. Technical Definition of Done
+# 21. Technical Definition of Done
 
 Swisscom can clone the repository, follow the documented setup, start the MCP server, inspect its declared coverage and limitations, run an on-demand build, and execute the supplied evaluation tests.
 

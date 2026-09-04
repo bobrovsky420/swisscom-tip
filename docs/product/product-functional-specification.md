@@ -7,7 +7,7 @@
 **Structured demo:** Swiss Arrival Checklist<br>
 **Stretch demo:** Swiss Hike with clearly labelled mock data<br>
 **Preferred semantic model:** Apertus, with a model-independent core<br>
-**Technical design:** [`TECHNICAL_SPECIFICATION.md`](TECHNICAL_SPECIFICATION.md)
+**Technical design:** [`technical-specification.md`](../architecture/technical-specification.md)
 
 ---
 

@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## First-Round Pitch — Maximum 10 Minutes
+## First-Round Pitch Deck — Maximum 10 Minutes
 
 **Format:** 7 slides, ~8:30 presentation + buffer.  
 **Goal:** sell a credible hackathon vertical slice and the target product it validates.

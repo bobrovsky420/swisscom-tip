@@ -1,4 +1,4 @@
-# Pitch Presentation — Swisscom Trusted Information Platform
+# Full Pitch Presentation — Swisscom Trusted Information Platform
 
 ## Slide 1 — Trusted Information Infrastructure
 
