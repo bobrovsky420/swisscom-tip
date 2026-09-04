@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification — V2
+## Technical & Solution Architecture Specification — V3
 
 **Hackathon:** Swiss Grounding MCP<br>
 **Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
@@ -184,11 +184,21 @@ The P0 backend must not be split into a Python ingestion service and a TypeScrip
 
 ---
 
-# 6. Proposed Python Repository Structure
+# 6. Proposed Python Workspace Structure
 
 **Decision class: Team MVP choice designed for target-product evolution**
 
-The repository uses a Python `src` layout and a modular monolith. `tip` is the Python import namespace (`import tip`), not an architectural layer. The Admin UI and demo applications are consumers of the backend rather than owners of grounding logic.
+The repository uses one Python workspace, one lock file and a small number of internal packages. Package folders use concise boundary names. Published distribution names use the `swisstip-` prefix, while Python imports use the shared `swisstip.*` namespace.
+
+The shared namespace improves readability:
+
+```python
+from swisstip.core.evidence import EvidenceObject
+from swisstip.ingestion.compilation import EvidenceCompiler
+from swisstip.runtime.resolution import Resolver
+```
+
+The `swisstip` directory is a Python namespace, not an architectural layer. With implicit namespace packaging, each contributing distribution omits `swisstip/__init__.py` and defines an `__init__.py` only in its component package.
 
 ```text
 Hackathon2026/
@@ -207,7 +217,7 @@ Hackathon2026/
 │   ├── architecture/
 │   │   ├── technical-specification.md
 │   │   └── decisions/
-│   │       └── 0001-python-modular-monolith.md
+│   │       └── 0001-python-workspace.md
 │   ├── challenge/
 │   │   ├── coverage-and-limitations.md
 │   │   ├── evaluation-plan.md
@@ -228,73 +238,95 @@ Hackathon2026/
 │       ├── thresholds.yaml
 │       └── test-cases.yaml
 │
-├── src/
-│   └── tip/
-│       ├── __init__.py
-│       ├── config.py
-│       │
-│       ├── domain/
-│       │   ├── __init__.py
-│       │   ├── sources.py
-│       │   ├── evidence.py
-│       │   ├── releases.py
-│       │   ├── trust.py
-│       │   ├── coverage.py
-│       │   └── information_products.py
-│       │
-│       ├── application/
-│       │   ├── __init__.py
-│       │   ├── build/
-│       │   │   ├── full_reload.py
-│       │   │   └── publish_release.py
-│       │   ├── resolution/
-│       │   │   ├── plan_query.py
-│       │   │   ├── resolve.py
-│       │   │   └── assemble_result.py
-│       │   ├── evaluation/
-│       │   │   └── run_evaluation.py
-│       │   └── ports/
-│       │       ├── source_provider.py
-│       │       ├── repositories.py
-│       │       ├── search.py
-│       │       ├── semantic_model.py
-│       │       └── capability_provider.py
-│       │
-│       ├── infrastructure/
-│       │   ├── sources/
-│       │   │   ├── http_fetcher.py
-│       │   │   ├── sem.py
-│       │   │   └── zh.py
-│       │   ├── persistence/
-│       │   │   ├── postgres/
-│       │   │   └── snapshot_store/
-│       │   ├── search/
-│       │   │   ├── postgres_fts.py
-│       │   │   └── pgvector.py
-│       │   ├── models/
-│       │   │   ├── apertus.py
-│       │   │   └── fallback.py
-│       │   └── capabilities/
-│       │
-│       ├── interfaces/
-│       │   ├── mcp/
-│       │   │   ├── server.py
-│       │   │   └── tools/
-│       │   │       ├── resolve.py
-│       │   │       ├── get_evidence.py
-│       │   │       └── get_coverage.py
-│       │   ├── rest/
-│       │   │   ├── app.py
-│       │   │   └── routes/
-│       │   └── cli/
-│       │       ├── main.py
-│       │       ├── build.py
-│       │       ├── serve.py
-│       │       └── evaluate.py
-│       │
-│       └── observability/
-│           ├── logging.py
-│           └── metrics.py
+├── packages/
+│   ├── core/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── core/
+│   │               ├── __init__.py
+│   │               ├── domain/
+│   │               ├── contracts/
+│   │               ├── ports/
+│   │               └── rules/
+│   │
+│   ├── ingestion/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── ingestion/
+│   │               ├── __init__.py
+│   │               ├── scanning/
+│   │               ├── fetching/
+│   │               ├── sources/
+│   │               │   ├── sem.py
+│   │               │   └── zh.py
+│   │               ├── normalization/
+│   │               ├── enrichment/
+│   │               ├── compilation/
+│   │               └── publishing/
+│   │
+│   ├── runtime/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── runtime/
+│   │               ├── __init__.py
+│   │               ├── planning/
+│   │               ├── retrieval/
+│   │               ├── search/
+│   │               ├── applicability/
+│   │               ├── resolution/
+│   │               └── assembly/
+│   │
+│   └── integrations/
+│       ├── pyproject.toml
+│       └── src/
+│           └── swisstip/
+│               └── integrations/
+│                   ├── __init__.py
+│                   ├── postgres/
+│                   ├── snapshot_store/
+│                   └── models/
+│                       ├── apertus/
+│                       └── fallback/
+│
+├── apps/
+│   ├── knowledge-builder/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── builder/
+│   │               ├── __init__.py
+│   │               ├── main.py
+│   │               ├── bootstrap.py
+│   │               └── cli.py
+│   │
+│   ├── mcp-server/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── mcp_server/
+│   │               ├── __init__.py
+│   │               ├── main.py
+│   │               ├── bootstrap.py
+│   │               └── tools/
+│   │                   ├── resolve.py
+│   │                   ├── get_evidence.py
+│   │                   └── get_coverage.py
+│   │
+│   ├── control-api/
+│   │   ├── pyproject.toml
+│   │   └── src/
+│   │       └── swisstip/
+│   │           └── control_api/
+│   │               ├── __init__.py
+│   │               ├── main.py
+│   │               └── routes/
+│   │
+│   ├── admin-console/
+│   ├── arrival-checklist/
+│   └── swiss-hike/
 │
 ├── schemas/
 │   ├── mcp/
@@ -306,12 +338,7 @@ Hackathon2026/
 │
 ├── tests/
 │   ├── unit/
-│   │   ├── domain/
-│   │   └── application/
 │   ├── integration/
-│   │   ├── sources/
-│   │   ├── persistence/
-│   │   └── search/
 │   ├── contract/
 │   │   └── mcp/
 │   ├── end_to_end/
@@ -324,11 +351,6 @@ Hackathon2026/
 │   ├── freshness/
 │   └── reports/
 │
-├── apps/
-│   ├── admin-control-plane/
-│   ├── arrival-checklist/
-│   └── swiss-hike/
-│
 ├── data/
 │   ├── demo/
 │   │   └── hiking/
@@ -339,41 +361,141 @@ Hackathon2026/
     └── entrypoint.sh
 ```
 
-## 6.1 Package boundaries
+## 6.1 Distribution and import names
 
-- `domain` contains Pydantic models, enums, value objects and deterministic domain rules. It imports neither MCP nor infrastructure implementations.
-- `application` contains use cases and orchestration.
-- `application/ports` contains Python protocols required by application logic.
-- `infrastructure` implements source, persistence, search, model and capability ports.
-- `interfaces` exposes application use cases through MCP, REST and CLI.
-- `schemas` contains generated public JSON Schema and OpenAPI artifacts; canonical definitions remain in Python.
-- `evaluation` contains challenge cases and generated reports; `tests` contains software verification.
-- `apps` contains P1/P2 clients and cannot implement separate grounding rules.
-- `data/runtime` and `evaluation/reports` are generated and Git-ignored.
+| Folder | Distribution name | Python import |
+|---|---|---|
+| `packages/core` | `swisstip-core` | `swisstip.core` |
+| `packages/ingestion` | `swisstip-ingestion` | `swisstip.ingestion` |
+| `packages/runtime` | `swisstip-runtime` | `swisstip.runtime` |
+| `packages/integrations` | `swisstip-integrations` | `swisstip.integrations` |
+| `apps/knowledge-builder` | `swisstip-knowledge-builder` | `swisstip.builder` |
+| `apps/mcp-server` | `swisstip-mcp-server` | `swisstip.mcp_server` |
+| `apps/control-api` | `swisstip-control-api` | `swisstip.control_api` |
 
-Suggested Python command entry points:
+Concise folder names avoid repeating the product name throughout the repository. Distribution names retain the product prefix for package-manager clarity, and the shared import namespace makes component boundaries explicit. Concatenated imports such as `swisstipcore` are not used.
+
+## 6.2 Package responsibilities
+
+### `swisstip.core`
+
+Contains the stable shared language of the product:
+
+- domain objects and value types;
+- Pydantic contracts;
+- statuses and Trust Envelope;
+- repository and provider protocols;
+- deterministic domain rules.
+
+It imports neither MCP, FastAPI, PostgreSQL, Apertus, document parsers nor other internal packages.
+
+### `swisstip.ingestion`
+
+Implements the control-plane knowledge compiler:
+
+```text
+sources
+→ snapshots
+→ normalization
+→ enrichment
+→ evidence
+→ release
+```
+
+It may use heavier parsing and semantic dependencies. It depends on `swisstip.core` and never on `swisstip.runtime`.
+
+### `swisstip.runtime`
+
+Implements the published-release query engine:
+
+```text
+request
+→ retrieval
+→ applicability
+→ evidence resolution
+→ structured result
+```
+
+It depends on `swisstip.core` and never on `swisstip.ingestion`. This prevents request-time queries from invoking crawlers or build logic.
+
+### `swisstip.integrations`
+
+Implements the storage and model ports declared by `swisstip.core`. Optional dependency groups should prevent source-parsing or local-model dependencies from being installed into the MCP runtime unless they are required.
+
+## 6.3 Deployable applications
+
+- `knowledge-builder` is a CLI or one-shot job that composes ingestion with source, storage and model integrations.
+- `mcp-server` is a thin protocol adapter over runtime use cases. It contains MCP registration and translation, not grounding rules.
+- `control-api` is a P1 FastAPI application for build initiation, evidence inspection, releases and structured Information Products.
+- `admin-console` and `arrival-checklist` are P1 TypeScript clients of the Control API.
+- `swiss-hike` is the P2 Flutter client.
+
+Suggested executable entry points are defined in their owning application distributions:
 
 ```toml
 [project.scripts]
-tip = "tip.interfaces.cli.main:main"
-tip-mcp = "tip.interfaces.mcp.server:main"
-tip-api = "tip.interfaces.rest.app:main"
+swisstip-builder = "swisstip.builder.cli:main"
+swisstip-mcp = "swisstip.mcp_server.main:main"
+swisstip-api = "swisstip.control_api.main:main"
 ```
 
-## 6.2 Hackathon implementation order
+## 6.4 Dependency direction
+
+```text
+knowledge-builder ──→ swisstip.ingestion ──→ swisstip.core
+        └────────────→ selected integrations ────────┘
+
+mcp-server ─────────→ swisstip.runtime ─────→ swisstip.core
+     └──────────────→ selected integrations ────────┘
+
+control-api ────────→ ingestion / runtime / selected integrations
+```
+
+The enforced dependency rules are:
+
+```text
+swisstip.core          → no internal package dependencies
+swisstip.ingestion     → swisstip.core
+swisstip.runtime       → swisstip.core
+swisstip.integrations  → swisstip.core
+knowledge-builder      → core + ingestion + selected integrations
+mcp-server             → core + runtime + selected integrations
+control-api            → may compose both build and runtime capabilities
+```
+
+Ingestion and runtime communicate through published release contracts and storage, not through direct package imports.
+
+## 6.5 Split criteria and restraint
+
+The package split is justified by different dependencies, execution profiles and failure behaviour:
+
+| Concern | Knowledge builder | MCP server |
+|---|---|---|
+| Lifetime | Batch job | Long-running service |
+| Workload | Crawling, parsing, embedding and indexing | Low-latency reads and resolution |
+| Dependencies | Document parsers and model tooling | MCP, retrieval and database client |
+| Failure policy | Preserve the previous release | Continue serving the previous release |
+| Scaling | Occasional compute-heavy work | Concurrent request handling |
+| Network access | Outbound access to approved sources | Restricted runtime access |
+
+Do not create separate packages for each source connector, MCP tool, domain object, storage technology or Information Product. Marketplace, billing and entitlement packages are added only when those target-product capabilities acquire implementation, ownership or deployment needs.
+
+The workspace initially uses one repository, one lock file and one versioning policy. Packages are not independently published or versioned during the hackathon.
+
+## 6.6 Hackathon implementation order
 
 The P0 implementation path is:
 
 ```text
-config and domain contracts
-→ application build use cases
-→ source and persistence adapters
-→ application resolution use cases
-→ MCP interface
+swisstip.core contracts and ports
+→ swisstip.ingestion full build
+→ selected storage and model integrations
+→ swisstip.runtime resolution
+→ mcp-server
 → grounding and integration evaluation
 ```
 
-REST, the Admin Control Plane, Arrival Checklist and Swiss Hike remain P1/P2 consumers of the same application layer.
+The initial deployables are the one-shot `knowledge-builder` and long-running `mcp-server`. The Control API, web clients and Flutter client remain P1/P2 consumers of the same packages.
 
 ---
 
