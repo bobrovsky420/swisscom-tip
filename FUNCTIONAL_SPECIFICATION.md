@@ -1,33 +1,28 @@
 # Swisscom Trusted Information Platform
-## Functional & Solution Design Specification — V7
+## Functional & Solution Design Specification — V8
 
 **Working product name:** Swisscom Trusted Information Platform (TIP)  
 **Hackathon domain:** Swiss Public Information  
-**Primary demo sources:** Swiss Confederation / admin.ch ecosystem (including SEM) and Canton Zurich / zh.ch  
+**Primary demo sources:** admin.ch ecosystem (including SEM) and zh.ch  
 **Reference MCP client:** OpenCode  
-**Primary MCP transport:** Streamable HTTP; stdio optional for local development  
 **Reference structured app:** Swiss Arrival Checklist  
-**Stretch consumer reference app:** Swiss Hike — Flutter  
+**Stretch app:** Swiss Hike — Flutter with DEMO/MOCK providers  
 **Primary Swisscom semantic model:** Apertus  
-**Deployment model:** Headless platform; SaaS/private SaaS/on-prem capable
+**Deployment:** Headless; SaaS/private SaaS/on-prem capable
 
 ---
 
 # 1. Executive Summary
 
-Swisscom Trusted Information Platform is a headless platform that converts authoritative knowledge, live data, private context and digital services into trustworthy structured Information Products consumable by applications and AI agents.
-
-It is explicitly **not a chatbot**.
+TIP is a headless platform that converts authoritative knowledge, live data, private context and digital services into trustworthy structured Information Products consumable by applications and AI agents.
 
 > **AI is infrastructure, not the interface.**
 
-The hackathon MVP deliberately focuses on the core value path. Selected official content from the admin.ch ecosystem and zh.ch is loaded **on demand**, stored as immutable source snapshots, normalized, enriched with Apertus where useful, indexed, evaluated and published as a Knowledge Release. Runtime requests search the published local release rather than scraping government sites per question.
+The hackathon MVP proves the core using selected admin.ch/SEM and zh.ch sources. It performs an **on-demand full build**: source acquisition, immutable snapshots, normalization, Apertus enrichment, Evidence Object compilation, indexing, evaluation and publication of a Knowledge Release. Runtime serves that release locally through MCP/REST rather than scraping government sites per request.
 
-For the hackathon there is **no scheduler, continuous source watcher, incremental refresh worker or automatic Knowledge CI/CD loop**. An administrator presses **Build / Full Reload**, or invokes the equivalent CLI/API command. The platform then reloads the configured source scope, rebuilds the Knowledge Space, runs tests and publishes a new release.
+The full product extends this foundation with scheduled/incremental Knowledge CI/CD and a **Publisher & Data Product Marketplace**. Governments, exchanges/data providers, companies, associations and individual experts can publish governed Data Products, maintain them, define licensing and pricing, and receive compensation. Swisscom operates hosting, trust, distribution, metering, billing and settlement.
 
-The full product architecture still includes scheduled revalidation, incremental refresh, semantic change detection, impact analysis, approval policies and autonomous Knowledge CI/CD. These are explicitly roadmap/production capabilities rather than hackathon dependencies.
-
-The runtime itself is more structured than ordinary RAG. A request becomes an explicit Execution Plan. Hard metadata filters are applied before hybrid retrieval. Evidence is reranked using authority, jurisdiction, applicability and validity. Facts are resolved by concept, conflicts are handled explicitly, and a compact Evidence Bundle + Trust Envelope is returned. Natural-language generation is optional and happens only after the evidence has been established.
+**The marketplace/commercial publisher functionality is explicitly NOT part of the hackathon MVP.** The MVP only keeps the architectural contracts compatible with it.
 
 ---
 
@@ -35,349 +30,223 @@ The runtime itself is more structured than ordinary RAG. A request becomes an ex
 
 TIP answers:
 
-> **When an application needs information, what source should it trust, how should that source be accessed, how current is it, where does it apply, and how can the result be verified?**
+> **When an application needs information, what should it trust, where should it obtain it, where does it apply, how current is it, and under what entitlement/commercial terms may it be consumed?**
 
 ```text
-                           APPLICATIONS
-
- OpenCode/myAI   Arrival App   Flutter App   eGov   Bank Portal
-       \             |             |          |         /
+                         APPLICATIONS
+ OpenCode/myAI │ Mobile │ eGov │ Bank Portal │ Enterprise Agent
+                         │
                     MCP / REST / SDK
-                          │
-                          ▼
-        ┌────────────────────────────────┐
-        │ TRUSTED INFORMATION PLATFORM  │
-        │ Knowledge │ Live │ Context     │
-        │ Rules │ Recommendations │ Trust│
-        └────────────────┬───────────────┘
                          │
-          ┌──────────────┼───────────────┐
-          ▼              ▼               ▼
-     Compiled         Live APIs       Private data
-     knowledge        & services      / policies
-          └──────────────┼───────────────┘
                          ▼
+             TRUSTED INFORMATION PLATFORM
+                         │
+       Knowledge │ Live Data │ Context │ Rules
+       Trust │ Entitlements │ Metering │ Actions
+                         │
+          ┌──────────────┼──────────────┐
+          ▼              ▼              ▼
+     Knowledge       Capabilities    Private data
+     / Data Packs     / APIs          / policies
+                         │
                       Apertus
-                where semantically useful
+                 where useful
                          │
-                         ▼
-                  STRUCTURED RESULT
+                  Structured Result
 ```
 
 ---
 
-# 3. Product Principles
+# 3. Core Principles
 
-1. **Stable authoritative information is compiled ahead of runtime.**
-2. **Live information is obtained through registered Capabilities when needed.**
-3. **The external authority remains canonical; TIP stores a verified operational copy.**
-4. **Deterministic logic handles deterministic problems.**
-5. **Apertus handles semantic uncertainty.**
-6. **Structured output precedes generated prose.**
-7. **Every result carries provenance, applicability and trust metadata.**
-8. **MCP is an interface, not the product architecture.**
-9. **Search returns evidence, not answers.**
-10. **Minimum sufficient evidence:** normally 2–5 high-quality Evidence Objects.
-11. **Hackathon simplicity:** full reload on demand; no background refresh dependency.
-12. **Production autonomy:** scheduled/incremental Knowledge CI/CD remains part of the target design.
+1. Stable authoritative information is compiled ahead of runtime.
+2. Inherently live information uses registered Capabilities.
+3. External publishers remain canonical authorities for their data.
+4. Deterministic logic handles deterministic problems.
+5. Apertus handles semantic uncertainty.
+6. Structured output precedes optional prose generation.
+7. Search returns evidence, not answers.
+8. Runtime uses minimum sufficient evidence, normally 2–5 objects.
+9. Every result includes a Trust Envelope.
+10. MCP is an integration protocol, not the product architecture.
+11. The platform is model-independent, Apertus-first for Swisscom.
+12. Publisher licensing/entitlements are first-class in the full platform.
+13. Marketplace and autonomous refresh are roadmap/full-product capabilities, not MVP requirements.
 
 ---
 
 # 4. Information Classes
 
-| Class | Example | Default strategy |
+| Class | Example | Strategy |
 |---|---|---|
 | AUTHORITATIVE | Residence-registration requirements | Compiled Knowledge Space |
 | LIVE | Train fare tomorrow | Live Capability |
-| PRIVATE | Does my lease permit cats? | Private Knowledge Space |
-| CONSENSUS | Good first-date locations | Discovery/recommendation sources |
-| DERIVED | Best hike for tomorrow's constraints | Knowledge + capabilities + rules |
-| HISTORICAL | What rule applied in 2024? | Versioned source repository |
+| PRIVATE | Does my lease allow cats? | Private Knowledge Space |
+| CONSENSUS | Good first-date places | Discovery/recommendation data |
+| DERIVED | Best hike tomorrow | Data + capabilities + constraints/ranking |
+| HISTORICAL | Rule applicable in 2024 | Versioned source repository |
 
 ---
 
-# 5. Main Hackathon Scenario
+# 5. Platform Artifact Model
 
-Primary scenario:
+TIP distinguishes three important artifacts.
+
+## 5.1 Knowledge Space
+
+Internal technical representation of compiled knowledge: sources, snapshots, evidence, concepts, indexes, versions and tests.
+
+Examples: `swiss-public`, `emir-core`, `finma`, `ubs-policy`.
+
+## 5.2 Data Product
+
+A distributable and optionally commercial artifact published by a provider. It may contain one or more Knowledge Spaces, structured datasets and/or Capabilities plus metadata, licensing and commercial terms.
+
+Examples:
+
+```text
+Swiss Public Official
+Swiss Hiking Routes Pro
+SIX Market Data Product
+Alpine Photo Locations
+EMIR Expert Pack
+```
+
+## 5.3 Information Product
+
+An application-level capability combining typed inputs, Knowledge Spaces/Data Products, Capabilities, rules, optional AI and typed output.
+
+Examples: `swiss-arrival-checklist`, `swiss-hike-finder`, `emir-applicability`.
+
+```text
+Publisher → Data Product ─┐
+Publisher → Capability ───┼→ Information Product → Application
+Internal Knowledge ───────┘
+```
+
+---
+
+# 6. Main Hackathon Scenario
+
+Primary question:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
 ```text
 Swiss Confederation
        ↓
-State Secretariat for Migration (SEM)
-       ↓ federal context
-Canton Zurich
-       ↓ cantonal guidance
+SEM / federal context
+       ↓
+Canton Zurich / cantonal guidance
+       ↓
 Municipality / user context
 ```
 
-Golden cases include:
-
-- direct registration question;
-- EU/EFTA employee moving to Zurich;
-- jurisdiction mismatch such as Geneva;
-- German-language equivalent;
-- unsupported municipal detail;
-- exact citation/provenance checks;
-- query after a manually triggered new full build.
-
----
-
-# 6. Scope Split: Hackathon MVP vs Target Product
-
-## 6.1 Hackathon MVP
-
-Implemented:
-
-```text
-Configured admin.ch/SEM + zh.ch sources
-        ↓
-Manual Build / Full Reload
-        ↓
-scan configured scope
-        ↓
-fetch + immutable snapshots
-        ↓
-normalize
-        ↓
-Apertus enrichment
-        ↓
-Evidence Objects + candidate facts
-        ↓
-index
-        ↓
-evaluate
-        ↓
-publish Knowledge Release
-        ↓
-MCP / REST runtime
-```
-
-Not required:
-
-- background scheduler;
-- periodic source watcher;
-- ETag-driven recurring jobs;
-- incremental rebuilds;
-- semantic diff UI;
-- automatic impact analysis;
-- autonomous release promotion.
-
-## 6.2 Full Product / Production Design
-
-Retained in the architecture:
-
-```text
-Scheduler / Source Watcher
-        ↓
-cheap revalidation
-        ↓
-new / changed sources only
-        ↓
-semantic change analysis
-        ↓
-impact analysis
-        ↓
-incremental compilation
-        ↓
-regression tests
-        ↓
-auto-publish or approval policy
-```
-
-This separation keeps the hackathon feasible without weakening the long-term product story.
+The demo proves authority, jurisdiction, applicability, citations, unsupported handling and local compiled retrieval.
 
 ---
 
 # 7. Control Plane and Data Plane
 
 ```text
-                     CONTROL PLANE
+CONTROL PLANE
+Admin GUI
+  ↓
+Source Registry → Scan/Crawl/Fetch → Snapshot/Normalize
+  ↓
+Apertus Enrichment → Evidence Compile → Index/Test → Release
 
- Admin GUI / CLI
-    ↓
- Source Registry
-    ↓
- [Build / Full Reload]
-    ↓
- Scanner / Crawler / Fetcher
-    ↓
- Immutable Snapshot / Normalize
-    ↓
- Apertus Enrichment
-    ↓
- Evidence Compilation
-    ↓
- Index / Evaluate / Publish
-
-────────────────────────────────────────────
-
-                       DATA PLANE
-
-               Published Knowledge Release
-                         │
-                   Query Planner
-                         │
-             Retrieval / Capability Engine
-                         │
-                Evidence / Rule Engine
-                         │
-                  Result Assembler
-                         │
-               ┌─────────┼──────────────┐
-               ▼         ▼              ▼
-              MCP       REST           SDK
-               │         │              │
-               ▼         ├────────┐     ▼
-           OpenCode   Arrival   Swiss Hike   Other Apps
-                      Checklist   Flutter
+DATA PLANE
+Published Knowledge Release
+  ↓
+Query Planner → Retrieval/Capabilities → Evidence & Rules → Result Assembler
+  ↓
+MCP / REST / SDK
+  ↓
+OpenCode │ Arrival Checklist │ Swiss Hike │ Other Apps
 ```
 
-The Data Plane does not depend on the Admin GUI being available.
+The Admin GUI is not required for runtime availability.
 
 ---
 
-# 8. Hackathon Deployment Topology
+# 8. Hackathon Scope vs Full Product
 
-Use a modular monorepo rather than unnecessary microservices.
+## 8.1 Hackathon MVP — required
 
-```text
-Process 1  API + MCP Runtime
-Process 2  Build Worker
-           scanner/crawler/fetcher/compiler/evaluation
-Process 3  Admin Backend
-Process 4  Admin Web UI
-Process 5  optional mock-capability service for Swiss Hike
+- configured admin.ch/SEM and zh.ch source scope;
+- scanner/crawler/fetcher;
+- **manual/on-demand full reload only**;
+- immutable raw snapshots;
+- normalization;
+- Apertus semantic enrichment where useful;
+- Evidence Objects;
+- PostgreSQL full-text + pgvector retrieval;
+- evaluation gate;
+- immutable published Knowledge Release;
+- MCP + REST runtime;
+- OpenCode reference integration;
+- Admin Control Plane;
+- Swiss Arrival Checklist;
+- explicit unsupported/conflicting states.
 
-PostgreSQL + pgvector
-MinIO or local object storage
-Optional Redis
-```
+## 8.2 Hackathon stretch
 
-No scheduler process is required for the hackathon.
+- Flutter Swiss Hike;
+- 10–20 DEMO/MOCK route records;
+- MockTransportProvider, MockWeatherProvider, MockPlacesProvider;
+- typed REST request/result;
+- deterministic hard constraints and optional soft ranking.
 
-Typical setup:
+## 8.3 Explicitly excluded from MVP
 
-```text
-docker compose up
-→ configure sources
-→ Build / Full Reload
-→ release published
-→ OpenCode / REST apps consume release
-```
+- scheduler;
+- periodic source watcher;
+- incremental refresh;
+- automatic semantic-change promotion;
+- autonomous Knowledge CI/CD;
+- publisher self-service onboarding;
+- Data Product marketplace UI;
+- pricing/billing/metering/settlement;
+- real publisher payouts;
+- entitlement/licensing enforcement beyond basic tenant access;
+- production SBB/weather/places integrations;
+- marketplace discovery/rating/certification workflows.
+
+These remain part of the full design and roadmap.
 
 ---
 
 # 9. Shared Contracts
 
-The `/contracts` package is the first integration deliverable.
-
-Required types:
-
-- `SourceDefinition`
-- `DiscoveredResource`
-- `SourceSnapshot`
-- `NormalizedDocument`
-- `EvidenceObject`
-- `CandidateFact`
-- `KnowledgeRelease`
-- `ExecutionPlan`
-- `EvidenceBundle`
-- `RetrievalResult`
-- `TrustEnvelope`
-- `CapabilityDefinition`
-- `InformationProductRequest`
-- `InformationProductResult`
-
-Use Pydantic/JSON Schema and commit fixtures early so modules can develop independently.
-
-## 9.1 EvidenceObject
-
-```json
-{
-  "evidence_id": "ev-zh-registration-22",
-  "source_id": "zh-arriving",
-  "source_version": 22,
-  "authority": {"publisher": "Canton Zurich", "level": "cantonal"},
-  "jurisdiction": "CH-ZH",
-  "concepts": ["residence.registration", "residence.registration_deadline"],
-  "applicability": {"destination_canton": "CH-ZH"},
-  "content": "original supporting passage",
-  "canonical_url": "...",
-  "retrieved_at": "..."
-}
-```
-
-## 9.2 ExecutionPlan
-
-```json
-{
-  "information_class": "AUTHORITATIVE",
-  "knowledge_spaces": ["swiss-public"],
-  "concepts": ["residence.registration", "residence.permit"],
-  "applicability": {
-    "jurisdiction": "CH-ZH",
-    "nationality_group": "EU_EFTA",
-    "purpose": "EMPLOYMENT"
-  },
-  "requested_date": "2026-09-04",
-  "retrieval_strategy": "HYBRID",
-  "max_evidence": 4
-}
-```
-
-## 9.3 EvidenceBundle
-
-```json
-{
-  "status": "SUPPORTED",
-  "facts": [
-    {
-      "concept": "residence.registration_deadline",
-      "value": 14,
-      "unit": "days",
-      "evidence": ["ev-sem-registration-17", "ev-zh-registration-22"]
-    }
-  ],
-  "evidence": ["ev-sem-registration-17", "ev-zh-registration-22"],
-  "trust": {
-    "knowledge_release": "swiss-public@2026.09.04.3",
-    "confidence": 0.98
-  }
-}
-```
-
----
-
-# 10. Module A — Domain Configuration & Contracts
-
-Responsibilities:
-
-- schemas;
-- Swiss Public configuration;
-- trusted source definitions;
-- concept vocabulary;
-- applicability dimensions;
-- fixtures.
-
-Example concepts:
+The `/contracts` package should define at least:
 
 ```text
-residence.registration
-residence.registration_deadline
-residence.permit
-employment.start
-health.insurance
+SourceDefinition
+DiscoveredResource
+SourceSnapshot
+NormalizedDocument
+EvidenceObject
+CandidateFact
+SemanticChange
+KnowledgeRelease
+ExecutionPlan
+EvidenceBundle
+RetrievalResult
+TrustEnvelope
+CapabilityDefinition
+DataProductDefinition        # roadmap-compatible
+Entitlement                  # roadmap-compatible
+UsageRecord                  # roadmap-compatible
+InformationProductRequest
+InformationProductResult
 ```
+
+MVP implementations of `DataProductDefinition`, `Entitlement` and `UsageRecord` may be schemas/fixtures only; no commercial runtime is required.
 
 ---
 
-# 11. Module B — Source Acquisition & Ingestion
-
-## Hackathon responsibility
-
-Perform a bounded full scan/fetch whenever Build is triggered.
+# 10. Source Acquisition & Ingestion
 
 Components:
 
@@ -390,176 +259,81 @@ Snapshot Manager
 Normalizer
 ```
 
-The scanner discovers resources from configured roots using links/sitemaps where practical. The crawler obeys explicit include/exclude scopes. The fetcher handles HTTP state, retries, rate limits, redirects and content types. Raw HTML/PDF/JSON is stored immutably. The normalizer removes boilerplate while preserving meaningful structure.
+For the MVP, the operator presses **Build / Full Reload**. The configured source scope is fetched and rebuilt from scratch into a candidate release.
 
-Example source policy:
+Full-product roadmap adds Scheduler, Source Watcher, ETag/Last-Modified revalidation, content-hash diff, semantic diff and incremental compilation.
 
-```yaml
-source: zh.ch
-discovery:
-  follow_links: true
-  max_depth: 2
-include:
-  - /migration-integration/**
-exclude:
-  - /search/**
-  - /news/**
-```
-
-Hackathon build states:
+Acquisition states:
 
 ```text
 DISCOVERED → ELIGIBLE → FETCHED → SNAPSHOTTED
            → NORMALIZED → READY_FOR_COMPILATION
 ```
 
-Exceptions:
-
-```text
-IGNORED
-FETCH_FAILED
-PARSE_FAILED
-REVIEW_REQUIRED
-REJECTED
-```
-
-## Production extension
-
-Add Scheduler, Source Watcher, ETag/Last-Modified revalidation, content hashes and incremental fetching. These interfaces should be anticipated but need not be implemented in the MVP.
+Exceptions: `IGNORED`, `FETCH_FAILED`, `PARSE_FAILED`, `REVIEW_REQUIRED`, `REJECTED`.
 
 ---
 
-# 12. Module C — Knowledge Compiler & Apertus Enrichment
+# 11. Knowledge Compiler & Apertus
 
-Responsibilities:
+The compiler performs document classification, concept/applicability extraction, multilingual mapping, authority relationships, Evidence Object creation and candidate fact extraction.
 
-- classification;
-- concept extraction;
-- applicability extraction;
-- multilingual terminology mapping;
-- authority/source relationship analysis;
-- Evidence Object compilation;
-- candidate fact extraction;
-- candidate evaluation generation.
+Apertus is never treated as the authority. Exact evidence remains linked to immutable source snapshots.
 
-Apertus is not authoritative. Original source evidence is always preserved.
-
-Stable facts such as deadlines, rates, thresholds, effective dates and boolean obligations SHOULD be extracted during build when reliable, reducing runtime inference.
-
-Production extension: semantic old/new change analysis and affected-concept impact detection.
+Stable high-value facts such as deadlines, thresholds, effective dates and boolean obligations should be extracted at build time where practical, preserving evidence links.
 
 ---
 
-# 13. Module D — Storage, Indexing & Retrieval
+# 12. Storage & Retrieval
 
 Recommended MVP stack:
 
 ```text
-PostgreSQL        sources, snapshots, documents, evidence,
-                  concepts, candidate facts, releases, evaluations
+PostgreSQL        metadata, sources, evidence, facts, releases, tests
 pgvector          semantic retrieval
 PostgreSQL FTS    lexical retrieval
-MinIO/filesystem  immutable raw snapshots
+MinIO/filesystem  immutable source snapshots
 ```
 
-Retrieval applies hard filters before similarity search:
+Retrieval:
 
 ```text
 Published Release
-        ↓
-validity date
-        ↓
-jurisdiction / applicability
-        ↓
-authority / trust
-        ↓
-lexical + vector + concept retrieval
-        ↓
-merge / rerank
-        ↓
+  ↓
+validity + jurisdiction + applicability + authority filters
+  ↓
+lexical + vector + concept search
+  ↓
+merge/rerank
+  ↓
 diversity-aware selection
-        ↓
+  ↓
 2–5 Evidence Objects
 ```
 
-Ranking signals:
-
-```text
-lexical relevance
-semantic relevance
-concept match
-authority weight
-jurisdiction specificity
-applicability match
-temporal validity
-source quality
-```
+Ranking combines relevance with authority, jurisdiction specificity, applicability and temporal validity.
 
 ---
 
-# 14. Module E — Trusted Information Runtime
-
-The runtime contains four logical engines:
+# 13. Runtime Request Processing
 
 ```text
 REQUEST
-   ↓
+  ↓
 1. Query Planner
-   ↓
+  ↓
 2. Retrieval / Capability Engine
-   ↓
+  ↓
 3. Evidence & Rule Engine
-   ↓
+  ↓
 4. Result Assembler
 ```
 
-## 14.1 Query Planner
+Natural-language MCP input may use Apertus to derive an `ExecutionPlan`. Structured apps normally skip that step.
 
-Natural-language MCP requests may use Apertus to extract intent, concepts and applicability. Structured apps usually skip this step because their inputs are already typed.
+The Evidence & Rule Engine groups facts by concept, combines corroborating sources, recognizes federal/cantonal specialization, applies deterministic rules and exposes unresolved contradictions.
 
-The planner decides:
-
-- information class;
-- Knowledge Spaces / Capabilities;
-- concepts;
-- jurisdiction/applicability;
-- effective date;
-- evidence budget.
-
-## 14.2 Retrieval / Capability Engine
-
-AUTHORITATIVE requests use the published Knowledge Release. LIVE requests use registered Capabilities. DERIVED products can combine both.
-
-## 14.3 Evidence & Rule Engine
-
-The engine:
-
-- groups facts by concept;
-- combines corroborating evidence;
-- recognizes specialization, e.g. federal + cantonal guidance;
-- applies deterministic rules;
-- detects unresolved contradictions;
-- preserves evidence links.
-
-If two sources disagree, the engine checks applicability, specificity, authority and validity. If the conflict cannot be resolved, return `CONFLICTING_EVIDENCE` rather than silently choosing one.
-
-## 14.4 Result Assembler
-
-Produces:
-
-```text
-status
-facts
-applicability
-evidence
-Trust Envelope
-limitations
-optional explanation context
-```
-
-OpenCode may generate prose from this bundle. Arrival Checklist can directly render typed facts with no final LLM call.
-
-Supported states:
+Statuses:
 
 ```text
 SUPPORTED
@@ -571,9 +345,11 @@ CONFLICTING_EVIDENCE
 STALE
 ```
 
+Optional prose is generated only after an Evidence Bundle has been established.
+
 ---
 
-# 15. MCP Contract and OpenCode
+# 14. MCP & OpenCode
 
 MVP tools:
 
@@ -581,340 +357,223 @@ MVP tools:
 - `swiss_information.get_evidence`
 - `swiss_information.get_coverage`
 
-The high-level `resolve` tool should normally require one agent call.
-
-The repository should include `opencode.jsonc` and a smoke-test sequence for the Streamable HTTP endpoint.
-
-Visible demo path:
-
-```text
-OpenCode
-   ↓
-swiss_information.resolve
-   ↓
-Execution Plan
-   ↓
-swiss-public release
-   ↓
-SEM + zh.ch Evidence Bundle
-   ↓
-answer with citations
-```
+OpenCode is the reference MCP client. The core demo should make the `swiss_information.resolve` call visible and normally complete the request with one high-level tool call.
 
 ---
 
-# 16. Admin Control Plane
+# 15. Admin Control Plane
 
-The Admin GUI is required because it makes the knowledge lifecycle visible.
-
-## Hackathon screens
+Minimum MVP screens:
 
 1. Dashboard
-2. Knowledge Space
+2. Knowledge Spaces
 3. Source Registry
-4. Build / Full Reload
-5. Build progress/results
-6. Source snapshots
-7. Evidence Explorer
-8. Evaluations
-9. Knowledge Releases
-10. MCP/REST integration status
+4. Scan/build status
+5. Source detail / snapshots
+6. Evidence Explorer
+7. Evaluations
+8. Knowledge Releases
+9. MCP/REST integration status
 
-Example:
+MVP primary action:
 
 ```text
-SWISS PUBLIC                        HEALTHY
-Production release                 build-003
-Configured sources                 8
-Last full build                    13:10
-Evidence                           421
-Tests                              42 / 42 PASS
-
 [ BUILD / FULL RELOAD ]
 ```
 
-Do not spend MVP time on scheduler configuration, source-watch dashboards or semantic diff approval screens.
-
-## Production Control Plane extension
-
-Add:
-
-- refresh schedules;
-- source-watch status;
-- new/changed document counts;
-- semantic diff review;
-- impact analysis;
-- approval policies;
-- automatic promotion/rollback controls.
+The UI shows progress from fetch through release publication. Scheduled refresh/change-review screens may be mocked or marked ROADMAP, but are not MVP requirements.
 
 ---
 
-# 17. Build, Evaluation and Releases
-
-## Hackathon
-
-Each Build / Full Reload creates a candidate release:
+# 16. Evaluation & Release
 
 ```text
-Build triggered
-      ↓
-full configured source load
-      ↓
-compile
-      ↓
-index
-      ↓
-run golden tests
-      ↓
-PASS → publish new release
-FAIL → keep previous production release
+On-demand Full Build
+       ↓
+Candidate Knowledge Release
+       ↓
+Golden Evaluation Suite
+       ↓
+PASS → Publish immutable release
+FAIL → Keep previous production release
 ```
 
-This still proves versioning, reproducibility and quality gating without implementing background CI/CD.
-
-A useful demo can build once before the session, then optionally trigger a second manual rebuild from a controlled fixture/mirror if time permits. It should not be presented as an autonomous watcher.
-
-## Production
-
-Extend the same release machinery into full Knowledge CI/CD:
-
-```text
-scheduled/change-triggered revalidation
-→ incremental rebuild
-→ semantic impact analysis
-→ regression suite
-→ policy-based publish/review
-```
+Golden tests cover grounding, citations, jurisdiction, multilingual questions, unsupported cases, response size, tool count and latency.
 
 ---
 
-# 18. Reference Application — Swiss Arrival Checklist
+# 17. Swiss Arrival Checklist
 
-Purpose: prove that the admin.ch/zh.ch Knowledge Release can power a formal non-chat application.
+Formal inputs include nationality group, purpose, duration, destination canton/municipality, arrival date and work start date.
 
-Inputs:
+It calls TIP over REST and receives a typed checklist containing requirement status, deadlines, evidence IDs and Trust Envelope. No chat prompt is required.
+
+---
+
+# 18. Swiss Hike Flutter Stretch Demo
+
+Use formal inputs: origin, date, target duration, difficulty, max travel time, scenery preferences, weather preference and restaurant requirement.
+
+Mock architecture:
 
 ```text
-Nationality category
-Purpose of stay
-Employment duration
-Destination canton
-Municipality
-Arrival date
-Work start date
+Flutter
+  ↓ REST
+swiss-hike-finder
+  ↓
+DemoRouteRepository (10–20 routes)
+MockTransportProvider
+MockWeatherProvider
+MockPlacesProvider
+  ↓
+hard filters
+  ↓
+soft preference ranking
+  ↓
+typed route cards
 ```
 
-Example REST request:
+Files may include:
+
+```text
+demo/hiking/routes.json
+demo/hiking/transport.json
+demo/hiking/weather.json
+demo/hiking/restaurants.json
+```
+
+All mock data must be visibly marked `DEMO/MOCK` and must not be presented as current authoritative data.
+
+---
+
+# 19. Full Product — Autonomous Knowledge CI/CD (Post-MVP)
+
+Production evolution:
+
+```text
+Scheduler / Source Watcher
+  ↓
+cheap revalidation (ETag/Last-Modified/hash)
+  ↓
+semantic change analysis only when needed
+  ↓
+affected evidence / dependencies
+  ↓
+incremental build
+  ↓
+regression tests
+  ↓
+autonomous or approval-based promotion
+```
+
+Governance modes may include `AUTONOMOUS`, `AUTONOMOUS_WITH_AUDIT`, `APPROVAL_FOR_HIGH_RISK`, and `MANUAL`.
+
+---
+
+# 20. Full Product — Publisher & Data Product Marketplace (Post-MVP)
+
+This is a strategic product capability and commercial model, **not a hackathon deliverable**.
+
+## 20.1 Publisher Types
+
+Potential publishers include:
+
+- Swiss Confederation, cantons and municipalities;
+- exchanges and commercial data providers such as SIX;
+- tourism organizations;
+- companies and industry associations;
+- professional/legal/regulatory publishers;
+- individual domain experts, e.g. hiking, cycling or photography specialists;
+- enterprise tenants publishing private/internal packs.
+
+## 20.2 Publisher Self-Service
+
+Authorized publishers can eventually:
+
+```text
+create publisher account/tenant
+register Data Product
+upload/connect sources
+configure build/refresh policy
+set metadata and coverage
+set license and entitlements
+select pricing model
+publish versions
+inspect quality/usage/revenue
+```
+
+Swisscom may require certification/review before public marketplace publication.
+
+## 20.3 DataProductDefinition
+
+Illustrative schema:
+
+```yaml
+id: swiss-alpine-hiking-pro
+publisher: provider-x
+version: 3.2
+contains:
+  datasets: [routes, huts, pois]
+  knowledge_spaces: [hiking-rules]
+  capabilities: [route-search]
+coverage:
+  geography: CH
+license:
+  redistribution: restricted
+commercial:
+  model: revenue_share
+  consumer_price_per_request: 0.05
+  publisher_share_per_request: 0.03
+trust:
+  certification: VERIFIED
+```
+
+## 20.4 Commercial Models
+
+TIP should support several models rather than assume one marketplace mechanism.
+
+### Usage / revenue share
+
+End consumer or consuming tenant pays per request/usage unit. Swisscom retains platform margin and settles the publisher share.
+
+### Swisscom subscription/license purchase
+
+Swisscom licenses a Data Product from a publisher for a monthly/annual amount and resells/bundles access to its customers.
+
+### One-time license/acquisition
+
+Swisscom pays a one-time fee for defined data/version/usage rights, subject to licensing terms.
+
+### Publisher-hosted SaaS
+
+Publisher pays Swisscom hosting/platform fees while making the Data Product free or independently priced for consumers.
+
+### Free/open public product
+
+Government/open-data packs may be free. Swisscom can still monetize hosting, SLA, API consumption, inference, enterprise overlays and derived Information Products.
+
+## 20.5 Metering and Settlement
+
+Every commercial execution should eventually produce a `UsageRecord`:
 
 ```json
 {
-  "nationality_group": "EU_EFTA",
-  "purpose": "EMPLOYMENT",
-  "employment_duration": "MORE_THAN_3_MONTHS",
-  "destination": {"canton": "CH-ZH", "municipality": "Zurich"},
-  "arrival_date": "2026-09-04",
-  "employment_start_date": "2026-09-08"
+  "request_id": "...",
+  "consumer_tenant": "consumer-x",
+  "information_product": "swiss-hike-finder",
+  "data_products": [
+    {"id": "swiss-alpine-hiking-pro", "units": 1, "publisher_cost": 0.03},
+    {"id": "weather-product", "units": 1, "publisher_cost": 0.01}
+  ],
+  "platform_fee": 0.02,
+  "model_cost": 0.002
 }
 ```
 
-Output is a typed checklist with requirement status, deadlines, evidence IDs and Trust Envelope. No natural-language prompt is required.
+The Commercial Control Plane should support metering, billing, publisher settlement, cost attribution, margin analysis and audit.
 
----
+## 20.6 Licensing & Entitlements
 
-# 19. Stretch Reference Application — Swiss Hike / Flutter
+TIP must know not only whether data exists but whether the consuming tenant is permitted to use it.
 
-Swiss Hike is P2/stretch only.
-
-Structured input:
-
-```text
-origin
-date
-target hiking duration
-difficulty
-max transport time
-scenery preferences
-weather preference
-restaurant near end
-```
-
-Mock strategy:
-
-```text
-demo/hiking/routes.json        10–20 curated demo routes
-demo/hiking/transport.json     fixed travel times
-demo/hiking/weather.json       deterministic forecast scenarios
-demo/hiking/restaurants.json   deterministic nearby places
-```
-
-Provider interfaces:
-
-```text
-TransportProvider
- ├─ MockTransportProvider       ← hackathon
- └─ RealProviderAdapter         ← future
-
-WeatherProvider
- ├─ MockWeatherProvider         ← hackathon
- └─ RealProviderAdapter         ← future
-
-PlacesProvider
- ├─ MockPlacesProvider          ← hackathon
- └─ RealProviderAdapter         ← future
-```
-
-Mocks must be clearly labelled `DEMO/MOCK` and never represented as current authoritative data.
-
-Execution:
-
-```text
-route candidates
-      ↓
-hard filters: duration, difficulty, transport
-      ↓
-mock capability enrichment
-      ↓
-soft preference ranking
-      ↓
-structured result cards
-```
-
----
-
-# 20. Independent Hackathon Workstreams
-
-| Workstream | Responsibility | Fixture boundary |
-|---|---|---|
-| A | Contracts/domain config | shared schemas |
-| B | Scanner/crawler/full-load ingestion | SourceDefinition |
-| C | Apertus compiler/enrichment | NormalizedDocument |
-| D | DB/index/retrieval | EvidenceObject |
-| E | Runtime/MCP/REST | RetrievalResult/EvidenceBundle |
-| F | Admin GUI | mocked Admin API |
-| G | Evaluation + reference apps | mocked runtime endpoints |
-
-No one needs to implement a scheduler or background refresher during the hackathon.
-
----
-
-# 21. Recommended Python Stack
-
-If Python is selected:
-
-```text
-FastAPI + Pydantic v2        API/contracts
-Official MCP Python SDK      MCP adapter
-PostgreSQL                   persistent metadata/facts
-pgvector                     vector retrieval
-PostgreSQL FTS               lexical retrieval
-SQLAlchemy 2 + Alembic       persistence/migrations
-httpx                        source fetching
-BeautifulSoup + trafilatura  HTML structure/content
-PyMuPDF                      PDF extraction
-pytest                       unit/contract/golden tests
-uv                           environment/package management
-Docker Compose               reproducible deployment
-React/Vue                    Admin GUI
-Flutter                      optional Swiss Hike app
-```
-
-Not required for MVP: APScheduler, Celery, Kafka, Kubernetes, LangChain, LlamaIndex, LangGraph, Neo4j, Elasticsearch or a dedicated vector database.
-
-A production scheduler can later use APScheduler, Celery, Temporal, Kubernetes jobs or an equivalent operational mechanism without changing the ingestion contracts.
-
----
-
-# 22. Hackathon Demo Flow
-
-1. Open Admin Control Plane.
-2. Show configured admin.ch/SEM + zh.ch sources.
-3. Trigger **Build / Full Reload** or show the completed build record.
-4. Show snapshots → Evidence Objects → tests → published release.
-5. Open OpenCode and ask the Zurich-arrival question.
-6. Make the single `swiss_information.resolve` call visible.
-7. Show federal + CH-ZH evidence and citations.
-8. Ask an unsupported question and show explicit refusal/coverage state.
-9. Open Swiss Arrival Checklist and submit typed fields against the same release.
-10. If P2 is ready, show Swiss Hike Flutter using mocked providers.
-
-Optional technical/final-round demo: manually modify a controlled fixture/mirror, press **Build / Full Reload** again, and show that a new release changes downstream results. Make clear that automatic change watching is a production roadmap capability.
-
----
-
-# 23. Hackathon Definition of Done
-
-The submission is successful when:
-
-1. official admin.ch/SEM and zh.ch sources are configured;
-2. Build / Full Reload acquires the configured scope;
-3. raw snapshots are stored immutably;
-4. normalized documents and Evidence Objects are produced;
-5. Apertus enriches semantic fields;
-6. evidence is locally indexed;
-7. golden tests run;
-8. a Knowledge Release is published;
-9. OpenCode connects through MCP;
-10. normal requests do not scrape government sites;
-11. the runtime filters by jurisdiction/applicability before hybrid retrieval;
-12. compact Evidence Bundles contain citations and Trust metadata;
-13. unsupported/conflicting evidence is represented explicitly;
-14. Swiss Arrival Checklist consumes the same release through REST;
-15. the whole stack starts reproducibly;
-16. no scheduler or background-refresh infrastructure is required for completion.
-
----
-
-# 24. Target Product Roadmap
-
-### Phase 1 — Hackathon
-On-demand full builds, Swiss Public Knowledge Space, OpenCode MCP, Admin GUI, Arrival Checklist.
-
-### Phase 2 — Operational Knowledge Platform
-Scheduled source watching, conditional HTTP revalidation, incremental builds, semantic change analysis, automatic regression and approval workflows.
-
-### Phase 3 — Live Capabilities
-Transport, weather, places, public datasets.
-
-### Phase 4 — Consumer Information Products
-Hiking, cycling, photography, housing, local discovery.
-
-### Phase 5 — Enterprise Overlay
-Private policies, enterprise context and governance.
-
-### Phase 6 — Regulatory Intelligence
-FINMA, EMIR, DORA, dependency/impact analysis.
-
-### Phase 7 — Actions and Marketplace
-Transactions, workflows, reusable Knowledge Packs and Capabilities.
-
----
-
-# 25. Final Architecture Principle
-
-For the hackathon:
-
-```text
-CONFIGURE SOURCES
-      ↓
-BUILD / FULL RELOAD
-      ↓
-COMPILE + TEST
-      ↓
-PUBLISH
-      ↓
-SERVE LOCALLY THROUGH MCP/REST
-```
-
-For the production platform:
-
-```text
-CONTINUOUS SOURCE WATCHING
-      ↓
-INCREMENTAL KNOWLEDGE CI/CD
-      ↓
-VERSIONED TRUSTED INFORMATION
-      ↓
-ANY APPLICATION
-```
-
-The hackathon proves the information model, build pipeline, evidence retrieval, trust model and integrations. Continuous autonomous maintenance is the natural production extension—not a dependency for proving the core concept in two days.
+Entitlements may constrain:
