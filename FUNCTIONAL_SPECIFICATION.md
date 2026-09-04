@@ -1,28 +1,27 @@
 # Swisscom Trusted Information Platform
-## Functional & Solution Design Specification — V8
+## Functional & Solution Design Specification — V9
 
-**Working product name:** Swisscom Trusted Information Platform (TIP)  
 **Hackathon domain:** Swiss Public Information  
-**Primary demo sources:** admin.ch ecosystem (including SEM) and zh.ch  
+**Primary sources:** admin.ch/SEM + zh.ch  
 **Reference MCP client:** OpenCode  
-**Reference structured app:** Swiss Arrival Checklist  
-**Stretch app:** Swiss Hike — Flutter with DEMO/MOCK providers  
-**Primary Swisscom semantic model:** Apertus  
-**Deployment:** Headless; SaaS/private SaaS/on-prem capable
+**Structured reference app:** Swiss Arrival Checklist  
+**Stretch app:** Swiss Hike (Flutter, DEMO/MOCK data)  
+**Primary Swisscom semantic model:** Apertus
 
 ---
 
-# 1. Executive Summary
+# 1. Summary
 
-TIP is a headless platform that converts authoritative knowledge, live data, private context and digital services into trustworthy structured Information Products consumable by applications and AI agents.
+TIP is a headless platform that converts authoritative knowledge, live data, private context and digital services into trustworthy structured Information Products for applications and AI agents.
 
 > **AI is infrastructure, not the interface.**
 
-The hackathon MVP proves the core using selected admin.ch/SEM and zh.ch sources. It performs an **on-demand full build**: source acquisition, immutable snapshots, normalization, Apertus enrichment, Evidence Object compilation, indexing, evaluation and publication of a Knowledge Release. Runtime serves that release locally through MCP/REST rather than scraping government sites per request.
+The hackathon MVP performs an **on-demand full build** of selected admin.ch/SEM and zh.ch content: acquire → snapshot → normalize → enrich → compile Evidence Objects → index → evaluate → publish immutable Knowledge Release. Runtime serves the published release locally through MCP/REST.
 
-The full product extends this foundation with scheduled/incremental Knowledge CI/CD and a **Publisher & Data Product Marketplace**. Governments, exchanges/data providers, companies, associations and individual experts can publish governed Data Products, maintain them, define licensing and pricing, and receive compensation. Swisscom operates hosting, trust, distribution, metering, billing and settlement.
+The full product adds two major capabilities that are deliberately **excluded from the hackathon MVP**:
 
-**The marketplace/commercial publisher functionality is explicitly NOT part of the hackathon MVP.** The MVP only keeps the architectural contracts compatible with it.
+1. autonomous/scheduled incremental Knowledge CI/CD;
+2. a multi-tenant **Publisher & Data Product Marketplace** with licensing, entitlements, usage metering, billing and publisher settlement.
 
 ---
 
@@ -30,27 +29,21 @@ The full product extends this foundation with scheduled/incremental Knowledge CI
 
 TIP answers:
 
-> **When an application needs information, what should it trust, where should it obtain it, where does it apply, how current is it, and under what entitlement/commercial terms may it be consumed?**
+> **What information should an application trust, where should it obtain it, where does it apply, how current is it, and under what entitlement/commercial terms may it be consumed?**
 
 ```text
-                         APPLICATIONS
- OpenCode/myAI │ Mobile │ eGov │ Bank Portal │ Enterprise Agent
+Applications: myAI │ Mobile │ eGov │ Bank Portal │ Agents
                          │
                     MCP / REST / SDK
                          │
                          ▼
              TRUSTED INFORMATION PLATFORM
+       Knowledge │ Live │ Context │ Rules │ Trust
+       Entitlements │ Metering │ Information Products
                          │
-       Knowledge │ Live Data │ Context │ Rules
-       Trust │ Entitlements │ Metering │ Actions
-                         │
-          ┌──────────────┼──────────────┐
-          ▼              ▼              ▼
-     Knowledge       Capabilities    Private data
-     / Data Packs     / APIs          / policies
+          Data Products / Capabilities / Private Data
                          │
                       Apertus
-                 where useful
                          │
                   Structured Result
 ```
@@ -64,14 +57,13 @@ TIP answers:
 3. External publishers remain canonical authorities for their data.
 4. Deterministic logic handles deterministic problems.
 5. Apertus handles semantic uncertainty.
-6. Structured output precedes optional prose generation.
-7. Search returns evidence, not answers.
-8. Runtime uses minimum sufficient evidence, normally 2–5 objects.
+6. Search returns evidence, not answers.
+7. Runtime uses minimum sufficient evidence, normally 2–5 objects.
+8. Structured output precedes optional prose generation.
 9. Every result includes a Trust Envelope.
 10. MCP is an integration protocol, not the product architecture.
-11. The platform is model-independent, Apertus-first for Swisscom.
-12. Publisher licensing/entitlements are first-class in the full platform.
-13. Marketplace and autonomous refresh are roadmap/full-product capabilities, not MVP requirements.
+11. Publisher licensing/entitlements are first-class in the full platform.
+12. Marketplace and autonomous refresh are post-MVP capabilities.
 
 ---
 
@@ -79,74 +71,51 @@ TIP answers:
 
 | Class | Example | Strategy |
 |---|---|---|
-| AUTHORITATIVE | Residence-registration requirements | Compiled Knowledge Space |
-| LIVE | Train fare tomorrow | Live Capability |
-| PRIVATE | Does my lease allow cats? | Private Knowledge Space |
-| CONSENSUS | Good first-date places | Discovery/recommendation data |
+| AUTHORITATIVE | Residence-registration rules | Compiled Knowledge Space |
+| LIVE | Train fare/weather | Live Capability |
+| PRIVATE | Lease/company policy | Private Knowledge Space |
+| CONSENSUS | First-date recommendations | Discovery/recommendation data |
 | DERIVED | Best hike tomorrow | Data + capabilities + constraints/ranking |
-| HISTORICAL | Rule applicable in 2024 | Versioned source repository |
+| HISTORICAL | Rule applicable in 2024 | Versioned repository |
 
 ---
 
-# 5. Platform Artifact Model
+# 5. Platform Artifacts
 
-TIP distinguishes three important artifacts.
+## Knowledge Space
+Internal compiled representation: sources, snapshots, evidence, concepts, indexes, versions and tests. Examples: `swiss-public`, `emir-core`, `finma`.
 
-## 5.1 Knowledge Space
+## Data Product
+Distributable and optionally commercial publisher artifact containing Knowledge Spaces, structured datasets and/or Capabilities plus metadata, coverage, license, entitlements and commercial terms. Examples: `Swiss Public Official`, `Swiss Hiking Routes Pro`, `SIX Market Data`, `Alpine Photo Locations`.
 
-Internal technical representation of compiled knowledge: sources, snapshots, evidence, concepts, indexes, versions and tests.
-
-Examples: `swiss-public`, `emir-core`, `finma`, `ubs-policy`.
-
-## 5.2 Data Product
-
-A distributable and optionally commercial artifact published by a provider. It may contain one or more Knowledge Spaces, structured datasets and/or Capabilities plus metadata, licensing and commercial terms.
-
-Examples:
-
-```text
-Swiss Public Official
-Swiss Hiking Routes Pro
-SIX Market Data Product
-Alpine Photo Locations
-EMIR Expert Pack
-```
-
-## 5.3 Information Product
-
-An application-level capability combining typed inputs, Knowledge Spaces/Data Products, Capabilities, rules, optional AI and typed output.
-
-Examples: `swiss-arrival-checklist`, `swiss-hike-finder`, `emir-applicability`.
+## Information Product
+Application-level capability combining typed inputs, Knowledge Spaces/Data Products, Capabilities, deterministic rules, optional AI and typed output. Examples: `swiss-arrival-checklist`, `swiss-hike-finder`, `emir-applicability`.
 
 ```text
 Publisher → Data Product ─┐
 Publisher → Capability ───┼→ Information Product → Application
-Internal Knowledge ───────┘
+Private Knowledge ────────┘
 ```
 
 ---
 
 # 6. Main Hackathon Scenario
 
-Primary question:
-
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
 ```text
-Swiss Confederation
-       ↓
-SEM / federal context
-       ↓
-Canton Zurich / cantonal guidance
-       ↓
-Municipality / user context
+Swiss Confederation → SEM/federal context
+                           ↓
+                    Canton Zurich
+                           ↓
+                 municipality/context
 ```
 
-The demo proves authority, jurisdiction, applicability, citations, unsupported handling and local compiled retrieval.
+Golden tests cover factual grounding, federal/cantonal applicability, German queries, unsupported municipal details, citations, response size, tool calls and latency.
 
 ---
 
-# 7. Control Plane and Data Plane
+# 7. Architecture
 
 ```text
 CONTROL PLANE
@@ -159,137 +128,130 @@ Apertus Enrichment → Evidence Compile → Index/Test → Release
 DATA PLANE
 Published Knowledge Release
   ↓
-Query Planner → Retrieval/Capabilities → Evidence & Rules → Result Assembler
+Query Planner → Retrieval/Capabilities → Evidence & Rules → Result
   ↓
 MCP / REST / SDK
   ↓
 OpenCode │ Arrival Checklist │ Swiss Hike │ Other Apps
 ```
 
-The Admin GUI is not required for runtime availability.
-
 ---
 
-# 8. Hackathon Scope vs Full Product
+# 8. Hackathon Scope
 
-## 8.1 Hackathon MVP — required
+## Required MVP
 
-- configured admin.ch/SEM and zh.ch source scope;
+- configured admin.ch/SEM + zh.ch scope;
 - scanner/crawler/fetcher;
 - **manual/on-demand full reload only**;
-- immutable raw snapshots;
-- normalization;
-- Apertus semantic enrichment where useful;
-- Evidence Objects;
-- PostgreSQL full-text + pgvector retrieval;
-- evaluation gate;
-- immutable published Knowledge Release;
-- MCP + REST runtime;
-- OpenCode reference integration;
+- immutable snapshots and normalized documents;
+- Apertus enrichment where useful;
+- Evidence Objects and candidate facts;
+- PostgreSQL FTS + pgvector retrieval;
+- evaluation gate + immutable Knowledge Release;
+- MCP + REST;
+- OpenCode integration;
 - Admin Control Plane;
 - Swiss Arrival Checklist;
 - explicit unsupported/conflicting states.
 
-## 8.2 Hackathon stretch
+## Stretch
 
 - Flutter Swiss Hike;
-- 10–20 DEMO/MOCK route records;
+- 10–20 DEMO/MOCK routes;
 - MockTransportProvider, MockWeatherProvider, MockPlacesProvider;
 - typed REST request/result;
-- deterministic hard constraints and optional soft ranking.
+- deterministic hard filters + optional soft ranking.
 
-## 8.3 Explicitly excluded from MVP
+## Explicitly excluded from MVP
 
-- scheduler;
-- periodic source watcher;
-- incremental refresh;
-- automatic semantic-change promotion;
+- scheduler / periodic watcher;
+- incremental refresh / semantic-change promotion;
 - autonomous Knowledge CI/CD;
 - publisher self-service onboarding;
-- Data Product marketplace UI;
-- pricing/billing/metering/settlement;
+- marketplace UI/discovery;
+- commercial pricing/billing/metering/settlement;
 - real publisher payouts;
-- entitlement/licensing enforcement beyond basic tenant access;
-- production SBB/weather/places integrations;
-- marketplace discovery/rating/certification workflows.
-
-These remain part of the full design and roadmap.
+- production licensing/entitlement engine;
+- real SBB/weather/places integrations.
 
 ---
 
 # 9. Shared Contracts
 
-The `/contracts` package should define at least:
+Core contracts:
 
 ```text
 SourceDefinition
-DiscoveredResource
 SourceSnapshot
 NormalizedDocument
 EvidenceObject
 CandidateFact
-SemanticChange
 KnowledgeRelease
 ExecutionPlan
 EvidenceBundle
-RetrievalResult
 TrustEnvelope
 CapabilityDefinition
-DataProductDefinition        # roadmap-compatible
-Entitlement                  # roadmap-compatible
-UsageRecord                  # roadmap-compatible
 InformationProductRequest
 InformationProductResult
 ```
 
-MVP implementations of `DataProductDefinition`, `Entitlement` and `UsageRecord` may be schemas/fixtures only; no commercial runtime is required.
-
----
-
-# 10. Source Acquisition & Ingestion
-
-Components:
+Roadmap-compatible contracts should also be reserved:
 
 ```text
-Source Registry
-Scanner
-Crawler
-Fetcher
-Snapshot Manager
-Normalizer
+Publisher
+DataProductDefinition
+LicensePolicy
+Entitlement
+UsageRecord
+PricingModel
+SettlementRecord
 ```
 
-For the MVP, the operator presses **Build / Full Reload**. The configured source scope is fetched and rebuilt from scratch into a candidate release.
+These commercial contracts may be schemas only during the hackathon.
 
-Full-product roadmap adds Scheduler, Source Watcher, ETag/Last-Modified revalidation, content-hash diff, semantic diff and incremental compilation.
+---
 
-Acquisition states:
+# 10. Source Acquisition & Build
+
+MVP operator action:
 
 ```text
-DISCOVERED → ELIGIBLE → FETCHED → SNAPSHOTTED
-           → NORMALIZED → READY_FOR_COMPILATION
+[ BUILD / FULL RELOAD ]
 ```
 
-Exceptions: `IGNORED`, `FETCH_FAILED`, `PARSE_FAILED`, `REVIEW_REQUIRED`, `REJECTED`.
-
----
-
-# 11. Knowledge Compiler & Apertus
-
-The compiler performs document classification, concept/applicability extraction, multilingual mapping, authority relationships, Evidence Object creation and candidate fact extraction.
-
-Apertus is never treated as the authority. Exact evidence remains linked to immutable source snapshots.
-
-Stable high-value facts such as deadlines, thresholds, effective dates and boolean obligations should be extracted at build time where practical, preserving evidence links.
-
----
-
-# 12. Storage & Retrieval
-
-Recommended MVP stack:
+Flow:
 
 ```text
-PostgreSQL        metadata, sources, evidence, facts, releases, tests
+configured source scope
+  ↓
+scan/crawl/fetch
+  ↓
+immutable raw snapshots
+  ↓
+normalize
+  ↓
+Apertus enrichment
+  ↓
+Evidence Objects / candidate facts
+  ↓
+index
+  ↓
+golden evaluations
+  ↓
+publish immutable release
+```
+
+No scheduler is required. Full-product roadmap adds cheap revalidation, source watching, semantic diff and incremental builds.
+
+---
+
+# 11. Storage & Retrieval
+
+MVP stack:
+
+```text
+PostgreSQL        metadata/evidence/facts/releases/tests
 pgvector          semantic retrieval
 PostgreSQL FTS    lexical retrieval
 MinIO/filesystem  immutable source snapshots
@@ -311,27 +273,27 @@ diversity-aware selection
 2–5 Evidence Objects
 ```
 
-Ranking combines relevance with authority, jurisdiction specificity, applicability and temporal validity.
+Ranking combines semantic/lexical relevance with concept match, authority, jurisdiction specificity, applicability and temporal validity.
 
 ---
 
-# 13. Runtime Request Processing
+# 12. Runtime Processing
 
 ```text
 REQUEST
   ↓
-1. Query Planner
+Query Planner
   ↓
-2. Retrieval / Capability Engine
+Retrieval / Capability Engine
   ↓
-3. Evidence & Rule Engine
+Evidence & Rule Engine
   ↓
-4. Result Assembler
+Result Assembler
 ```
 
-Natural-language MCP input may use Apertus to derive an `ExecutionPlan`. Structured apps normally skip that step.
+Natural-language MCP requests may use Apertus to derive an `ExecutionPlan`. Structured apps normally skip that step.
 
-The Evidence & Rule Engine groups facts by concept, combines corroborating sources, recognizes federal/cantonal specialization, applies deterministic rules and exposes unresolved contradictions.
+The Evidence & Rule Engine groups facts by concept, combines corroborating evidence, recognizes federal/cantonal specialization, applies deterministic rules and exposes unresolved contradictions.
 
 Statuses:
 
@@ -345,11 +307,11 @@ CONFLICTING_EVIDENCE
 STALE
 ```
 
-Optional prose is generated only after an Evidence Bundle has been established.
+Optional prose is generated only after evidence/facts are established.
 
 ---
 
-# 14. MCP & OpenCode
+# 13. MCP & OpenCode
 
 MVP tools:
 
@@ -357,83 +319,54 @@ MVP tools:
 - `swiss_information.get_evidence`
 - `swiss_information.get_coverage`
 
-OpenCode is the reference MCP client. The core demo should make the `swiss_information.resolve` call visible and normally complete the request with one high-level tool call.
+OpenCode is the reference MCP client. The main query should normally require one high-level `resolve` call and return compact evidence plus Trust Envelope.
 
 ---
 
-# 15. Admin Control Plane
+# 14. Admin Control Plane
 
-Minimum MVP screens:
+MVP screens:
 
 1. Dashboard
 2. Knowledge Spaces
 3. Source Registry
-4. Scan/build status
-5. Source detail / snapshots
+4. Full-build status
+5. Source snapshots
 6. Evidence Explorer
 7. Evaluations
 8. Knowledge Releases
 9. MCP/REST integration status
 
-MVP primary action:
-
-```text
-[ BUILD / FULL RELOAD ]
-```
-
-The UI shows progress from fetch through release publication. Scheduled refresh/change-review screens may be mocked or marked ROADMAP, but are not MVP requirements.
+Scheduled-refresh/change-review screens are post-MVP.
 
 ---
 
-# 16. Evaluation & Release
+# 15. Swiss Arrival Checklist
 
-```text
-On-demand Full Build
-       ↓
-Candidate Knowledge Release
-       ↓
-Golden Evaluation Suite
-       ↓
-PASS → Publish immutable release
-FAIL → Keep previous production release
-```
+Formal fields: nationality group, purpose, duration, canton/municipality, arrival date, work start date.
 
-Golden tests cover grounding, citations, jurisdiction, multilingual questions, unsupported cases, response size, tool count and latency.
+The app calls REST and receives typed requirements, deadlines, evidence IDs and Trust Envelope. No natural-language prompt is required.
 
 ---
 
-# 17. Swiss Arrival Checklist
-
-Formal inputs include nationality group, purpose, duration, destination canton/municipality, arrival date and work start date.
-
-It calls TIP over REST and receives a typed checklist containing requirement status, deadlines, evidence IDs and Trust Envelope. No chat prompt is required.
-
----
-
-# 18. Swiss Hike Flutter Stretch Demo
-
-Use formal inputs: origin, date, target duration, difficulty, max travel time, scenery preferences, weather preference and restaurant requirement.
-
-Mock architecture:
+# 16. Swiss Hike Stretch Demo
 
 ```text
-Flutter
-  ↓ REST
-swiss-hike-finder
-  ↓
-DemoRouteRepository (10–20 routes)
-MockTransportProvider
-MockWeatherProvider
-MockPlacesProvider
-  ↓
-hard filters
-  ↓
-soft preference ranking
-  ↓
-typed route cards
+Flutter → REST → swiss-hike-finder
+                    ↓
+              DemoRouteRepository
+              MockTransportProvider
+              MockWeatherProvider
+              MockPlacesProvider
+                    ↓
+              deterministic filters
+                    ↓
+              preference ranking
+                    ↓
+              typed route cards
 ```
 
-Files may include:
+Suggested files:
 
 ```text
 demo/hiking/routes.json
@@ -442,138 +375,205 @@ demo/hiking/weather.json
 demo/hiking/restaurants.json
 ```
 
-All mock data must be visibly marked `DEMO/MOCK` and must not be presented as current authoritative data.
+All mock data must be labelled `DEMO/MOCK`.
 
 ---
 
-# 19. Full Product — Autonomous Knowledge CI/CD (Post-MVP)
+# 17. Full Product — Autonomous Knowledge CI/CD (Post-MVP)
 
 Production evolution:
 
 ```text
 Scheduler / Source Watcher
   ↓
-cheap revalidation (ETag/Last-Modified/hash)
+ETag/Last-Modified/hash revalidation
   ↓
-semantic change analysis only when needed
+semantic analysis only when needed
   ↓
-affected evidence / dependencies
+affected evidence/dependencies
   ↓
-incremental build
-  ↓
-regression tests
+incremental build + tests
   ↓
 autonomous or approval-based promotion
 ```
 
-Governance modes may include `AUTONOMOUS`, `AUTONOMOUS_WITH_AUDIT`, `APPROVAL_FOR_HIGH_RISK`, and `MANUAL`.
+This remains a key differentiator but is not required in two days.
 
 ---
 
-# 20. Full Product — Publisher & Data Product Marketplace (Post-MVP)
+# 18. Full Product — Publisher & Data Product Marketplace (Post-MVP)
 
-This is a strategic product capability and commercial model, **not a hackathon deliverable**.
+## 18.1 Business Model
 
-## 20.1 Publisher Types
-
-Potential publishers include:
-
-- Swiss Confederation, cantons and municipalities;
-- exchanges and commercial data providers such as SIX;
-- tourism organizations;
-- companies and industry associations;
-- professional/legal/regulatory publishers;
-- individual domain experts, e.g. hiking, cycling or photography specialists;
-- enterprise tenants publishing private/internal packs.
-
-## 20.2 Publisher Self-Service
-
-Authorized publishers can eventually:
+TIP is a multi-sided platform:
 
 ```text
-create publisher account/tenant
-register Data Product
-upload/connect sources
-configure build/refresh policy
-set metadata and coverage
-set license and entitlements
-select pricing model
-publish versions
-inspect quality/usage/revenue
+Consumers / Apps / Enterprises
+             │ pay / consume
+             ▼
+        SWISSCOM TIP
+ hosting │ trust │ distribution │ metering │ billing
+             │
+        settlement / licensing
+             ▼
+Publishers / Data Providers
+Government │ SIX-like providers │ Companies │ Experts │ Individuals
 ```
 
-Swisscom may require certification/review before public marketplace publication.
+Swisscom can monetize platform requests directly while also compensating publishers whose Data Products contribute to those requests.
 
-## 20.3 DataProductDefinition
+## 18.2 Publisher Self-Service
 
-Illustrative schema:
+Future publishers can create a tenant/account, register Data Products, connect/upload sources, configure maintenance, define coverage, license and pricing, publish versions, and inspect usage/revenue. Public marketplace publication may require Swisscom certification.
 
-```yaml
-id: swiss-alpine-hiking-pro
-publisher: provider-x
-version: 3.2
-contains:
-  datasets: [routes, huts, pois]
-  knowledge_spaces: [hiking-rules]
-  capabilities: [route-search]
-coverage:
-  geography: CH
-license:
-  redistribution: restricted
-commercial:
-  model: revenue_share
-  consumer_price_per_request: 0.05
-  publisher_share_per_request: 0.03
-trust:
-  certification: VERIFIED
+## 18.3 Commercial Models
+
+TIP should support multiple models:
+
+- **Usage/revenue share:** consumer/tenant pays per request or unit; Swisscom retains margin and pays publisher share.
+- **Monthly/annual license:** Swisscom licenses a pack and bundles/resells access.
+- **One-time license/acquisition:** Swisscom purchases defined rights/version for a one-time payment.
+- **Publisher SaaS:** publisher pays Swisscom hosting/platform fees and decides whether its product is free or paid.
+- **Free/open product:** government/open-data product is free; Swisscom monetizes hosting, SLA, API use, inference, enterprise overlays and derived products.
+
+## 18.4 Licensing & Entitlements
+
+Before using a commercial Data Product, TIP must verify that the consuming tenant is entitled to it. Policies may restrict tenants, applications, geography, purpose, redistribution, retention, volume or time period.
+
+This is particularly important for professional financial-data providers and enterprise/private packs.
+
+## 18.5 Metering & Settlement
+
+Every commercial execution eventually creates a `UsageRecord` identifying consumer, Information Product, Data Products/Capabilities used, units, publisher cost, platform fee and model/provider costs.
+
+A Commercial Control Plane will support:
+
+```text
+usage metering
+consumer billing
+publisher settlement
+cost attribution
+margin analysis
+entitlement audit
+revenue reporting
 ```
 
-## 20.4 Commercial Models
+## 18.6 Trust / Certification
 
-TIP should support several models rather than assume one marketplace mechanism.
+Potential marketplace levels:
 
-### Usage / revenue share
-
-End consumer or consuming tenant pays per request/usage unit. Swisscom retains platform margin and settles the publisher share.
-
-### Swisscom subscription/license purchase
-
-Swisscom licenses a Data Product from a publisher for a monthly/annual amount and resells/bundles access to its customers.
-
-### One-time license/acquisition
-
-Swisscom pays a one-time fee for defined data/version/usage rights, subject to licensing terms.
-
-### Publisher-hosted SaaS
-
-Publisher pays Swisscom hosting/platform fees while making the Data Product free or independently priced for consumers.
-
-### Free/open public product
-
-Government/open-data packs may be free. Swisscom can still monetize hosting, SLA, API consumption, inference, enterprise overlays and derived Information Products.
-
-## 20.5 Metering and Settlement
-
-Every commercial execution should eventually produce a `UsageRecord`:
-
-```json
-{
-  "request_id": "...",
-  "consumer_tenant": "consumer-x",
-  "information_product": "swiss-hike-finder",
-  "data_products": [
-    {"id": "swiss-alpine-hiking-pro", "units": 1, "publisher_cost": 0.03},
-    {"id": "weather-product", "units": 1, "publisher_cost": 0.01}
-  ],
-  "platform_fee": 0.02,
-  "model_cost": 0.002
-}
+```text
+COMMUNITY
+VERIFIED
+EXPERT VERIFIED
+OFFICIAL
 ```
 
-The Commercial Control Plane should support metering, billing, publisher settlement, cost attribution, margin analysis and audit.
+Trust certification is separate from commercial pricing: a free government pack may be OFFICIAL, while a paid expert pack may be EXPERT VERIFIED.
 
-## 20.6 Licensing & Entitlements
+---
 
-TIP must know not only whether data exists but whether the consuming tenant is permitted to use it.
+# 19. Example Marketplace Composition — Swiss Hike
 
-Entitlements may constrain:
+Future production version:
+
+```text
+Swiss Hiking Routes Data Product      publisher A
+Weather Capability/Data Product       publisher B
+Transport Capability                  provider C
+Places/Restaurants Product            provider D
+                    ↓
+             Swiss Hike Finder
+                    ↓
+             Flutter / myAI / web
+```
+
+A single end-user request can generate usage for several providers. TIP meters the dependency graph and applies the configured commercial model to each component.
+
+For the hackathon this is simulated only by free `DEMO/MOCK` providers; there is no billing or settlement implementation.
+
+---
+
+# 20. Swisscom Alignment & Economics
+
+TIP can strengthen:
+
+- **myAI:** richer trusted Swiss information and capabilities;
+- **eGovHub:** AI-ready government Data Products;
+- **Swiss AI Platform/Apertus:** increased inference/platform consumption;
+- **Banking:** FINMA/EMIR/regulatory Information Products;
+- **Enterprise:** private Data Products and Knowledge Spaces;
+- **Marketplace:** new distribution and monetization channel for trusted data providers.
+
+Swisscom can earn through API/MCP usage, SaaS subscriptions, hosting, managed knowledge, enterprise deployments, regulatory intelligence, inference consumption and marketplace/platform margin.
+
+Publishers gain a new machine-consumption distribution channel and can monetize expertise/data without building their own AI application platform.
+
+---
+
+# 21. Reuse for UBS / Swiss Re
+
+Replace Swiss public sources with regulation and private policy while retaining the same primitives:
+
+```text
+EMIR / FINMA / DORA
+      +
+company policies / procedures
+      +
+transaction/product context
+      ↓
+Information Product
+      ↓
+portal / workflow / agent
+```
+
+Commercial third-party regulatory or market Data Products can be licensed through the same entitlement/metering layer in the full platform.
+
+---
+
+# 22. Hackathon Workstreams
+
+| Workstream | Scope |
+|---|---|
+| A | Contracts + Swiss domain config |
+| B | Scanner/crawler/fetcher/normalizer |
+| C | Apertus enrichment + evidence compiler |
+| D | PostgreSQL/pgvector retrieval |
+| E | Runtime + MCP/REST + OpenCode |
+| F | Admin Control Plane |
+| G | Evaluation + Arrival Checklist; Hike stretch |
+
+No workstream is required for scheduler/refresh automation or marketplace billing during the MVP.
+
+---
+
+# 23. Definition of Done
+
+The MVP is complete when Swisscom can clone/start the repository, run an on-demand full build of configured admin.ch/SEM + zh.ch sources, inspect snapshots/evidence/tests/releases, connect OpenCode, obtain grounded cited results, see explicit unsupported/conflicting states, and use the same release through the structured Arrival Checklist.
+
+Stretch: Flutter Swiss Hike demonstrates a different typed Information Product using clearly labelled mock providers.
+
+---
+
+# 24. Roadmap
+
+```text
+Phase 1  Hackathon: on-demand Swiss Public build + MCP/REST
+Phase 2  production hardening + broader Swiss coverage
+Phase 3  scheduled/incremental Knowledge CI/CD
+Phase 4  live Capabilities + consumer Information Products
+Phase 5  enterprise/private overlays
+Phase 6  Publisher/Data Product self-service + entitlements
+Phase 7  metering, billing, settlement + marketplace
+Phase 8  regulatory impact + actions/workflows
+```
+
+---
+
+# 25. Final Positioning
+
+> **Apertus provides semantic intelligence.**  
+> **TIP provides trusted information, context, entitlement and orchestration.**  
+> **Swisscom provides infrastructure, trust, distribution and commercial reach.**
+
+The hackathon
