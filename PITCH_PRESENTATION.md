@@ -1,418 +1,400 @@
 # Pitch Presentation — Swisscom Trusted Information Platform
 
-## Slide 1 — From AI That Talks to AI That Knows What to Trust
+## Slide 1 — Trusted Information Infrastructure
 
 # Swisscom Trusted Information Platform
 
-**Turning authoritative Swiss information into trustworthy infrastructure for applications and AI.**
-
-Most AI systems are good at language but unreliable at knowing what is current, authoritative or applicable. TIP solves that problem once as reusable infrastructure.
-
----
-
-## Slide 2 — The Original Challenge
-
-**Build an MCP server that makes authoritative public Swiss information accessible to AI assistants as effectively as possible.**
-
-Our insight:
-
-> **The hard problem is not search. It is converting authoritative sources into tested, versioned, AI-ready information that applications can trust.**
-
----
-
-## Slide 3 — Hackathon Scope: admin.ch + zh.ch
-
-We deliberately do not try to cover all Switzerland in two days.
-
-```text
-Swiss Confederation / admin.ch ecosystem
-                 +
-           Canton Zurich / zh.ch
-```
-
-Primary scenario:
-
-> **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
-
-This demonstrates authority, jurisdiction and applicability rather than mere semantic similarity.
-
----
-
-## Slide 4 — Demo Starts With the Sources
-
-The first surface is the **Admin Control Plane**:
-
-```text
-Knowledge Space: Swiss Public
-
-SEM / admin.ch ecosystem    FEDERAL
-Canton Zurich / zh.ch       CANTONAL
-Status                      NOT BUILT
-
-[ BUILD / FULL RELOAD ]
-```
-
-Sourcing is visible product functionality, not a hidden preprocessing script.
-
----
-
-## Slide 5 — Hackathon Build: Simple on Purpose
-
-For the hackathon we do **not** build a scheduler or continuous refresher.
-
-```text
-Build / Full Reload
-        ↓
-scan configured scope
-        ↓
-fetch official pages
-        ↓
-immutable snapshots
-        ↓
-normalize + Apertus enrichment
-        ↓
-Evidence Objects
-        ↓
-index + tests
-        ↓
-publish Knowledge Release
-```
-
-This is enough to prove the core architecture while keeping delivery realistic.
-
----
-
-## Slide 6 — Stable Knowledge Is Compiled
-
-Normal MCP requests do **not** scrape admin.ch or zh.ch.
-
-```text
-Official source
-      ↓
-immutable snapshot
-      ↓
-Evidence Objects
-      ↓
-local lexical + vector + metadata indexes
-      ↓
-Knowledge Release
-```
-
-Benefits: latency, reproducibility, auditability, source etiquette and resilience.
-
----
-
-## Slide 7 — Apertus as Knowledge Engineer
-
-Apertus is not the source of truth. It adds semantic intelligence:
-
-```text
-classification
-concept extraction
-multilingual terminology
-applicability
-federal/cantonal relationships
-candidate fact extraction
-fuzzy reranking/explanation
-```
-
-Software handles HTTP state, hashes, dates, numeric constraints and version consistency.
-
-> **Use AI for semantic uncertainty; software for deterministic certainty.**
-
----
-
-## Slide 8 — Search Returns Evidence, Not Answers
-
-The runtime path is explicit:
-
-```text
-Request
-  ↓
-Execution Plan
-  ↓
-metadata filters
-  ↓
-lexical + vector + concept search
-  ↓
-rerank by authority / jurisdiction / validity
-  ↓
-2–5 Evidence Objects
-  ↓
-fact/rule resolution
-  ↓
-Evidence Bundle + Trust Envelope
-```
-
-Only then does a consuming LLM generate prose if prose is needed.
-
----
-
-## Slide 9 — OpenCode Is the Reference MCP Client
-
-```text
-User
- ↓
-OpenCode + evaluation LLM
- ↓
-swiss_information.resolve
- ↓
-TIP / published Swiss Public release
- ├─ SEM evidence
- └─ zh.ch evidence
- ↓
-answer with citations
-```
-
-The tool call and evidence should be visible so judges can see agent efficiency and grounding.
-
----
-
-## Slide 10 — Grounded Federal + Zurich Test
-
-Ask:
-
-> **I am an EU citizen moving to Zurich for work. What do I need to do after arrival?**
-
-TIP returns:
-
-- federal + Canton Zurich evidence;
-- CH-ZH applicability;
-- source versions and citations;
-- compact facts;
-- confidence and limitations.
-
-**No government-site request occurs at question time.**
-
----
-
-## Slide 11 — Know When We Don't Know
-
-Ask for a local fact that was never sourced.
-
-Expected:
-
-```text
-INSUFFICIENT_VERIFIED_EVIDENCE
-```
-
-or:
-
-```text
-OUT_OF_COVERAGE
-```
-
-> **The boundary of trusted knowledge is part of grounding quality.**
-
----
-
-## Slide 12 — Not Another Chatbot: Swiss Arrival Checklist
-
-The same Knowledge Release powers a formal application:
-
-```text
-Nationality          [ EU/EFTA ▼ ]
-Purpose              [ Employment ▼ ]
-Duration             [ >3 months ▼ ]
-Destination canton   [ Zurich ▼ ]
-Municipality         [ Zurich ▼ ]
-Arrival date         [ ... ]
-```
-
-Output is a structured checklist of requirements, deadlines, evidence and trust. No prompt is required.
+**Turning authoritative and live information into trustworthy services for any application.**
 
 > **AI is infrastructure, not the interface.**
 
 ---
 
-## Slide 13 — Stretch Demo: Swiss Hike on Flutter
+## Slide 2 — Original Challenge
 
-If the core is complete, show a completely different client:
+Build an MCP server that makes authoritative public Swiss information accessible effectively: grounded, cited, jurisdiction-aware, fresh, efficient, operable and easy to integrate.
 
-```text
-Start              Zürich HB
-Date               Tomorrow
-Hiking time        ~4h
-Difficulty         Moderate
-Travel             ≤90 min
-Scenery            Lake + Panorama
-Weather            Good
-Restaurant          Near finish
-```
+Our insight:
 
-Flutter sends a typed REST request to `swiss-hike-finder`. No chat box and no hidden natural-language prompt.
+> **The hard problem is not search. It is turning sources into trusted, maintainable, application-ready information.**
 
 ---
 
-## Slide 14 — Mock the Hiking Providers, Not the Architecture
-
-Use 10–20 curated demo routes and deterministic mock providers:
+## Slide 3 — Hackathon Scope
 
 ```text
-demo/hiking/routes.json
-demo/hiking/transport.json
-demo/hiking/weather.json
-demo/hiking/restaurants.json
+admin.ch / SEM
+      +
+Canton Zurich / zh.ch
 ```
 
-```text
-TransportProvider → Mock now / Real adapter later
-WeatherProvider   → Mock now / Real adapter later
-PlacesProvider    → Mock now / Real adapter later
-```
+Scenario:
 
-Mocks are explicitly marked **DEMO/MOCK**.
+> I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?
+
+Focused coverage demonstrates federal/cantonal authority, applicability and citations.
 
 ---
 
-## Slide 15 — Four Surfaces, Four Messages
+## Slide 4 — On-Demand Knowledge Build
+
+For the hackathon:
 
 ```text
-ADMIN CONTROL PLANE
-“How trusted information is built.”
-
-OPENCODE
-“Standard MCP/agent integration.”
-
-ARRIVAL CHECKLIST
-“Structured authoritative application.”
-
-SWISS HIKE / FLUTTER
-“Same headless platform can power a consumer product.”
+[ BUILD / FULL RELOAD ]
+       ↓
+scan / crawl / fetch
+       ↓
+immutable snapshots
+       ↓
+normalize
+       ↓
+Apertus enrichment
+       ↓
+Evidence Objects
+       ↓
+index + tests
+       ↓
+publish Knowledge Release
 ```
 
-**Same platform. No shared user interface.**
+No scheduler or incremental refresher is required in the MVP.
 
 ---
 
-## Slide 16 — Full Product: Continuous Knowledge CI/CD
+## Slide 5 — Stable Knowledge Is Compiled
 
-The hackathon uses manual full builds. The production platform extends the same release machinery:
+Normal MCP requests do **not** scrape admin.ch or zh.ch.
 
-```text
-scheduled / change-triggered revalidation
-        ↓
-fetch new/changed content only
-        ↓
-semantic change analysis
-        ↓
-impact analysis
-        ↓
-incremental rebuild
-        ↓
-regression tests
-        ↓
-auto-publish or human approval
-```
+Benefits:
 
-> **Hackathon proves the build/release model; production adds autonomous maintenance.**
+- low latency;
+- reproducibility;
+- exact citations/source versions;
+- resilience;
+- source etiquette;
+- predictable evaluation.
+
+The government source remains canonical; TIP stores a verified operational representation.
 
 ---
 
-## Slide 17 — Why This Belongs at Swisscom
+## Slide 6 — Apertus as Semantic Infrastructure
 
-```text
-                    EXPERIENCES
-       myAI / eGov / Mobile / Banking / Apps
-                         │
-                         ▼
-             TRUSTED INFORMATION PLATFORM
-                         │
-              Knowledge │ Data │ Services
-                         │
-                         ▼
-                     APERTUS
-                         │
-                         ▼
-               SWISS AI PLATFORM
-                         │
-                         ▼
-             SWISS INFRASTRUCTURE
-```
+Apertus can support classification, concept extraction, multilingual terminology, applicability interpretation, evidence reranking and explanations.
 
-TIP fills the missing layer: **what information can this application trust?**
+Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
+
+> **Use AI for semantic uncertainty; software for deterministic certainty.**
 
 ---
 
-## Slide 18 — Business Potential
+## Slide 7 — Search Returns Evidence, Not Answers
 
-TIP can strengthen:
+```text
+Request
+ ↓
+Query Planner
+ ↓
+Authority / jurisdiction / date filters
+ ↓
+lexical + vector + concept retrieval
+ ↓
+2–5 diverse Evidence Objects
+ ↓
+Evidence / Rule Engine
+ ↓
+structured facts + Trust Envelope
+ ↓
+optional natural-language explanation
+```
 
-- **myAI** — better Swiss information;
-- **eGovHub** — AI-ready knowledge for cantons and municipalities;
-- **Swiss AI Platform** — more Apertus/inference consumption;
-- **Banking** — FINMA/EMIR/regulatory intelligence;
-- **Enterprise** — private Knowledge Spaces and Information Products.
+The LLM never needs a large uncontrolled document dump.
+
+---
+
+## Slide 8 — OpenCode: Reference MCP Client
+
+```text
+OpenCode
+   ↓
+swiss_information.resolve
+   ↓
+TIP / published release
+   ├─ SEM evidence
+   └─ zh.ch evidence
+   ↓
+answer with citations
+```
+
+One high-level tool call should normally be sufficient.
+
+---
+
+## Slide 9 — Know When We Don't Know
+
+TIP explicitly supports:
+
+```text
+SUPPORTED
+PARTIALLY_SUPPORTED
+NEEDS_CONTEXT
+OUT_OF_COVERAGE
+INSUFFICIENT_VERIFIED_EVIDENCE
+CONFLICTING_EVIDENCE
+```
+
+A nearest semantic match is not silently treated as applicable truth.
+
+---
+
+## Slide 10 — Admin Control Plane
+
+The Admin UI makes the platform visible:
+
+```text
+Knowledge Space: Swiss Public
+Sources: SEM/admin.ch + zh.ch
+Build: COMPLETE
+Evidence: ...
+Tests: PASS
+Production Release: ...
+```
+
+MVP primary operation: **Build / Full Reload**.
+
+Scheduled refresh/change monitoring is post-MVP.
+
+---
+
+## Slide 11 — Not Another Chatbot: Arrival Checklist
+
+Formal fields:
+
+```text
+Nationality       EU/EFTA
+Purpose           Employment
+Duration          >3 months
+Canton            Zurich
+Arrival date      ...
+```
+
+REST returns typed requirements, deadlines, evidence and Trust Envelope. No natural-language prompt is required.
+
+---
+
+## Slide 12 — Stretch: Swiss Hike Flutter App
+
+A completely different client uses typed inputs:
+
+```text
+Origin │ Date │ Duration │ Difficulty │ Travel limit
+Lake/Panorama │ Weather │ Restaurant
+```
+
+Hackathon backend uses 10–20 clearly labelled DEMO/MOCK routes and provider abstractions:
+
+```text
+MockTransportProvider
+MockWeatherProvider
+MockPlacesProvider
+```
+
+The app demonstrates architecture, not a production hiking database.
+
+---
+
+## Slide 13 — Three Platform Artifacts
+
+### Knowledge Space
+Internal compiled knowledge.
+
+### Data Product
+A distributable publisher artifact containing knowledge, datasets and/or capabilities plus license/commercial metadata.
+
+### Information Product
+An application capability combining Data Products/Knowledge Spaces, live capabilities, rules and optional AI.
+
+```text
+Data Products + Capabilities
+          ↓
+   Information Product
+          ↓
+     Any Application
+```
+
+---
+
+## Slide 14 — Why Swisscom?
+
+```text
+myAI / eGov / Mobile / Banking / Enterprise
+                    ↓
+                   TIP
+                    ↓
+              Apertus
+                    ↓
+          Swiss AI Platform
+```
+
+TIP creates a reusable trusted-information layer above Swisscom's AI infrastructure and below its applications.
+
+---
+
+## Slide 15 — Direct Swisscom Economics
 
 Potential revenue:
 
 ```text
+API / MCP consumption
 Knowledge SaaS
-API / MCP usage
-managed knowledge services
-private tenants
+managed knowledge
+enterprise/private tenants
 regulatory intelligence
-integration / private deployment
-future marketplace
+integration/private deployment
+Apertus / AI-platform consumption
 ```
+
+But TIP can become more than a Swisscom-owned content service.
 
 ---
 
-## Slide 19 — From Swiss Public to Enterprise Regulation
+## Slide 16 — Post-MVP: Publisher & Data Product Marketplace
 
 ```text
-SWISS PUBLIC
-admin.ch → zh.ch → municipality
-
-BANKING
-EMIR → RTS/ITS → ESMA guidance → bank policy
-
-INSURANCE
-regulation → guidance → company policy → product/process
+Government │ SIX-like providers │ Companies │ Experts │ Individuals
+                         ↓
+                    DATA PRODUCTS
+                         ↓
+                   SWISSCOM TIP
+       hosting │ trust │ distribution │ metering │ billing
+                         ↓
+              myAI │ Apps │ Enterprises │ Agents
 ```
 
-Reusable primitives: Source, Authority, Applicability, Evidence, Capability, Version, Trust and Information Product.
+Publishers maintain their own trusted packs and can monetize machine consumption. Swisscom operates the platform and distribution channel.
+
+**This marketplace is not part of the hackathon MVP.**
 
 ---
 
-## Slide 20 — Delivery Priority
+## Slide 17 — Commercial Models
+
+TIP should support several publisher relationships:
+
+1. **Revenue share / usage:** end customer pays per request/unit; Swisscom retains margin and pays publisher share.
+2. **Monthly/annual license:** Swisscom licenses a Data Product and bundles/resells access.
+3. **One-time license:** Swisscom buys defined rights/version once.
+4. **Publisher SaaS:** publisher pays Swisscom for hosting/distribution.
+5. **Free/open:** government/open data is free while Swisscom monetizes hosting, SLA, inference and derived Information Products.
+
+---
+
+## Slide 18 — Example: Future Swiss Hike Economics
 
 ```text
-P0  admin.ch/zh.ch full load → storage → compiler → retrieval → MCP → OpenCode
+Hiking Routes Product      Publisher A
+Weather Product            Publisher B
+Transport Capability       Provider C
+Places Product             Provider D
+          ↓
+     Swiss Hike Finder
+          ↓
+      end-user request
+```
+
+One request may consume several paid/free products. TIP records which components were used and applies entitlement, pricing and settlement rules.
+
+For the hackathon all hiking providers remain FREE + DEMO/MOCK.
+
+---
+
+## Slide 19 — Licensing & Entitlements Matter
+
+TIP must eventually know not only whether information exists but whether the consumer may use it.
+
+Entitlements can constrain:
+
+```text
+tenant / application
+purpose
+geography
+redistribution
+retention
+volume
+contract period
+```
+
+This makes the marketplace applicable to professional providers and regulated enterprises.
+
+---
+
+## Slide 20 — Publisher Incentive
+
+Government can publish an OFFICIAL free Data Product.
+
+A professional data company can sell licensed datasets.
+
+A hiking/photography expert can monetize curated knowledge.
+
+An enterprise can publish private internal Data Products.
+
+Swisscom does not need to create all content itself; it creates the **trusted distribution and monetization infrastructure**.
+
+---
+
+## Slide 21 — Post-MVP: Autonomous Knowledge CI/CD
+
+Production evolution:
+
+```text
+source watcher
+ ↓
+cheap change checks
+ ↓
+semantic change analysis
+ ↓
+incremental rebuild
+ ↓
+regression tests
+ ↓
+automatic/approved promotion
+```
+
+The hackathon proves repeatable on-demand builds; automation comes later.
+
+---
+
+## Slide 22 — From Swiss Public to Enterprise
+
+```text
+Swiss Public: admin.ch → zh.ch
+Banking: EMIR → ESMA → FINMA → bank policy
+Insurance: regulation → guidance → company policy → product/process
+```
+
+Same primitives: Source, Authority, Applicability, Evidence, Version, Trust, Data Product, Entitlement and Information Product.
+
+---
+
+## Slide 23 — Delivery Priority
+
+```text
+P0  admin.ch/zh.ch → full build → retrieval → MCP → OpenCode
 P1  Admin Control Plane
-P1  Swiss Arrival Checklist
+P1  Arrival Checklist
 P2  Flutter Swiss Hike with mock providers
-P3  scheduled/incremental refresh prototype only if everything else is complete
-```
-
-The core submission must not depend on background infrastructure.
-
----
-
-## Slide 21 — Challenge Criteria
-
-```text
-GROUNDING           official admin.ch/SEM + zh.ch evidence
-CITATIONS           Evidence Objects trace to snapshots
-JURISDICTION        federal + CH-ZH applicability
-FRESHNESS           explicit build timestamp + repeatable full reload
-AGENT EFFICIENCY    one high-level MCP call; compact evidence
-SOURCE ETIQUETTE    no upstream fetch per question
-OPERABILITY         reproducible builds, tests, releases, Admin UI
-INTEGRATION         OpenCode MCP + REST apps
-EXTENSIBILITY       production roadmap to autonomous Knowledge CI/CD
+POST-MVP scheduler/incremental Knowledge CI/CD
+POST-MVP publisher marketplace/billing/settlement
 ```
 
 ---
 
-## Slide 22 — Closing
-
-**LLMs should not have to know everything. Applications should know where trustworthy information comes from.**
+## Slide 24 — Closing
 
 > **Apertus provides semantic intelligence.**  
 > **TIP provides trusted information, context and orchestration.**  
-> **Swisscom provides infrastructure, sovereignty and distribution.**
+> **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-# Swisscom Trusted Information Platform
-
-**From admin.ch and zh.ch to trustworthy information products for any application.**
+**Hackathon:** prove trusted Swiss information from admin.ch + zh.ch.  
+**Product vision:** a marketplace and runtime where trusted publishers can distribute and monetize Data Products for any application.
