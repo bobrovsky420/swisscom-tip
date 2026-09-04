@@ -10,7 +10,7 @@
 
 ---
 
-## Slide 2 — Original Challenge
+## Slide 2 — Published Challenge
 
 Build an MCP server that makes authoritative public Swiss information accessible effectively: grounded, cited, jurisdiction-aware, fresh, efficient, operable and easy to integrate.
 
@@ -20,7 +20,7 @@ Our insight:
 
 ---
 
-## Slide 3 — Hackathon Scope
+## Slide 3 — Team MVP: A Focused Vertical Slice
 
 ```text
 admin.ch / SEM
@@ -32,7 +32,7 @@ Scenario:
 
 > I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?
 
-Focused coverage demonstrates federal/cantonal authority, applicability and citations.
+Focused coverage demonstrates federal/cantonal authority, applicability and citations. It is the first vertical slice of TIP, not the limit of the product vision.
 
 ---
 
@@ -49,7 +49,8 @@ immutable snapshots
        ↓
 normalize
        ↓
-Apertus enrichment
+semantic enrichment
+(Apertus preferred)
        ↓
 Evidence Objects
        ↓
@@ -79,9 +80,9 @@ The government source remains canonical; TIP stores a verified operational repre
 
 ---
 
-## Slide 6 — Apertus as Semantic Infrastructure
+## Slide 6 — Apertus Preferred, Core Model-Independent
 
-Apertus can support classification, concept extraction, multilingual terminology, applicability interpretation, evidence reranking and explanations.
+Apertus is the preferred model for classification, concept extraction, multilingual terminology, applicability interpretation, evidence reranking and explanations. The core can use another compatible provider when Apertus is unavailable or another model performs better in evaluation.
 
 Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
 
@@ -113,7 +114,7 @@ The LLM never needs a large uncontrolled document dump.
 
 ---
 
-## Slide 8 — OpenCode: Reference MCP Client
+## Slide 8 — OpenCode: Example MCP Client
 
 ```text
 OpenCode
@@ -127,7 +128,7 @@ TIP / published release
 answer with citations
 ```
 
-One high-level tool call should normally be sufficient.
+One high-level tool call should normally be sufficient. OpenCode demonstrates standard MCP compatibility; the server does not depend on OpenCode-specific behaviour.
 
 ---
 
@@ -204,7 +205,9 @@ The app demonstrates architecture, not a production hiking database.
 
 ---
 
-## Slide 13 — Three Platform Artifacts
+## Slide 13 — Target Product Model — Team Hypothesis
+
+The remaining product vision builds on concepts exercised by the hackathon vertical slice.
 
 ### Knowledge Space
 Internal compiled knowledge.
@@ -225,7 +228,7 @@ Data Products + Capabilities
 
 ---
 
-## Slide 14 — Why Swisscom?
+## Slide 14 — Target Product Value for Swisscom
 
 ```text
 myAI / eGov / Mobile / Banking / Enterprise
@@ -241,7 +244,7 @@ TIP creates a reusable trusted-information layer above Swisscom's AI infrastruct
 
 ---
 
-## Slide 15 — Direct Swisscom Economics
+## Slide 15 — Business Hypothesis: Swisscom Economics
 
 Potential revenue:
 
@@ -259,7 +262,7 @@ But TIP can become more than a Swisscom-owned content service.
 
 ---
 
-## Slide 16 — Post-MVP: Publisher & Data Product Marketplace
+## Slide 16 — Target Product: Publisher & Data Product Marketplace
 
 ```text
 Government │ SIX-like providers │ Companies │ Experts │ Individuals
@@ -274,7 +277,7 @@ Government │ SIX-like providers │ Companies │ Experts │ Individuals
 
 Publishers maintain their own trusted packs and can monetize machine consumption. Swisscom operates the platform and distribution channel.
 
-**This marketplace is not part of the hackathon MVP.**
+**Decision boundary:** the marketplace is a target-product capability, not a hackathon implementation. The vertical slice validates the source, evidence, release, trust and distribution foundations it would require.
 
 ---
 
@@ -343,7 +346,7 @@ Swisscom does not need to create all content itself; it creates the **trusted di
 
 ---
 
-## Slide 21 — Post-MVP: Autonomous Knowledge CI/CD
+## Slide 21 — Target Product: Autonomous Knowledge CI/CD
 
 Production evolution:
 
@@ -361,7 +364,7 @@ regression tests
 automatic/approved promotion
 ```
 
-The hackathon proves repeatable on-demand builds; automation comes later.
+The hackathon proves repeatable on-demand builds and lifecycle metadata; automation is the target-product evolution.
 
 ---
 
@@ -377,24 +380,26 @@ Same primitives: Source, Authority, Applicability, Evidence, Version, Trust, Dat
 
 ---
 
-## Slide 23 — Delivery Priority
+## Slide 23 — Two Product Horizons
 
 ```text
-P0  admin.ch/zh.ch → full build → retrieval → MCP → OpenCode
-P1  Admin Control Plane
-P1  Arrival Checklist
-P2  Flutter Swiss Hike with mock providers
-POST-MVP scheduler/incremental Knowledge CI/CD
-POST-MVP publisher marketplace/billing/settlement
+HACKATHON VERTICAL SLICE
+P0  admin.ch/zh.ch → build → evidence → MCP → standard clients
+P1  Admin Control Plane + Arrival Checklist
+P2  Swiss Hike composition demo with mock providers
+
+TARGET PRODUCT
+broader domains → Knowledge CI/CD → enterprise overlays
+→ publisher Data Products → entitlement / metering / settlement
 ```
 
 ---
 
 ## Slide 24 — Closing
 
-> **Apertus provides semantic intelligence.**  
+> **Apertus is our preferred semantic model; TIP remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-**Hackathon:** prove trusted Swiss information from admin.ch + zh.ch.  
-**Product vision:** a marketplace and runtime where trusted publishers can distribute and monetize Data Products for any application.
+**Hackathon:** prove a credible vertical slice using trusted Swiss information from admin.ch + zh.ch.<br>
+**Target product:** trusted-information infrastructure where publishers and enterprises can govern, distribute and compose Data Products for any application.

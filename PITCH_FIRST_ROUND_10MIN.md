@@ -2,7 +2,7 @@
 ## First-Round Pitch — Maximum 10 Minutes
 
 **Format:** 7 slides, ~8:30 presentation + buffer.  
-**Goal:** sell the core hackathon idea and Swisscom potential without expanding MVP scope.
+**Goal:** sell a credible hackathon vertical slice and the target product it validates.
 
 ---
 
@@ -11,11 +11,13 @@
 
 **Swisscom Trusted Information Platform** is a headless platform that turns authoritative and live information into trustworthy structured services for any application.
 
+The hackathon MCP server is its first narrow vertical slice—not the complete product vision.
+
 > **AI is infrastructure, not the interface.**
 
 TIP can power myAI, a mobile app, eGovernment, a banking portal or an automated workflow.
 
-**Speaker note (~60s):** The hackathon asks for Swiss public information through MCP. We solve the underlying trusted-information problem as reusable infrastructure rather than another chatbot/RAG UI.
+**Speaker note (~60s):** The published challenge asks for Swiss public information through MCP. Our product hypothesis is larger: solve the underlying trusted-information problem as reusable infrastructure rather than another chatbot/RAG UI. The MCP server is the focused proof.
 
 ---
 
@@ -39,7 +41,7 @@ This tests authority, jurisdiction and applicability rather than only semantic s
 
 ---
 
-# Slide 3 — Build Trusted Knowledge, Then Serve It
+# Slide 3 — Hackathon Vertical Slice: Build, Then Serve
 
 Hackathon MVP:
 
@@ -50,7 +52,8 @@ scan + fetch official sources
         ↓
 immutable snapshots
         ↓
-normalize + Apertus enrichment
+normalize + semantic enrichment
+       (Apertus preferred)
         ↓
 Evidence Objects
         ↓
@@ -81,14 +84,14 @@ For the hackathon, builds are **on demand**. Scheduled/incremental Knowledge CI/
 ```
 
 - **Admin Control Plane:** sources, build, evidence, tests, releases.
-- **OpenCode:** independent MCP integration and visible `swiss_information.resolve` call.
+- **OpenCode:** one standards-compatible example client with a visible `swiss_information.resolve` call.
 - **Arrival Checklist:** formal fields → typed result; no chat prompt.
 
 Stretch only: **Flutter Swiss Hike** using 10–20 clearly labelled DEMO/MOCK routes plus mock transport/weather/places providers.
 
 > **Same platform. No shared user interface.**
 
-**Speaker note (~75s):** OpenCode proves MCP; Arrival proves non-chat integration; Hike is only a stretch architecture proof.
+**Speaker note (~75s):** OpenCode demonstrates standard MCP compatibility; Arrival proves non-chat integration; Hike is only a stretch architecture proof. The server does not depend on OpenCode-specific behaviour.
 
 ---
 
@@ -112,13 +115,15 @@ structured facts + Trust Envelope
 optional prose
 ```
 
-Apertus handles semantic uncertainty; deterministic software handles dates, hashes, numeric constraints and rules.
+Apertus is our preferred model for semantic uncertainty, but the core is model-independent and can use another compatible provider. Deterministic software handles dates, hashes, numeric constraints and rules.
 
 **Speaker note (~75s):** The LLM does not receive dozens of documents and improvise. TIP first establishes the evidence and facts.
 
 ---
 
-# Slide 6 — Why Swisscom? And Where the Business Can Go
+# Slide 6 — Target Product Vision: Why Swisscom?
+
+**Team product and business hypothesis:**
 
 ```text
 myAI / eGov / Mobile / Banking / Enterprise
@@ -130,7 +135,7 @@ myAI / eGov / Mobile / Banking / Enterprise
 
 Direct value: API/MCP usage, SaaS, managed knowledge, enterprise deployments, regulatory intelligence and increased AI-platform consumption.
 
-**Post-MVP marketplace opportunity:** trusted publishers can distribute **Data Products** through TIP.
+**Target-product marketplace opportunity:** trusted publishers can distribute **Data Products** through TIP.
 
 ```text
 Government │ SIX-like data providers │ Companies │ Experts
@@ -147,23 +152,24 @@ Possible commercial models: revenue share per request, monthly/annual licensing,
 
 **Important:** publisher onboarding, billing, metering and settlement are **not part of the hackathon MVP**.
 
-**Speaker note (~90s):** Swisscom can monetize consumption while publishers gain a machine-consumption distribution channel. Free public data can still drive hosting, SLA, inference and derived-product revenue.
+**Speaker note (~90s):** The hackathon does not implement this commercial layer. It validates the source, evidence, trust, release and distribution concepts the target product needs. Swisscom can later monetize consumption while publishers gain a machine-consumption distribution channel.
 
 ---
 
 # Slide 7 — Start Focused, Build a Platform
 
-Hackathon:
+Hackathon proof:
 
 ```text
 admin.ch + zh.ch
        ↓
 on-demand trusted Knowledge Release
        ↓
-OpenCode + Arrival Checklist
+Standard MCP clients + Arrival Checklist
+        (OpenCode demo)
 ```
 
-Full product:
+Target product:
 
 ```text
 Swiss Public │ Mobility │ Hiking │ Housing
@@ -180,11 +186,11 @@ Version │ Trust │ Capability │ Information Product
 Data Product │ Entitlement │ Usage
 ```
 
-> **Apertus provides semantic intelligence.**  
+> **Apertus is our preferred semantic model; TIP remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-**Speaker note (~75s):** The marketplace and autonomous refresh are the product vision, not two-day deliverables. The hackathon proves the foundation they need.
+**Speaker note (~75s):** This is one product across two horizons. The two-day vertical slice proves a working Swiss-grounding service; the target product evolves the same contracts into automated knowledge operations, more domains and a publisher ecosystem.
 
 ---
 

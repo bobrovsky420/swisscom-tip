@@ -1,186 +1,141 @@
 # Why We Should Choose the Swisscom TIP Challenge
 ## Short rationale for the UBS hackathon team
 
-I think the Swisscom Trusted Information Platform (TIP) challenge is a stronger choice for our team than the UBS client-transaction-prediction challenge—not because the UBS use case is less valuable, but because TIP gives us a better combination of **hackathon feasibility, learning, technical breadth, reuse and visibility**.
+**Published challenge descriptions used for this comparison:**
 
-> **Transaction prediction solves one UBS use case. TIP lets us build a reusable platform and bring the experience back into UBS.**
+- [Swiss Grounding MCP](https://zh.ai-weeks.ch/challenges/swiss-grounding-mcp)
+- [UBS Transaction Activity Forecasting](https://zh.ai-weeks.ch/challenges/transaction-activity-forecasting)
 
----
+I think the Swisscom **Swiss Grounding MCP** challenge, addressed through our Trusted Information Platform (TIP), is the stronger choice for our team if our priorities are **technology scouting, broad engineering experience, reusable architecture and external visibility**.
 
-## 1. Better Fit for a Short Hackathon
+The working MCP server is the hackathon vertical slice; TIP is the target-product vision that the slice is intended to validate.
 
-The UBS transaction-prediction challenge depends heavily on sensitive internal data, feature quality, labels, backtesting and proving that a prediction is actually useful.
+This is not because the UBS challenge lacks value. Transaction Activity Forecasting is a focused, data-ready financial AI problem with clear client benefits and measurable results. The distinction is the kind of experience we want from the hackathon:
 
-TIP can use real public data from `admin.ch` / SEM and `zh.ch` immediately. Success is also easier to demonstrate visibly:
-
-- did we retrieve the right authority?
-- did we apply the right jurisdiction?
-- are citations correct?
-- do we refuse unsupported questions?
-- can OpenCode use our MCP server efficiently?
-- can the same platform power a structured application?
-
-For the hackathon we keep the implementation focused: **on-demand full knowledge build**, retrieval, MCP/REST, Admin UI and structured demo apps. Automated scheduling and incremental Knowledge CI/CD remain post-MVP.
+> **The UBS challenge lets us investigate one important forecasting problem. The Swisscom challenge lets us build and test a reusable grounding capability and bring those architectural lessons back into UBS.**
 
 ---
 
-## 2. We Learn More New Technology and Bring It Back to UBS
+## 1. We Learn More New Technology and Bring It Back to UBS
 
-One condition of UBS employee participation is to share what we learn afterward. The Swisscom challenge is particularly useful because it exposes us to technologies and architectural patterns that may not yet be widely used in our normal UBS environment:
+One condition of UBS employee participation is to share what we learn afterward. The Swisscom challenge exposes us to technologies and architectural patterns that may be less common in our normal UBS work:
 
-- **Apertus** and the Swiss open/sovereign AI ecosystem;
-- **MCP** and MCP clients such as OpenCode;
+- **MCP** contracts and integration with standard AI clients;
 - evidence-first AI architecture and provenance;
 - hybrid lexical/vector/concept retrieval;
+- jurisdiction, applicability and freshness handling;
 - knowledge compilation rather than runtime-only RAG;
 - structured AI Information Products instead of chat-first applications;
 - combining deterministic business logic with generative AI;
-- future multi-tenant Data Product/platform patterns.
+- evaluation of grounded agent tools for accuracy, citations, efficiency and operability.
 
-After the hackathon we can share concrete experience rather than theoretical research: an internal demo, architecture lessons, Apertus observations, MCP lessons learned and possible UBS follow-up use cases.
+We may also evaluate **Apertus** for semantic tasks such as multilingual retrieval, classification or reranking if access is available and it provides measurable value. The server's core should remain model-independent.
 
-The value brought back to UBS is therefore not only the TIP idea—it is **hands-on technology scouting and practical experience with a different AI ecosystem**.
+After the hackathon we can share concrete results: an internal demo, MCP design lessons, grounding and provenance patterns, evaluation results, operational lessons from public-source ingestion, and potential UBS applications.
+
+The value brought back to UBS is therefore not only the TIP concept. It is **hands-on technology scouting and tested engineering experience with a different AI ecosystem**.
 
 ---
 
-## 3. The Technology Is Directly Reusable at UBS
+## 2. Broader Systems-Engineering Experience
 
-The Swiss demo uses:
+The UBS challenge offers substantial data-science work: recurrence detection, feature engineering, sequence representation, comparison of modelling approaches, metric selection and interpretability.
+
+The Swisscom challenge spans a different and broader set of system layers:
 
 ```text
-admin.ch + zh.ch
-      ↓
-trusted evidence
-      ↓
-MCP / REST / applications
+source acquisition and refresh
+→ immutable snapshots and provenance
+→ normalization and evidence compilation
+→ hybrid retrieval
+→ jurisdiction and applicability resolution
+→ MCP tool design
+→ automated grounding and efficiency tests
+→ reproducible deployment and operations
 ```
 
-The same architecture can later use:
-
-```text
-EMIR / EUR-Lex
-ESMA
-FINMA
-DORA / MiFID
-UBS policies and procedures
-      ↓
-trusted evidence
-      ↓
-UBS portal / workflow / agent
-```
-
-A concrete example is an **EMIR Applicability** application with formal transaction inputs and structured `REQUIRED / NOT REQUIRED / REVIEW` results backed by regulatory evidence.
-
-So we are not choosing between “something for Swisscom” and “something useful to UBS”. We can build the generic technology externally and bring the architecture back into UBS.
+This creates meaningful work across software engineering, data engineering, AI, architecture, evaluation and product design. That breadth is a reason to choose it if it matches our team's skills and learning objectives—not evidence that the UBS modelling work is technically less demanding.
 
 ---
 
-## 4. Broader Engineering Challenge
+## 3. External Visibility and Open Contribution
 
-TIP lets the team work across several interesting areas:
+The Swisscom challenge explicitly encourages, but does not require, teams to publish their MCP repository under a license that lets others use, extend and maintain it. Because the selected source material is public, the solution may be suitable for an externally visible technical artifact, subject to UBS, hackathon, source-licensing and intellectual-property rules.
 
-```text
-source acquisition
-→ immutable snapshots
-→ Apertus enrichment
-→ evidence compilation
-→ PostgreSQL / pgvector retrieval
-→ query planning and evidence resolution
-→ MCP + REST
-→ Admin Control Plane
-→ structured applications
-```
+If permitted, a public repository under an appropriate license could provide durable technical provenance through its code, commit history, `AUTHORS`/`NOTICE` information and architecture documentation. The purpose is professional attribution and contribution to Swiss AI infrastructure, not personal monetisation.
 
-This creates meaningful work for software, data, AI, architecture, UX and product-oriented team members rather than making success depend primarily on one prediction model.
+The UBS challenge uses synthetic rather than sensitive internal transaction data. Nevertheless, the permitted publication or redistribution of the supplied dataset, baseline and resulting artifacts still depends on the challenge terms. We should verify the applicable rules for either challenge before assuming that anything can be released publicly.
 
 ---
 
-## 5. Better External and Professional Visibility
-
-TIP is based predominantly on public information and standard interfaces, so—**subject to UBS and hackathon IP rules**—the MVP may be easier to keep as an externally visible technical artifact than a solution based on confidential UBS transaction data.
-
-If permitted, a public repository under a permissive license such as Apache-2.0 could provide durable technical provenance through the repository, commit history, `AUTHORS`/`NOTICE` information and original architecture documentation.
-
-The point is **not personal monetisation**. The benefit is durable attribution and professional visibility.
-
-If Swisscom or another organization later develops a product based on the original concept, the team could credibly point to having designed and built the initial TIP prototype.
-
-Participation in an external challenge also gives the team exposure to engineers, architects and product stakeholders outside UBS.
-
-Before relying on this benefit, we should confirm the hackathon/UBS rules around repository ownership, open-source licensing and contributor attribution.
-
----
-
-## 6. Cleaner Independence / Fairness Optics
-
-There is also a small secondary advantage in competing on an external challenge.
-
-A UBS team competing on a UBS-sponsored challenge could be perceived as having more familiarity with the business context or expected outcome, even if the competition is completely fair. Judges may also be particularly careful about the optics of awarding the UBS challenge to a UBS team.
-
-Choosing the Swisscom challenge removes this question entirely:
-
-> **We compete on the same external problem and public information as everyone else, so the result is a clean demonstration of the team's capability.**
-
-This is not a claim that the jury would be biased—just that an external challenge avoids unnecessary perception issues.
-
----
-
-## 7. Bigger Product Potential
+## 4. Reuse at UBS and Larger Product Horizon
 
 TIP can eventually become more than the Swiss public-information MVP.
 
 ```text
-CONSUMER
-Swiss Public
-Hiking
-Cycling
-Photo Scout
-Housing
+PUBLIC / CONSUMER
+Swiss administration
+housing and relocation
+mobility and recreation
 
 ENTERPRISE
 FINMA
 EMIR
 DORA
 internal policies
-regulatory impact
+regulatory applicability and impact
 ```
 
-Longer term, Swisscom could operate it as a multi-sided Data Product platform where government, professional data providers, companies or experts publish trusted packs and Swisscom provides hosting, distribution, trust, entitlements and metering.
+Longer term, the same foundation might support publisher-managed Data Products, entitlements and metering. That is product vision rather than a hackathon deliverable. The hackathon should prove only the trusted-information and MCP foundation needed for such future options.
 
-That marketplace and automated Knowledge CI/CD are **not hackathon deliverables**; they simply show that the architecture has somewhere meaningful to go afterward.
+The architecture also has a concrete reuse path at UBS.
 
----
+The Swiss demo uses:
 
-## 8. Where the UBS Challenge Is Stronger
+```text
+admin.ch / SEM + zh.ch
+          ↓
+authoritative, versioned evidence
+          ↓
+MCP / applications / workflows
+```
 
-The UBS transaction-prediction challenge is closer to direct client revenue. If the data, modelling infrastructure and deployment route are already mature, it may produce a more immediate UBS business result.
+The same architectural patterns could later be evaluated with:
 
-So the argument is not that the UBS challenge is bad.
+```text
+EUR-Lex / EMIR
+ESMA
+FINMA
+DORA / MiFID
+UBS policies and procedures
+          ↓
+authoritative, versioned evidence
+          ↓
+UBS portal / workflow / agent
+```
 
-The argument is:
+A possible application is an **EMIR Applicability** service with formal transaction inputs and structured `REQUIRED / NOT_REQUIRED / REVIEW` results backed by regulatory evidence.
 
-> **For this hackathon, TIP gives us a better combination of feasibility, technical novelty, learning value, reusable architecture and external visibility—while still producing knowledge and technology we can bring back into UBS.**
+This would require separate UBS governance, security, legal and implementation decisions; the hackathon does not prove production readiness for that use case. It does, however, let us test the underlying patterns on public information without using UBS data.
 
 ---
 
 ## Recommendation
 
-Choose the **Swisscom TIP challenge** if our goal is to use the hackathon not only to solve a problem, but to explore new technology, build a reusable platform, demonstrate broader engineering capability and return to UBS with genuinely new experience.
+Choose the **Swiss Grounding MCP** challenge if our primary goals are to:
 
-In short:
+- explore MCP and evidence-first agent architecture;
+- build across data, AI, integration and operational layers;
+- test reusable grounding patterns on authoritative public information;
+- return to UBS with experience that differs from a conventional modelling exercise;
+- potentially contribute a reusable Swiss grounding server publicly, if permitted.
 
-```text
-Better hackathon demo
-        +
-More new technology learned
-        +
-Reusable at UBS
-        +
-External challenge / network
-        +
-Potential durable technical attribution
-        +
-Larger product vision
-```
+Choose **Transaction Activity Forecasting** instead if our priority is to:
 
-That combination is difficult to get from the internal transaction-prediction challenge.
+- work on a tightly defined financial time-series problem;
+- start from a supplied synthetic dataset and baseline;
+- focus on recurrence detection, feature engineering and sequence modelling;
+- compare forecasting approaches quantitatively;
+- investigate interpretable predictions tied directly to client financial activity.
+
+For a team deliberately seeking broader platform-engineering and technology-scouting experience, I recommend **Swiss Grounding MCP**, implemented as a narrowly scoped and testable vertical slice of the TIP target product.
