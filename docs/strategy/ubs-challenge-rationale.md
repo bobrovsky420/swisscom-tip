@@ -22,7 +22,7 @@ One condition of UBS employee participation is to share what we learn afterward.
 
 - **MCP** contracts and integration with standard AI clients;
 - evidence-first AI architecture and provenance;
-- hybrid lexical/vector/concept retrieval;
+- post-normalization concept extraction, corpus aggregation, compact localized metadata and hybrid lexical/vector/concept retrieval;
 - jurisdiction, applicability and freshness handling;
 - knowledge compilation rather than runtime-only RAG;
 - structured AI Information Products instead of chat-first applications;

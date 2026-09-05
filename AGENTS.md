@@ -16,3 +16,8 @@
 ## Writing conventions
 
 - Use the ASCII hyphen-minus (`-`) instead of en dashes or em dashes in repository text.
+
+## Commit messages
+
+- After every substantial repository update, propose a one-line commit message in the final response.
+- Before proposing the message, inspect the subjects of the 10 most recent commits and follow their established style.

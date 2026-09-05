@@ -39,7 +39,7 @@ This tests authority, jurisdiction and applicability rather than only semantic s
 
 Multilingual proof: ask in English, German, French, Italian, Swiss German or Romansh; retrieve original evidence in any source language declared by the release; receive the explanation in the requested language.
 
-**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Multilingual means cross-language retrieval inside TIP - not asking the client LLM to translate first.
+**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Declared languages work directly inside TIP. A client using another language, such as Russian, translates to the documented English fallback before calling the server.
 
 ---
 
@@ -56,9 +56,13 @@ immutable snapshots
         ↓
 normalize + detect language
         ↓
-canonical concepts + multilingual terminology
+extract concept candidates (Apertus assisted)
         ↓
-semantic enrichment (Apertus preferred)
+aggregate corpus + validate granularity
+        ↓
+reviewed concept graph + multilingual terminology
+        ↓
+compact en/de/fr/it/rm metadata projections
         ↓
 Evidence Objects
         ↓
@@ -73,7 +77,9 @@ Normal requests do **not** scrape government websites.
 
 For the hackathon, builds are **on demand**. Scheduled/incremental Knowledge CI/CD remains in the production roadmap, not the MVP.
 
-**Speaker note (~75s):** This gives predictable latency, citations, auditability and source etiquette without spending two days building scheduling infrastructure.
+Broad concepts such as `Residence` organize the journey; narrow answerable concepts such as `Residence permit` and `Municipal registration` carry their own evidence.
+
+**Speaker note (~75s):** Crawling stays deterministic. Concept extraction runs over normalized snapshots, so Apertus can propose structure without changing source evidence. Candidates are aggregated across documents and languages, then reviewed or validated before publication.
 
 ---
 
@@ -105,11 +111,12 @@ Stretch only: **Flutter Swiss Hike** using 10-20 clearly labelled DEMO/MOCK rout
 ```text
 Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
   ↓
-language detection + canonical concept
+language contract + most specific concept
   ↓
 server-side terminology expansion
   ↓
-lexical variants + concept lookup + multilingual vector search
+same-language metadata + lexical variants
+  + concept lookup + multilingual vector search
   ↓
 authority / jurisdiction / date checks
   ↓
@@ -122,9 +129,9 @@ structured facts + Trust Envelope
 requested-language prose + original-language citations
 ```
 
-Apertus is our preferred model for language detection, concept resolution, terminology expansion, reranking and optional response rendering. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
+Apertus is our preferred model for language detection, concept resolution, terminology expansion, missing metadata translations, reranking and optional response rendering. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
 
-**Speaker note (~75s):** “Residence permit in Zurich” resolves to the canonical concept and reviewed terms such as “Aufenthaltsbewilligung”. The LLM does not receive dozens of documents and improvise: TIP retrieves and establishes original evidence first, then renders the answer language.
+**Speaker note (~75s):** We do not translate every full page. We project compact titles, headings, keyphrases and synopses into the five standard retrieval languages. Swiss German uses tested aliases and German normalization. A broad `Residence` request expands to answerable descendants; a narrow `Residence permit` request stays narrow.
 
 ---
 

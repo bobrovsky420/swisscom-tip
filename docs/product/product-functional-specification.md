@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Product & Functional Specification - V13
+## Product & Functional Specification - V15
 
 **Hackathon:** Swiss Grounding MCP using selected `admin.ch` / SEM and `zh.ch` sources<br>
 **Primary deliverable:** Testable MCP server<br>
@@ -122,14 +122,18 @@ Private Knowledge ───────┘
 5. Semantic models handle semantic uncertainty only where they add value.
 6. Apertus is preferred for relevant semantic tasks, while the core remains compatible with other providers.
 7. Cross-language retrieval is a server capability; clients are not required to translate or expand requests.
-8. Search returns evidence, not unsupported answers.
-9. Runtime normally uses a small set of high-quality evidence.
-10. Structured output precedes optional prose.
-11. Original-language evidence remains authoritative; translations are labelled derivative content.
-12. Every result carries a Trust Envelope.
-13. MCP is the primary hackathon interface, not the entire product architecture.
-14. Publisher licensing and entitlements are full-product concerns.
-15. Marketplace features and autonomous refresh are post-MVP.
+8. Concept extraction may propose structure, but evidence and evaluation determine what is published.
+9. Broad concepts support navigation; answerable concepts support grounded resolution.
+10. Search returns evidence, not unsupported answers.
+11. Runtime normally uses a small set of high-quality evidence.
+12. Structured output precedes optional prose.
+13. Original-language evidence remains authoritative; full source content is not machine-translated for retrieval.
+14. Compact retrieval metadata is projected into the configured standard languages; Swiss German uses tested dialect terminology and German normalization.
+15. Translations are labelled derivative content.
+16. Every result carries a Trust Envelope.
+17. MCP is the primary hackathon interface, not the entire product architecture.
+18. Publisher licensing and entitlements are full-product concerns.
+19. Marketplace features and autonomous refresh are post-MVP.
 
 ---
 
@@ -186,7 +190,10 @@ The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` mate
 - operator-triggered, on-demand knowledge builds;
 - traceable source versions and immutable published releases;
 - normalized evidence with source-language, authority, jurisdiction, applicability and temporal metadata;
-- server-managed canonical concepts and multilingual terminology for the principal scenario;
+- a reviewed seed concept graph and multilingual terminology for the principal scenario;
+- post-normalization candidate concept extraction and corpus-level aggregation;
+- compact retrieval metadata projections for English, German, French, Italian and Romansh;
+- tested Swiss German aliases and normalization to German retrieval terms;
 - language-aware lexical, canonical-concept and multilingual vector retrieval;
 - automated grounding, citation, multilingual retrieval, efficiency, freshness and integration tests;
 - compact Trust Envelopes and high-level resolution calls.
@@ -234,15 +241,76 @@ The product must:
 2. acquire and preserve source versions;
 3. normalize relevant source content;
 4. detect and record the language of each normalized document and evidence object;
-5. assign canonical concepts and reviewed multilingual terminology for P0 concepts;
-6. derive evidence and optional candidate facts while preserving original-language text;
-7. build language-aware lexical, canonical-concept and multilingual vector representations;
-8. evaluate the candidate release against its declared cross-language matrix;
-9. publish it only if the evaluation gate passes;
-10. preserve the last successful release if a build fails;
-11. expose build progress, failures and freshness.
+5. extract candidate concepts and document-to-concept assignments from normalized sections;
+6. aggregate candidates across documents, sources and languages;
+7. merge synonyms and translations, create broader/narrower/related relationships, and apply the configured granularity policy;
+8. promote only reviewed or automatically verified concepts into the published concept graph;
+9. derive evidence and optional candidate facts while preserving original-language text;
+10. build compact localized retrieval metadata from official parallel content or labelled machine translation;
+11. build language-aware lexical, canonical-concept and multilingual vector representations;
+12. evaluate the candidate release against its declared concept and cross-language matrices;
+13. publish it only if the evaluation gate passes;
+14. preserve the last successful release if a build fails;
+15. expose build progress, failures and freshness.
 
 Normal MCP requests use the published release and do not scrape government sites at request time.
+
+## 9.1 Concept Compilation and Granularity
+
+Concept extraction occurs during the knowledge build after crawling, snapshotting, normalization and language detection. It is not part of source acquisition. This separation allows extraction to be retried, evaluated or rerun with another provider without fetching the source again.
+
+The published representation is a language-neutral, versioned concept graph rather than a flat keyword list or a strict single-parent tree. A document or evidence object may be assigned to several concepts, and concepts may have `BROADER`, `NARROWER`, `RELATED` and `SAME_AS` relationships.
+
+The granularity model is:
+
+| Level | Purpose | Examples |
+|---|---|---|
+| Domain | Top-level coverage and navigation | Immigration, Health, Housing |
+| Topic or journey | Broad request routing | Residence, Healthcare access |
+| Answerable concept | Independent action, obligation or question with its own evidence | Residence permit, Municipal registration, Health insurance |
+| Detail | A subtype, deadline, exemption or other precise fact | Permit B, Registration deadline, Insurance exemption |
+
+`ANSWERABLE` is the default grounding level. Broad domain and topic concepts organize coverage and expand broad requests into relevant descendants; they are not sufficient by themselves to support a factual answer.
+
+A candidate becomes a separate answerable concept when one or more of the following differs: required user action, responsible authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful user question. Translations, synonyms, abbreviations, spelling variants and dialect variants of the same administrative or legal object are merged as terminology for one concept.
+
+For example, `Residence` is a broad topic. `Residence permit`, `Municipal registration`, `Change of address` and `Deregistration` are separate answerable concepts. Municipal conduct rules may be related to living in a municipality but are not automatically children of `Residence permit`. Likewise, `Health` is a domain while `Health insurance`, `Healthcare access`, `Emergency care` and `Public health` are separate concepts.
+
+Concept governance states are:
+
+```text
+CURATED             producer/admin defined and reviewed
+VERIFIED_AUTOMATIC  extracted automatically and accepted by configured validation
+CANDIDATE           unverified; usable only as a soft retrieval signal
+MERGED              redirected to another stable concept identifier
+DEPRECATED          retained for compatibility and audit history
+REJECTED            excluded with recorded rationale
+```
+
+The Knowledge Space producer owns the seed graph, granularity policy and P0 concepts. An administrator or delegated reviewer approves changes to curated concepts. Apertus may propose candidate concepts, terminology, translations, assignments and relationships, but model output does not automatically become declared coverage. During the hackathon, reviewed concepts may be maintained as repository configuration; authoring and review through the Admin Control Plane is a P1 capability. In the target product, publishers own their domain concept packs subject to platform validation and governance.
+
+Every concept and assignment records provenance, evidence references, extraction method, confidence, lifecycle status and version. Concept identifiers remain stable when labels change, and published Knowledge Releases reference the exact concept graph used for indexing and evaluation.
+
+## 9.2 Localized Retrieval Metadata
+
+TIP preserves each normalized section in its original language and does not machine-translate complete source pages as the default retrieval representation. Instead, each included section receives a compact localized projection containing:
+
+```text
+title
+section headings
+keyphrases and terminology
+short retrieval synopsis
+canonical concept identifiers
+named entities and jurisdiction references
+```
+
+The default projection languages are English (`en`), German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and Romansh (`rm-CH`). The Romansh coverage declaration identifies whether `rm-CH` means Rumantsch Grischun and which additional idioms, if any, are evaluated.
+
+For each field, TIP prefers an official parallel-language version published by the same authority, then curated terminology, then a machine-generated translation. Every derived field records its method, provider/model where applicable, review status and original content hash. Canonical concept identifiers, authorities, jurisdictions, dates and other structured values are not translated.
+
+Swiss German (`gsw-CH`) remains an explicitly supported query language but does not receive an automatically generated full metadata projection. TIP uses reviewed dialect aliases, query normalization and mapping to German terminology and the `de-CH` projection. Coverage lists the tested dialect forms.
+
+Localized projections are candidate-retrieval aids, not evidence. Results and citations always resolve to the original source section or an official parallel-language source section.
 
 ---
 
@@ -269,17 +337,29 @@ For a natural-language request, TIP must:
 1. detect the query language unless the client supplies it;
 2. determine the response language, defaulting to the query language;
 3. map the request to canonical domain concepts and normalize Swiss jurisdiction names;
-4. expand those concepts using reviewed terminology for languages declared by the active release;
-5. retrieve evidence across all declared source languages unless the client explicitly restricts them;
-6. combine original-query lexical, expanded-query lexical, canonical-concept and multilingual vector candidates;
-7. establish supported facts from original authoritative evidence;
-8. render optional prose in the requested response language only after the supported result is established.
+4. validate the query language against the active release and direct unsupported clients to the English fallback contract;
+5. expand resolved concepts using reviewed terminology for languages declared by the active release;
+6. search the localized metadata projection matching the query language, with Swiss German normalized to German;
+7. retrieve evidence across all declared source languages unless the client explicitly restricts them;
+8. combine localized-metadata, original-query lexical, expanded-query lexical, canonical-concept and multilingual vector candidates;
+9. establish supported facts from original authoritative evidence;
+10. render optional prose in the requested response language only after the supported result is established.
 
 Terminology expansion is a server responsibility. MCP and REST clients are not required to translate a request, supply synonyms or know the source languages. Query language and response language must not act as implicit filters on source language.
+
+The server guarantees direct handling only for query and response languages declared by the active release. A client using another language must translate its request to English and identify the request as `query_language=en`; it may translate the returned English result for its user. The server does not silently translate an unsupported request to an arbitrary supported language. English is the single interoperability pivot for unsupported clients.
 
 Original-language source excerpts and citations remain authoritative. A translated excerpt is derivative content, must be labelled as a machine translation, must identify its provider and model version, and must retain a reference to the original excerpt. A translation is never presented as the cited source.
 
 The functional guarantee applies only within the source, topic, jurisdiction, concept and language matrix declared by the active release. Swiss German is treated as a family of dialects and Romansh coverage identifies Rumantsch Grischun and any supported idioms explicitly.
+
+## 10.2 Concept-Aware Resolution Behaviour
+
+The planner maps a request to the most specific supported concept that preserves the user's meaning.
+
+- A broad request such as `What should I know about residence in Zurich?` expands the `Residence` topic into a bounded and diverse set of answerable descendants, such as permits, municipal registration, address changes and deregistration. The result is grouped by concept and may return `NEEDS_CONTEXT` when a decision requires more detail.
+- A narrow request such as `How do I obtain a residence permit?` starts at `Residence permit` and its relevant details. It must not include unrelated municipal topics merely because they share the word `residence`.
+- If concept resolution is uncertain, lexical and vector retrieval remain available and the uncertainty is recorded. A missing or incorrect concept assignment must not make an otherwise relevant document undiscoverable.
 
 ---
 
@@ -293,6 +373,7 @@ OUT_OF_COVERAGE
 INSUFFICIENT_VERIFIED_EVIDENCE
 CONFLICTING_EVIDENCE
 STALE
+UNSUPPORTED_LANGUAGE
 ```
 
 A nearest semantic match must never be silently presented as applicable truth.
@@ -305,6 +386,8 @@ Each result includes enough Trust Envelope information for a client to understan
 - the supporting evidence and citations;
 - any missing context, conflict, limitation or warning.
 
+`UNSUPPORTED_LANGUAGE` returns the supported query and response languages and identifies English as the required fallback. It does not claim that the topic or source itself is out of coverage.
+
 ---
 
 # 12. MCP Capability
@@ -315,7 +398,7 @@ The MCP server provides three user-facing capabilities:
 2. inspect cited evidence and provenance;
 3. inspect declared coverage, limitations and freshness.
 
-A normal supported request, including a cross-language request, should require one high-level resolution call whenever possible. The requesting application supplies the question and optional context or language preferences; the server performs language detection, canonical-concept resolution, terminology expansion and cross-language retrieval. Client-side translation or terminology expansion must not be required for correctness. Evidence and coverage inspection remain available when the client or evaluator needs more detail.
+A normal supported request, including a cross-language request, should require one high-level resolution call whenever possible. The requesting application supplies the question and optional context or language preferences; the server performs language detection, canonical-concept resolution, terminology expansion and cross-language retrieval. Client-side translation or terminology expansion must not be required for declared languages. A client using an unsupported language translates the request to English before calling TIP. Evidence and coverage inspection remain available when the client or evaluator needs more detail.
 
 Exact tool names, schemas, transports and client configuration are defined in the technical specification.
 
@@ -331,9 +414,11 @@ The P1 Admin UI makes platform state inspectable through:
 4. Full-build initiation and progress
 5. Source snapshots and freshness
 6. Evidence Explorer
-7. Evaluations
-8. Knowledge Releases
-9. MCP/REST integration guidance
+7. Concept Registry, candidate review and graph changes
+8. Localized metadata projections and language coverage
+9. Evaluations
+10. Knowledge Releases
+11. MCP/REST integration guidance
 
 Its primary operation is **Build / Full Reload**. The Admin UI is not required for MCP runtime availability.
 
@@ -444,10 +529,14 @@ Swisscom can:
 - understand declared coverage and limitations;
 - run an on-demand refresh of configured `admin.ch` / SEM and `zh.ch` sources;
 - observe source versions, freshness, build outcome and the active release;
+- inspect the published concept graph, concept provenance and lifecycle status;
+- inspect localized metadata provenance and completeness for each declared language;
 - connect its evaluation harness or another standard MCP client;
 - obtain compact grounded results with exact citations;
 - issue an English, German, French, Italian, Swiss German or Romansh query for a declared P0 concept and retrieve relevant evidence in another declared source language;
 - receive optional prose in the requested response language while retaining original-language evidence and citations;
+- receive `UNSUPPORTED_LANGUAGE` with English fallback guidance for a language outside the release contract;
+- receive a grouped overview for a broad concept and precise evidence for a narrow answerable concept without unrelated topic leakage;
 - see explicit unsupported, insufficient, conflicting and stale states;
 - reproduce the supplied grounding, multilingual retrieval, efficiency and integration tests.
 

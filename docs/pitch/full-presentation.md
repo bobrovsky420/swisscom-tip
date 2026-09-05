@@ -36,6 +36,8 @@ Focused coverage demonstrates federal/cantonal authority, applicability and cita
 
 Multilingual proof: the same scenario is queried in English, German, French, Italian, Swiss German and Romansh, while evidence may remain in another language declared by the release.
 
+Clients using another language translate to English before calling TIP. This keeps the server contract finite, testable and independent of an unlimited metadata translation matrix.
+
 ---
 
 ## Slide 4 - On-Demand Knowledge Build
@@ -53,9 +55,15 @@ normalize
        ↓
 language detection
        ↓
-canonical concepts + multilingual terminology
+per-section concept candidates (Apertus assisted)
        ↓
-semantic enrichment (Apertus preferred)
+cross-document/language aggregation
+       ↓
+granularity + graph validation
+       ↓
+reviewed concept graph + terminology
+       ↓
+compact en/de/fr/it/rm metadata projections
        ↓
 Evidence Objects
        ↓
@@ -83,11 +91,13 @@ Benefits:
 
 The government source remains canonical; TIP stores a verified operational representation.
 
+The Knowledge Release also freezes the reviewed concept graph used for indexing: broad concepts navigate, while answerable concepts ground independent actions, obligations and facts.
+
 ---
 
 ## Slide 6 - Apertus for Swiss Multilingual Semantics
 
-Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, applicability interpretation, evidence reranking and optional response-language rendering.
+Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, missing metadata translations, applicability interpretation, evidence reranking and optional response-language rendering.
 
 Why it fits: the [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports 15 trillion training tokens across more than 1,000 languages, 40% non-English data, and explicitly includes Swiss German and Romansh. The [official FAQ](https://www.apertus-ai.org/docs/faq/) cautions that Apertus is fully conversational in only a few dozen languages and recommends evaluation or fine-tuning for specific needs.
 
@@ -104,11 +114,12 @@ Deterministic software handles HTTP state, hashes, dates, numeric constraints an
 ```text
 Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
  ↓
-language detection + canonical concept
+language contract + most specific concept
  ↓
 server-side multilingual terminology expansion
  ↓
-lexical variants + concept lookup + multilingual vector retrieval
+same-language metadata + lexical variants
+ + concept lookup + multilingual vector retrieval
  ↓
 authority / jurisdiction / date checks
  ↓
@@ -121,7 +132,11 @@ structured facts + Trust Envelope
 requested-language explanation + original-language citations
 ```
 
-The requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
+For declared languages, the requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
+
+Broad queries expand to a bounded and diverse set of answerable descendants. Narrow queries stay narrow. Concept lookup improves recall but never disables lexical or vector discovery.
+
+TIP translates compact metadata, not complete pages. English, German, French, Italian and the declared Romansh form receive searchable projections. Swiss German uses tested dialect aliases and German normalization. Unsupported clients use English as the single pivot.
 
 ---
 
@@ -158,6 +173,7 @@ NEEDS_CONTEXT
 OUT_OF_COVERAGE
 INSUFFICIENT_VERIFIED_EVIDENCE
 CONFLICTING_EVIDENCE
+UNSUPPORTED_LANGUAGE
 ```
 
 A nearest semantic match is not silently treated as applicable truth.
@@ -173,6 +189,9 @@ Knowledge Space: Swiss Public
 Sources: SEM/admin.ch + zh.ch
 Build: COMPLETE
 Evidence: ...
+Concept graph: VALIDATED
+Candidate review: ...
+Metadata projections: COMPLETE
 Tests: PASS
 Multilingual matrix: PASS
 Production Release: ...
@@ -400,7 +419,7 @@ Same primitives: Source, Authority, Applicability, Evidence, Version, Trust, Dat
 
 ```text
 HACKATHON VERTICAL SLICE
-P0  admin.ch/zh.ch → multilingual build/retrieval → evidence → MCP → standard clients
+P0  admin.ch/zh.ch → concepts + localized metadata → multilingual retrieval → evidence → MCP
 P1  Admin Control Plane + Arrival Checklist
 P2  Swiss Hike composition demo with mock providers
 

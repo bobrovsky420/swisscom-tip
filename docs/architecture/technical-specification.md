@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification - V4
+## Technical & Solution Architecture Specification - V6
 
 **Hackathon:** Swiss Grounding MCP<br>
 **Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
@@ -35,13 +35,17 @@ Technical decisions are classified as:
 5. Deterministic code handles dates, hashes, filtering, thresholds and explicit rules.
 6. Semantic models handle classification, terminology, retrieval and explanation where they add measurable value.
 7. Cross-language terminology expansion and retrieval are server responsibilities, not client responsibilities.
-8. Retrieval returns a small evidence bundle rather than an uncontrolled document dump.
-9. Original-language evidence remains authoritative; translations are labelled derivative content.
-10. Every result is traceable to source versions and processing metadata.
-11. Refresh, cache state and source failures are observable.
-12. All model, storage and client integrations are replaceable behind explicit interfaces.
-13. The vertical slice should validate target-product concepts without implementing the entire target product.
-14. Future commercial and autonomous capabilities influence contracts only where that does not endanger MVP delivery.
+8. Concept extraction occurs after deterministic acquisition and produces candidates before governed aggregation and promotion.
+9. Broad concepts route requests; answerable concepts ground independent actions, rules and facts.
+10. Full source content remains in its original language; compact metadata projections provide bounded multilingual lexical retrieval.
+11. Swiss German queries use tested dialect terminology and German normalization rather than a synthetic universal dialect projection.
+12. Retrieval returns a small evidence bundle rather than an uncontrolled document dump.
+13. Original-language evidence remains authoritative; translations are labelled derivative content.
+14. Every result is traceable to source versions and processing metadata.
+15. Refresh, cache state and source failures are observable.
+16. All model, storage and client integrations are replaceable behind explicit interfaces.
+17. The vertical slice should validate target-product concepts without implementing the entire target product.
+18. Future commercial and autonomous capabilities influence contracts only where that does not endanger MVP delivery.
 
 ---
 
@@ -399,12 +403,15 @@ Implements the control-plane knowledge compiler:
 sources
 → snapshots
 → normalization
-→ enrichment
+→ language detection
+→ candidate concept extraction
+→ corpus aggregation and concept graph validation
+→ additional enrichment
 → evidence
 → release
 ```
 
-It may use heavier parsing and semantic dependencies. It depends on `swisstip.core` and never on `swisstip.runtime`.
+It owns build-time candidate extraction, concept aggregation and graph validation and may use heavier parsing and semantic dependencies. It depends on `swisstip.core` and never on `swisstip.runtime`.
 
 ### `swisstip.runtime`
 
@@ -412,13 +419,15 @@ Implements the published-release query engine:
 
 ```text
 request
+→ query-to-concept resolution
+→ broad/narrow concept planning
 → retrieval
 → applicability
 → evidence resolution
 → structured result
 ```
 
-It depends on `swisstip.core` and never on `swisstip.ingestion`. This prevents request-time queries from invoking crawlers or build logic.
+It consumes only the concept graph published with the active release. It depends on `swisstip.core` and never on `swisstip.ingestion`. This prevents request-time queries from invoking crawlers, candidate extraction, aggregation or other build logic.
 
 ### `swisstip.integrations`
 
@@ -552,6 +561,7 @@ The mandatory reproducible path consists of:
 - versioned canonical concept identifiers;
 - a reviewed multilingual terminology registry for P0 concepts;
 - server-side query expansion;
+- same-language lexical search over compact localized metadata projections;
 - language-aware lexical retrieval;
 - direct canonical-concept lookup;
 - original-language evidence and citation preservation;
@@ -560,6 +570,8 @@ The mandatory reproducible path consists of:
 Multilingual vector retrieval, semantic concept resolution, reranking and translation supplement this path when they improve measured results. They must not be the only way to retrieve a P0 concept.
 
 Every model provider declares supported operations, languages and model versions. The initial evaluation matrix includes English (`en`), German (`de-CH`), French (`fr-CH`), Italian (`it-CH`), Swiss German (`gsw-CH`) and Romansh (`rm-CH`) query variants for the principal scenario. Coverage declarations identify the tested Swiss German dialect forms and Romansh standard or idioms; training-data inclusion alone must not be represented as verified capability.
+
+The default metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. Swiss German remains a declared query language but uses reviewed `gsw-CH` terminology and normalization to German rather than automatically generated projections for every document. A client using a language outside the active release contract translates its request to English before calling TIP.
 
 ---
 
@@ -575,10 +587,15 @@ LanguageDetector
 SemanticModelProvider
 EmbeddingProvider
 TerminologyRegistry
+CandidateConceptExtractor
+ConceptAggregator
+ConceptGraphValidator
 ConceptResolver
 QueryExpander
+MetadataProjectionBuilder
 EvidenceCompiler
 LexicalIndex
+LocalizedMetadataIndex
 VectorIndex
 EvaluationRunner
 ReleasePublisher
@@ -608,9 +625,14 @@ EvidenceObject
 CandidateFact
 LanguageContext
 ConceptDefinition
+CandidateConcept
+ConceptAssignment
+ConceptRelation
+ConceptGraph
 TerminologyEntry
 QueryVariant
 TranslationMetadata
+LocalizedRetrievalProjection
 KnowledgeRelease
 ExecutionPlan
 EvidenceBundle
@@ -632,8 +654,35 @@ LanguageContext
 ConceptDefinition
   concept_id
   preferred labels by language
+  concept type and granularity level
   jurisdiction/topic scope
+  lifecycle status and owner
+  concept relations
   schema version
+
+CandidateConcept
+  proposed labels, type and granularity
+  candidate relations and terminology
+  source evidence references
+  extraction provider and model metadata
+  confidence and validation state
+
+ConceptAssignment
+  concept_id
+  document/evidence identifier
+  assignment method and confidence
+  supporting text spans
+
+ConceptRelation
+  source and target concept identifiers
+  BROADER / NARROWER / RELATED / SAME_AS
+  provenance, confidence and review status
+
+ConceptGraph
+  graph identifier and version
+  concept and terminology versions
+  aggregation configuration
+  validation result
 
 TerminologyEntry
   concept_id
@@ -655,6 +704,16 @@ TranslationMetadata
   provider, model and version
   generation timestamp
   original content hash
+
+LocalizedRetrievalProjection
+  document/section identifier
+  source language and target language
+  localized title and section headings
+  localized keyphrases and short synopsis
+  canonical concepts, named entities and jurisdiction references
+  OFFICIAL_PARALLEL / CURATED / MODEL_TRANSLATION method per field
+  provider/model metadata where applicable
+  review status and original content hash
 ```
 
 `QueryVariant.generation_method` distinguishes at least `ORIGINAL`, `CURATED_ALIAS`, `MODEL_TRANSLATION` and `SEMANTIC_EXPANSION`. This keeps deterministic and model-generated recall paths inspectable.
@@ -674,6 +733,25 @@ SettlementRecord
 Commercial contracts are target-product capabilities. At most, the hackathon preserves compatible identifiers and dependency metadata; it does not implement commercial workflows.
 
 Every persisted contract includes a schema version. Published releases reference exact contract versions and content hashes.
+
+## 9.1 Concept graph and governance
+
+Canonical concepts use stable, language-neutral identifiers. Labels, translations and aliases may change without changing a concept identifier. Published records use these lifecycle states:
+
+```text
+CURATED
+VERIFIED_AUTOMATIC
+CANDIDATE
+MERGED
+DEPRECATED
+REJECTED
+```
+
+Only `CURATED` and `VERIFIED_AUTOMATIC` concepts contribute to declared concept coverage and direct canonical-concept lookup. `CANDIDATE` concepts may contribute a bounded soft ranking signal but cannot establish applicability, support a fact or exclude a document. `MERGED` and `DEPRECATED` records retain redirects for compatibility; rejected candidates retain audit metadata without entering runtime indexes.
+
+The graph supports multiple parents and typed `BROADER`, `NARROWER`, `RELATED` and `SAME_AS` edges. It must be acyclic for broader/narrower edges, while related and equivalence edges are validated separately. A normalized section or Evidence Object may have multiple `ConceptAssignment`s.
+
+Concept governance is scoped by Knowledge Space. The producer owns seed concepts, granularity policy and P0 coverage. Reviewers approve curated changes. A published `KnowledgeRelease` references an immutable `ConceptGraph` version, its terminology versions, assignment set, extraction metadata and evaluation result.
 
 ---
 
@@ -714,7 +792,13 @@ normalize
   ↓
 language detection
   ↓
-canonical concepts + multilingual terminology
+candidate concept extraction
+  ↓
+corpus aggregation + concept graph validation
+  ↓
+approved concepts + multilingual terminology
+  ↓
+compact localized metadata projections
   ↓
 optional semantic enrichment
   ↓
@@ -726,6 +810,98 @@ evaluation gate
   ↓
 immutable published release
 ```
+
+## 10.1 Concept compilation
+
+Concept compilation is a build-time semantic process over immutable normalized content. It is not executed by `SourceScanner` or `SourceFetcher` and never changes a source snapshot.
+
+```text
+normalized sections + language metadata
+  ↓
+per-section CandidateConcepts and ConceptAssignments
+  ↓
+cross-document and cross-language candidate aggregation
+  ↓
+match against seed concepts and existing stable identifiers
+  ↓
+merge synonyms / translations / abbreviations / dialect forms
+  ↓
+propose BROADER / NARROWER / RELATED / SAME_AS edges
+  ↓
+apply granularity and lifecycle policy
+  ↓
+validate graph, assignments and evidence provenance
+  ↓
+versioned ConceptGraph for release evaluation
+```
+
+Candidate extraction records the exact normalized section and text span supporting each proposal. Apertus may propose concepts, labels, relations and multilingual terminology through `SemanticModelProvider`. Deterministic matching handles known identifiers and reviewed terminology. Corpus aggregation considers labels, multilingual embeddings, shared evidence, source structure and jurisdiction, but no similarity threshold alone may merge or promote a P0 concept.
+
+Granularity is policy-driven rather than a fixed tree depth:
+
+```text
+DOMAIN      top-level coverage, for example Immigration or Health
+TOPIC       broad navigation or journey, for example Residence
+ANSWERABLE  independent action, obligation or question with evidence
+DETAIL      subtype, deadline, exemption or other precise fact
+```
+
+`ANSWERABLE` is the default retrieval and grounding unit. Split a candidate when user action, authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful question differs. Merge candidates when they are translations, synonyms, spelling variants, abbreviations or dialect variants of the same scoped object.
+
+Examples:
+
+```text
+Residence [TOPIC]
+  Residence permit [ANSWERABLE]
+    Permit B [DETAIL]
+    Permit L [DETAIL]
+    Permit C [DETAIL]
+  Municipal registration [ANSWERABLE]
+  Change of address [ANSWERABLE]
+  Deregistration [ANSWERABLE]
+
+Health [DOMAIN]
+  Health insurance [ANSWERABLE]
+  Healthcare access [ANSWERABLE]
+  Emergency care [ANSWERABLE]
+  Public health [ANSWERABLE]
+```
+
+Municipal conduct rules may be related to residence or living in a municipality, but are not automatically children of `Residence permit`. A model suggestion is a candidate relation until it meets configured validation or receives review.
+
+## 10.2 Localized retrieval projection compilation
+
+The builder creates compact search projections instead of machine-translating complete pages. Each included normalized section retains its original text and receives localized title, heading, keyphrase and short-synopsis fields for the configured projection languages.
+
+```text
+original normalized section
+  ↓
+official parallel-language fields when available
+  ↓
+curated terminology and concept labels
+  ↓
+model translation for remaining projection fields
+  ↓
+field-level provenance and validation
+  ↓
+LocalizedMetadataIndex
+```
+
+The field precedence is `OFFICIAL_PARALLEL`, then `CURATED`, then `MODEL_TRANSLATION`. Official content is linked through source provenance rather than copied without identity. Model-derived fields record provider, model, generation timestamp, original content hash and review status. Authorities, jurisdiction identifiers, dates, numeric values, canonical concept identifiers and other language-neutral structured values are copied without translation.
+
+The default projection set is:
+
+```text
+en
+de-CH
+fr-CH
+it-CH
+rm-CH
+```
+
+The `rm-CH` configuration declares Rumantsch Grischun and any additional evaluated idioms. `gsw-CH` does not receive automatic document-wide metadata projections because Swiss German has no single standardized written form. Its reviewed dialect aliases resolve to canonical concepts and German terminology, and its queries search the `de-CH` projection alongside the other retrieval channels.
+
+Projection records are derived retrieval artifacts and cannot support a fact or serve as cited evidence. The original section or an official parallel-language section remains the evidence target. Projection generation is cached by original content hash and provider/configuration version so unchanged content is not translated again.
 
 Scheduled and incremental Knowledge CI/CD is a target-product capability, not part of the hackathon implementation. The MVP should nevertheless use ETag, Last-Modified and content hashes where available, record the last attempted and successful refresh, respect source rate limits, and expose failures without removing the previous release. This validates the lifecycle metadata on which later automation depends.
 
@@ -759,9 +935,9 @@ Only a release that passes the configured evaluation gate can become the active 
 Recommended storage layout:
 
 ```text
-PostgreSQL        source metadata / evidence / facts / releases / tests
+PostgreSQL        source metadata / localized projections / evidence / facts / releases / tests
 pgvector          semantic vectors
-PostgreSQL FTS    lexical search documents
+PostgreSQL FTS    original text + per-language compact metadata projections
 MinIO/filesystem  immutable raw snapshots
 ```
 
@@ -770,14 +946,15 @@ Retrieval uses independent lexical, concept and semantic paths so a failure in o
 ```text
 active published release
   ↓
-query-language detection + response-language selection
+query-language detection + contract validation + response-language selection
   ↓
 jurisdiction normalization + canonical-concept resolution
   ↓
 multilingual terminology expansion
   ↓
 parallel candidates:
-  original-query lexical + expanded-query lexical
+  same-language localized metadata + original-query lexical
+  + expanded-query lexical
   + canonical concept + multilingual vector
   ↓
 candidate union + rank fusion
@@ -792,6 +969,10 @@ rerank / diversify
 Candidate retrieval uses a larger configurable pool than the final 2-5 evidence objects. Ranking may combine semantic relevance, lexical relevance, concept match, source authority, jurisdiction specificity, applicability and temporal validity. Every retrieval channel, query variant and ranking factor must be inspectable for evaluation and debugging.
 
 Query language and response language never act as implicit filters on source language. Source language is restricted only when a client explicitly supplies `source_languages`. Explicit authority, jurisdiction, applicability and temporal constraints remain hard checks before evidence is accepted as support.
+
+For a declared standard language, lexical candidate generation searches the matching localized metadata projection across all source languages. For `gsw-CH`, it searches reviewed Swiss German terminology and the normalized `de-CH` projection. Localized metadata is an additional candidate channel and must not become an exclusive prefilter for concept, original-language lexical or vector retrieval.
+
+Concept lookup is one retrieval channel, not a gate. Original and expanded lexical search plus multilingual vector search continue to operate when concept extraction or query-to-concept resolution is missing or uncertain. No concept assignment may make a document invisible to the other channels.
 
 ---
 
@@ -813,13 +994,22 @@ For a natural-language request, the `QueryPlanner`:
 
 1. accepts or detects `query_language`;
 2. selects `response_language`, defaulting to the query language;
-3. normalizes jurisdiction and other structured context;
-4. resolves canonical concepts;
-5. creates multilingual `QueryVariant`s from reviewed terminology;
-6. optionally adds model-generated variants, recording their provenance;
-7. produces an inspectable `ExecutionPlan` for parallel retrieval.
+3. validates both languages against the active release contract;
+4. returns `UNSUPPORTED_LANGUAGE` with English fallback guidance when either language is unsupported;
+5. normalizes Swiss German to tested dialect terminology and German retrieval terms;
+6. normalizes jurisdiction and other structured context;
+7. resolves canonical concepts;
+8. selects the most specific supported concept that preserves the request meaning;
+9. expands broad `DOMAIN` or `TOPIC` concepts into a bounded, diverse set of `ANSWERABLE` descendants;
+10. creates multilingual `QueryVariant`s from reviewed terminology;
+11. optionally adds model-generated variants, recording their provenance;
+12. produces an inspectable `ExecutionPlan` for parallel retrieval.
 
 Structured clients normally supply relevant context directly, but clients are never required to translate questions, supply synonyms or know source languages. Curated terminology is preferred for P0 concepts; model-generated expansion is a fallback for unrecognized language or phrasing.
+
+The no-client-translation guarantee applies only to languages declared by the active release. Unsupported clients translate the request to English, set `query_language=en` and accept English as the TIP response language; any translation from English back to the user's language remains the client's responsibility. TIP does not silently select another pivot language.
+
+A narrow request searches its answerable concept and relevant details without automatically broadening to sibling topics. A broad request returns evidence grouped by answerable descendant and may produce `NEEDS_CONTEXT` if a required decision cannot be made. Any fallback broadening is recorded in the execution plan so unrelated topic leakage can be evaluated.
 
 The Evidence and Rule Engine:
 
@@ -856,9 +1046,11 @@ structured_context   optional
 
 It returns a compact structured result containing the resolved language context, status, supported facts, evidence references, coverage information and a Trust Envelope. Each evidence reference exposes `source_language`, the original excerpt and citation, plus optional `translated_excerpt` and `translation_metadata`. A translated excerpt is never represented as the cited source.
 
+If `query_language` or `response_language` is outside the active release contract, `resolve` returns `UNSUPPORTED_LANGUAGE`, the supported language lists and `fallback_language=en` without running factual resolution. The client may resubmit an English translation as a new request.
+
 `get_evidence` resolves evidence identifiers to source excerpts and provenance without returning entire source documents by default.
 
-`get_coverage` returns declared sources, topics, jurisdictions, query languages, source languages, response languages, tested Swiss German dialect forms and Romansh variants, exclusions, release version and freshness information.
+`get_coverage` returns declared sources, topics, jurisdictions, query languages, source languages, response languages, metadata projection languages and completeness, tested Swiss German dialect forms, Romansh variants, `fallback_language=en`, exclusions, release version and freshness information.
 
 The compatibility target is standard MCP clients and the Swisscom evaluation harness. OpenCode is a supported example and validation client, not a required, privileged or server-specific integration. A normal demo query should complete with one high-level `resolve` call whenever possible.
 
@@ -894,9 +1086,12 @@ The optional MVP Admin UI uses control-plane APIs for:
 4. full-build initiation and progress;
 5. source snapshots and refresh state;
 6. Evidence Explorer;
-7. evaluation results;
-8. Knowledge Releases;
-9. MCP/REST integration examples.
+7. Concept Registry, candidates, assignments and graph diff;
+8. concept review and lifecycle actions;
+9. localized metadata projections, provenance and completeness;
+10. evaluation results;
+11. Knowledge Releases;
+12. MCP/REST integration examples.
 
 The UI is not required for MCP runtime availability.
 
@@ -910,15 +1105,19 @@ Automated evaluation covers the challenge dimensions:
 |---|---|
 | Grounding quality | factual correctness, authority, jurisdiction, temporal validity, citation support, unsupported/conflicting results |
 | Useful coverage | declared coverage matrix and representative questions per source/topic |
+| Concept quality | P0 assignment accuracy, duplicate/orphan rate, hierarchy consistency, multilingual alias correctness and stability across releases |
+| Concept retrieval behaviour | broad-query descendant coverage, narrow-query precision, unrelated-topic leakage and retrieval recall with concept lookup disabled/enabled |
 | Multilingual retrieval | cross-language candidate recall, final evidence hit rate, concept resolution, terminology expansion and source-language diversity |
+| Localized metadata | projection completeness, official/curated/model provenance, same-language lexical recall and original-evidence linkage |
 | Response-language safety | requested response language, original evidence preservation, translation labelling and citation linkage |
+| Unsupported language | deterministic rejection, supported-language discovery and English fallback guidance |
 | Agent efficiency | tool-call count, response bytes/tokens, evidence count and latency |
 | Operability | clean setup, repeatable builds, cache behaviour, refresh, source failures, last-known-good release and monitoring |
 | Integration readiness | schema validation and tests through standard MCP clients |
 
 The evaluation configuration stores explicit thresholds for release promotion. For the finite P0 multilingual golden set, every required authoritative document must appear in the top 20 candidate pool and every required supported fact must have at least one supporting document in the final top 5 evidence objects. Every citation must resolve to original-language evidence. Operational latency and throughput targets should be calibrated against the available infrastructure before the event rather than embedded as unsupported estimates.
 
-The golden suite covers every declared query/source-language pair and includes terminology, abbreviations, spelling variants, German compounds, Swiss German dialect forms and declared Romansh forms. At minimum it tests the residence-permit concept across `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and corresponding evaluated Italian, Swiss German and Romansh variants. A multilingual regression blocks release promotion.
+The golden suite covers every declared query/source-language pair and includes terminology, abbreviations, spelling variants, German compounds, Swiss German dialect forms and declared Romansh forms. At minimum it tests the residence-permit concept across `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and corresponding evaluated Italian, Swiss German and Romansh variants. It also contrasts broad requests such as `residence in Zurich` and `health` with narrow requests such as `residence permit`, `municipal registration` and `health insurance`. Each standard query language must retrieve the gold evidence through its matching metadata projection, while Swiss German must do so through declared aliases and German normalization. An unsupported-language case such as Russian must return `UNSUPPORTED_LANGUAGE`; the equivalent client-translated English request must resolve normally. A concept, projection, multilingual or query-granularity regression blocks release promotion.
 
 Operational telemetry includes:
 
@@ -931,6 +1130,11 @@ query latency
 retrieval candidate and evidence counts
 detected query / response / source languages
 resolved concepts and query-variant provenance
+concept candidates / assignments / merges / promotions
+concept graph version and graph-validation result
+concept resolution level and descendant expansion
+metadata projection language / method / completeness
+unsupported-language rejection and English fallback use
 per-channel candidate ranks and multilingual fallback use
 model/provider latency and errors
 MCP tool calls and response size
@@ -995,7 +1199,9 @@ All mock data must be visibly labelled `DEMO/MOCK`.
 |---|---|---|
 | P0 | Contracts and coverage | MCP schemas, language contracts, terminology, source definitions, coverage/limitations |
 | P0 | Acquisition | scanner, fetcher, snapshots, normalizer and refresh metadata |
-| P0 | Evidence | compiler, authority/applicability metadata and citations |
+| P0 | Concepts | seed graph, candidate extraction, corpus aggregation, granularity policy, terminology and graph validation |
+| P0 | Localized metadata | compact standard-language projections, provenance, caching and Swiss German normalization |
+| P0 | Evidence | compiler, concept assignments, authority/applicability metadata and citations |
 | P0 | Retrieval | language-aware lexical, canonical-concept and multilingual vector retrieval plus hard checks |
 | P0 | Runtime | language detection, server-side expansion, planner, evidence/rule engine, response rendering and MCP server |
 | P0 | Evaluation | grounding, citations, multilingual recall, translation safety, unsupported queries, efficiency and freshness |
@@ -1012,7 +1218,11 @@ No hackathon workstream is required to implement scheduled/incremental builds or
 
 Swisscom can clone the repository, follow the documented setup, start the MCP server, inspect its declared coverage and limitations, run an on-demand build, and execute the supplied evaluation tests.
 
-The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the requested language, reports freshness, and preserves the last successful release when a source or build fails.
+The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language and broad/narrow concept variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the requested language, reports freshness, and preserves the last successful release when a source or build fails.
+
+Every included P0 section has complete, provenance-linked compact metadata projections for English, German, French, Italian and the declared Romansh form. Swiss German requests resolve through tested dialect aliases and German normalization. Requests outside the declared query-language contract receive `UNSUPPORTED_LANGUAGE` and English fallback guidance rather than best-effort silent translation.
+
+The published release exposes a versioned concept graph with provenance and lifecycle status, returns grouped answerable descendants for broad requests, preserves narrow-query precision, and continues to retrieve relevant documents through lexical/vector paths when concept metadata is missing.
 
 For the principal scenario, the published release passes the declared English, German, French, Italian, Swiss German and Romansh query matrix without client-side translation or terminology expansion. The guarantee is limited to declared concepts, sources, jurisdictions and tested language variants; unsupported dialects, idioms or source languages are reported through coverage and result status rather than inferred.
 
