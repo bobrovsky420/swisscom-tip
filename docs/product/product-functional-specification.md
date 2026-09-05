@@ -262,7 +262,7 @@ An operator can initiate **Build / Full Reload** for the configured sources.
 The product must:
 
 1. show which sources are included;
-2. acquire and preserve source versions;
+2. discover website language variants within the configured crawl scope, acquire eligible variants and preserve source versions;
 3. normalize relevant source content;
 4. detect and record the language of each normalized document and evidence object;
 5. extract candidate concepts and document-to-concept assignments from normalized sections;
@@ -278,6 +278,23 @@ The product must:
 15. expose build progress, failures and freshness.
 
 Normal MCP requests use the published release and do not scrape government sites at request time.
+
+### Website language discovery
+
+Website language discovery is a P0 acquisition requirement. Given a configured website root such as `https://admin.ch/`, the builder must inspect the root and subsequently fetched pages for language selectors and alternate-language links, inspect permitted sitemaps, and add discovered eligible language entry URLs to the crawl. An operator must not need to supply a separate seed URL for every language exposed through supported discovery mechanisms. A redirect to one default language must not restrict discovery to that language.
+
+The builder must:
+
+- discover variants from HTML and HTTP `hreflang` links, language-selector links or URL-valued options in returned HTML, and sitemap alternate-language entries; record page-language declarations and redirect observations as supporting hints;
+- retain the discovered URL, advertised language and discovery provenance, and distinguish advertised languages from languages verified in fetched content;
+- crawl discovered variants admitted by the configured URL scope, source-language declarations and candidate release policy, subject to robots rules, rate limits and shared crawl budgets; discovered subdomains require explicit scope permission;
+- preserve language-specific URLs, including meaningful query parameters, and treat alternate-language links as candidate relationships until content and version validation establishes an eligible parallel version;
+- report discovered, fetched, validated, excluded, failed and unresolved variants with reasons, plus incomplete discovery caused by crawl limits or inaccessible mechanisms; absence of discovered alternatives must not be reported as proof that a site is monolingual;
+- use a configured source adapter for selectors that require JavaScript or cookies when available; otherwise report an observed unresolved selector as requiring an adapter and allow explicit language entry URLs. Automatic browser interaction is not required for P0, and discovery coverage must state this limitation.
+
+Discovery does not add languages to the product catalog, source declaration or release policy. Website labels such as `de` or `fr` are untrusted discovery hints, not valid source declarations or proof of a regional language profile. Admission and content-language validation follow the existing governed language rules. An advertised language alone does not establish published coverage.
+
+For the root-scan acceptance scenario, a fixture representing a multilingual government website redirects to a default-language page whose selector exposes German, French and Italian URLs. With those source languages and paths enabled and sufficient crawl budget, all three variants must be discovered and fetched without separate language seeds. The report must identify any excluded or unreachable variant. A missing required variant blocks publication; optional gaps are reported and excluded from claimed coverage. This fixture defines behavior without assuming the current structure or complete coverage of the live `admin.ch` website.
 
 ## 9.1 Concept Compilation and Granularity
 
@@ -579,6 +596,7 @@ Swisscom can:
 - clone and start the repository from clear instructions;
 - understand declared coverage and limitations;
 - run an on-demand refresh of configured `admin.ch` / SEM and `zh.ch` sources;
+- start a configured website scan from its root, discover eligible language variants without separate language seeds, and inspect discovery provenance, exclusions and completeness limits;
 - observe source versions, freshness, build outcome and the active release;
 - inspect the published concept graph, concept provenance and lifecycle status;
 - inspect localized metadata provenance and completeness for each declared language;

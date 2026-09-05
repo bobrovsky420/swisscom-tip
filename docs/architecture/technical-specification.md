@@ -649,6 +649,7 @@ MVP contracts:
 
 ```text
 SourceDefinition
+LanguageDiscoveryRecord
 SourceSnapshot
 NormalizedDocument
 EvidenceObject
@@ -850,6 +851,10 @@ A `SourceDefinition` contains at least:
 source_id
 canonical authority
 base URL and allowed URL patterns
+optional language entry URLs and source discovery adapter identifier/version
+reviewed website-language hint mappings to declared source tags
+crawl page/depth/request/time budgets and sitemap limits
+required language entry points or coverage expectations
 source type
 jurisdiction
 declared languages
@@ -869,7 +874,7 @@ The hackathon operator triggers:
 ```text
 configured sources
   ↓
-scan / crawl / fetch
+root fetch + language discovery + bounded crawl / fetch
   ↓
 conditional HTTP validation
   ↓
@@ -897,6 +902,22 @@ evaluation gate
   ↓
 immutable published release
 ```
+
+### Website language discovery contract
+
+P0 website acquisition starts from the configured base URL and optional entry URLs. Discovery runs on the root response, permitted redirect destinations and every fetched HTML page, before navigation removal during normalization. It uses deterministic parsers and configured source adapters; semantic extraction does not control the crawl frontier.
+
+1. Inspect HTML `link` and `a` elements carrying `hreflang`, HTTP `Link` alternate-language headers, and language-selector anchors or URL-valued `option` elements. Recognize selector labels through a versioned label dictionary and explicit adapter rules; an arbitrary link mentioning a language is not sufficient. Record HTML `lang`, `Content-Language` and redirect destinations as page hints, not as lists of available translations. Treat `x-default` as a default entry URL, never as a source language.
+2. Inspect sitemap URLs declared by the source or advertised through `robots.txt`, and make a bounded conventional `/sitemap.xml` probe when permitted. Traverse sitemap indexes within configured limits; extract page URLs and alternate-language links. A sitemap URL without a language hint may enter ordinary scoped crawling, with its language determined after normalization. Record unavailable or truncated sitemap discovery without claiming full-site coverage.
+3. Resolve relative links against the response URL and any valid HTML base URL, then apply URL scope and robots checks before every request and redirect hop, including sitemap and adapter requests. A root or selector redirect cannot implicitly admit `www` hosts, sibling subdomains or external hosts. Remove fragments and deduplicate normalized URLs without removing language-bearing paths or query parameters. A canonical link must not collapse distinct language variants. Bound redirect loops and repeated selector links.
+4. Preserve advertised tags and labels as raw hints. Canonicalize well-formed tags for comparison; exact enabled source tags or reviewed per-source hint mappings can identify eligible variants. For example, a mapping from the website hint `fr` to an already declared `fr-CH` tag may guide discovery, but it does not create a source-declaration alias or bypass section 10.3 validation. Mapping targets must belong to both the source declaration and candidate policy or configuration validation fails. Conflicting or unmapped hints remain unresolved; URLs with unknown language may be fetched through ordinary scoped crawling for content validation. Explicitly identified variants outside the source declaration or policy are recorded as excluded, without scheduling their language branch. Newly encountered unsupported content is omitted from evidence and reported as a gap.
+5. Queue eligible language entry URLs ahead of deeper navigation and use stable round-robin scheduling across discovered language branches. All discovery and acquisition requests share the configured traffic and crawl budgets; record pending variants when limits are reached. Language discovery never guarantees exhaustive coverage of a site or equal translation availability for every page.
+6. Use the same declared request headers and isolated cookie policy on repeat builds, and record that fetch profile and adapter version. Explicit language URLs are preferred over ambient browser preferences. An observed selector requiring JavaScript, form submission or cookie state without an available adapter is reported as unresolved with `adapter_required`. P0 static discovery does not promise detection of controls absent from returned HTML. A configured adapter may expose additional URLs or bounded language-specific requests, subject to the same scope and budget checks. If multiple variants share a URL, retain the explicit language request profile in fetch identity and snapshot provenance to prevent deduplication or cache reuse across variants.
+7. Submit fetched variants to the existing snapshot, normalization and source-language validation pipeline. Alternate-language links propose parallel-content groups; they never establish semantic or revision equivalence on their own. Do not generate alternate URLs by guessing language path substitutions.
+
+Each `LanguageDiscoveryRecord` contains the source/build identifiers, parent response or sitemap reference and hash, discovery mechanism, raw advertised tag/label, nullable mapped source tag, resolved candidate URL, request-profile identifier, redirect chain, fetch/snapshot reference when available, and nullable validated effective language. For unresolved selectors without a URL, the candidate URL is nullable and an element locator identifies the control. Its disposition is `DISCOVERED`, `QUEUED`, `FETCHED`, `VALIDATED`, `EXCLUDED`, `FAILED` or `UNRESOLVED`, with decision history and reason codes such as `outside_scope`, `robots_disallowed`, `language_not_declared`, `language_not_enabled`, `unmapped_hint`, `adapter_required`, `fetch_failed`, `language_quarantined` and `budget_exhausted`. A fetched page becomes `VALIDATED` only after source-language validation; this does not itself establish published coverage.
+
+The build report groups records by advertised and validated language, lists entry URLs and acquisition outcomes, and exposes `COMPLETE_WITHIN_SCOPE`, `PARTIAL` or `FAILED` discovery status with the scope, mechanisms attempted, budgets and outstanding limitations. `COMPLETE_WITHIN_SCOPE` means the configured static/adapter discovery frontier was exhausted, not that all languages on the live site are known. Unresolved observed selectors, failed discovery inputs or exhausted budgets make discovery `PARTIAL`; inability to inspect any configured entry point makes it `FAILED`. An absent conventional sitemap alone is a reported limitation, not a discovery failure; failure to read an advertised or configured sitemap makes discovery partial. Required language entry points and coverage expectations are explicit source configuration: failure to discover, fetch or validate them blocks release promotion. Other gaps remain visible and cannot contribute to claimed coverage; the last successful release remains active when promotion fails.
 
 ## 10.1 Concept compilation
 
@@ -1254,6 +1275,15 @@ The UI is not required for MCP runtime availability.
 
 Automated evaluation covers the challenge dimensions:
 
+Website language discovery uses deterministic local HTTP fixtures, not live government-site availability, as its P0 acceptance gate. Fixtures must verify:
+
+- a root redirect to a default-language page followed by discovery and fetching of German, French and Italian selector targets without separate seeds, using declared Swiss source tags and reviewed mappings for bare website labels;
+- HTML and HTTP `hreflang`, relative selector links, URL-valued options, `x-default`, robots-advertised sitemap indexes and sitemap alternates, including repeated links and redirect loops;
+- preservation of language query parameters and separate language variants despite a shared canonical URL, plus isolation of cookies, request identity and cache entries when a configured adapter serves multiple languages at one URL;
+- exclusion of disallowed paths, subdomains, redirects, robots-blocked targets and explicitly unsupported languages before branch acquisition, with no automatic changes to source declarations or release policy;
+- partial reports for observed JavaScript/cookie selectors without adapters, unreachable advertised variants, malformed or conflicting hints and exhausted budgets; no alternatives found must never imply a monolingual site;
+- independent content-language validation and parallel-version checks, stable scheduling across language branches, and publication failure for missing required variants while optional gaps remain excluded from coverage.
+
 | Dimension | Technical checks |
 |---|---|
 | Grounding quality | factual correctness, authority, jurisdiction, temporal validity, citation support, unsupported/conflicting results |
@@ -1264,6 +1294,7 @@ Automated evaluation covers the challenge dimensions:
 | Language policy | closed-catalog enforcement, policy immutability, tag/alias mapping, provider isolation and Knowledge Release policy reference |
 | Language resolution | malformed and unsupported tags, requested/detected/effective fields, low-confidence, short, carrier selection, protected spans, mixed combinations and mismatch outcomes |
 | Source-language integrity | declaration/detection mismatch, mixed-section segmentation, encoding failures and parallel-page revision compatibility |
+| Website language discovery | root redirects, selector links/options, HTML/HTTP hreflang, x-default, sitemap alternates, scope enforcement, language URL preservation, shared budgets and discovery reporting |
 | Localized metadata | required projection completeness, original/official/curated/model provenance, provider-failure gating, routed-language lexical recall and original-evidence linkage |
 | Response-language safety | supported response language, fixed `de`/`de-DE`/`gsw`/`gsw-CH` to `de-CH` mappings, absence of Swiss German generation, original evidence preservation, translation labelling and citation linkage |
 | Presentation degradation | structured result preservation, typed render/translation warnings and absence of silent response-language fallback |
@@ -1301,6 +1332,7 @@ Operational telemetry includes:
 ```text
 build duration and state
 source request count / cache hit / failure
+language discovery status / advertised and validated languages / entry URLs / exclusions and unresolved selectors / budget limits
 last attempted and successful refresh
 snapshot and release identifiers
 platform catalog / language policy identifiers, versions and hashes
@@ -1381,7 +1413,7 @@ All mock data must be visibly labelled `DEMO/MOCK`.
 | Priority | Workstream | Scope |
 |---|---|---|
 | P0 | Contracts and coverage | MCP schemas, language contracts, terminology, source definitions, coverage/limitations |
-| P0 | Acquisition | scanner, fetcher, snapshots, normalizer and refresh metadata |
+| P0 | Acquisition | scanner, website language discovery, fetcher, snapshots, normalizer, discovery report and refresh metadata |
 | P0 | Concepts | seed graph, candidate extraction, corpus aggregation, granularity policy, terminology and graph validation |
 | P0 | Localized metadata | compact standard-language projections, provenance, caching, German-variant routing and Swiss German normalization |
 | P0 | Evidence | compiler, concept assignments, authority/applicability metadata and citations |
@@ -1400,6 +1432,8 @@ No hackathon workstream is required to implement scheduled/incremental builds or
 # 21. Technical Definition of Done
 
 Swisscom can clone the repository, follow the documented setup, start the MCP server, inspect its declared coverage and limitations, run an on-demand build, and execute the supplied evaluation tests.
+
+A root-seeded website build discovers and fetches eligible language variants exposed by supported selectors, alternate links and sitemaps without separate language seeds. Its report distinguishes advertised languages, validated content and published coverage, explains skipped or unresolved variants, and declares discovery limits. Missing required variants block promotion without replacing the last successful release.
 
 The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language and broad/narrow concept variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the effective supported response language, maps `de`, `de-DE`, `gsw` and `gsw-CH` queries to `de-CH` generated prose, reports freshness, and preserves the last successful release when a source or build fails.
 
