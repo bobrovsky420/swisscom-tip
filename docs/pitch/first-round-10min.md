@@ -1,17 +1,17 @@
 # Swisscom Trusted Information Platform
-## First-Round Pitch Deck — Maximum 10 Minutes
+## First-Round Pitch Deck - Maximum 10 Minutes
 
-**Format:** 7 slides, ~8:30 presentation + buffer.  
+**Format:** 7 slides, ~8:45 presentation + buffer.<br>
 **Goal:** sell a credible hackathon vertical slice and the target product it validates.
 
 ---
 
-# Slide 1 — The Idea
+# Slide 1 - The Idea
 ## From AI that talks to AI that knows what to trust
 
 **Swisscom Trusted Information Platform** is a headless platform that turns authoritative and live information into trustworthy structured services for any application.
 
-The hackathon MCP server is its first narrow vertical slice—not the complete product vision.
+The hackathon MCP server is its first narrow vertical slice - not the complete product vision.
 
 > **AI is infrastructure, not the interface.**
 
@@ -21,7 +21,7 @@ TIP can power myAI, a mobile app, eGovernment, a banking portal or an automated 
 
 ---
 
-# Slide 2 — Hackathon Proof: admin.ch + zh.ch
+# Slide 2 - Hackathon Proof: admin.ch + zh.ch
 
 We deliberately start small and authoritative:
 
@@ -37,11 +37,13 @@ Demo scenario:
 
 This tests authority, jurisdiction and applicability rather than only semantic similarity.
 
-**Speaker note (~60s):** Real official data, focused coverage, credible foundation.
+Multilingual proof: ask in English, German, French, Italian, Swiss German or Romansh; retrieve original evidence in any source language declared by the release; receive the explanation in the requested language.
+
+**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Multilingual means cross-language retrieval inside TIP - not asking the client LLM to translate first.
 
 ---
 
-# Slide 3 — Hackathon Vertical Slice: Build, Then Serve
+# Slide 3 - Hackathon Vertical Slice: Build, Then Serve
 
 Hackathon MVP:
 
@@ -52,8 +54,11 @@ scan + fetch official sources
         ↓
 immutable snapshots
         ↓
-normalize + semantic enrichment
-       (Apertus preferred)
+normalize + detect language
+        ↓
+canonical concepts + multilingual terminology
+        ↓
+semantic enrichment (Apertus preferred)
         ↓
 Evidence Objects
         ↓
@@ -72,7 +77,7 @@ For the hackathon, builds are **on demand**. Scheduled/incremental Knowledge CI/
 
 ---
 
-# Slide 4 — One Platform, Different Clients
+# Slide 4 - One Platform, Different Clients
 
 ```text
                     TIP
@@ -87,7 +92,7 @@ For the hackathon, builds are **on demand**. Scheduled/incremental Knowledge CI/
 - **OpenCode:** one standards-compatible example client with a visible `swiss_information.resolve` call.
 - **Arrival Checklist:** formal fields → typed result; no chat prompt.
 
-Stretch only: **Flutter Swiss Hike** using 10–20 clearly labelled DEMO/MOCK routes plus mock transport/weather/places providers.
+Stretch only: **Flutter Swiss Hike** using 10-20 clearly labelled DEMO/MOCK routes plus mock transport/weather/places providers.
 
 > **Same platform. No shared user interface.**
 
@@ -95,33 +100,35 @@ Stretch only: **Flutter Swiss Hike** using 10–20 clearly labelled DEMO/MOCK ro
 
 ---
 
-# Slide 5 — Runtime: Search Returns Evidence, Not Answers
+# Slide 5 - Runtime: Search Returns Evidence, Not Answers
 
 ```text
-Request
+Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
   ↓
-Query Planner
+language detection + canonical concept
   ↓
-Authority / jurisdiction / date filters
+server-side terminology expansion
   ↓
-lexical + vector + concept search
+lexical variants + concept lookup + multilingual vector search
   ↓
-2–5 Evidence Objects
+authority / jurisdiction / date checks
+  ↓
+2-5 Evidence Objects
   ↓
 Evidence / Rule Engine
   ↓
 structured facts + Trust Envelope
   ↓
-optional prose
+requested-language prose + original-language citations
 ```
 
-Apertus is our preferred model for semantic uncertainty, but the core is model-independent and can use another compatible provider. Deterministic software handles dates, hashes, numeric constraints and rules.
+Apertus is our preferred model for language detection, concept resolution, terminology expansion, reranking and optional response rendering. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
 
-**Speaker note (~75s):** The LLM does not receive dozens of documents and improvise. TIP first establishes the evidence and facts.
+**Speaker note (~75s):** “Residence permit in Zurich” resolves to the canonical concept and reviewed terms such as “Aufenthaltsbewilligung”. The LLM does not receive dozens of documents and improvise: TIP retrieves and establishes original evidence first, then renders the answer language.
 
 ---
 
-# Slide 6 — Target Product Vision: Why Swisscom?
+# Slide 6 - Target Product Vision: Why Swisscom?
 
 **Team product and business hypothesis:**
 
@@ -156,7 +163,7 @@ Possible commercial models: revenue share per request, monthly/annual licensing,
 
 ---
 
-# Slide 7 — Start Focused, Build a Platform
+# Slide 7 - Start Focused, Build a Platform
 
 Hackathon proof:
 
@@ -186,7 +193,7 @@ Version │ Trust │ Capability │ Information Product
 Data Product │ Entitlement │ Usage
 ```
 
-> **Apertus is our preferred semantic model; TIP remains model-independent.**<br>
+> **Apertus brings Swiss multilingual potential; TIP verifies it and remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
@@ -202,9 +209,9 @@ Data Product │ Entitlement │ Usage
 | 2 | 1:00 |
 | 3 | 1:15 |
 | 4 | 1:15 |
-| 5 | 1:15 |
+| 5 | 1:30 |
 | 6 | 1:30 |
 | 7 | 1:15 |
-| **Total** | **8:30** |
+| **Total** | **8:45** |
 
 Keep detailed crawler design, database schemas, autonomous refresh, billing/settlement and marketplace workflows for later rounds/Q&A.

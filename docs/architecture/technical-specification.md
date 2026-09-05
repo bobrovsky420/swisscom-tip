@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification — V3
+## Technical & Solution Architecture Specification - V4
 
 **Hackathon:** Swiss Grounding MCP<br>
 **Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
@@ -34,12 +34,14 @@ Technical decisions are classified as:
 4. Raw source snapshots and published releases are immutable.
 5. Deterministic code handles dates, hashes, filtering, thresholds and explicit rules.
 6. Semantic models handle classification, terminology, retrieval and explanation where they add measurable value.
-7. Retrieval returns a small evidence bundle rather than an uncontrolled document dump.
-8. Every result is traceable to source versions and processing metadata.
-9. Refresh, cache state and source failures are observable.
-10. All model, storage and client integrations are replaceable behind explicit interfaces.
-11. The vertical slice should validate target-product concepts without implementing the entire target product.
-12. Future commercial and autonomous capabilities influence contracts only where that does not endanger MVP delivery.
+7. Cross-language terminology expansion and retrieval are server responsibilities, not client responsibilities.
+8. Retrieval returns a small evidence bundle rather than an uncontrolled document dump.
+9. Original-language evidence remains authoritative; translations are labelled derivative content.
+10. Every result is traceable to source versions and processing metadata.
+11. Refresh, cache state and source failures are observable.
+12. All model, storage and client integrations are replaceable behind explicit interfaces.
+13. The vertical slice should validate target-product concepts without implementing the entire target product.
+14. Future commercial and autonomous capabilities influence contracts only where that does not endanger MVP delivery.
 
 ---
 
@@ -152,7 +154,7 @@ Python is selected for the hackathon backend because TIP's primary complexity li
 The implementation boundary is:
 
 ```text
-PYTHON — P0 BACKEND
+PYTHON - P0 BACKEND
 source acquisition
 normalization and evidence compilation
 retrieval and deterministic rules
@@ -161,11 +163,11 @@ evaluation
 MCP server
 REST API
 
-TYPESCRIPT — OPTIONAL P1 CLIENTS
+TYPESCRIPT - OPTIONAL P1 CLIENTS
 Admin Control Plane
 Arrival Checklist web client
 
-FLUTTER — OPTIONAL P2 CLIENT
+FLUTTER - OPTIONAL P2 CLIENT
 Swiss Hike
 ```
 
@@ -505,20 +507,25 @@ The initial deployables are the one-shot `knowledge-builder` and long-running `m
 
 ## 7.1 Preferred provider
 
-Apertus is the preferred semantic model for the hackathon because it supports the Swiss and sovereign-AI positioning and gives the team an opportunity to evaluate it on multilingual Swiss information.
+Apertus is the preferred semantic model for the hackathon because it supports the Swiss and sovereign-AI positioning and is a credible candidate for multilingual Swiss language work. The [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training on 15 trillion tokens across more than 1,000 languages, with 40% non-English data, and explicitly names Swiss German and Romansh among included underrepresented languages.
+
+This training coverage is motivation for evaluation, not a performance guarantee. The [official Apertus FAQ](https://www.apertus-ai.org/docs/faq/) says that Apertus was trained on more than 1,800 languages but is fully conversational in only a few dozen, and recommends evaluation or fine-tuning for specific language needs. TIP therefore promotes an Apertus configuration only when it passes the same multilingual retrieval and rendering gates as any other provider.
 
 Suitable uses include:
 
 - source and document classification;
 - concept and terminology extraction;
-- multilingual query and evidence matching;
+- query-language detection and canonical-concept resolution;
+- multilingual terminology expansion, including evaluated Swiss German and Romansh variants;
 - applicability interpretation;
 - evidence reranking;
-- optional explanations after evidence has been established.
+- optional translation and response-language rendering after evidence has been established.
+
+Apertus is a generative semantic provider in this architecture, not implicitly the vector-embedding model. Vector retrieval uses a separately configured multilingual embedding provider unless an Apertus-derived embedding implementation independently passes the retrieval evaluation gate.
 
 ## 7.2 Model independence
 
-All semantic operations must use a `SemanticModelProvider` interface. The implementation may use another compatible LLM or embedding model when Apertus is unavailable, unsuitable for a task, or outperformed in evaluation.
+All model-assisted operations use explicit provider interfaces. Generative classification, expansion, reranking and rendering use `SemanticModelProvider`; vector generation uses `EmbeddingProvider`. An implementation may use another compatible LLM or embedding model when Apertus is unavailable, unsuitable for a task, or outperformed in evaluation.
 
 The core server must continue to support deterministic acquisition, filtering, citation, freshness and unsupported-result handling without an Apertus-specific dependency.
 
@@ -536,6 +543,24 @@ output content hash
 
 Provider changes require regression evaluation before publishing a release.
 
+## 7.3 Multilingual capability contract
+
+Cross-language retrieval is a P0 runtime capability for the source, concept, jurisdiction and language matrix declared by the active release. It must not depend on the requesting application translating or expanding the question.
+
+The mandatory reproducible path consists of:
+
+- versioned canonical concept identifiers;
+- a reviewed multilingual terminology registry for P0 concepts;
+- server-side query expansion;
+- language-aware lexical retrieval;
+- direct canonical-concept lookup;
+- original-language evidence and citation preservation;
+- release-gating evaluation across declared query/source-language pairs.
+
+Multilingual vector retrieval, semantic concept resolution, reranking and translation supplement this path when they improve measured results. They must not be the only way to retrieve a P0 concept.
+
+Every model provider declares supported operations, languages and model versions. The initial evaluation matrix includes English (`en`), German (`de-CH`), French (`fr-CH`), Italian (`it-CH`), Swiss German (`gsw-CH`) and Romansh (`rm-CH`) query variants for the principal scenario. Coverage declarations identify the tested Swiss German dialect forms and Romansh standard or idioms; training-data inclusion alone must not be represented as verified capability.
+
 ---
 
 # 8. Core Components
@@ -546,7 +571,12 @@ SourceScanner
 SourceFetcher
 SnapshotStore
 DocumentNormalizer
+LanguageDetector
 SemanticModelProvider
+EmbeddingProvider
+TerminologyRegistry
+ConceptResolver
+QueryExpander
 EvidenceCompiler
 LexicalIndex
 VectorIndex
@@ -557,6 +587,7 @@ EvidenceRetriever
 CapabilityRegistry
 EvidenceRuleEngine
 ResultAssembler
+ResponseLanguageRenderer
 McpServer
 RestApi
 ```
@@ -575,6 +606,11 @@ SourceSnapshot
 NormalizedDocument
 EvidenceObject
 CandidateFact
+LanguageContext
+ConceptDefinition
+TerminologyEntry
+QueryVariant
+TranslationMetadata
 KnowledgeRelease
 ExecutionPlan
 EvidenceBundle
@@ -583,6 +619,45 @@ CapabilityDefinition
 InformationProductRequest
 InformationProductResult
 ```
+
+The multilingual contracts contain at least:
+
+```text
+LanguageContext
+  query_language
+  response_language
+  source_languages
+  detection_method and confidence
+
+ConceptDefinition
+  concept_id
+  preferred labels by language
+  jurisdiction/topic scope
+  schema version
+
+TerminologyEntry
+  concept_id
+  BCP 47 language tag
+  term and normalized term
+  alias type
+  jurisdiction scope
+  provenance and review status
+  version
+
+QueryVariant
+  text and language
+  concept identifiers
+  generation method
+  source terminology/model reference
+
+TranslationMetadata
+  source and target languages
+  provider, model and version
+  generation timestamp
+  original content hash
+```
+
+`QueryVariant.generation_method` distinguishes at least `ORIGINAL`, `CURATED_ALIAS`, `MODEL_TRANSLATION` and `SEMANTIC_EXPANSION`. This keeps deterministic and model-generated recall paths inspectable.
 
 Target-product contracts:
 
@@ -612,7 +687,7 @@ canonical authority
 base URL and allowed URL patterns
 source type
 jurisdiction
-language
+declared languages
 declared topic coverage
 refresh policy
 cache policy
@@ -636,6 +711,10 @@ conditional HTTP validation
 immutable snapshots
   ↓
 normalize
+  ↓
+language detection
+  ↓
+canonical concepts + multilingual terminology
   ↓
 optional semantic enrichment
   ↓
@@ -667,6 +746,8 @@ raw-object location
 fetch/build identifier
 ```
 
+`NormalizedDocument` and `EvidenceObject` records contain at least `detected_language`, `language_detection_method`, `canonical_concept_ids` and the original text or an immutable reference to it. A source may declare several languages while an individual evidence object normally has one detected language.
+
 A `KnowledgeRelease` references the exact snapshots, normalized documents, evidence objects, indexes, schema versions, model metadata and evaluation result used to create it.
 
 Only a release that passes the configured evaluation gate can become the active release.
@@ -684,21 +765,33 @@ PostgreSQL FTS    lexical search documents
 MinIO/filesystem  immutable raw snapshots
 ```
 
-Retrieval applies hard constraints before relevance ranking:
+Retrieval uses independent lexical, concept and semantic paths so a failure in one path does not silently remove otherwise relevant evidence:
 
 ```text
 active published release
   ↓
-validity / jurisdiction / applicability / authority filters
+query-language detection + response-language selection
   ↓
-lexical + vector + concept candidates
+jurisdiction normalization + canonical-concept resolution
   ↓
-merge / rerank / diversify
+multilingual terminology expansion
   ↓
-2–5 Evidence Objects by default
+parallel candidates:
+  original-query lexical + expanded-query lexical
+  + canonical concept + multilingual vector
+  ↓
+candidate union + rank fusion
+  ↓
+validity / jurisdiction / applicability / authority checks
+  ↓
+rerank / diversify
+  ↓
+2-5 Evidence Objects by default
 ```
 
-Ranking may combine semantic relevance, lexical relevance, concept match, source authority, jurisdiction specificity, applicability and temporal validity. Every factor must be inspectable for evaluation and debugging.
+Candidate retrieval uses a larger configurable pool than the final 2-5 evidence objects. Ranking may combine semantic relevance, lexical relevance, concept match, source authority, jurisdiction specificity, applicability and temporal validity. Every retrieval channel, query variant and ranking factor must be inspectable for evaluation and debugging.
+
+Query language and response language never act as implicit filters on source language. Source language is restricted only when a client explicitly supplies `source_languages`. Explicit authority, jurisdiction, applicability and temporal constraints remain hard checks before evidence is accepted as support.
 
 ---
 
@@ -716,7 +809,17 @@ Evidence and Rule Engine
 Result Assembler
 ```
 
-Natural-language requests may use the configured semantic provider to derive an `ExecutionPlan`. Structured clients normally supply the relevant context directly.
+For a natural-language request, the `QueryPlanner`:
+
+1. accepts or detects `query_language`;
+2. selects `response_language`, defaulting to the query language;
+3. normalizes jurisdiction and other structured context;
+4. resolves canonical concepts;
+5. creates multilingual `QueryVariant`s from reviewed terminology;
+6. optionally adds model-generated variants, recording their provenance;
+7. produces an inspectable `ExecutionPlan` for parallel retrieval.
+
+Structured clients normally supply relevant context directly, but clients are never required to translate questions, supply synonyms or know source languages. Curated terminology is preferred for P0 concepts; model-generated expansion is a fallback for unrecognized language or phrasing.
 
 The Evidence and Rule Engine:
 
@@ -727,7 +830,7 @@ The Evidence and Rule Engine:
 - exposes unresolved contradictions;
 - prevents a nearest semantic match from becoming an unsupported factual claim.
 
-Optional prose is generated only after structured facts, statuses and evidence have been established.
+Optional prose is generated only after structured facts, statuses and evidence have been established. It is rendered in `response_language`. The original source excerpt remains the authoritative evidence; any translated excerpt is labelled as machine translation, records provider and model metadata, and links to the original excerpt and citation.
 
 ---
 
@@ -739,11 +842,23 @@ Initial tools:
 - `swiss_information.get_evidence`
 - `swiss_information.get_coverage`
 
-`resolve` accepts the question plus optional language, jurisdiction, date and structured context. It returns a compact structured result containing status, supported facts, evidence references, coverage information and a Trust Envelope.
+`resolve` accepts:
+
+```text
+question             required
+query_language       optional; BCP 47 tag, detected when absent
+response_language    optional; BCP 47 tag, defaults to query language
+source_languages     optional explicit evidence-language constraint
+jurisdiction         optional
+date                 optional
+structured_context   optional
+```
+
+It returns a compact structured result containing the resolved language context, status, supported facts, evidence references, coverage information and a Trust Envelope. Each evidence reference exposes `source_language`, the original excerpt and citation, plus optional `translated_excerpt` and `translation_metadata`. A translated excerpt is never represented as the cited source.
 
 `get_evidence` resolves evidence identifiers to source excerpts and provenance without returning entire source documents by default.
 
-`get_coverage` returns declared sources, topics, jurisdictions, languages, exclusions, release version and freshness information.
+`get_coverage` returns declared sources, topics, jurisdictions, query languages, source languages, response languages, tested Swiss German dialect forms and Romansh variants, exclusions, release version and freshness information.
 
 The compatibility target is standard MCP clients and the Swisscom evaluation harness. OpenCode is a supported example and validation client, not a required, privileged or server-specific integration. A normal demo query should complete with one high-level `resolve` call whenever possible.
 
@@ -795,11 +910,15 @@ Automated evaluation covers the challenge dimensions:
 |---|---|
 | Grounding quality | factual correctness, authority, jurisdiction, temporal validity, citation support, unsupported/conflicting results |
 | Useful coverage | declared coverage matrix and representative questions per source/topic |
+| Multilingual retrieval | cross-language candidate recall, final evidence hit rate, concept resolution, terminology expansion and source-language diversity |
+| Response-language safety | requested response language, original evidence preservation, translation labelling and citation linkage |
 | Agent efficiency | tool-call count, response bytes/tokens, evidence count and latency |
 | Operability | clean setup, repeatable builds, cache behaviour, refresh, source failures, last-known-good release and monitoring |
 | Integration readiness | schema validation and tests through standard MCP clients |
 
-The evaluation configuration stores explicit thresholds for release promotion. Final targets should be calibrated against the available infrastructure before the event rather than embedded as unsupported estimates.
+The evaluation configuration stores explicit thresholds for release promotion. For the finite P0 multilingual golden set, every required authoritative document must appear in the top 20 candidate pool and every required supported fact must have at least one supporting document in the final top 5 evidence objects. Every citation must resolve to original-language evidence. Operational latency and throughput targets should be calibrated against the available infrastructure before the event rather than embedded as unsupported estimates.
+
+The golden suite covers every declared query/source-language pair and includes terminology, abbreviations, spelling variants, German compounds, Swiss German dialect forms and declared Romansh forms. At minimum it tests the residence-permit concept across `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and corresponding evaluated Italian, Swiss German and Romansh variants. A multilingual regression blocks release promotion.
 
 Operational telemetry includes:
 
@@ -810,6 +929,9 @@ last attempted and successful refresh
 snapshot and release identifiers
 query latency
 retrieval candidate and evidence counts
+detected query / response / source languages
+resolved concepts and query-variant provenance
+per-channel candidate ranks and multilingual fallback use
 model/provider latency and errors
 MCP tool calls and response size
 ```
@@ -871,12 +993,12 @@ All mock data must be visibly labelled `DEMO/MOCK`.
 
 | Priority | Workstream | Scope |
 |---|---|---|
-| P0 | Contracts and coverage | MCP schemas, source definitions, coverage/limitations |
+| P0 | Contracts and coverage | MCP schemas, language contracts, terminology, source definitions, coverage/limitations |
 | P0 | Acquisition | scanner, fetcher, snapshots, normalizer and refresh metadata |
 | P0 | Evidence | compiler, authority/applicability metadata and citations |
-| P0 | Retrieval | lexical/vector retrieval and hard filters |
-| P0 | Runtime | planner, evidence/rule engine, MCP server |
-| P0 | Evaluation | grounding, citations, unsupported queries, efficiency and freshness |
+| P0 | Retrieval | language-aware lexical, canonical-concept and multilingual vector retrieval plus hard checks |
+| P0 | Runtime | language detection, server-side expansion, planner, evidence/rule engine, response rendering and MCP server |
+| P0 | Evaluation | grounding, citations, multilingual recall, translation safety, unsupported queries, efficiency and freshness |
 | P0 | Delivery | reproducible setup and standard MCP client validation |
 | P1 | Control plane | build, evidence, evaluation and release views |
 | P1 | Structured demo | REST and Arrival Checklist |
@@ -890,7 +1012,9 @@ No hackathon workstream is required to implement scheduled/incremental builds or
 
 Swisscom can clone the repository, follow the documented setup, start the MCP server, inspect its declared coverage and limitations, run an on-demand build, and execute the supplied evaluation tests.
 
-The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo with one high-level tool call, returns compact cited evidence and explicit trust status, reports freshness, and preserves the last successful release when a source or build fails.
+The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the requested language, reports freshness, and preserves the last successful release when a source or build fails.
+
+For the principal scenario, the published release passes the declared English, German, French, Italian, Swiss German and Romansh query matrix without client-side translation or terminology expansion. The guarantee is limited to declared concepts, sources, jurisdictions and tested language variants; unsupported dialects, idioms or source languages are reported through coverage and result status rather than inferred.
 
 OpenCode is used as one demonstrated client without introducing OpenCode-specific server behaviour. Apertus is used where available and beneficial, while an alternative compatible provider can be configured without changing domain or MCP contracts.
 

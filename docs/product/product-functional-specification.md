@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Product & Functional Specification — V12
+## Product & Functional Specification - V13
 
 **Hackathon:** Swiss Grounding MCP using selected `admin.ch` / SEM and `zh.ch` sources<br>
 **Primary deliverable:** Testable MCP server<br>
@@ -17,7 +17,7 @@ The Trusted Information Platform (TIP) turns authoritative knowledge, live data,
 
 > **AI is infrastructure, not the interface.**
 
-TIP is the target product. The hackathon delivers a narrow vertical slice of it: a working MCP server for focused Swiss public information. That slice builds a versioned knowledge release from selected official sources, returns compact evidence with citations, distinguishes jurisdiction and applicability, reports freshness and explicitly declines unsupported questions.
+TIP is the target product. The hackathon delivers a narrow vertical slice of it: a working MCP server for focused Swiss public information. That slice builds a versioned knowledge release from selected official sources, resolves requests across declared query and source languages, returns compact evidence with citations, distinguishes jurisdiction and applicability, reports freshness and explicitly declines unsupported questions.
 
 The vertical slice is not a throwaway demonstration or the complete definition of the product. It is designed to validate the foundation for structured applications, private and enterprise knowledge, automated Knowledge CI/CD, and a publisher Data Product marketplace. Delivery discipline and product ambition are therefore treated as complementary horizons.
 
@@ -121,13 +121,15 @@ Private Knowledge ───────┘
 4. Deterministic logic handles deterministic problems.
 5. Semantic models handle semantic uncertainty only where they add value.
 6. Apertus is preferred for relevant semantic tasks, while the core remains compatible with other providers.
-7. Search returns evidence, not unsupported answers.
-8. Runtime normally uses a small set of high-quality evidence.
-9. Structured output precedes optional prose.
-10. Every result carries a Trust Envelope.
-11. MCP is the primary hackathon interface, not the entire product architecture.
-12. Publisher licensing and entitlements are full-product concerns.
-13. Marketplace features and autonomous refresh are post-MVP.
+7. Cross-language retrieval is a server capability; clients are not required to translate or expand requests.
+8. Search returns evidence, not unsupported answers.
+9. Runtime normally uses a small set of high-quality evidence.
+10. Structured output precedes optional prose.
+11. Original-language evidence remains authoritative; translations are labelled derivative content.
+12. Every result carries a Trust Envelope.
+13. MCP is the primary hackathon interface, not the entire product architecture.
+14. Publisher licensing and entitlements are full-product concerns.
+15. Marketplace features and autonomous refresh are post-MVP.
 
 ---
 
@@ -158,7 +160,7 @@ Swiss Confederation → SEM / federal context
               declared local limitations
 ```
 
-The demo tests authority, federal/cantonal applicability, citations, unsupported handling, multilingual queries and efficient retrieval.
+The demo tests authority, federal/cantonal applicability, citations, unsupported handling, multilingual queries and efficient retrieval. Its language matrix includes English, German, French, Italian, Swiss German and Romansh query variants against the source languages declared by the active release. Exact Swiss German dialect and Romansh idiom coverage is reported rather than implied.
 
 The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` material. It does not claim complete Swiss, cantonal or municipal coverage. Exact sources, topics, languages, jurisdictions, exclusions and last refresh are exposed through the product and documented in the repository.
 
@@ -166,7 +168,7 @@ The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` mate
 
 # 8. Hackathon Scope and Priority
 
-## P0 — Published challenge outcome
+## P0 - Published challenge outcome
 
 - working MCP server in an accessible GitHub repository;
 - clear setup, client configuration, coverage and limitations documentation;
@@ -178,27 +180,29 @@ The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` mate
 - compatibility with the Swisscom harness and standard MCP clients;
 - safe secret and test-access handling.
 
-## P0 — Team MVP choices
+## P0 - Team MVP choices
 
 - focused `admin.ch` / SEM and `zh.ch` coverage;
 - operator-triggered, on-demand knowledge builds;
 - traceable source versions and immutable published releases;
-- normalized evidence with authority, jurisdiction, applicability and temporal metadata;
-- automated grounding, citation, efficiency, freshness and integration tests;
+- normalized evidence with source-language, authority, jurisdiction, applicability and temporal metadata;
+- server-managed canonical concepts and multilingual terminology for the principal scenario;
+- language-aware lexical, canonical-concept and multilingual vector retrieval;
+- automated grounding, citation, multilingual retrieval, efficiency, freshness and integration tests;
 - compact Trust Envelopes and high-level resolution calls.
 
-Semantic enrichment is optional and used only when it improves measured results. Apertus is the preferred provider; another compatible LLM or embedding model may be used without changing the platform's functional contracts.
+Cross-language retrieval is a P0 functional requirement for the language combinations and concepts declared by the active release. Curated terminology and canonical-concept lookup provide the reproducible baseline. Semantic enrichment, multilingual embeddings and reranking are used only when they improve measured results. Apertus is the preferred semantic provider, while vector retrieval uses a separately evaluated multilingual embedding provider; either provider may be replaced without changing the platform's functional contracts.
 
-## P1 — Product-validation extensions
+## P1 - Product-validation extensions
 
 - Admin Control Plane for sources, builds, evidence, tests and releases;
 - REST access to the same published release;
 - Swiss Arrival Checklist using typed inputs and outputs.
 
-## P2 — Product-composition stretch
+## P2 - Product-composition stretch
 
 - Flutter Swiss Hike client;
-- 10–20 clearly labelled `DEMO/MOCK` routes;
+- 10-20 clearly labelled `DEMO/MOCK` routes;
 - mock transport, weather and places providers;
 - deterministic filters and optional preference ranking.
 
@@ -229,12 +233,14 @@ The product must:
 1. show which sources are included;
 2. acquire and preserve source versions;
 3. normalize relevant source content;
-4. derive evidence and optional candidate facts;
-5. build the retrieval representation;
-6. evaluate the candidate release;
-7. publish it only if the evaluation gate passes;
-8. preserve the last successful release if a build fails;
-9. expose build progress, failures and freshness.
+4. detect and record the language of each normalized document and evidence object;
+5. assign canonical concepts and reviewed multilingual terminology for P0 concepts;
+6. derive evidence and optional candidate facts while preserving original-language text;
+7. build language-aware lexical, canonical-concept and multilingual vector representations;
+8. evaluate the candidate release against its declared cross-language matrix;
+9. publish it only if the evaluation gate passes;
+10. preserve the last successful release if a build fails;
+11. expose build progress, failures and freshness.
 
 Normal MCP requests use the published release and do not scrape government sites at request time.
 
@@ -253,6 +259,27 @@ For a natural-language request, TIP must:
 7. generate optional prose only after the supported result is established.
 
 Structured applications normally provide the relevant context directly and receive typed results without requiring a chat prompt.
+
+## 10.1 Multilingual Resolution Behaviour
+
+TIP treats query language, response language and source language as distinct properties.
+
+For a natural-language request, TIP must:
+
+1. detect the query language unless the client supplies it;
+2. determine the response language, defaulting to the query language;
+3. map the request to canonical domain concepts and normalize Swiss jurisdiction names;
+4. expand those concepts using reviewed terminology for languages declared by the active release;
+5. retrieve evidence across all declared source languages unless the client explicitly restricts them;
+6. combine original-query lexical, expanded-query lexical, canonical-concept and multilingual vector candidates;
+7. establish supported facts from original authoritative evidence;
+8. render optional prose in the requested response language only after the supported result is established.
+
+Terminology expansion is a server responsibility. MCP and REST clients are not required to translate a request, supply synonyms or know the source languages. Query language and response language must not act as implicit filters on source language.
+
+Original-language source excerpts and citations remain authoritative. A translated excerpt is derivative content, must be labelled as a machine translation, must identify its provider and model version, and must retain a reference to the original excerpt. A translation is never presented as the cited source.
+
+The functional guarantee applies only within the source, topic, jurisdiction, concept and language matrix declared by the active release. Swiss German is treated as a family of dialects and Romansh coverage identifies Rumantsch Grischun and any supported idioms explicitly.
 
 ---
 
@@ -288,7 +315,7 @@ The MCP server provides three user-facing capabilities:
 2. inspect cited evidence and provenance;
 3. inspect declared coverage, limitations and freshness.
 
-A normal supported request should require one high-level resolution call whenever possible. Evidence and coverage inspection remain available when the client or evaluator needs more detail.
+A normal supported request, including a cross-language request, should require one high-level resolution call whenever possible. The requesting application supplies the question and optional context or language preferences; the server performs language detection, canonical-concept resolution, terminology expansion and cross-language retrieval. Client-side translation or terminology expansion must not be required for correctness. Evidence and coverage inspection remain available when the client or evaluator needs more detail.
 
 Exact tool names, schemas, transports and client configuration are defined in the technical specification.
 
@@ -419,8 +446,10 @@ Swisscom can:
 - observe source versions, freshness, build outcome and the active release;
 - connect its evaluation harness or another standard MCP client;
 - obtain compact grounded results with exact citations;
+- issue an English, German, French, Italian, Swiss German or Romansh query for a declared P0 concept and retrieve relevant evidence in another declared source language;
+- receive optional prose in the requested response language while retaining original-language evidence and citations;
 - see explicit unsupported, insufficient, conflicting and stale states;
-- reproduce the supplied grounding, efficiency and integration tests.
+- reproduce the supplied grounding, multilingual retrieval, efficiency and integration tests.
 
 OpenCode is demonstrated as one compatible client, not treated as a required integration. Apertus is preferred where it adds evaluated value, while the server remains functional with another compatible semantic provider.
 
@@ -449,4 +478,4 @@ P1 completion additionally provides the Admin Control Plane and structured Swiss
 > **TIP provides trusted information, context and orchestration.**<br>
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-The hackathon vertical slice proves the working Swiss-grounding MCP foundation and tests the concepts on which the target product depends. Structured applications, autonomous Knowledge CI/CD, enterprise overlays and the publisher marketplace are the intended product evolution—not prerequisites for a credible two-day implementation.
+The hackathon vertical slice proves the working Swiss-grounding MCP foundation and tests the concepts on which the target product depends. Structured applications, autonomous Knowledge CI/CD, enterprise overlays and the publisher marketplace are the intended product evolution - not prerequisites for a credible two-day implementation.

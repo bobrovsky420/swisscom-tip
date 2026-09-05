@@ -1,6 +1,6 @@
-# Full Pitch Presentation — Swisscom Trusted Information Platform
+# Full Pitch Presentation - Swisscom Trusted Information Platform
 
-## Slide 1 — Trusted Information Infrastructure
+## Slide 1 - Trusted Information Infrastructure
 
 # Swisscom Trusted Information Platform
 
@@ -10,7 +10,7 @@
 
 ---
 
-## Slide 2 — Published Challenge
+## Slide 2 - Published Challenge
 
 Build an MCP server that makes authoritative public Swiss information accessible effectively: grounded, cited, jurisdiction-aware, fresh, efficient, operable and easy to integrate.
 
@@ -20,7 +20,7 @@ Our insight:
 
 ---
 
-## Slide 3 — Team MVP: A Focused Vertical Slice
+## Slide 3 - Team MVP: A Focused Vertical Slice
 
 ```text
 admin.ch / SEM
@@ -34,9 +34,11 @@ Scenario:
 
 Focused coverage demonstrates federal/cantonal authority, applicability and citations. It is the first vertical slice of TIP, not the limit of the product vision.
 
+Multilingual proof: the same scenario is queried in English, German, French, Italian, Swiss German and Romansh, while evidence may remain in another language declared by the release.
+
 ---
 
-## Slide 4 — On-Demand Knowledge Build
+## Slide 4 - On-Demand Knowledge Build
 
 For the hackathon:
 
@@ -49,8 +51,11 @@ immutable snapshots
        ↓
 normalize
        ↓
-semantic enrichment
-(Apertus preferred)
+language detection
+       ↓
+canonical concepts + multilingual terminology
+       ↓
+semantic enrichment (Apertus preferred)
        ↓
 Evidence Objects
        ↓
@@ -63,7 +68,7 @@ No scheduler or incremental refresher is required in the MVP.
 
 ---
 
-## Slide 5 — Stable Knowledge Is Compiled
+## Slide 5 - Stable Knowledge Is Compiled
 
 Normal MCP requests do **not** scrape admin.ch or zh.ch.
 
@@ -80,9 +85,13 @@ The government source remains canonical; TIP stores a verified operational repre
 
 ---
 
-## Slide 6 — Apertus Preferred, Core Model-Independent
+## Slide 6 - Apertus for Swiss Multilingual Semantics
 
-Apertus is the preferred model for classification, concept extraction, multilingual terminology, applicability interpretation, evidence reranking and explanations. The core can use another compatible provider when Apertus is unavailable or another model performs better in evaluation.
+Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, applicability interpretation, evidence reranking and optional response-language rendering.
+
+Why it fits: the [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports 15 trillion training tokens across more than 1,000 languages, 40% non-English data, and explicitly includes Swiss German and Romansh. The [official FAQ](https://www.apertus-ai.org/docs/faq/) cautions that Apertus is fully conversational in only a few dozen languages and recommends evaluation or fine-tuning for specific needs.
+
+Therefore TIP **tests rather than assumes** performance for English, German, French, Italian, Swiss German and Romansh. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
 
 Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
 
@@ -90,49 +99,55 @@ Deterministic software handles HTTP state, hashes, dates, numeric constraints an
 
 ---
 
-## Slide 7 — Search Returns Evidence, Not Answers
+## Slide 7 - Search Returns Evidence, Not Answers
 
 ```text
-Request
+Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
  ↓
-Query Planner
+language detection + canonical concept
  ↓
-Authority / jurisdiction / date filters
+server-side multilingual terminology expansion
  ↓
-lexical + vector + concept retrieval
+lexical variants + concept lookup + multilingual vector retrieval
  ↓
-2–5 diverse Evidence Objects
+authority / jurisdiction / date checks
+ ↓
+2-5 diverse Evidence Objects
  ↓
 Evidence / Rule Engine
  ↓
 structured facts + Trust Envelope
  ↓
-optional natural-language explanation
+requested-language explanation + original-language citations
 ```
 
-The LLM never needs a large uncontrolled document dump.
+The requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
 
 ---
 
-## Slide 8 — OpenCode: Example MCP Client
+## Slide 8 - OpenCode: Example MCP Client
 
 ```text
 OpenCode
    ↓
 swiss_information.resolve
    ↓
+"residence permit in Zurich" (English)
+   ↓
+residence_permit → Aufenthaltsbewilligung
+   ↓
 TIP / published release
    ├─ SEM evidence
    └─ zh.ch evidence
    ↓
-answer with citations
+English answer + original German/French citations
 ```
 
 One high-level tool call should normally be sufficient. OpenCode demonstrates standard MCP compatibility; the server does not depend on OpenCode-specific behaviour.
 
 ---
 
-## Slide 9 — Know When We Don't Know
+## Slide 9 - Know When We Don't Know
 
 TIP explicitly supports:
 
@@ -149,7 +164,7 @@ A nearest semantic match is not silently treated as applicable truth.
 
 ---
 
-## Slide 10 — Admin Control Plane
+## Slide 10 - Admin Control Plane
 
 The Admin UI makes the platform visible:
 
@@ -159,6 +174,7 @@ Sources: SEM/admin.ch + zh.ch
 Build: COMPLETE
 Evidence: ...
 Tests: PASS
+Multilingual matrix: PASS
 Production Release: ...
 ```
 
@@ -168,7 +184,7 @@ Scheduled refresh/change monitoring is post-MVP.
 
 ---
 
-## Slide 11 — Not Another Chatbot: Arrival Checklist
+## Slide 11 - Not Another Chatbot: Arrival Checklist
 
 Formal fields:
 
@@ -184,7 +200,7 @@ REST returns typed requirements, deadlines, evidence and Trust Envelope. No natu
 
 ---
 
-## Slide 12 — Stretch: Swiss Hike Flutter App
+## Slide 12 - Stretch: Swiss Hike Flutter App
 
 A completely different client uses typed inputs:
 
@@ -193,7 +209,7 @@ Origin │ Date │ Duration │ Difficulty │ Travel limit
 Lake/Panorama │ Weather │ Restaurant
 ```
 
-Hackathon backend uses 10–20 clearly labelled DEMO/MOCK routes and provider abstractions:
+Hackathon backend uses 10-20 clearly labelled DEMO/MOCK routes and provider abstractions:
 
 ```text
 MockTransportProvider
@@ -205,7 +221,7 @@ The app demonstrates architecture, not a production hiking database.
 
 ---
 
-## Slide 13 — Target Product Model — Team Hypothesis
+## Slide 13 - Target Product Model - Team Hypothesis
 
 The remaining product vision builds on concepts exercised by the hackathon vertical slice.
 
@@ -228,7 +244,7 @@ Data Products + Capabilities
 
 ---
 
-## Slide 14 — Target Product Value for Swisscom
+## Slide 14 - Target Product Value for Swisscom
 
 ```text
 myAI / eGov / Mobile / Banking / Enterprise
@@ -244,7 +260,7 @@ TIP creates a reusable trusted-information layer above Swisscom's AI infrastruct
 
 ---
 
-## Slide 15 — Business Hypothesis: Swisscom Economics
+## Slide 15 - Business Hypothesis: Swisscom Economics
 
 Potential revenue:
 
@@ -262,7 +278,7 @@ But TIP can become more than a Swisscom-owned content service.
 
 ---
 
-## Slide 16 — Target Product: Publisher & Data Product Marketplace
+## Slide 16 - Target Product: Publisher & Data Product Marketplace
 
 ```text
 Government │ SIX-like providers │ Companies │ Experts │ Individuals
@@ -281,7 +297,7 @@ Publishers maintain their own trusted packs and can monetize machine consumption
 
 ---
 
-## Slide 17 — Commercial Models
+## Slide 17 - Commercial Models
 
 TIP should support several publisher relationships:
 
@@ -293,7 +309,7 @@ TIP should support several publisher relationships:
 
 ---
 
-## Slide 18 — Example: Future Swiss Hike Economics
+## Slide 18 - Example: Future Swiss Hike Economics
 
 ```text
 Hiking Routes Product      Publisher A
@@ -312,7 +328,7 @@ For the hackathon all hiking providers remain FREE + DEMO/MOCK.
 
 ---
 
-## Slide 19 — Licensing & Entitlements Matter
+## Slide 19 - Licensing & Entitlements Matter
 
 TIP must eventually know not only whether information exists but whether the consumer may use it.
 
@@ -332,7 +348,7 @@ This makes the marketplace applicable to professional providers and regulated en
 
 ---
 
-## Slide 20 — Publisher Incentive
+## Slide 20 - Publisher Incentive
 
 Government can publish an OFFICIAL free Data Product.
 
@@ -346,7 +362,7 @@ Swisscom does not need to create all content itself; it creates the **trusted di
 
 ---
 
-## Slide 21 — Target Product: Autonomous Knowledge CI/CD
+## Slide 21 - Target Product: Autonomous Knowledge CI/CD
 
 Production evolution:
 
@@ -368,7 +384,7 @@ The hackathon proves repeatable on-demand builds and lifecycle metadata; automat
 
 ---
 
-## Slide 22 — From Swiss Public to Enterprise
+## Slide 22 - From Swiss Public to Enterprise
 
 ```text
 Swiss Public: admin.ch → zh.ch
@@ -380,11 +396,11 @@ Same primitives: Source, Authority, Applicability, Evidence, Version, Trust, Dat
 
 ---
 
-## Slide 23 — Two Product Horizons
+## Slide 23 - Two Product Horizons
 
 ```text
 HACKATHON VERTICAL SLICE
-P0  admin.ch/zh.ch → build → evidence → MCP → standard clients
+P0  admin.ch/zh.ch → multilingual build/retrieval → evidence → MCP → standard clients
 P1  Admin Control Plane + Arrival Checklist
 P2  Swiss Hike composition demo with mock providers
 
@@ -395,9 +411,9 @@ broader domains → Knowledge CI/CD → enterprise overlays
 
 ---
 
-## Slide 24 — Closing
+## Slide 24 - Closing
 
-> **Apertus is our preferred semantic model; TIP remains model-independent.**<br>
+> **Apertus brings Swiss multilingual potential; TIP verifies it and remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 

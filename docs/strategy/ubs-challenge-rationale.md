@@ -29,7 +29,7 @@ One condition of UBS employee participation is to share what we learn afterward.
 - combining deterministic business logic with generative AI;
 - evaluation of grounded agent tools for accuracy, citations, efficiency and operability.
 
-We may also evaluate **Apertus** for semantic tasks such as multilingual retrieval, classification or reranking if access is available and it provides measurable value. The server's core should remain model-independent.
+We will evaluate **Apertus** for server-side language detection, canonical-concept resolution, multilingual terminology expansion, classification, reranking and response-language rendering. The [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh, which makes it particularly relevant to the Swiss grounding scenario. The [official FAQ](https://www.apertus-ai.org/docs/faq/) recommends evaluating or fine-tuning Apertus for specific language needs, so the platform treats this coverage as a reason to test - not as proof of retrieval quality. Curated multilingual terminology, direct concept lookup and release-gating tests provide the reproducible baseline; vector retrieval uses a separately evaluated multilingual embedding provider, and the server core remains model-independent.
 
 After the hackathon we can share concrete results: an internal demo, MCP design lessons, grounding and provenance patterns, evaluation results, operational lessons from public-source ingestion, and potential UBS applications.
 
@@ -54,7 +54,7 @@ source acquisition and refresh
 → reproducible deployment and operations
 ```
 
-This creates meaningful work across software engineering, data engineering, AI, architecture, evaluation and product design. That breadth is a reason to choose it if it matches our team's skills and learning objectives—not evidence that the UBS modelling work is technically less demanding.
+This creates meaningful work across software engineering, data engineering, AI, architecture, evaluation and product design. That breadth is a reason to choose it if it matches our team's skills and learning objectives - not evidence that the UBS modelling work is technically less demanding.
 
 ---
 

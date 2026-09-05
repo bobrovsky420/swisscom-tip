@@ -12,3 +12,7 @@
   newer, then install the editable workspace packages:
   `.venv\Scripts\python.exe -m pip install -e packages/ingestion -e apps/knowledge-builder`.
 - Never commit `.venv`; it is intentionally excluded by the root `.gitignore`.
+
+## Writing conventions
+
+- Use the ASCII hyphen-minus (`-`) instead of en dashes or em dashes in repository text.
