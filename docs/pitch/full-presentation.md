@@ -34,9 +34,9 @@ Scenario:
 
 Focused coverage demonstrates federal/cantonal authority, applicability and citations. It is the first vertical slice of TIP, not the limit of the product vision.
 
-Multilingual proof: the same scenario is queried in English, German, French, Italian, Swiss German and Romansh, while evidence may remain in another language declared by the release.
+Multilingual proof: the same scenario is queried in English, German without a regional tag, Swiss Standard German, German (Germany), French, Italian, Swiss German and Romansh, while evidence may remain in another language declared by the release. German without a regional tag (`de`), German (Germany) (`de-DE`) and Swiss German (`gsw-CH`) are input-only query variants: they route through the `de-CH` projection and always render generated response prose in Swiss Standard German (`de-CH`).
 
-Clients using another language translate to English before calling TIP. This keeps the server contract finite, testable and independent of an unlimited metadata translation matrix.
+Clients with an unsupported query language translate the request into English before calling TIP. This keeps the server contract finite, testable and independent of an unlimited metadata translation matrix.
 
 ---
 
@@ -63,7 +63,7 @@ granularity + graph validation
        ↓
 reviewed concept graph + terminology
        ↓
-compact en/de/fr/it/rm metadata projections
+compact en/de-CH/fr-CH/it-CH/rm-CH metadata projections
        ↓
 Evidence Objects
        ↓
@@ -97,11 +97,11 @@ The Knowledge Release also freezes the reviewed concept graph used for indexing:
 
 ## Slide 6 - Apertus for Swiss Multilingual Semantics
 
-Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, missing metadata translations, applicability interpretation, evidence reranking and optional response-language rendering.
+Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, missing metadata translations, applicability interpretation, evidence reranking and optional rendering in the effective supported response language.
 
 Why it fits: the [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports 15 trillion training tokens across more than 1,000 languages, 40% non-English data, and explicitly includes Swiss German and Romansh. The [official FAQ](https://www.apertus-ai.org/docs/faq/) cautions that Apertus is fully conversational in only a few dozen languages and recommends evaluation or fine-tuning for specific needs.
 
-Therefore TIP **tests rather than assumes** performance for English, German, French, Italian, Swiss German and Romansh. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
+Therefore TIP **tests rather than assumes** query understanding for every declared query language and response rendering for every declared response language. The `de`, `de-DE` and `gsw-CH` variants are evaluated for input understanding only and are never selected as response-language tags; Swiss German prose is never generated. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
 
 Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
 
@@ -112,13 +112,13 @@ Deterministic software handles HTTP state, hashes, dates, numeric constraints an
 ## Slide 7 - Search Returns Evidence, Not Answers
 
 ```text
-Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
+Request in en / de / de-CH / de-DE / fr-CH / it-CH / gsw-CH / rm-CH
  ↓
 language contract + most specific concept
  ↓
 server-side multilingual terminology expansion
  ↓
-same-language metadata + lexical variants
+matching or normalized metadata + lexical variants
  + concept lookup + multilingual vector retrieval
  ↓
 authority / jurisdiction / date checks
@@ -129,14 +129,14 @@ Evidence / Rule Engine
  ↓
 structured facts + Trust Envelope
  ↓
-requested-language explanation + original-language citations
+prose in effective response language (de / de-DE / gsw-CH -> de-CH) + original-language citations
 ```
 
-For declared languages, the requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
+For declared query languages, the requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
 
 Broad queries expand to a bounded and diverse set of answerable descendants. Narrow queries stay narrow. Concept lookup improves recall but never disables lexical or vector discovery.
 
-TIP translates compact metadata, not complete pages. English, German, French, Italian and the declared Romansh form receive searchable projections. Swiss German uses tested dialect aliases and German normalization. Unsupported clients use English as the single pivot.
+TIP translates compact metadata, not complete pages. English (`en`), Swiss Standard German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and the declared Romansh form (`rm-CH`) receive searchable projections. German without a regional tag (`de`) and German (Germany) (`de-DE`) use reviewed terminology, while Swiss German (`gsw-CH`) uses tested dialect aliases. These input-only query variants route through the `de-CH` projection and fix generated response prose to `de-CH`; original-language evidence remains unchanged. Clients with an unsupported query language use English as the single pivot.
 
 ---
 

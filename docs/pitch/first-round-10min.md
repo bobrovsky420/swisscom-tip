@@ -37,9 +37,9 @@ Demo scenario:
 
 This tests authority, jurisdiction and applicability rather than only semantic similarity.
 
-Multilingual proof: ask in English, German, French, Italian, Swiss German or Romansh; retrieve original evidence in any source language declared by the release; receive the explanation in the requested language.
+Multilingual proof: ask in English, German without a regional tag, Swiss Standard German, German (Germany), French, Italian, Swiss German or Romansh; retrieve original evidence in any source language declared by the release; receive prose in the effective response language. German without a regional tag (`de`), German (Germany) (`de-DE`) and Swiss German (`gsw-CH`) are input-only query variants: they route through the `de-CH` projection and always render generated response prose in Swiss Standard German (`de-CH`).
 
-**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Declared languages work directly inside TIP. A client using another language, such as Russian, translates to the documented English fallback before calling the server.
+**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Declared query languages work directly inside TIP. A client with an unsupported query language, such as Russian, translates its request into English before calling the server, using the documented query fallback.
 
 ---
 
@@ -62,7 +62,7 @@ aggregate corpus + validate granularity
         ↓
 reviewed concept graph + multilingual terminology
         ↓
-compact en/de/fr/it/rm metadata projections
+compact en/de-CH/fr-CH/it-CH/rm-CH metadata projections
         ↓
 Evidence Objects
         ↓
@@ -109,13 +109,13 @@ Stretch only: **Flutter Swiss Hike** using 10-20 clearly labelled DEMO/MOCK rout
 # Slide 5 - Runtime: Search Returns Evidence, Not Answers
 
 ```text
-Request in en / de-CH / fr-CH / it-CH / gsw-CH / rm-CH
+Request in en / de / de-CH / de-DE / fr-CH / it-CH / gsw-CH / rm-CH
   ↓
 language contract + most specific concept
   ↓
 server-side terminology expansion
   ↓
-same-language metadata + lexical variants
+matching or normalized metadata + lexical variants
   + concept lookup + multilingual vector search
   ↓
 authority / jurisdiction / date checks
@@ -126,12 +126,12 @@ Evidence / Rule Engine
   ↓
 structured facts + Trust Envelope
   ↓
-requested-language prose + original-language citations
+prose in effective response language (de / de-DE / gsw-CH -> de-CH) + original-language citations
 ```
 
-Apertus is our preferred model for language detection, concept resolution, terminology expansion, missing metadata translations, reranking and optional response rendering. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
+Apertus is our preferred model for language detection, concept resolution, terminology expansion, missing metadata translations, reranking and optional rendering in the effective supported response language. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
 
-**Speaker note (~75s):** We do not translate every full page. We project compact titles, headings, keyphrases and synopses into the five standard retrieval languages. Swiss German uses tested aliases and German normalization. A broad `Residence` request expands to answerable descendants; a narrow `Residence permit` request stays narrow.
+**Speaker note (~75s):** We do not translate every full page. We project compact titles, headings, keyphrases and synopses into the five metadata-projection languages. German without a regional tag and German (Germany) use reviewed, concept-scoped terminology, while Swiss German uses tested dialect aliases. These input-only query variants route through the `de-CH` projection and fix generated response prose to `de-CH`; original-query lexical, concept and vector retrieval remain active. A broad `Residence` request expands to answerable descendants; a narrow `Residence permit` request stays narrow.
 
 ---
 

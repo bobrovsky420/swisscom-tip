@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification - V6
+## Technical & Solution Architecture Specification - V7
 
 **Hackathon:** Swiss Grounding MCP<br>
 **Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
@@ -38,7 +38,7 @@ Technical decisions are classified as:
 8. Concept extraction occurs after deterministic acquisition and produces candidates before governed aggregation and promotion.
 9. Broad concepts route requests; answerable concepts ground independent actions, rules and facts.
 10. Full source content remains in its original language; compact metadata projections provide bounded multilingual lexical retrieval.
-11. Swiss German queries use tested dialect terminology and German normalization rather than a synthetic universal dialect projection.
+11. Generic German, German (Germany) and Swiss German are accepted input variants that route to Swiss Standard German retrieval and generated prose; Swiss German is never generated as output.
 12. Retrieval returns a small evidence bundle rather than an uncontrolled document dump.
 13. Original-language evidence remains authoritative; translations are labelled derivative content.
 14. Every result is traceable to source versions and processing metadata.
@@ -525,10 +525,10 @@ Suitable uses include:
 - source and document classification;
 - concept and terminology extraction;
 - query-language detection and canonical-concept resolution;
-- multilingual terminology expansion, including evaluated Swiss German and Romansh variants;
+- multilingual terminology expansion, including evaluated generic German, German (Germany), Swiss German and Romansh input variants;
 - applicability interpretation;
 - evidence reranking;
-- optional translation and response-language rendering after evidence has been established.
+- optional translation and supported output-language rendering after evidence has been established.
 
 Apertus is a generative semantic provider in this architecture, not implicitly the vector-embedding model. Vector retrieval uses a separately configured multilingual embedding provider unless an Apertus-derived embedding implementation independently passes the retrieval evaluation gate.
 
@@ -561,7 +561,7 @@ The mandatory reproducible path consists of:
 - versioned canonical concept identifiers;
 - a reviewed multilingual terminology registry for P0 concepts;
 - server-side query expansion;
-- same-language lexical search over compact localized metadata projections;
+- routed-language lexical search over compact localized metadata projections;
 - language-aware lexical retrieval;
 - direct canonical-concept lookup;
 - original-language evidence and citation preservation;
@@ -569,9 +569,21 @@ The mandatory reproducible path consists of:
 
 Multilingual vector retrieval, semantic concept resolution, reranking and translation supplement this path when they improve measured results. They must not be the only way to retrieve a P0 concept.
 
-Every model provider declares supported operations, languages and model versions. The initial evaluation matrix includes English (`en`), German (`de-CH`), French (`fr-CH`), Italian (`it-CH`), Swiss German (`gsw-CH`) and Romansh (`rm-CH`) query variants for the principal scenario. Coverage declarations identify the tested Swiss German dialect forms and Romansh standard or idioms; training-data inclusion alone must not be represented as verified capability.
+Every model provider declares supported operations, languages and model versions. The initial evaluation matrix includes English (`en`), generic German (`de`), Swiss Standard German (`de-CH`), German (Germany) (`de-DE`), French (`fr-CH`), Italian (`it-CH`), Swiss German (`gsw` and `gsw-CH`) and Romansh (`rm-CH`) query variants for the principal scenario. Coverage declarations identify the accepted German query tags, tested Swiss German dialect forms and Romansh standard or idioms; training-data inclusion alone must not be represented as verified capability.
 
-The default metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. Swiss German remains a declared query language but uses reviewed `gsw-CH` terminology and normalization to German rather than automatically generated projections for every document. A client using a language outside the active release contract translates its request to English before calling TIP.
+The default metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. Generic German, German (Germany) and Swiss German are input-only query variants: reviewed `de`, `de-DE`, `gsw` and `gsw-CH` terminology routes to the `de-CH` projection, and generated response prose for those variants is always `de-CH`. A client using a query language outside the active release contract translates its request to English before calling TIP.
+
+The initial language routing contract is:
+
+| Query tag | Retrieval projection | Response rule |
+|---|---|---|
+| `en` | `en` | defaults to `en` |
+| `de-CH` | `de-CH` | defaults to `de-CH` |
+| `de`, `de-DE` | `de-CH` plus reviewed terminology | fixed to `de-CH` |
+| `gsw`, `gsw-CH` | `de-CH` plus reviewed dialect aliases | fixed to `de-CH` |
+| `fr-CH`, `it-CH`, `rm-CH` | matching projection | defaults to the query language |
+
+The initial response-language set is `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The tags `de`, `de-DE`, `gsw` and `gsw-CH` are never valid output tags. BCP 47 tags are parsed and compared case-insensitively and emitted with canonical casing, so `DE-de` becomes `de-DE`. The initial release uses exact matching after canonicalization rather than accepting every `de-*` or `gsw-*` tag. Bare `gsw` is an explicit application alias for the `gsw-CH` query profile in this Swiss Knowledge Space; `de-AT` and other undeclared variants remain unsupported until release-gated. This is an application routing policy, not BCP 47 fallback behaviour.
 
 ---
 
@@ -646,8 +658,10 @@ The multilingual contracts contain at least:
 
 ```text
 LanguageContext
-  query_language
-  response_language
+  query_language                 canonical supplied or detected query tag
+  retrieval_projection_language routed metadata projection; never a source filter
+  requested_response_language   nullable canonical client request
+  response_language             effective response tag
   source_languages
   detection_method and confidence
 
@@ -899,7 +913,7 @@ it-CH
 rm-CH
 ```
 
-The `rm-CH` configuration declares Rumantsch Grischun and any additional evaluated idioms. `gsw-CH` does not receive automatic document-wide metadata projections because Swiss German has no single standardized written form. Its reviewed dialect aliases resolve to canonical concepts and German terminology, and its queries search the `de-CH` projection alongside the other retrieval channels.
+The `rm-CH` configuration declares Rumantsch Grischun and any additional evaluated idioms. Generic German (`de`) and German (Germany) (`de-DE`) use reviewed terminology and the `de-CH` projection rather than separate projections. Swiss German (`gsw` and `gsw-CH`) also does not receive an automatic document-wide metadata projection because it has no single standardized written form. Its reviewed dialect aliases resolve to canonical concepts and Swiss Standard German terminology. All four input-only tags search the `de-CH` projection alongside the original-query lexical, concept and vector channels and always receive `de-CH` generated prose.
 
 Projection records are derived retrieval artifacts and cannot support a fact or serve as cited evidence. The original section or an official parallel-language section remains the evidence target. Projection generation is cached by original content hash and provider/configuration version so unchanged content is not translated again.
 
@@ -946,14 +960,14 @@ Retrieval uses independent lexical, concept and semantic paths so a failure in o
 ```text
 active published release
   ↓
-query-language detection + contract validation + response-language selection
+query-language detection + contract validation + retrieval/response-language routing
   ↓
 jurisdiction normalization + canonical-concept resolution
   ↓
 multilingual terminology expansion
   ↓
 parallel candidates:
-  same-language localized metadata + original-query lexical
+  routed-language localized metadata + original-query lexical
   + expanded-query lexical
   + canonical concept + multilingual vector
   ↓
@@ -968,9 +982,9 @@ rerank / diversify
 
 Candidate retrieval uses a larger configurable pool than the final 2-5 evidence objects. Ranking may combine semantic relevance, lexical relevance, concept match, source authority, jurisdiction specificity, applicability and temporal validity. Every retrieval channel, query variant and ranking factor must be inspectable for evaluation and debugging.
 
-Query language and response language never act as implicit filters on source language. Source language is restricted only when a client explicitly supplies `source_languages`. Explicit authority, jurisdiction, applicability and temporal constraints remain hard checks before evidence is accepted as support.
+Query language, retrieval-projection language and response language never act as implicit filters on source language. Source language is restricted only when a client explicitly supplies `source_languages`. Explicit authority, jurisdiction, applicability and temporal constraints remain hard checks before evidence is accepted as support.
 
-For a declared standard language, lexical candidate generation searches the matching localized metadata projection across all source languages. For `gsw-CH`, it searches reviewed Swiss German terminology and the normalized `de-CH` projection. Localized metadata is an additional candidate channel and must not become an exclusive prefilter for concept, original-language lexical or vector retrieval.
+For a declared standard language, lexical candidate generation searches its routed localized metadata projection across all source languages. Queries tagged `de` or `de-DE` search reviewed standard-German terminology and the `de-CH` projection. Queries tagged `gsw` or `gsw-CH` search reviewed Swiss German dialect terminology and the `de-CH` projection. Localized metadata is an additional candidate channel and must not become an exclusive prefilter for concept, original-query lexical or vector retrieval.
 
 Concept lookup is one retrieval channel, not a gate. Original and expanded lexical search plus multilingual vector search continue to operate when concept extraction or query-to-concept resolution is missing or uncertain. No concept assignment may make a document invisible to the other channels.
 
@@ -993,21 +1007,23 @@ Result Assembler
 For a natural-language request, the `QueryPlanner`:
 
 1. accepts or detects `query_language`;
-2. selects `response_language`, defaulting to the query language;
-3. validates both languages against the active release contract;
-4. returns `UNSUPPORTED_LANGUAGE` with English fallback guidance when either language is unsupported;
-5. normalizes Swiss German to tested dialect terminology and German retrieval terms;
-6. normalizes jurisdiction and other structured context;
-7. resolves canonical concepts;
-8. selects the most specific supported concept that preserves the request meaning;
-9. expands broad `DOMAIN` or `TOPIC` concepts into a bounded, diverse set of `ANSWERABLE` descendants;
-10. creates multilingual `QueryVariant`s from reviewed terminology;
-11. optionally adds model-generated variants, recording their provenance;
-12. produces an inspectable `ExecutionPlan` for parallel retrieval.
+2. canonicalizes BCP 47 casing, preserves the supplied or detected tag and maps the explicit `gsw` alias to the `gsw-CH` query profile;
+3. rejects a query tag outside the exact release-gated set with `unsupported_component=query_language` and `fallback_query_language=en`;
+4. preserves and canonicalizes `requested_response_language`, when supplied, before deriving any effective value;
+5. for `de`, `de-DE`, `gsw` and `gsw-CH`, rejects any explicit response other than `de-CH` with `unsupported_component=language_combination` and `required_response_language=de-CH`, then sets `retrieval_projection_language=de-CH` and `response_language=de-CH`;
+6. for other supported queries, rejects a requested tag outside the response-language set with `unsupported_component=response_language`, then sets `retrieval_projection_language=query_language` and defaults `response_language` to the query language when no response was requested;
+7. normalizes generic German and German (Germany) with reviewed terminology and Swiss German with tested dialect aliases;
+8. normalizes jurisdiction and other structured context;
+9. resolves canonical concepts;
+10. selects the most specific supported concept that preserves the request meaning;
+11. expands broad `DOMAIN` or `TOPIC` concepts into a bounded, diverse set of `ANSWERABLE` descendants;
+12. creates multilingual `QueryVariant`s from reviewed terminology;
+13. optionally adds model-generated variants, recording their provenance;
+14. produces an inspectable `ExecutionPlan` for parallel retrieval.
 
 Structured clients normally supply relevant context directly, but clients are never required to translate questions, supply synonyms or know source languages. Curated terminology is preferred for P0 concepts; model-generated expansion is a fallback for unrecognized language or phrasing.
 
-The no-client-translation guarantee applies only to languages declared by the active release. Unsupported clients translate the request to English, set `query_language=en` and accept English as the TIP response language; any translation from English back to the user's language remains the client's responsibility. TIP does not silently select another pivot language.
+The no-client-translation guarantee applies only to query languages declared by the active release. A client with an unsupported query language translates the request to English, sets `query_language=en` and accepts English as the TIP response language; any translation from English back to the user's language remains the client's responsibility. TIP does not silently select another pivot language. Invalid response languages and forbidden query-response combinations receive their own remediation and do not trigger query translation.
 
 A narrow request searches its answerable concept and relevant details without automatically broadening to sibling topics. A broad request returns evidence grouped by answerable descendant and may produce `NEEDS_CONTEXT` if a required decision cannot be made. Any fallback broadening is recorded in the execution plan so unrelated topic leakage can be evaluated.
 
@@ -1020,7 +1036,7 @@ The Evidence and Rule Engine:
 - exposes unresolved contradictions;
 - prevents a nearest semantic match from becoming an unsupported factual claim.
 
-Optional prose is generated only after structured facts, statuses and evidence have been established. It is rendered in `response_language`. The original source excerpt remains the authoritative evidence; any translated excerpt is labelled as machine translation, records provider and model metadata, and links to the original excerpt and citation.
+Optional prose is generated only after structured facts, statuses and evidence have been established. It is rendered in the effective `response_language`; `de`, `de-DE`, `gsw` and `gsw-CH` queries always use `de-CH`, and Swiss German is never generated. Any translated excerpt or other generated user-facing language also uses the effective response language. The original source excerpt remains the authoritative evidence; any translated excerpt is labelled as machine translation, records provider and model metadata, and links to the original excerpt and citation.
 
 ---
 
@@ -1037,20 +1053,20 @@ Initial tools:
 ```text
 question             required
 query_language       optional; BCP 47 tag, detected when absent
-response_language    optional; BCP 47 tag, defaults to query language
+response_language    optional requested output BCP 47 tag; `de`, `de-DE`, `gsw` and `gsw-CH` queries require `de-CH`, otherwise defaults to query language
 source_languages     optional explicit evidence-language constraint
 jurisdiction         optional
 date                 optional
 structured_context   optional
 ```
 
-It returns a compact structured result containing the resolved language context, status, supported facts, evidence references, coverage information and a Trust Envelope. Each evidence reference exposes `source_language`, the original excerpt and citation, plus optional `translated_excerpt` and `translation_metadata`. A translated excerpt is never represented as the cited source.
+It returns a compact structured result containing the resolved language context, including the requested and effective response languages, status, supported facts, evidence references, coverage information and a Trust Envelope. Each evidence reference exposes `source_language`, the original excerpt and citation, plus optional `translated_excerpt` and `translation_metadata`. A translated excerpt uses the effective response language and is never represented as the cited source.
 
-If `query_language` or `response_language` is outside the active release contract, `resolve` returns `UNSUPPORTED_LANGUAGE`, the supported language lists and `fallback_language=en` without running factual resolution. The client may resubmit an English translation as a new request.
+If `query_language`, `response_language` or their combination is outside the active release contract, `resolve` returns `UNSUPPORTED_LANGUAGE` with `unsupported_component=query_language|response_language|language_combination` without running factual resolution. An unsupported query includes the supported query-language list and `fallback_query_language=en`; an unsupported response includes the supported response-language list; a forbidden fixed mapping includes `required_response_language=de-CH`. Only the unsupported-query case asks the client to resubmit an English translation.
 
 `get_evidence` resolves evidence identifiers to source excerpts and provenance without returning entire source documents by default.
 
-`get_coverage` returns declared sources, topics, jurisdictions, query languages, source languages, response languages, metadata projection languages and completeness, tested Swiss German dialect forms, Romansh variants, `fallback_language=en`, exclusions, release version and freshness information.
+`get_coverage` returns declared sources, topics, jurisdictions, query languages, query aliases, query-to-projection mappings, source languages, response languages, fixed query-to-response mappings, metadata projection languages and completeness, tested Swiss German dialect forms, Romansh variants, `fallback_query_language=en`, exclusions, release version and freshness information.
 
 The compatibility target is standard MCP clients and the Swisscom evaluation harness. OpenCode is a supported example and validation client, not a required, privileged or server-specific integration. A normal demo query should complete with one high-level `resolve` call whenever possible.
 
@@ -1108,16 +1124,22 @@ Automated evaluation covers the challenge dimensions:
 | Concept quality | P0 assignment accuracy, duplicate/orphan rate, hierarchy consistency, multilingual alias correctness and stability across releases |
 | Concept retrieval behaviour | broad-query descendant coverage, narrow-query precision, unrelated-topic leakage and retrieval recall with concept lookup disabled/enabled |
 | Multilingual retrieval | cross-language candidate recall, final evidence hit rate, concept resolution, terminology expansion and source-language diversity |
-| Localized metadata | projection completeness, official/curated/model provenance, same-language lexical recall and original-evidence linkage |
-| Response-language safety | requested response language, original evidence preservation, translation labelling and citation linkage |
-| Unsupported language | deterministic rejection, supported-language discovery and English fallback guidance |
+| Localized metadata | projection completeness, official/curated/model provenance, routed-language lexical recall and original-evidence linkage |
+| Response-language safety | supported response language, fixed `de`/`de-DE`/`gsw`/`gsw-CH` to `de-CH` mappings, absence of Swiss German generation, original evidence preservation, translation labelling and citation linkage |
+| Unsupported language | deterministic rejection, separate query/response-language discovery and English query-fallback guidance |
 | Agent efficiency | tool-call count, response bytes/tokens, evidence count and latency |
 | Operability | clean setup, repeatable builds, cache behaviour, refresh, source failures, last-known-good release and monitoring |
 | Integration readiness | schema validation and tests through standard MCP clients |
 
 The evaluation configuration stores explicit thresholds for release promotion. For the finite P0 multilingual golden set, every required authoritative document must appear in the top 20 candidate pool and every required supported fact must have at least one supporting document in the final top 5 evidence objects. Every citation must resolve to original-language evidence. Operational latency and throughput targets should be calibrated against the available infrastructure before the event rather than embedded as unsupported estimates.
 
-The golden suite covers every declared query/source-language pair and includes terminology, abbreviations, spelling variants, German compounds, Swiss German dialect forms and declared Romansh forms. At minimum it tests the residence-permit concept across `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and corresponding evaluated Italian, Swiss German and Romansh variants. It also contrasts broad requests such as `residence in Zurich` and `health` with narrow requests such as `residence permit`, `municipal registration` and `health insurance`. Each standard query language must retrieve the gold evidence through its matching metadata projection, while Swiss German must do so through declared aliases and German normalization. An unsupported-language case such as Russian must return `UNSUPPORTED_LANGUAGE`; the equivalent client-translated English request must resolve normally. A concept, projection, multilingual or query-granularity regression blocks release promotion.
+The golden suite covers every declared query/source-language pair and includes terminology, abbreviations, spelling variants, German compounds, Swiss German dialect forms and declared Romansh forms. At minimum it tests the residence-permit concept across `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and corresponding evaluated Italian, Swiss German and Romansh variants. Broad requests such as `residence in Zurich` and `health` are contrasted with narrow requests such as `residence permit`, `municipal registration` and `health insurance`. A cross-border case such as `Gilt meine deutsche Aufenthaltserlaubnis in der Schweiz?` verifies that a named foreign status remains a distinct entity rather than being rewritten as a Swiss permit.
+
+`Aufenthaltserlaubnis` is a reviewed `de-DE` query alias only when it semantically names the Swiss residence permit being sought or required. If it denotes an existing German or other foreign document or legal status, the planner preserves it as an entity and returns the coverage-appropriate result, including `OUT_OF_COVERAGE` when recognition or transfer is not covered. Ambiguous bare `Erlaubnis` without sufficient jurisdiction or concept context returns `NEEDS_CONTEXT`; neither term is normalized globally. The suite tests `de`, `de-CH`, `de-DE`, `gsw` and `gsw-CH`, query detection without a supplied tag, low-confidence mixed-language input, and canonicalization such as `DE-de` to `de-DE`. Undeclared variants such as `de-AT` remain unsupported.
+
+The suite verifies that `de`, `de-DE`, `gsw` and `gsw-CH` queries route through the `de-CH` metadata projection and produce `de-CH` generated prose, including Swiss terminology and orthography such as `Aufenthaltsbewilligung` and `Strasse` rather than generated `Aufenthaltserlaubnis` or `Straße`. Original excerpts and proper names remain unchanged. It tests omitted and explicit `de-CH` response values, rejects explicit `de`, `de-DE`, `gsw` or `gsw-CH` output and rejects another response language for a fixed mapping. For `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`, default output and explicit supported cross-language responses remain release-gated. Each projected standard query language must retrieve the gold evidence through its routed metadata projection, while Swiss German must do so through declared aliases and German normalization.
+
+An unsupported query language such as Russian must return `UNSUPPORTED_LANGUAGE` with `unsupported_component=query_language` and `fallback_query_language=en`; the equivalent client-translated English request must resolve normally. Unsupported response and fixed-combination cases return their specific remediation without English query-fallback guidance. A concept, projection, multilingual, language-routing or query-granularity regression blocks release promotion.
 
 Operational telemetry includes:
 
@@ -1128,13 +1150,13 @@ last attempted and successful refresh
 snapshot and release identifiers
 query latency
 retrieval candidate and evidence counts
-detected query / response / source languages
+detected query / effective retrieval projection / requested and effective response / source languages
 resolved concepts and query-variant provenance
 concept candidates / assignments / merges / promotions
 concept graph version and graph-validation result
 concept resolution level and descendant expansion
 metadata projection language / method / completeness
-unsupported-language rejection and English fallback use
+unsupported-language rejection and English query-fallback use
 per-channel candidate ranks and multilingual fallback use
 model/provider latency and errors
 MCP tool calls and response size
@@ -1200,7 +1222,7 @@ All mock data must be visibly labelled `DEMO/MOCK`.
 | P0 | Contracts and coverage | MCP schemas, language contracts, terminology, source definitions, coverage/limitations |
 | P0 | Acquisition | scanner, fetcher, snapshots, normalizer and refresh metadata |
 | P0 | Concepts | seed graph, candidate extraction, corpus aggregation, granularity policy, terminology and graph validation |
-| P0 | Localized metadata | compact standard-language projections, provenance, caching and Swiss German normalization |
+| P0 | Localized metadata | compact standard-language projections, provenance, caching, German-variant routing and Swiss German normalization |
 | P0 | Evidence | compiler, concept assignments, authority/applicability metadata and citations |
 | P0 | Retrieval | language-aware lexical, canonical-concept and multilingual vector retrieval plus hard checks |
 | P0 | Runtime | language detection, server-side expansion, planner, evidence/rule engine, response rendering and MCP server |
@@ -1218,13 +1240,13 @@ No hackathon workstream is required to implement scheduled/incremental builds or
 
 Swisscom can clone the repository, follow the documented setup, start the MCP server, inspect its declared coverage and limitations, run an on-demand build, and execute the supplied evaluation tests.
 
-The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language and broad/narrow concept variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the requested language, reports freshness, and preserves the last successful release when a source or build fails.
+The server works through a standard MCP client and the Swisscom evaluation harness, normally resolves the principal demo - including cross-language and broad/narrow concept variants - with one high-level tool call, returns compact cited original-language evidence and explicit trust status, renders optional prose in the effective supported response language, maps `de`, `de-DE`, `gsw` and `gsw-CH` queries to `de-CH` generated prose, reports freshness, and preserves the last successful release when a source or build fails.
 
-Every included P0 section has complete, provenance-linked compact metadata projections for English, German, French, Italian and the declared Romansh form. Swiss German requests resolve through tested dialect aliases and German normalization. Requests outside the declared query-language contract receive `UNSUPPORTED_LANGUAGE` and English fallback guidance rather than best-effort silent translation.
+Every included P0 section has complete, provenance-linked compact metadata projections for English, Swiss Standard German, French, Italian and the declared Romansh form. Generic German and German (Germany) requests resolve through reviewed terminology and the `de-CH` projection; Swiss German requests resolve through tested dialect aliases and the same projection. These input-only query variants produce `de-CH` generated prose while preserving original-language evidence. Requests outside the declared query-language contract receive `UNSUPPORTED_LANGUAGE` and English query-fallback guidance rather than best-effort silent translation.
 
 The published release exposes a versioned concept graph with provenance and lifecycle status, returns grouped answerable descendants for broad requests, preserves narrow-query precision, and continues to retrieve relevant documents through lexical/vector paths when concept metadata is missing.
 
-For the principal scenario, the published release passes the declared English, German, French, Italian, Swiss German and Romansh query matrix without client-side translation or terminology expansion. The guarantee is limited to declared concepts, sources, jurisdictions and tested language variants; unsupported dialects, idioms or source languages are reported through coverage and result status rather than inferred.
+For the principal scenario, the published release passes the declared English, generic German, Swiss Standard German, German (Germany), French, Italian, Swiss German and Romansh query matrix without client-side translation or terminology expansion. The guarantee is limited to declared concepts, sources, jurisdictions and tested language variants; unsupported dialects, idioms or source languages are reported through coverage and result status rather than inferred.
 
 OpenCode is used as one demonstrated client without introducing OpenCode-specific server behaviour. Apertus is used where available and beneficial, while an alternative compatible provider can be configured without changing domain or MCP contracts.
 
