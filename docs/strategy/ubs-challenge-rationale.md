@@ -10,6 +10,8 @@ I think the Swisscom **Swiss Grounding MCP** challenge, addressed through our Tr
 
 The working MCP server is the hackathon vertical slice; TIP is the target-product vision that the slice is intended to validate.
 
+One of TIP's defining differentiators is verified cross-language grounding across a predefined, closed Swiss language catalog. Within an evaluated release profile, users can ask in one supported query language, retrieve authoritative evidence published in another declared source language and receive the result in a supported response language while citations remain anchored to original-language evidence. TIP is not a general-purpose translator and offers no standalone translation capability.
+
 This is not because the UBS challenge lacks value. Transaction Activity Forecasting is a focused, data-ready financial AI problem with clear client benefits and measurable results. The distinction is the kind of experience we want from the hackathon:
 
 > **The UBS challenge lets us investigate one important forecasting problem. The Swisscom challenge lets us build and test a reusable grounding capability and bring those architectural lessons back into UBS.**
@@ -29,7 +31,7 @@ One condition of UBS employee participation is to share what we learn afterward.
 - combining deterministic business logic with generative AI;
 - evaluation of grounded agent tools for accuracy, citations, efficiency and operability.
 
-We will evaluate **Apertus** for server-side language detection, canonical-concept resolution, multilingual terminology expansion, classification, reranking and rendering in the effective supported response language. The [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh, which makes it particularly relevant to the Swiss grounding scenario. Swiss German is evaluated for input understanding only; Swiss German, German without a regional tag and German (Germany) queries route through the Swiss Standard German metadata projection and fix generated response prose to Swiss Standard German. The [official FAQ](https://www.apertus-ai.org/docs/faq/) recommends evaluating or fine-tuning Apertus for specific language needs, so the platform treats this coverage as a reason to test - not as proof of retrieval quality. Curated multilingual terminology, direct concept lookup and release-gating tests provide the reproducible baseline; vector retrieval uses a separately evaluated multilingual embedding provider, and the server core remains model-independent.
+We will evaluate **Apertus** for server-side language detection, canonical-concept resolution, multilingual terminology expansion, classification, reranking and rendering in the effective supported response language. The [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh, which makes it particularly relevant to the Swiss grounding scenario. Swiss German is evaluated for input understanding only; Swiss German, German without a regional tag and German (Germany) queries route through the Swiss Standard German metadata projection and fix generated response prose to Swiss Standard German. The [official FAQ](https://www.apertus-ai.org/docs/faq/) recommends evaluating or fine-tuning Apertus for specific language needs, so the platform treats this coverage as a reason to test - not as proof of retrieval quality. Curated multilingual terminology, direct concept lookup and release-gating tests provide the reproducible baseline; vector retrieval uses a separately evaluated multilingual embedding provider, and the server core remains model-independent. Neither a provider's advertised languages, a model's training data nor runtime configuration can expand the governed product catalog. Each knowledge release may enable only an evaluated subset and must declare query, response, source and metadata-projection roles separately.
 
 After the hackathon we can share concrete results: an internal demo, MCP design lessons, grounding and provenance patterns, evaluation results, operational lessons from public-source ingestion, and potential UBS applications.
 
@@ -127,6 +129,7 @@ Choose the **Swiss Grounding MCP** challenge if our primary goals are to:
 - explore MCP and evidence-first agent architecture;
 - build across data, AI, integration and operational layers;
 - test reusable grounding patterns on authoritative public information;
+- validate a finite Swiss cross-language grounding contract while preserving original-language evidence;
 - return to UBS with experience that differs from a conventional modelling exercise;
 - potentially contribute a reusable Swiss grounding server publicly, if permitted.
 
@@ -138,4 +141,4 @@ Choose **Transaction Activity Forecasting** instead if our priority is to:
 - compare forecasting approaches quantitatively;
 - investigate interpretable predictions tied directly to client financial activity.
 
-For a team deliberately seeking broader platform-engineering and technology-scouting experience, I recommend **Swiss Grounding MCP**, implemented as a narrowly scoped and testable vertical slice of the TIP target product.
+For a team deliberately seeking broader platform-engineering and technology-scouting experience, I recommend **Swiss Grounding MCP**, implemented as a narrowly scoped and testable vertical slice of the TIP target product. Its multilingual differentiator should be demonstrated through predefined, release-gated Swiss language combinations, not presented as universal translation: users query in a supported language, TIP retrieves across declared source languages, supported response prose follows the release policy and original-language evidence remains authoritative.

@@ -6,6 +6,8 @@
 
 **Turning authoritative and live information into trustworthy services for any application.**
 
+**Verified cross-language grounding across a predefined Swiss language catalog - not universal translation.**
+
 > **AI is infrastructure, not the interface.**
 
 ---
@@ -34,9 +36,11 @@ Scenario:
 
 Focused coverage demonstrates federal/cantonal authority, applicability and citations. It is the first vertical slice of TIP, not the limit of the product vision.
 
-Multilingual proof: the same scenario is queried in English, German without a regional tag, Swiss Standard German, German (Germany), French, Italian, Swiss German and Romansh, while evidence may remain in another language declared by the release. German without a regional tag (`de`), German (Germany) (`de-DE`) and Swiss German (`gsw-CH`) are input-only query variants: they route through the `de-CH` projection and always render generated response prose in Swiss Standard German (`de-CH`).
+Multilingual proof: within a matching evaluated coverage profile, ask the same question in one of its declared query languages - including a declared Swiss German variant - retrieve evidence in another source language declared by that profile, and receive prose in a response language that profile permits, with the original citations preserved.
 
-Clients with an unsupported query language translate the request into English before calling TIP. This keeps the server contract finite, testable and independent of an unlimited metadata translation matrix.
+TIP's language catalog is finite and release-gated. Each release enables only an evaluated subset, and model or provider capabilities cannot expand it.
+
+**Speaker note:** The hackathon target release accepts `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH` for queries. Its response and metadata-projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The input-only `de`, `de-DE`, `gsw` and `gsw-CH` variants route through the `de-CH` projection and always generate Swiss Standard German prose. Only a client with an unsupported query language receives guidance to translate the request into English and resubmit it; unsupported response languages, source-language filters and forbidden combinations receive their own explicit remediation.
 
 ---
 
@@ -101,7 +105,9 @@ Apertus is the preferred model for language detection, concept extraction, multi
 
 Why it fits: the [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports 15 trillion training tokens across more than 1,000 languages, 40% non-English data, and explicitly includes Swiss German and Romansh. The [official FAQ](https://www.apertus-ai.org/docs/faq/) cautions that Apertus is fully conversational in only a few dozen languages and recommends evaluation or fine-tuning for specific needs.
 
-Therefore TIP **tests rather than assumes** query understanding for every declared query language and response rendering for every declared response language. The `de`, `de-DE` and `gsw-CH` variants are evaluated for input understanding only and are never selected as response-language tags; Swiss German prose is never generated. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
+Therefore TIP **tests rather than assumes** query understanding for every declared query language and response rendering for every declared response language. German and declared Swiss German input variants are never selected as response languages; they produce Swiss Standard German prose, and Swiss German prose is never generated. Apertus's breadth does not expand TIP's predefined language catalog. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
+
+**Speaker note:** The input-only query tags are `de`, `de-DE`, `gsw` and `gsw-CH`; each routes through the `de-CH` projection and fixes the effective response language to `de-CH`.
 
 Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
 
@@ -112,7 +118,7 @@ Deterministic software handles HTTP state, hashes, dates, numeric constraints an
 ## Slide 7 - Search Returns Evidence, Not Answers
 
 ```text
-Request in en / de / de-CH / de-DE / fr-CH / it-CH / gsw-CH / rm-CH
+Request in a declared query language
  ↓
 language contract + most specific concept
  ↓
@@ -129,14 +135,16 @@ Evidence / Rule Engine
  ↓
 structured facts + Trust Envelope
  ↓
-prose in effective response language (de / de-DE / gsw-CH -> de-CH) + original-language citations
+prose in permitted effective response language + original-language citations
 ```
 
 For declared query languages, the requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
 
 Broad queries expand to a bounded and diverse set of answerable descendants. Narrow queries stay narrow. Concept lookup improves recall but never disables lexical or vector discovery.
 
-TIP translates compact metadata, not complete pages. English (`en`), Swiss Standard German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and the declared Romansh form (`rm-CH`) receive searchable projections. German without a regional tag (`de`) and German (Germany) (`de-DE`) use reviewed terminology, while Swiss German (`gsw-CH`) uses tested dialect aliases. These input-only query variants route through the `de-CH` projection and fix generated response prose to `de-CH`; original-language evidence remains unchanged. Clients with an unsupported query language use English as the single pivot.
+TIP translates compact metadata and labelled derivative presentation, not complete pages, and exposes no standalone translation operation. Each query routes through one of five standard-language projections; original-language evidence remains unchanged. German and declared Swiss German input variants use reviewed terminology or tested dialect aliases and route to Swiss Standard German retrieval and generated prose.
+
+**Speaker note:** The projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The input-only tags `de`, `de-DE`, `gsw` and `gsw-CH` route through `de-CH` and require `de-CH` output. A client with an unsupported query language may translate and resubmit the request in English; TIP never pivots languages silently. An unsupported response language, source-language filter or forbidden combination is rejected with component-specific remediation. If optional rendering fails, facts and original evidence remain available with `presentation_status=DEGRADED`.
 
 ---
 
@@ -173,10 +181,13 @@ NEEDS_CONTEXT
 OUT_OF_COVERAGE
 INSUFFICIENT_VERIFIED_EVIDENCE
 CONFLICTING_EVIDENCE
+STALE
 UNSUPPORTED_LANGUAGE
 ```
 
 A nearest semantic match is not silently treated as applicable truth.
+
+Optional presentation is tracked separately: a rendering or excerpt-translation failure preserves the factual status and original evidence and returns `presentation_status=DEGRADED`.
 
 ---
 
@@ -432,6 +443,7 @@ broader domains → Knowledge CI/CD → enterprise overlays
 
 ## Slide 24 - Closing
 
+> **TIP delivers verified cross-language grounding across a predefined Swiss language catalog - not universal translation.**<br>
 > **Apertus brings Swiss multilingual potential; TIP verifies it and remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**

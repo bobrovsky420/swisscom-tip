@@ -11,6 +11,8 @@
 
 **Swisscom Trusted Information Platform** is a headless platform that turns authoritative and live information into trustworthy structured services for any application.
 
+Across a predefined Swiss language catalog, users can ask in one supported language, retrieve authoritative evidence published in another and receive a supported-language result with original-language citations. Each release enables only an evaluated subset; TIP is not a universal translator.
+
 The hackathon MCP server is its first narrow vertical slice - not the complete product vision.
 
 > **AI is infrastructure, not the interface.**
@@ -37,9 +39,9 @@ Demo scenario:
 
 This tests authority, jurisdiction and applicability rather than only semantic similarity.
 
-Multilingual proof: ask in English, German without a regional tag, Swiss Standard German, German (Germany), French, Italian, Swiss German or Romansh; retrieve original evidence in any source language declared by the release; receive prose in the effective response language. German without a regional tag (`de`), German (Germany) (`de-DE`) and Swiss German (`gsw-CH`) are input-only query variants: they route through the `de-CH` projection and always render generated response prose in Swiss Standard German (`de-CH`).
+Multilingual proof: for a matching evaluated coverage profile, ask in one of its declared query languages - including a declared Swiss German variant - retrieve original evidence in its declared source language or languages, and receive prose in a response language permitted by that profile. Original-language citations remain authoritative.
 
-**Speaker note (~60s):** Real official data, focused coverage, credible foundation. Declared query languages work directly inside TIP. A client with an unsupported query language, such as Russian, translates its request into English before calling the server, using the documented query fallback.
+**Speaker note (~60s):** Real official data, focused coverage, credible foundation. The hackathon target release accepts `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH` for queries. Its response and metadata-projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The input-only `de`, `de-DE`, `gsw` and `gsw-CH` variants route through the `de-CH` projection and always generate Swiss Standard German prose. Only a client with an unsupported query language receives guidance to translate the request into English and resubmit it; unsupported response languages, source-language filters and forbidden combinations receive their own explicit remediation.
 
 ---
 
@@ -109,7 +111,7 @@ Stretch only: **Flutter Swiss Hike** using 10-20 clearly labelled DEMO/MOCK rout
 # Slide 5 - Runtime: Search Returns Evidence, Not Answers
 
 ```text
-Request in en / de / de-CH / de-DE / fr-CH / it-CH / gsw-CH / rm-CH
+Request in a declared query language
   ↓
 language contract + most specific concept
   ↓
@@ -126,12 +128,12 @@ Evidence / Rule Engine
   ↓
 structured facts + Trust Envelope
   ↓
-prose in effective response language (de / de-DE / gsw-CH -> de-CH) + original-language citations
+prose in permitted effective response language + original-language citations
 ```
 
-Apertus is our preferred model for language detection, concept resolution, terminology expansion, missing metadata translations, reranking and optional rendering in the effective supported response language. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Vector search uses a separately evaluated multilingual embedding provider.
+Apertus is our preferred model for language detection, concept resolution, terminology expansion, missing metadata translations, reranking and optional rendering in the effective supported response language. Its [official launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports training across more than 1,000 languages and explicitly includes Swiss German and Romansh. Its [FAQ](https://www.apertus-ai.org/docs/faq/) also says language-specific capability must be evaluated, so TIP release-gates these cases instead of assuming them. Model breadth does not expand TIP's predefined language catalog. Vector search uses a separately evaluated multilingual embedding provider.
 
-**Speaker note (~75s):** We do not translate every full page. We project compact titles, headings, keyphrases and synopses into the five metadata-projection languages. German without a regional tag and German (Germany) use reviewed, concept-scoped terminology, while Swiss German uses tested dialect aliases. These input-only query variants route through the `de-CH` projection and fix generated response prose to `de-CH`; original-query lexical, concept and vector retrieval remain active. A broad `Residence` request expands to answerable descendants; a narrow `Residence permit` request stays narrow.
+**Speaker note (~75s):** We do not translate every full page and expose no standalone translation operation. We project compact titles, headings, keyphrases and synopses into the five metadata-projection languages. The input-only `de` and `de-DE` variants use reviewed, concept-scoped terminology, while the declared `gsw` and `gsw-CH` Swiss German variants use tested dialect aliases. All four route through the `de-CH` projection and fix generated response prose to `de-CH`; original-query lexical, concept and vector retrieval remain active. If optional rendering fails, structured facts and original evidence remain available with a typed presentation warning. A broad `Residence` request expands to answerable descendants; a narrow `Residence permit` request stays narrow.
 
 ---
 
@@ -200,6 +202,7 @@ Version │ Trust │ Capability │ Information Product
 Data Product │ Entitlement │ Usage
 ```
 
+> **TIP delivers verified cross-language grounding across a predefined Swiss language catalog - not universal translation.**<br>
 > **Apertus brings Swiss multilingual potential; TIP verifies it and remains model-independent.**<br>
 > **TIP provides trusted information, context and orchestration.**  
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
