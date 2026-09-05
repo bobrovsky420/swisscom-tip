@@ -1,0 +1,2 @@
+"""SwissTIP knowledge-builder application."""
+
