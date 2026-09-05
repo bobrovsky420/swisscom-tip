@@ -11,8 +11,8 @@ dependencies = ["swisstip-ingestion==0.1.0"]
 
 [project.scripts]
 swisstip-crawl = "swisstip.builder.cli:main"
+swisstip-concepts = "swisstip.builder.concept_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
-
