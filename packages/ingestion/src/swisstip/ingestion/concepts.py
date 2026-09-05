@@ -566,6 +566,7 @@ class CandidateConceptExtractor:
         max_concepts_per_chunk: int = 20,
         max_model_requests_per_page: int = 20,
         clock: Callable[[], datetime] | None = None,
+        progress: Callable[[str], None] | None = None,
     ) -> None:
         if prompt_profile != DEFAULT_PROMPT_PROFILE:
             raise ConceptExtractionError(f"unsupported prompt profile: {prompt_profile}")
@@ -592,24 +593,46 @@ class CandidateConceptExtractor:
         self._max_concepts_per_chunk = max_concepts_per_chunk
         self._max_model_requests_per_page = max_model_requests_per_page
         self._clock = clock or (lambda: datetime.now(UTC))
+        self._progress = progress or (lambda _message: None)
 
     def extract(self, page: NormalizedPage) -> ConceptProposalReport:
         chunks = self._chunks(page.sections)
         if not chunks:
             raise ConceptExtractionError("normalized page has no extractable chunks")
         self._validate_request_budget(len(chunks))
+        self._progress(
+            f"Prepared {len(chunks)} model request(s) for {page.source}"
+        )
 
         schema = concept_response_schema(self._max_concepts_per_chunk)
         drafts: list[_CandidateDraft] = []
         warnings: list[str] = []
         completions: list[ModelCompletion] = []
         for index, chunk in enumerate(chunks, start=1):
+            self._progress(
+                f"Model request {index}/{len(chunks)} started for {page.source}"
+            )
             completion = self._provider.generate_structured(
                 system_prompt=_SYSTEM_PROMPT,
                 user_prompt=self._user_prompt(page, chunk, index, len(chunks)),
                 response_schema=schema,
             )
             completions.append(completion)
+            prompt_tokens = (
+                str(completion.prompt_tokens)
+                if completion.prompt_tokens is not None
+                else "unknown"
+            )
+            output_tokens = (
+                str(completion.output_tokens)
+                if completion.output_tokens is not None
+                else "unknown"
+            )
+            self._progress(
+                f"Model request {index}/{len(chunks)} completed for {page.source}: "
+                f"provider={completion.provider}, model={completion.model}, "
+                f"prompt_tokens={prompt_tokens}, output_tokens={output_tokens}"
+            )
             parsed, chunk_warnings = self._parse_completion(
                 completion.content,
                 chunk,
@@ -617,9 +640,18 @@ class CandidateConceptExtractor:
             )
             drafts.extend(parsed)
             warnings.extend(chunk_warnings)
+            self._progress(
+                f"Model request {index}/{len(chunks)} validated for {page.source}: "
+                f"accepted_candidates={len(parsed)}, "
+                f"rejected_candidates={len(chunk_warnings)}"
+            )
 
         candidates, merge_warnings = self._merge_drafts(page.content_hash, drafts)
         warnings.extend(merge_warnings)
+        self._progress(
+            f"Page extraction completed for {page.source}: "
+            f"candidates={len(candidates)}, warnings={len(warnings)}"
+        )
         serialized_candidates = [candidate.to_dict() for candidate in candidates]
         output_hash = hashlib.sha256(
             json.dumps(

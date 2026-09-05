@@ -1,17 +1,17 @@
 schema_version = "swisstip.semantic-model-profiles/v1"
 
 [semantic_model]
-active_profile = "ollama_local"
+active_profile = "apertus_8b"
 
 [generation]
 temperature = 0.0
-max_output_tokens = 2048
+max_output_tokens = 4096
 
 [extraction]
 prompt_profile = "concept_extraction_v1"
 chunk_content_characters = 12000
 chunk_overlap_characters = 600
-max_concepts_per_chunk = 12
+max_concepts_per_chunk = 6
 max_pages_per_run = 10
 max_total_input_characters = 120000
 max_model_requests_per_page = 12
@@ -25,7 +25,7 @@ timeout_seconds = 180.0
 num_ctx = 8192
 keep_alive = "5m"
 
-[profiles.hf_free]
+[profiles.apertus_8b]
 adapter = "huggingface"
 model = "swiss-ai/Apertus-8B-Instruct-2509"
 base_url = "https://router.huggingface.co/v1"
@@ -33,7 +33,7 @@ timeout_seconds = 120.0
 provider = "publicai"
 token_env = "HF_TOKEN"
 
-[profiles.hf_paid]
+[profiles.apertus_70b]
 adapter = "huggingface"
 model = "swiss-ai/Apertus-70B-Instruct-2509"
 base_url = "https://router.huggingface.co/v1"

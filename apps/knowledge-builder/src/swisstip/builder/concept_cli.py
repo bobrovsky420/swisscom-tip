@@ -9,6 +9,7 @@ import json
 import os
 import stat
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -305,24 +306,58 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum filesystem entries inspected during discovery (default: 100000)",
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="write live extraction progress to standard error",
+    )
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    started_at = time.monotonic()
+
+    def progress(message: str) -> None:
+        if not args.verbose:
+            return
+        elapsed = time.monotonic() - started_at
+        sys.stderr.write(f"swisstip-concepts: progress: +{elapsed:.1f}s {message}\n")
+        sys.stderr.flush()
 
     try:
+        progress(f"Loading semantic-model configuration from {args.config}")
         config = load_model_profiles(args.config)
         extraction = config.extraction
+        profile = config.active_profile
+        progress(
+            f"Selected profile={profile.name}, adapter={profile.adapter}, "
+            f"provider={profile.provider or 'automatic'}, model={profile.model}, "
+            f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
+        )
+        progress(f"Resolving {len(args.pages)} input specification(s)")
         page_paths = resolve_page_inputs(
             args.pages,
             max_pages=extraction.max_pages_per_run,
             max_discovery_entries=args.max_discovery_entries,
         )
-        pages = [
-            normalize_downloaded_page(path, max_file_bytes=args.max_file_bytes)
-            for path in page_paths
-        ]
+        progress(f"Discovered {len(page_paths)} supported page(s)")
+        pages = []
+        for index, path in enumerate(page_paths, start=1):
+            progress(f"Normalizing page {index}/{len(page_paths)}: {path}")
+            page = normalize_downloaded_page(
+                path,
+                max_file_bytes=args.max_file_bytes,
+            )
+            page_characters = sum(
+                len(section.evidence_text) for section in page.sections
+            )
+            progress(
+                f"Normalized page {index}/{len(page_paths)}: "
+                f"sections={len(page.sections)}, characters={page_characters}, "
+                f"title={page.title!r}"
+            )
+            pages.append(page)
         total_input_characters = sum(
             len(section.evidence_text)
             for page in pages
@@ -334,7 +369,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"exceeding the configured limit of "
                 f"{extraction.max_total_input_characters}"
             )
+        progress(
+            f"Validated normalized input: pages={len(pages)}, "
+            f"characters={total_input_characters}"
+        )
+        progress("Creating semantic-model provider")
         provider = create_semantic_model_provider(config)
+        progress("Semantic-model provider is ready")
         extractor = CandidateConceptExtractor(
             provider,
             active_profile=config.active_profile.name,
@@ -343,16 +384,36 @@ def main(argv: Sequence[str] | None = None) -> int:
             chunk_overlap_characters=extraction.chunk_overlap_characters,
             max_concepts_per_chunk=extraction.max_concepts_per_chunk,
             max_model_requests_per_page=extraction.max_model_requests_per_page,
+            progress=progress,
         )
-        planned_requests = sum(
+        requests_per_page = [
             extractor.planned_request_count(page) for page in pages
-        )
+        ]
+        planned_requests = sum(requests_per_page)
+        for index, (page, request_count) in enumerate(
+            zip(pages, requests_per_page, strict=True),
+            start=1,
+        ):
+            progress(
+                f"Planned page {index}/{len(pages)}: "
+                f"model_requests={request_count}, source={page.source}"
+            )
+        progress(f"Planned {planned_requests} model request(s) for this run")
         if planned_requests > extraction.max_model_requests_per_run:
             raise ConceptExtractionError(
                 f"run requires {planned_requests} model requests, exceeding the "
                 f"configured limit of {extraction.max_model_requests_per_run}"
             )
-        reports = [extractor.extract(page).to_dict() for page in pages]
+        reports = []
+        for index, page in enumerate(pages, start=1):
+            progress(f"Extracting page {index}/{len(pages)}: {page.source}")
+            report = extractor.extract(page)
+            reports.append(report.to_dict())
+            progress(
+                f"Finished page {index}/{len(pages)}: "
+                f"requests={report.request_count}, candidates={len(report.candidates)}, "
+                f"warnings={len(report.warnings)}"
+            )
     except (ValueError, SemanticModelError) as exc:
         sys.stderr.write(f"swisstip-concepts: error: {exc}\n")
         return 2
@@ -364,6 +425,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "report_count": len(reports),
         "reports": reports,
     }
+    progress(f"Writing {len(reports)} report(s) as JSON")
     json.dump(
         output,
         sys.stdout,
@@ -372,6 +434,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         sort_keys=True,
     )
     sys.stdout.write("\n")
+    sys.stdout.flush()
+    progress("Concept extraction completed successfully")
     return 0
 
 

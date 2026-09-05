@@ -17,6 +17,12 @@
 
 - Use the ASCII hyphen-minus (`-`) instead of en dashes or em dashes in repository text.
 
+## Shell conventions
+
+- Prefer PowerShell instead of Bash for working commands and ad hoc scripts
+  unless the user explicitly requests another shell.
+- Continue to prefer Unix-style shell commands in repository documentation.
+
 ## Commit messages
 
 - After every substantial repository update, propose a one-line commit message in the final response.

@@ -20,7 +20,10 @@ from swisstip.builder.concept_cli import (  # noqa: E402
     main,
     resolve_page_inputs,
 )
-from swisstip.ingestion.concepts import ModelCompletion  # noqa: E402
+from swisstip.ingestion.concepts import (  # noqa: E402
+    ModelCompletion,
+    SemanticModelError,
+)
 
 
 class FakeProvider:
@@ -62,6 +65,21 @@ class FakeProvider:
             model="fake-model",
             request_id=f"request-{self.calls}",
         )
+
+
+class FailingProvider:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def generate_structured(
+        self,
+        *,
+        system_prompt: str,
+        user_prompt: str,
+        response_schema: Mapping[str, object],
+    ) -> ModelCompletion:
+        self.calls += 1
+        raise SemanticModelError("Hugging Face router returned HTTP 504")
 
 
 class ConceptCliTests(unittest.TestCase):
@@ -124,7 +142,7 @@ class ConceptCliTests(unittest.TestCase):
             payload["model_config_schema_version"],
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertEqual(payload["active_profile"], "ollama_local")
+        self.assertEqual(payload["active_profile"], "apertus_8b")
         self.assertEqual(payload["report_count"], 2)
         self.assertEqual(len(payload["reports"]), 2)
         self.assertEqual(provider.calls, 2)
@@ -135,6 +153,84 @@ class ConceptCliTests(unittest.TestCase):
                 report["candidates"][0]["validation_state"],
                 "CANDIDATE",
             )
+
+    def test_verbose_mode_reports_live_extraction_milestones(self) -> None:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        provider = FakeProvider()
+        with tempfile.TemporaryDirectory() as directory:
+            page = Path(directory) / "page.txt"
+            page.write_text(
+                "A residence permit is required.\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch(
+                    "swisstip.builder.concept_cli.create_semantic_model_provider",
+                    return_value=provider,
+                ),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
+                exit_code = main(
+                    [
+                        str(page),
+                        "--config",
+                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        "--compact",
+                        "--verbose",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(json.loads(stdout.getvalue())["report_count"], 1)
+        progress = stderr.getvalue()
+        self.assertIn("Selected profile=apertus_8b", progress)
+        self.assertIn("Discovered 1 supported page(s)", progress)
+        self.assertIn("Normalizing page 1/1", progress)
+        self.assertIn("Planned 1 model request(s) for this run", progress)
+        self.assertIn("Model request 1/1 started", progress)
+        self.assertIn("Model request 1/1 completed", progress)
+        self.assertIn("accepted_candidates=1", progress)
+        self.assertIn("Concept extraction completed successfully", progress)
+
+    def test_verbose_mode_identifies_request_active_when_provider_fails(self) -> None:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        provider = FailingProvider()
+        with tempfile.TemporaryDirectory() as directory:
+            page = Path(directory) / "page.txt"
+            page.write_text(
+                "A residence permit is required.\n",
+                encoding="utf-8",
+            )
+
+            with (
+                patch(
+                    "swisstip.builder.concept_cli.create_semantic_model_provider",
+                    return_value=provider,
+                ),
+                redirect_stdout(stdout),
+                redirect_stderr(stderr),
+            ):
+                exit_code = main(
+                    [
+                        str(page),
+                        "--config",
+                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        "--verbose",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout.getvalue(), "")
+        self.assertEqual(provider.calls, 1)
+        progress = stderr.getvalue()
+        started = progress.index("Model request 1/1 started")
+        failed = progress.index("Hugging Face router returned HTTP 504")
+        self.assertLess(started, failed)
+        self.assertNotIn("Model request 1/1 completed", progress)
 
     def test_invalid_input_fails_before_provider_is_created(self) -> None:
         stdout = io.StringIO()

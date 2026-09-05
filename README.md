@@ -13,6 +13,6 @@ operator-triggered knowledge-builder proofs:
 - [Semantic-model profiles](config/semantic-models.toml)
 
 The concept extractor has three preconfigured model profiles: local Ollama,
-Hugging Face free-account testing, and Hugging Face paid-account use. Switching
+Hugging Face Apertus 8B, and Hugging Face Apertus 70B. Switching
 between them changes one `active_profile` value. All Python work uses the
 repository-local `.venv`; see `AGENTS.md` and the demo setup instructions.

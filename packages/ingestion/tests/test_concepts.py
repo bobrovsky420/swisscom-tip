@@ -182,11 +182,11 @@ class CandidateConceptExtractorTests(unittest.TestCase):
 
         report = CandidateConceptExtractor(
             provider,
-            active_profile="hf_free",
+            active_profile="apertus_8b",
             clock=lambda: datetime(2026, 9, 5, 12, 0, tzinfo=UTC),
         ).extract(page)
 
-        self.assertEqual(report.active_profile, "hf_free")
+        self.assertEqual(report.active_profile, "apertus_8b")
         self.assertEqual(report.provider, "test-provider")
         self.assertEqual(report.model, "test-model")
         self.assertEqual(report.operation, "candidate_concept_extraction")
@@ -294,7 +294,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
 
         report = CandidateConceptExtractor(
             provider,
-            active_profile="hf_paid",
+            active_profile="apertus_70b",
             chunk_content_characters=500,
             chunk_overlap_characters=0,
         ).extract(page)
@@ -343,7 +343,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
 
         report = CandidateConceptExtractor(
             provider,
-            active_profile="hf_paid",
+            active_profile="apertus_70b",
             chunk_content_characters=500,
             chunk_overlap_characters=0,
         ).extract(page)
@@ -383,7 +383,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
 
         report = CandidateConceptExtractor(
             provider,
-            active_profile="hf_paid",
+            active_profile="apertus_70b",
             chunk_content_characters=500,
             chunk_overlap_characters=0,
         ).extract(page)
@@ -448,7 +448,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
 
         report = CandidateConceptExtractor(
             provider,
-            active_profile="hf_paid",
+            active_profile="apertus_70b",
             chunk_content_characters=500,
             chunk_overlap_characters=0,
         ).extract(page)
@@ -469,7 +469,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
         )
         extractor = CandidateConceptExtractor(
             provider,
-            active_profile="hf_paid",
+            active_profile="apertus_70b",
             chunk_content_characters=500,
             chunk_overlap_characters=0,
             max_model_requests_per_page=2,

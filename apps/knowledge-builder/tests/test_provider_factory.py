@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -80,14 +81,14 @@ class ProviderFactoryTests(unittest.TestCase):
         )
         self.assertEqual(provider.options.base_url, "http://127.0.0.1:11434")
         self.assertEqual(provider.options.num_ctx, 8192)
-        self.assertEqual(provider.options.num_predict, 2048)
+        self.assertEqual(provider.options.num_predict, 4096)
         self.assertEqual(provider.options.temperature, 0.0)
         self.assertEqual(provider.options.keep_alive, "5m")
 
     def test_builds_both_hugging_face_profiles_with_the_same_token_mechanism(self) -> None:
         for profile, expected_model in {
-            "hf_free": "swiss-ai/Apertus-8B-Instruct-2509:publicai",
-            "hf_paid": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
+            "apertus_8b": "swiss-ai/Apertus-8B-Instruct-2509:publicai",
+            "apertus_70b": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
         }.items():
             with self.subTest(profile=profile):
                 config = self._load_profile(profile)
@@ -118,7 +119,7 @@ class ProviderFactoryTests(unittest.TestCase):
                 )
 
     def test_hugging_face_profile_fails_closed_without_token(self) -> None:
-        config = self._load_profile("hf_free")
+        config = self._load_profile("apertus_8b")
 
         with self.assertRaisesRegex(
             ProviderFactoryConfigurationError,
@@ -129,9 +130,11 @@ class ProviderFactoryTests(unittest.TestCase):
     def _load_profile(self, profile: str):
         source_path = REPOSITORY_ROOT / "config" / "semantic-models.toml"
         document = source_path.read_text(encoding="utf-8")
-        document = document.replace(
-            'active_profile = "ollama_local"',
+        document = re.sub(
+            r'active_profile = "[^"]+"',
             f'active_profile = "{profile}"',
+            document,
+            count=1,
         )
         with tempfile.TemporaryDirectory() as directory:
             config_path = Path(directory) / "semantic-models.toml"

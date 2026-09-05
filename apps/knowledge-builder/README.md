@@ -113,14 +113,14 @@ The available values are:
 | Profile | Runtime | Configured model | Intended use |
 | --- | --- | --- | --- |
 | `ollama_local` | Local Ollama API | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` | Offline/local testing with an unofficial community package |
-| `hf_free` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
-| `hf_paid` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Paid demo account |
+| `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
+| `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Paid demo account |
 
-For example, switching to the paid demo model requires only:
+For example, switching to the 70B demo model requires only:
 
 ```toml
 [semantic_model]
-active_profile = "hf_paid"
+active_profile = "apertus_70b"
 ```
 
 The profile owns its adapter, URL, model, provider, timeout, and optional billing
@@ -170,8 +170,8 @@ $env:HF_TOKEN = "hf_your_token_here"
   --config config\semantic-models.toml
 ```
 
-Set `active_profile` to `hf_free` for the configured 8B testing model or
-`hf_paid` for the configured 70B demo model. The Python command and token
+Set `active_profile` to `apertus_8b` for the configured 8B testing model or
+`apertus_70b` for the configured 70B demo model. The Python command and token
 mechanism are identical; only the profile selector and the Hugging Face account
 behind the token differ. Account quota and provider/model availability still
 apply.
@@ -182,7 +182,7 @@ trusted configuration file. Changing `base_url` changes where the bearer token
 and page data are sent. Do not use it for content that is not approved for that
 external processing. Reports include the supplied local source path. For an
 organization-paid account, set the optional `bill_to` value once in the
-`hf_paid` profile; selecting the profile remains a one-line change.
+`apertus_70b` profile; selecting the profile remains a one-line change.
 
 Do not commit a real token or place one in `semantic-models.toml`. The process
 environment is used directly; the application does not load `.env` files.

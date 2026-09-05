@@ -19,6 +19,7 @@ from swisstip.ingestion.concepts import (
 
 
 DEFAULT_BASE_URL = "https://router.huggingface.co/v1"
+USER_AGENT = "SwissTIP/0.1"
 _MAX_ERROR_BODY_BYTES = 4_096
 _MAX_RESPONSE_BYTES = 1_000_000
 
@@ -157,6 +158,7 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             "Accept": "application/json",
             "Authorization": f"Bearer {self._token}",
             "Content-Type": "application/json",
+            "User-Agent": USER_AGENT,
         }
         if self._bill_to is not None:
             headers["X-HF-Bill-To"] = self._bill_to
@@ -223,12 +225,9 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             )
 
         response_model = payload.get("model")
-        if not isinstance(response_model, str) or response_model not in {
-            self._model,
-            f"{self._model}:{self._provider}",
-        }:
+        if not isinstance(response_model, str) or not response_model.strip():
             raise HuggingFaceResponseError(
-                "Hugging Face router returned an unexpected model identity"
+                "Hugging Face router response has no model identity"
             )
 
         try:
@@ -245,7 +244,8 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             "stop_sequence",
         }:
             raise HuggingFaceResponseError(
-                "Hugging Face router returned an incomplete completion"
+                "Hugging Face router returned an incomplete completion "
+                f"(finish_reason={finish_reason!r})"
             )
         if not isinstance(content, str) or not content.strip():
             raise HuggingFaceResponseError(

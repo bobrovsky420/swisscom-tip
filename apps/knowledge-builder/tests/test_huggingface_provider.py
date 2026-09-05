@@ -127,6 +127,7 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
         headers = {name.lower(): value for name, value in request.header_items()}
         self.assertEqual(headers["authorization"], "Bearer hf_test_secret")
         self.assertEqual(headers["content-type"], "application/json")
+        self.assertEqual(headers["user-agent"], "SwissTIP/0.1")
         self.assertEqual(headers["x-hf-bill-to"], "trusted-team")
         self.assertEqual(opener.timeouts, [12.5])
 
@@ -165,7 +166,7 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
             FakeResponse(
                 {
                     "id": "completion-id",
-                    "model": "swiss-ai/Apertus-8B-Instruct-2509",
+                    "model": "swiss-ai/apertus-8b-instruct",
                     "choices": [
                         {
                             "finish_reason": "stop",
@@ -260,11 +261,11 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
                 response_schema={"type": "object"},
             )
 
-        identity_provider = make_provider(
+        missing_identity_provider = make_provider(
             FakeOpener(
                 FakeResponse(
                     {
-                        "model": "other/model",
+                        "model": "",
                         "choices": [
                             {
                                 "finish_reason": "stop",
@@ -276,7 +277,7 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
             )
         )
         with self.assertRaisesRegex(HuggingFaceResponseError, "model identity"):
-            identity_provider.generate_structured(
+            missing_identity_provider.generate_structured(
                 system_prompt="System",
                 user_prompt="User",
                 response_schema={"type": "object"},
@@ -299,7 +300,10 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
             )
         )
 
-        with self.assertRaisesRegex(HuggingFaceResponseError, "incomplete"):
+        with self.assertRaisesRegex(
+            HuggingFaceResponseError,
+            "incomplete completion .*finish_reason='length'",
+        ):
             provider.generate_structured(
                 system_prompt="System",
                 user_prompt="User",

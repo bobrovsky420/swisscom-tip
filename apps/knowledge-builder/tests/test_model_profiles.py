@@ -45,7 +45,7 @@ timeout_seconds = 180.0
 num_ctx = 8192
 keep_alive = "5m"
 
-[profiles.hf_free]
+[profiles.apertus_8b]
 adapter = "huggingface"
 model = "swiss-ai/Apertus-8B-Instruct-2509"
 base_url = "https://router.huggingface.co/v1"
@@ -53,7 +53,7 @@ timeout_seconds = 120.0
 provider = "publicai"
 token_env = "HF_TOKEN"
 
-[profiles.hf_paid]
+[profiles.apertus_70b]
 adapter = "huggingface"
 model = "swiss-ai/Apertus-70B-Instruct-2509"
 base_url = "https://router.huggingface.co/v1"
@@ -64,22 +64,24 @@ token_env = "HF_TOKEN"
 
 
 class ModelProfileTests(unittest.TestCase):
-    def test_repository_config_resolves_local_q4_profile(self) -> None:
+    def test_repository_config_resolves_apertus_8b_profile(self) -> None:
         config = load_model_profiles(REPOSITORY_ROOT / "config" / "semantic-models.toml")
 
-        self.assertEqual(config.active_profile.name, "ollama_local")
+        self.assertEqual(config.active_profile.name, "apertus_8b")
         self.assertEqual(
             config.schema_version,
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertEqual(config.active_profile.adapter, "ollama")
+        self.assertEqual(config.active_profile.adapter, "huggingface")
         self.assertEqual(
             config.active_profile.model,
-            "MichelRosselli/apertus:8b-instruct-2509-q4_k_m",
+            "swiss-ai/Apertus-8B-Instruct-2509",
         )
-        self.assertEqual(config.active_profile.num_ctx, 8192)
-        self.assertEqual(config.active_profile.keep_alive, "5m")
-        self.assertIsNone(config.active_profile.provider)
+        self.assertIsNone(config.active_profile.num_ctx)
+        self.assertIsNone(config.active_profile.keep_alive)
+        self.assertEqual(config.active_profile.provider, "publicai")
+        self.assertEqual(config.active_profile.token_env, "HF_TOKEN")
+        self.assertIsNone(config.active_profile.bill_to)
         self.assertEqual(config.generation.temperature, 0.0)
         self.assertGreater(config.generation.max_output_tokens, 0)
         self.assertGreater(config.extraction.chunk_content_characters, 0)
@@ -88,7 +90,7 @@ class ModelProfileTests(unittest.TestCase):
             config.extraction.chunk_content_characters,
         )
         self.assertEqual(config.extraction.max_pages_per_run, 10)
-        self.assertEqual(config.extraction.max_concepts_per_chunk, 12)
+        self.assertEqual(config.extraction.max_concepts_per_chunk, 6)
         self.assertEqual(config.extraction.max_total_input_characters, 120000)
         self.assertEqual(config.extraction.max_model_requests_per_page, 12)
         self.assertEqual(config.extraction.max_model_requests_per_run, 20)
@@ -96,7 +98,7 @@ class ModelProfileTests(unittest.TestCase):
     def test_file_selector_is_not_overridden_by_environment(self) -> None:
         with patch.dict(
             os.environ,
-            {"SWISSTIP_SEMANTIC_PROFILE": "hf_paid"},
+            {"SWISSTIP_SEMANTIC_PROFILE": "apertus_70b"},
             clear=False,
         ):
             config = self._load(VALID_CONFIG)
@@ -105,8 +107,8 @@ class ModelProfileTests(unittest.TestCase):
 
     def test_huggingface_profiles_are_resolved_with_safe_token_reference(self) -> None:
         for name, expected_model in {
-            "hf_free": "swiss-ai/Apertus-8B-Instruct-2509",
-            "hf_paid": "swiss-ai/Apertus-70B-Instruct-2509",
+            "apertus_8b": "swiss-ai/Apertus-8B-Instruct-2509",
+            "apertus_70b": "swiss-ai/Apertus-70B-Instruct-2509",
         }.items():
             with self.subTest(name=name):
                 config = self._load(
@@ -149,7 +151,7 @@ class ModelProfileTests(unittest.TestCase):
                 "max_output_tokens = 2048", 'max_output_tokens = "2048"'
             ),
             "profile table type": VALID_CONFIG.replace(
-                "[profiles.hf_paid]", 'profiles.hf_paid = "not-a-table"'
+                "[profiles.apertus_70b]", 'profiles.apertus_70b = "not-a-table"'
             ),
         }
         for name, document in cases.items():
@@ -263,8 +265,8 @@ class ModelProfileTests(unittest.TestCase):
     def test_unknown_fields_are_rejected_in_every_profile(self) -> None:
         self._assert_invalid(
             VALID_CONFIG.replace(
-                'token_env = "HF_TOKEN"\n\n[profiles.hf_paid]',
-                'token_env = "HF_TOKEN"\nunexpected = true\n\n[profiles.hf_paid]',
+                'token_env = "HF_TOKEN"\n\n[profiles.apertus_70b]',
+                'token_env = "HF_TOKEN"\nunexpected = true\n\n[profiles.apertus_70b]',
             ),
             "unknown field",
         )
