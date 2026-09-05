@@ -64,6 +64,27 @@ class HuggingFaceResponseError(HuggingFaceProviderError):
     """Raised when a successful response does not match the chat contract."""
 
 
+class HuggingFaceIncompleteCompletionError(HuggingFaceResponseError):
+    """Rejected completion with safe metadata, never its partial content."""
+
+    def __init__(self, *, finish_reason: object, prompt_tokens: int | None,
+                 output_tokens: int | None, content_characters: int | None,
+                 response_bytes: int, max_output_tokens: int) -> None:
+        self.diagnostics = {
+            "finish_reason": finish_reason if isinstance(finish_reason, str) else "invalid",
+            "prompt_tokens": prompt_tokens, "output_tokens": output_tokens,
+            "content_characters": content_characters, "response_bytes": response_bytes,
+            "max_output_tokens": max_output_tokens,
+        }
+        super().__init__(
+            "Hugging Face router returned an incomplete completion "
+            f"(finish_reason={self.diagnostics['finish_reason']!r}, "
+            f"prompt_tokens={prompt_tokens}, output_tokens={output_tokens}, "
+            f"content_characters={content_characters}, response_bytes={response_bytes}, "
+            f"max_output_tokens={max_output_tokens})"
+        )
+
+
 class _Opener(Protocol):
     def open(self, request: urllib.request.Request, *, timeout: float) -> Any: ...
 
@@ -243,9 +264,15 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             "eos_token",
             "stop_sequence",
         }:
-            raise HuggingFaceResponseError(
-                "Hugging Face router returned an incomplete completion "
-                f"(finish_reason={finish_reason!r})"
+            usage = payload.get("usage")
+            if not isinstance(usage, Mapping):
+                usage = {}
+            raise HuggingFaceIncompleteCompletionError(
+                finish_reason=finish_reason,
+                prompt_tokens=_optional_token_count(usage.get("prompt_tokens", usage.get("input_tokens"))),
+                output_tokens=_optional_token_count(usage.get("completion_tokens", usage.get("output_tokens"))),
+                content_characters=len(content) if isinstance(content, str) else None,
+                response_bytes=len(response_body), max_output_tokens=self._max_tokens,
             )
         if not isinstance(content, str) or not content.strip():
             raise HuggingFaceResponseError(

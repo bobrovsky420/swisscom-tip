@@ -8,14 +8,25 @@ temperature = 0.0
 max_output_tokens = 4096
 
 [extraction]
-prompt_profile = "concept_extraction_v1"
-chunk_content_characters = 12000
-chunk_overlap_characters = 600
+prompt_profile = "concept_extraction_v3"
+chunk_content_characters = 6400
+chunk_overlap_characters = 400
 max_concepts_per_chunk = 6
 max_pages_per_run = 10
 max_total_input_characters = 120000
 max_model_requests_per_page = 12
-max_model_requests_per_run = 20
+# Includes generation and semantic review calls. Unused review slots are skipped.
+max_model_requests_per_run = 30
+
+[recovery]
+# Additional attempts per transient HF failure, within the same request budgets.
+max_retries = 2
+backoff_seconds = 2.0
+max_backoff_seconds = 30.0
+# Separate cap for the provider's Retry-After header, with progress every 15s.
+max_retry_after_seconds = 300.0
+# Only after a truncated review; batches shrink to single proposals if needed.
+review_fallback_batch_size = 2
 
 [profiles.ollama_local]
 adapter = "ollama"

@@ -42,6 +42,12 @@ download limit used by Save-ZhChTestPages.ps1.
 .PARAMETER Force
 Allows replacement of an existing OutputPath after a successful extraction.
 
+.PARAMETER CheckpointDirectory
+Optional internal model-response cache. Matching responses are reused across runs.
+
+.PARAMETER FreshInference
+Ignore existing checkpoints, but continue saving successful new responses.
+
 .EXAMPLE
 ./scripts/test/zhch/Test-ZhChConceptExtraction.ps1 `
     -PagesRoot C:\Temp\swisstip-zhch\pages
@@ -63,6 +69,12 @@ param(
 
     [Parameter()]
     [string] $OutputPath,
+
+    [Parameter()]
+    [string] $CheckpointDirectory,
+
+    [Parameter()]
+    [switch] $FreshInference,
 
     [Parameter()]
     [ValidateRange(1, 1000)]
@@ -299,6 +311,12 @@ $cliArguments = @(
     "--compact"
 )
 $streamProgress = $VerbosePreference -ne "SilentlyContinue"
+if (-not [string]::IsNullOrWhiteSpace($CheckpointDirectory)) {
+    $cliArguments += @("--checkpoint-dir", [IO.Path]::GetFullPath($CheckpointDirectory))
+}
+if ($FreshInference) {
+    $cliArguments += "--fresh-inference"
+}
 if ($streamProgress) {
     $cliArguments += "--verbose"
 }
@@ -381,8 +399,13 @@ if (
     throw "Extraction report sources do not match the download manifest."
 }
 
-$providers = @($reports | ForEach-Object { [string] $_.provider } | Sort-Object -Unique)
-$models = @($reports | ForEach-Object { [string] $_.model } | Sort-Object -Unique)
+$calledReports = @($reports | Where-Object { [int] $_.request_count -gt 0 })
+$providers = @($calledReports | ForEach-Object { [string] $_.provider } | Sort-Object -Unique)
+$models = @($calledReports | ForEach-Object { [string] $_.model } | Sort-Object -Unique)
+if ($calledReports.Count -eq 0) {
+    $providers = @("not_called")
+    $models = @("not_called")
+}
 if (
     $providers.Count -ne 1 -or
     [string]::IsNullOrWhiteSpace($providers[0]) -or
@@ -422,7 +445,7 @@ foreach ($report in $reports) {
     $warningCount += @($report.warnings).Count
     $reportCandidates = @($report.candidates)
     if ($reportCandidates.Count -eq 0) {
-        throw "Report contains no candidate concepts: $($report.source)"
+        Write-Warning "Report contains no candidate concepts; review its diagnostics: $($report.source)"
     }
     foreach ($candidate in $reportCandidates) {
         $candidateCount++
@@ -449,7 +472,7 @@ foreach ($report in $reports) {
 }
 
 if ($candidateCount -eq 0) {
-    throw "No candidate concepts were proposed."
+    Write-Warning "No candidate concepts were retained. Saving diagnostics for quality review."
 }
 Write-Verbose (
     "Validated extraction response: reports={0}, requests={1}, candidates={2}, warnings={3}." -f

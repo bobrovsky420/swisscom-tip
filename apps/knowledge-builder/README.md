@@ -97,6 +97,21 @@ token usage when available, and validation warnings. A candidate with
 unsupported or non-exact evidence is rejected instead of being silently
 accepted; other valid candidates in the same response remain available.
 
+The default `concept_extraction_v3` prompt selects numbered source spans and
+Python attaches the original quotations. Paragraphs, lists and table rows are
+preserved; generic contact, navigation, feedback and embedded news sections are
+filtered before chunking. Proposals must cite their primary section. A separate
+call to the selected model reviews claim support, applicability, questions,
+language and type. Unsupported or uncertain proposals are excluded and recorded
+with reasons. Both generation and review count toward request and usage limits.
+Reports include these assessments, quality counts, the effective configuration,
+conservative consolidation and possible duplicate pairs. Model review is not
+authoritative verification; the output still requires human review. For repeat runs,
+saved logs, review worksheets and 8B/70B comparison instructions, see the
+[zh.ch quality experiment](../../scripts/test/zhch/README.md).
+The [2026-09-05 experiment report](../../docs/experiments/2026-09-05-zhch-concept-extraction.md)
+records the completed 8B/70B comparison, failure history and remaining quality issues.
+
 ### Select one of the three model profiles
 
 All non-secret model settings are in
@@ -138,6 +153,34 @@ The extraction section also places hard limits on pages, normalized input
 characters, requests per page, and requests per run. Every page is chunked and
 the complete batch is checked before the first model call. An over-budget batch
 fails instead of partially running or incurring unbounded paid requests.
+
+Optional `--checkpoint-dir /tmp/swisstip-checkpoints` persists successful model
+responses, including generation and review separately. Matching input, model,
+prompt, schema and output-affecting settings reuse previous responses. The zh.ch
+wrapper supplies a shared checkpoint directory automatically. Use
+`--fresh-inference` (PowerShell wrapper: `-FreshInference`) for independent tests;
+omit it to resume. Existing logs without checkpoints cannot reconstruct results.
+
+The optional `[recovery]` table controls `max_retries`, `backoff_seconds`,
+`max_backoff_seconds` and `max_retry_after_seconds`. Ordinary backoff is capped
+at 30 seconds, while provider-requested waits are allowed up to 300 seconds by
+default, with the exact header logged and progress every 15 seconds. The
+repository configuration allows two additional
+attempts for transient HF failures. All attempts count toward existing page/run
+limits, and no authentication or validation failure is retried. Result
+`execution` metrics distinguish new attempts and tokens from cached responses;
+report token totals include historical usage from those reused responses.
+Truncated HF responses expose finish reason, reported token usage and response
+sizes in failure diagnostics, without exposing or accepting partial content.
+For truncated reviews only, `recovery.review_fallback_batch_size` (default 2)
+enables smaller batches, shrinking to single proposals if necessary. Each
+successful batch is checkpointed; split markers allow interrupted work to
+resume without repeating its parent. All calls share the existing attempt
+budgets. `execution.review_fallbacks` records this work separately from logical
+review counts; invalid verdicts and single-proposal truncation still fail.
+V3 skips structurally identified generic link-only HTML chunks before inference,
+records them in `skipped_chunks`, and preserves unaffected checkpoint keys.
+See the [recovery and comparison details](../../scripts/test/zhch/README.md).
 
 ### Run with local Ollama
 

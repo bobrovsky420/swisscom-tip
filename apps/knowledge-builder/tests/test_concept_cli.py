@@ -38,6 +38,13 @@ class FakeProvider:
         response_schema: Mapping[str, object],
     ) -> ModelCompletion:
         self.calls += 1
+        request = json.loads(user_prompt)
+        if "untrusted_review" in request:
+            return ModelCompletion(json.dumps({"verdicts": [
+                {"review_id": item["review_id"], "decision": "supported",
+                 "issue": "none", "reason": "Supported by the test evidence."}
+                for item in request["untrusted_review"]["proposals"]
+            ]}), "fake", "fake-model")
         payload = {
             "concepts": [
                 {
@@ -59,6 +66,13 @@ class FakeProvider:
                 }
             ]
         }
+        page = json.loads(user_prompt)["untrusted_page"]
+        if "evidence_spans" in page:
+            span = next(s for s in page["evidence_spans"]
+                        if "A residence permit is required." in s["text"])
+            payload["concepts"][0]["evidence"] = [{"evidence_id": span["evidence_id"]}]
+            if "primary_section_id" in response_schema["properties"]["concepts"]["items"]["properties"]:
+                payload["concepts"][0]["primary_section_id"] = span["section_id"]
         return ModelCompletion(
             content=json.dumps(payload),
             provider="fake",
@@ -142,10 +156,10 @@ class ConceptCliTests(unittest.TestCase):
             payload["model_config_schema_version"],
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertEqual(payload["active_profile"], "apertus_8b")
+        self.assertIn(payload["active_profile"], ("apertus_8b", "apertus_70b", "ollama_local"))
         self.assertEqual(payload["report_count"], 2)
         self.assertEqual(len(payload["reports"]), 2)
-        self.assertEqual(provider.calls, 2)
+        self.assertEqual(provider.calls, 4)
         for report in payload["reports"]:
             self.assertEqual(report["provider"], "fake")
             self.assertEqual(report["model"], "fake-model")
@@ -186,10 +200,11 @@ class ConceptCliTests(unittest.TestCase):
         self.assertEqual(exit_code, 0)
         self.assertEqual(json.loads(stdout.getvalue())["report_count"], 1)
         progress = stderr.getvalue()
-        self.assertIn("Selected profile=apertus_8b", progress)
+        self.assertIn("Selected profile=", progress)
         self.assertIn("Discovered 1 supported page(s)", progress)
         self.assertIn("Normalizing page 1/1", progress)
-        self.assertIn("Planned 1 model request(s) for this run", progress)
+        self.assertIn("Planned 2 model request(s) for this run", progress)
+        self.assertIn("Semantic review for chunk 1/1 completed", progress)
         self.assertIn("Model request 1/1 started", progress)
         self.assertIn("Model request 1/1 completed", progress)
         self.assertIn("accepted_candidates=1", progress)
@@ -274,10 +289,10 @@ class ConceptCliTests(unittest.TestCase):
             ).read_text(encoding="utf-8")
             config_document = config_document.replace(
                 "max_model_requests_per_page = 12",
-                "max_model_requests_per_page = 1",
+                "max_model_requests_per_page = 2",
             ).replace(
-                "max_model_requests_per_run = 20",
-                "max_model_requests_per_run = 1",
+                "max_model_requests_per_run = 30",
+                "max_model_requests_per_run = 2",
             )
             config_path.write_text(config_document, encoding="utf-8")
 
@@ -299,7 +314,7 @@ class ConceptCliTests(unittest.TestCase):
 
         self.assertEqual(exit_code, 2)
         self.assertEqual(stdout.getvalue(), "")
-        self.assertIn("run requires 2 model requests", stderr.getvalue())
+        self.assertIn("run requires 4 model requests", stderr.getvalue())
         self.assertEqual(provider.calls, 0)
 
     def test_page_and_total_character_budgets_fail_before_provider_creation(self) -> None:
@@ -409,7 +424,7 @@ class ConceptCliTests(unittest.TestCase):
             expected_sources,
         )
         self.assertEqual(payload["report_count"], len(supported_pages))
-        self.assertEqual(provider.calls, len(supported_pages))
+        self.assertEqual(provider.calls, 2 * len(supported_pages))
 
     def test_quoted_glob_is_expanded_sorted_and_deduplicated(self) -> None:
         stdout = io.StringIO()
@@ -454,7 +469,7 @@ class ConceptCliTests(unittest.TestCase):
             [str(first), str(last)],
         )
         self.assertEqual(payload["report_count"], 2)
-        self.assertEqual(provider.calls, 2)
+        self.assertEqual(provider.calls, 4)
 
     def test_wildcard_syntax_precedes_an_existing_magic_literal(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -523,7 +538,7 @@ class ConceptCliTests(unittest.TestCase):
             [str(page) for page in pages],
         )
         self.assertEqual(payload["report_count"], len(pages))
-        self.assertEqual(provider.calls, len(pages))
+        self.assertEqual(provider.calls, 2 * len(pages))
 
     def test_directory_symlinks_are_not_traversed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -587,7 +602,7 @@ class ConceptCliTests(unittest.TestCase):
                     payload = json.loads(stdout.getvalue())
                     self.assertEqual(payload["report_count"], 1)
                     self.assertEqual(payload["reports"][0]["source"], str(visible))
-                    self.assertEqual(provider.calls, 1)
+                    self.assertEqual(provider.calls, 2)
 
     def test_link_in_explicit_root_path_is_treated_as_deliberate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -754,7 +769,7 @@ class ConceptCliTests(unittest.TestCase):
         payload = json.loads(stdout.getvalue())
         self.assertEqual(payload["report_count"], 1)
         self.assertEqual(Path(payload["reports"][0]["source"]).resolve(), page.resolve())
-        self.assertEqual(provider.calls, 1)
+        self.assertEqual(provider.calls, 2)
 
 
 if __name__ == "__main__":

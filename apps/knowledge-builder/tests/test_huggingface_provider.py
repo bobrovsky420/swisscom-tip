@@ -19,6 +19,7 @@ from swisstip.builder.huggingface_provider import (  # noqa: E402
     HuggingFaceConfigurationError,
     HuggingFaceRateLimitError,
     HuggingFaceResponseError,
+    HuggingFaceIncompleteCompletionError,
     HuggingFaceRouterProvider,
     HuggingFaceTransportError,
 )
@@ -309,6 +310,24 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
                 user_prompt="User",
                 response_schema={"type": "object"},
             )
+
+    def test_truncation_carries_usage_and_sizes_without_partial_content(self) -> None:
+        partial = 'secret-partial-content-\u00fc'
+        response = FakeResponse({
+            "model": "swiss-ai/Apertus-70B-Instruct-2509",
+            "choices": [{"finish_reason": "length", "message": {"content": partial}}],
+            "usage": {"input_tokens": 123, "output_tokens": 4096},
+        })
+        provider = make_provider(FakeOpener(response))
+        with self.assertRaises(HuggingFaceIncompleteCompletionError) as raised:
+            provider.generate_structured(system_prompt="System", user_prompt="User", response_schema={"type": "object"})
+        diagnostics = raised.exception.diagnostics
+        self.assertEqual(diagnostics["prompt_tokens"], 123)
+        self.assertEqual(diagnostics["output_tokens"], 4096)
+        self.assertEqual(diagnostics["content_characters"], len(partial))
+        self.assertEqual(diagnostics["response_bytes"], len(response.body))
+        self.assertNotIn(partial, str(raised.exception))
+        self.assertNotIn(partial, json.dumps(diagnostics))
 
     def test_default_transport_disables_redirects(self) -> None:
         provider = HuggingFaceRouterProvider(

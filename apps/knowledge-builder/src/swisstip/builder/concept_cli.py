@@ -10,12 +10,15 @@ import os
 import stat
 import sys
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from .concept_recovery import RecoverableProvider
 from typing import Iterable, Sequence
 
 from swisstip.ingestion.concepts import (
     CandidateConceptExtractor,
+    REVIEW_PROMPT_PROFILE,
     ConceptExtractionError,
     SemanticModelError,
     SUPPORTED_PAGE_SUFFIXES,
@@ -23,6 +26,7 @@ from swisstip.ingestion.concepts import (
 )
 
 from .model_profiles import load_model_profiles
+from .concept_batch import summarize_reports
 from .provider_factory import create_semantic_model_provider
 
 
@@ -306,6 +310,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum filesystem entries inspected during discovery (default: 100000)",
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
+    parser.add_argument("--checkpoint-dir", type=Path,
+                        help="persist and reuse model responses in this internal directory")
+    parser.add_argument("--fresh-inference", action="store_true",
+                        help="ignore existing model checkpoints, but save new responses")
     parser.add_argument(
         "--verbose",
         action="store_true",
@@ -317,6 +325,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     started_at = time.monotonic()
+    recovery_provider = None
 
     def progress(message: str) -> None:
         if not args.verbose:
@@ -335,6 +344,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"provider={profile.provider or 'automatic'}, model={profile.model}, "
             f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
         )
+        progress(f"Prompt profile={extraction.prompt_profile}")
         progress(f"Resolving {len(args.pages)} input specification(s)")
         page_paths = resolve_page_inputs(
             args.pages,
@@ -348,6 +358,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             page = normalize_downloaded_page(
                 path,
                 max_file_bytes=args.max_file_bytes,
+                preserve_structure=extraction.prompt_profile == REVIEW_PROMPT_PROFILE,
             )
             page_characters = sum(
                 len(section.evidence_text) for section in page.sections
@@ -375,9 +386,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
         progress("Creating semantic-model provider")
         provider = create_semantic_model_provider(config)
+        recovery_provider = RecoverableProvider(
+            provider, config, checkpoint_dir=args.checkpoint_dir,
+            fresh=args.fresh_inference, progress=progress,
+        )
         progress("Semantic-model provider is ready")
         extractor = CandidateConceptExtractor(
-            provider,
+            recovery_provider,
             active_profile=config.active_profile.name,
             prompt_profile=extraction.prompt_profile,
             chunk_content_characters=extraction.chunk_content_characters,
@@ -405,9 +420,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"configured limit of {extraction.max_model_requests_per_run}"
             )
         reports = []
+        typed_reports = []
         for index, page in enumerate(pages, start=1):
             progress(f"Extracting page {index}/{len(pages)}: {page.source}")
-            report = extractor.extract(page)
+            recovery_provider.begin_page(page)
+            try:
+                report = extractor.extract(page)
+            except ValueError:
+                recovery_provider.discard_last_checkpoint()
+                raise
+            typed_reports.append(report)
             reports.append(report.to_dict())
             progress(
                 f"Finished page {index}/{len(pages)}: "
@@ -415,6 +437,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"warnings={len(report.warnings)}"
             )
     except (ValueError, SemanticModelError) as exc:
+        if recovery_provider is not None:
+            progress(f"Execution accounting: {json.dumps(recovery_provider.statistics())}")
         sys.stderr.write(f"swisstip-concepts: error: {exc}\n")
         return 2
 
@@ -424,7 +448,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         "active_profile": config.active_profile.name,
         "report_count": len(reports),
         "reports": reports,
+        "effective_config": asdict(config),
+        "elapsed_seconds": round(time.monotonic() - started_at, 3),
+        "execution": recovery_provider.statistics(),
+        **summarize_reports(typed_reports),
     }
+    progress(f"Consolidated {output['quality_summary']['candidate_count']} candidates into "
+             f"{output['quality_summary']['consolidated_count']} proposal group(s)")
     progress(f"Writing {len(reports)} report(s) as JSON")
     json.dump(
         output,

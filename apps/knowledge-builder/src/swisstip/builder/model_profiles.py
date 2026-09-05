@@ -16,7 +16,7 @@ CONFIG_SCHEMA_VERSION = "swisstip.semantic-model-profiles/v1"
 
 _FORBIDDEN_SECRET_FIELDS = frozenset({"api_key", "token"})
 _TOP_LEVEL_FIELDS = frozenset(
-    {"schema_version", "semantic_model", "generation", "extraction", "profiles"}
+    {"schema_version", "semantic_model", "generation", "extraction", "profiles", "recovery"}
 )
 _COMMON_PROFILE_FIELDS = frozenset(
     {"adapter", "model", "base_url", "timeout_seconds"}
@@ -75,6 +75,17 @@ class ActiveModelProfile:
 
 
 @dataclass(frozen=True, slots=True)
+class RecoveryConfig:
+    """Bounded retries; omitted tables retain legacy no-retry behaviour."""
+
+    max_retries: int = 0
+    backoff_seconds: float = 2.0
+    max_backoff_seconds: float = 30.0
+    max_retry_after_seconds: float = 300.0
+    review_fallback_batch_size: int = 2
+
+
+@dataclass(frozen=True, slots=True)
 class SemanticModelConfig:
     """Resolved semantic-model, generation, and extraction configuration."""
 
@@ -82,6 +93,7 @@ class SemanticModelConfig:
     active_profile: ActiveModelProfile
     generation: GenerationConfig
     extraction: ExtractionConfig
+    recovery: RecoveryConfig = RecoveryConfig()
 
 
 def load_model_profiles(path: str | Path) -> SemanticModelConfig:
@@ -148,7 +160,31 @@ def load_model_profiles(path: str | Path) -> SemanticModelConfig:
         active_profile=active_profile,
         generation=generation,
         extraction=extraction,
+        recovery=_load_recovery(document.get("recovery", {})),
     )
+
+
+def _load_recovery(value: object) -> RecoveryConfig:
+    if not isinstance(value, Mapping):
+        raise ModelProfileConfigurationError("recovery must be a table")
+    _reject_unknown_fields(value, {"max_retries", "backoff_seconds", "max_backoff_seconds",
+                                  "max_retry_after_seconds", "review_fallback_batch_size"}, "recovery")
+    table = {"max_retries": 0, "backoff_seconds": 2.0, "max_backoff_seconds": 30.0,
+             "max_retry_after_seconds": 300.0, "review_fallback_batch_size": 2, **value}
+    retries = _required_non_negative_integer(table, "max_retries", "recovery")
+    delay = _required_number(table, "backoff_seconds", "recovery")
+    maximum = _required_number(table, "max_backoff_seconds", "recovery")
+    retry_after_maximum = _required_number(table, "max_retry_after_seconds", "recovery")
+    review_batch_size = _required_positive_integer(table, "review_fallback_batch_size", "recovery")
+    if review_batch_size > 10:
+        raise ModelProfileConfigurationError("recovery.review_fallback_batch_size must be at most 10")
+    if retries > 5 or not 0 < delay <= maximum <= 60:
+        raise ModelProfileConfigurationError(
+            "recovery requires max_retries <= 5 and 0 < backoff_seconds <= max_backoff_seconds <= 60"
+        )
+    if not 0 < retry_after_maximum <= 3600:
+        raise ModelProfileConfigurationError("recovery.max_retry_after_seconds must be greater than zero and at most 3600")
+    return RecoveryConfig(retries, delay, maximum, retry_after_maximum, review_batch_size)
 
 
 def _load_generation(table: Mapping[str, object]) -> GenerationConfig:

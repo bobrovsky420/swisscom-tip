@@ -13,6 +13,11 @@ process when set, otherwise it reads HF_TOKEN from the repository-root
 
 A complete downloaded fixture is reused on later runs. The extraction script
 revalidates its manifest, file sizes, and SHA-256 hashes before model calls.
+Each extraction writes to a new runs/<RunName> folder, preserving older results.
+
+.PARAMETER RunName
+Optional unique label for this extraction, such as 8b-v2-01. Defaults to a
+timestamp and random suffix. Existing run folders are never overwritten.
 
 .PARAMETER OutputRoot
 Directory for the fixture and results. The default is the stable
@@ -20,8 +25,12 @@ swisstip-zhch-poc directory beneath the system temp directory. An existing
 complete fixture is reused; a new or empty directory is populated.
 
 .PARAMETER RefreshFixture
-Removes the selected OutputRoot before downloading a fresh fixture. This is the
-only mode in which this script removes cached downloads.
+Removes the selected OutputRoot, including runs and results, before downloading
+a fresh fixture. Use a new OutputRoot to preserve comparison runs.
+
+.PARAMETER FreshInference
+Ignore existing model checkpoints for an independent model experiment. New
+responses are still saved. Without this switch, matching responses are reused.
 
 .PARAMETER ConfigPath
 Semantic-model configuration file. The extraction script defaults this to the
@@ -52,6 +61,13 @@ Timeout for individual network requests.
 param(
     [Parameter()]
     [string] $OutputRoot,
+
+    [Parameter()]
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9_-]{0,79}$')]
+    [string] $RunName,
+
+    [Parameter()]
+    [switch] $FreshInference,
 
     [Parameter()]
     [string] $ConfigPath,
@@ -155,6 +171,13 @@ if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
     $OutputRoot = Join-Path ([IO.Path]::GetTempPath()) "swisstip-zhch-poc"
 }
 $resolvedOutputRoot = [IO.Path]::GetFullPath($OutputRoot)
+if ([string]::IsNullOrWhiteSpace($RunName)) {
+    $RunName = (Get-Date -Format "yyyyMMdd-HHmmss-fff") + "-" + [Guid]::NewGuid().ToString("N").Substring(0, 8)
+}
+$runDirectory = Join-Path (Join-Path $resolvedOutputRoot "runs") $RunName
+if ((Test-Path -LiteralPath $runDirectory) -and -not $RefreshFixture) {
+    throw "Run already exists. Choose a new -RunName: $runDirectory"
+}
 
 if ($RefreshFixture -and (Test-Path -LiteralPath $resolvedOutputRoot)) {
     if (-not (Test-Path -LiteralPath $resolvedOutputRoot -PathType Container)) {
@@ -224,13 +247,21 @@ if ($null -eq $fixture) {
     $fixture | Add-Member -NotePropertyName Reused -NotePropertyValue $false
 }
 
+[void] (New-Item -ItemType Directory -Path $runDirectory)
+$logPath = Join-Path $runDirectory "run.log"
+$reviewPath = Join-Path $runDirectory "review.csv"
+Copy-Item -LiteralPath $fixture.ManifestPath -Destination (Join-Path $runDirectory "download-manifest.json")
+
 $extractionParameters = @{
     PagesRoot = $fixture.PagesRoot
     ManifestPath = $fixture.ManifestPath
     ExpectedPageCount = $fixture.PageCount
     MaxFileBytes = $MaxFileBytes
-    OutputPath = Join-Path $fixture.OutputRoot "concept-proposals.json"
-    Verbose = $VerbosePreference -ne "SilentlyContinue"
+    OutputPath = Join-Path $runDirectory "concept-proposals.json"
+    CheckpointDirectory = Join-Path $resolvedOutputRoot "checkpoints"
+    FreshInference = $FreshInference
+    # Capture progress in run.log even when the wrapper was invoked without -Verbose.
+    Verbose = $true
 }
 if (-not [string]::IsNullOrWhiteSpace($ConfigPath)) {
     $extractionParameters.ConfigPath = $ConfigPath
@@ -239,15 +270,60 @@ if (-not [string]::IsNullOrWhiteSpace($EnvFilePath)) {
     $extractionParameters.EnvFilePath = $EnvFilePath
 }
 
+$transcriptStarted = $false
 try {
+    Start-Transcript -Path $logPath -NoClobber | Out-Null
+    $transcriptStarted = $true
     $extraction = & $extractionScript @extractionParameters
+    $batch = Get-Content -LiteralPath $extraction.OutputPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $reviewRows = @(
+        foreach ($report in $batch.reports) {
+            foreach ($candidate in $report.candidates) {
+                [pscustomobject] ([ordered] @{
+                    Source = $report.source
+                    Title = $report.title
+                    CandidateId = $candidate.candidate_id
+                    Label = $candidate.preferred_label
+                    Type = $candidate.concept_type
+                    Granularity = $candidate.granularity
+                    Scope = $candidate.scope
+                    Description = $candidate.description
+                    Questions = $candidate.user_questions -join " | "
+                    Evidence = ($candidate.evidence | ForEach-Object { $_.quote }) -join " | "
+                    PrimarySection = $candidate.primary_section_id
+                    Relevant = ""
+                    SupportedByEvidence = ""
+                    CorrectType = ""
+                    DuplicateOf = ""
+                    Notes = ""
+                })
+            }
+        }
+    )
+    if ($reviewRows.Count -gt 0) {
+        $reviewRows | Export-Csv -LiteralPath $reviewPath -NoTypeInformation -Encoding UTF8
+    }
+    else {
+        [IO.File]::WriteAllText(
+            $reviewPath,
+            "Source,Title,CandidateId,Label,Type,Granularity,Scope,Description,Questions,Evidence,PrimarySection,Relevant,SupportedByEvidence,CorrectType,DuplicateOf,Notes`r`n",
+            [Text.UTF8Encoding]::new($false)
+        )
+    }
+    Write-Verbose "Saved human review worksheet to $reviewPath"
 }
 catch {
     throw (
         "Concept extraction failed. The downloaded fixture remains at " +
         "$($fixture.OutputRoot) and will be reused on the next run. " +
+        "Run diagnostics: $runDirectory. " +
         "$($_.Exception.Message)"
     )
+}
+finally {
+    if ($transcriptStarted) {
+        Stop-Transcript | Out-Null
+    }
 }
 
 return [pscustomobject] ([ordered] @{
@@ -257,6 +333,9 @@ return [pscustomobject] ([ordered] @{
     PreflightPath = $fixture.PreflightPath
     FixtureReused = [bool] $fixture.Reused
     ProposalPath = $extraction.OutputPath
+    RunDirectory = $runDirectory
+    LogPath = $logPath
+    ReviewPath = $reviewPath
     TokenSource = $extraction.TokenSource
     ActiveProfile = $extraction.ActiveProfile
     Provider = $extraction.Provider
