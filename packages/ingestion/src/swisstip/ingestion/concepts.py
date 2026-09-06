@@ -20,6 +20,7 @@ REPORT_SCHEMA_VERSION = "swisstip.concept-proposal-report/v1"
 DEFAULT_PROMPT_PROFILE = "concept_extraction_v1"
 SPAN_PROMPT_PROFILE = "concept_extraction_v2"
 REVIEW_PROMPT_PROFILE = "concept_extraction_v3"
+STRUCTURED_PROMPT_PROFILE = "concept_extraction_v4"
 _SPAN_PROFILES = {SPAN_PROMPT_PROFILE, REVIEW_PROMPT_PROFILE}
 CONCEPT_EXTRACTION_OPERATION = "candidate_concept_extraction"
 HTML_PAGE_SUFFIXES = frozenset({".html", ".htm"})
@@ -88,10 +89,17 @@ class NormalizedSection:
     heading_path: str
     text: str
     generic_link_only: bool = False
+    block_kind: str = "legacy_section"
+    scope_id: str = ""
+    structure_issues: tuple[str, ...] = ()
 
-    def content_dict(self) -> dict[str, str]:
+    def content_dict(self) -> dict[str, object]:
         """Stable text identity, excluding derived HTML-selection hints."""
-        return {"section_id": self.section_id, "heading_path": self.heading_path, "text": self.text}
+        result = {"section_id": self.section_id, "heading_path": self.heading_path, "text": self.text}
+        if self.block_kind != "legacy_section":
+            result.update(block_kind=self.block_kind, scope_id=self.scope_id,
+                          structure_issues=list(self.structure_issues))
+        return result
 
     @property
     def evidence_text(self) -> str:
@@ -108,6 +116,8 @@ class NormalizedPage:
     language: str | None
     content_hash: str
     sections: tuple[NormalizedSection, ...]
+    normalization_version: str = "legacy"
+    source_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -140,9 +150,15 @@ class CandidateConcept:
     relations: tuple[CandidateRelation, ...]
     validation_state: str = "CANDIDATE"
     primary_section_id: str | None = None
+    structured_claims: tuple[dict[str, object], ...] = ()
+    limitations: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        result = asdict(self)
+        if not self.structured_claims and not self.limitations:
+            result.pop("structured_claims")
+            result.pop("limitations")
+        return result
 
 
 @dataclass(frozen=True, slots=True)
@@ -173,9 +189,21 @@ class ConceptProposalReport:
     skipped_chunks: tuple[dict[str, object], ...] = ()
     # One entry per logical completion, including generation and review, in order.
     model_identities: tuple[dict[str, str | None], ...] = ()
+    source_inventory: tuple[dict[str, object], ...] = ()
+    content_policy: dict[str, object] = field(default_factory=dict)
+    human_review_queue: tuple[dict[str, object], ...] = ()
+    normalization_version: str = "legacy"
+    source_sha256: str | None = None
+    claim_contract_version: str | None = None
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        result = asdict(self)
+        if self.prompt_profile != STRUCTURED_PROMPT_PROFILE:
+            for field_name in ("source_inventory", "content_policy", "human_review_queue",
+                               "normalization_version", "source_sha256", "claim_contract_version"):
+                result.pop(field_name)
+            result["candidates"] = tuple(candidate.to_dict() for candidate in self.candidates)
+        return result
 
 
 _IGNORED_HTML_ELEMENTS = frozenset(
@@ -425,6 +453,7 @@ def normalize_downloaded_page(
     *,
     max_file_bytes: int = 2_000_000,
     preserve_structure: bool = False,
+    logical_blocks: bool = False,
 ) -> NormalizedPage:
     """Read one local HTML/Markdown/text page and create stable sections."""
 
@@ -454,6 +483,9 @@ def normalize_downloaded_page(
         raise PageNormalizationError(f"cannot read page: {path}") from exc
 
     suffix = path.suffix.lower()
+    if logical_blocks:
+        from .source_structure import normalize_blocks
+        return normalize_blocks(path, value, raw)
     if suffix in HTML_PAGE_SUFFIXES:
         parser = _VisiblePageParser(preserve_structure=preserve_structure)
         try:
@@ -733,8 +765,9 @@ class CandidateConceptExtractor:
         max_model_requests_per_page: int = 20,
         clock: Callable[[], datetime] | None = None,
         progress: Callable[[str], None] | None = None,
+        max_repair_attempts: int = 1,
     ) -> None:
-        if prompt_profile not in {DEFAULT_PROMPT_PROFILE, *_SPAN_PROFILES}:
+        if prompt_profile not in {DEFAULT_PROMPT_PROFILE, *_SPAN_PROFILES, STRUCTURED_PROMPT_PROFILE}:
             raise ConceptExtractionError(f"unsupported prompt profile: {prompt_profile}")
         if chunk_content_characters < 500:
             raise ConceptExtractionError("chunk_content_characters must be at least 500")
@@ -760,8 +793,14 @@ class CandidateConceptExtractor:
         self._max_model_requests_per_page = max_model_requests_per_page
         self._clock = clock or (lambda: datetime.now(UTC))
         self._progress = progress or (lambda _message: None)
+        if type(max_repair_attempts) is not int or max_repair_attempts not in (0, 1):
+            raise ConceptExtractionError("max_repair_attempts must be 0 or 1")
+        self._max_repair_attempts = max_repair_attempts
 
     def extract(self, page: NormalizedPage) -> ConceptProposalReport:
+        if self._prompt_profile == STRUCTURED_PROMPT_PROFILE:
+            from .structured_extraction import StructuredExtraction
+            return StructuredExtraction(self).extract(page)
         sections, excluded = self._content_sections(page)
         self._progress(
             f"Content selection for {page.source}: kept_sections={len(sections)}, "
@@ -929,6 +968,9 @@ class CandidateConceptExtractor:
     def planned_request_count(self, page: NormalizedPage) -> int:
         """Return the page call count, rejecting it when the budget is exceeded."""
 
+        if self._prompt_profile == STRUCTURED_PROMPT_PROFILE:
+            from .structured_extraction import StructuredExtraction
+            return StructuredExtraction(self).planned_request_count(page)
         sections, _ = self._content_sections(page)
         chunks = self._chunks(sections)
         if not chunks:

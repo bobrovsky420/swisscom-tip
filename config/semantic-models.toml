@@ -8,7 +8,9 @@ temperature = 0.0
 max_output_tokens = 4096
 
 [extraction]
+# Keep the frozen v3 baseline; --structured selects the separately versioned v4 path.
 prompt_profile = "concept_extraction_v3"
+max_repair_attempts = 1
 chunk_content_characters = 6400
 chunk_overlap_characters = 400
 max_concepts_per_chunk = 6

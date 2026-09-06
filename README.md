@@ -17,6 +17,9 @@ operator-triggered knowledge-builder proofs:
   prefer German; multilingual selections retain every chosen official version.
 - A concept extractor that proposes evidence-backed candidate concepts from
   downloaded HTML, text, and Markdown pages.
+- An opt-in [structured extraction and human review workflow](docs/experiments/2026-09-06-structured-extraction.md)
+  with logical source blocks, explicit claim conditions, omission audits, bounded
+  repair and revision-bound review annotations. Live quality validation is pending.
 
 The shared core now defines versioned catalog, context, evidence and structured
 request contracts, with offline catalog/request validation. POC-01 has 30 frozen

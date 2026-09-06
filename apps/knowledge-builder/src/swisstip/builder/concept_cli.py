@@ -10,7 +10,7 @@ import os
 import stat
 import sys
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 from .concept_recovery import RecoverableProvider
@@ -19,6 +19,7 @@ from typing import Iterable, Sequence
 from swisstip.ingestion.concepts import (
     CandidateConceptExtractor,
     REVIEW_PROMPT_PROFILE,
+    STRUCTURED_PROMPT_PROFILE,
     ConceptExtractionError,
     SemanticModelError,
     SUPPORTED_PAGE_SUFFIXES,
@@ -310,6 +311,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum filesystem entries inspected during discovery (default: 100000)",
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
+    parser.add_argument("--structured", action="store_true",
+                        help="opt into v4 logical blocks, structured claims, coverage audit and bounded repair")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="normalize and plan locally without creating a model provider or sending requests")
     parser.add_argument("--checkpoint-dir", type=Path,
                         help="persist and reuse model responses in this internal directory")
     parser.add_argument("--fresh-inference", action="store_true",
@@ -337,6 +342,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     try:
         progress(f"Loading semantic-model configuration from {args.config}")
         config = load_model_profiles(args.config)
+        if args.structured:
+            config = replace(config, extraction=replace(config.extraction, prompt_profile=STRUCTURED_PROMPT_PROFILE))
         extraction = config.extraction
         profile = config.active_profile
         progress(
@@ -359,6 +366,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 path,
                 max_file_bytes=args.max_file_bytes,
                 preserve_structure=extraction.prompt_profile == REVIEW_PROMPT_PROFILE,
+                logical_blocks=extraction.prompt_profile == STRUCTURED_PROMPT_PROFILE,
             )
             page_characters = sum(
                 len(section.evidence_text) for section in page.sections
@@ -384,23 +392,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"Validated normalized input: pages={len(pages)}, "
             f"characters={total_input_characters}"
         )
-        progress("Creating semantic-model provider")
-        provider = create_semantic_model_provider(config)
-        recovery_provider = RecoverableProvider(
-            provider, config, checkpoint_dir=args.checkpoint_dir,
-            fresh=args.fresh_inference, progress=progress,
-        )
-        progress("Semantic-model provider is ready")
-        extractor = CandidateConceptExtractor(
-            recovery_provider,
+        extractor_options = dict(
             active_profile=config.active_profile.name,
             prompt_profile=extraction.prompt_profile,
             chunk_content_characters=extraction.chunk_content_characters,
             chunk_overlap_characters=extraction.chunk_overlap_characters,
             max_concepts_per_chunk=extraction.max_concepts_per_chunk,
             max_model_requests_per_page=extraction.max_model_requests_per_page,
+            max_repair_attempts=extraction.max_repair_attempts,
             progress=progress,
         )
+        extractor = CandidateConceptExtractor(None, **extractor_options)
         requests_per_page = [
             extractor.planned_request_count(page) for page in pages
         ]
@@ -419,6 +421,28 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"run requires {planned_requests} model requests, exceeding the "
                 f"configured limit of {extraction.max_model_requests_per_run}"
             )
+        if args.dry_run:
+            from swisstip.ingestion.structured_extraction import StructuredExtraction
+            json.dump({"schema_version": "swisstip.concept-extraction-plan/v1",
+                       "prompt_profile": extraction.prompt_profile,
+                       "planned_request_ceiling": planned_requests,
+                       "model_requests_sent": 0,
+                       "pages": [{"source": page.source, "input_hash": page.content_hash,
+                                  "source_sha256": page.source_sha256,
+                                  "planned_request_ceiling": count,
+                                  "source_inventory": StructuredExtraction(extractor).plan(page)[1]
+                                  if args.structured or extraction.prompt_profile == STRUCTURED_PROMPT_PROFILE else []}
+                                 for page, count in zip(pages, requests_per_page, strict=True)]},
+                      sys.stdout, ensure_ascii=False, indent=None if args.compact else 2)
+            sys.stdout.write("\n")
+            return 0
+        progress("Creating semantic-model provider")
+        provider = create_semantic_model_provider(config)
+        recovery_provider = RecoverableProvider(
+            provider, config, checkpoint_dir=args.checkpoint_dir,
+            fresh=args.fresh_inference, progress=progress,
+        )
+        extractor = CandidateConceptExtractor(recovery_provider, **extractor_options)
         reports = []
         typed_reports = []
         for index, page in enumerate(pages, start=1):

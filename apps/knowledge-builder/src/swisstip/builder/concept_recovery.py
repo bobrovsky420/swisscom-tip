@@ -67,6 +67,10 @@ class RecoverableProvider:
         # Token values and recovery timing do not affect response identity.
         page_data = asdict(page)
         page_data["sections"] = tuple(section.content_dict() for section in page.sections)
+        if page.normalization_version == "legacy":
+            # Preserve v1-v3 checkpoint identity after adding optional v4 fields.
+            page_data.pop("normalization_version", None)
+            page_data.pop("source_sha256", None)
         self.context = _digest({
             "version": CHECKPOINT_VERSION, "page": page_data,
             "profile": asdict(self.config.active_profile),

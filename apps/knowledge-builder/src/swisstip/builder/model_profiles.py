@@ -56,6 +56,7 @@ class ExtractionConfig:
     max_total_input_characters: int
     max_model_requests_per_page: int
     max_model_requests_per_run: int
+    max_repair_attempts: int = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -216,6 +217,7 @@ def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
             "max_total_input_characters",
             "max_model_requests_per_page",
             "max_model_requests_per_run",
+            "max_repair_attempts",
         },
         path,
     )
@@ -252,6 +254,9 @@ def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
             "extraction.max_model_requests_per_page must not exceed "
             "extraction.max_model_requests_per_run"
         )
+    max_repair_attempts = table.get("max_repair_attempts", 1)
+    if type(max_repair_attempts) is not int or max_repair_attempts not in (0, 1):
+        raise ModelProfileConfigurationError("extraction.max_repair_attempts must be 0 or 1")
     return ExtractionConfig(
         prompt_profile=_required_non_empty_string(table, "prompt_profile", path),
         chunk_content_characters=chunk_content_characters,
@@ -265,6 +270,7 @@ def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
         ),
         max_model_requests_per_page=max_model_requests_per_page,
         max_model_requests_per_run=max_model_requests_per_run,
+        max_repair_attempts=max_repair_attempts,
     )
 
 

@@ -139,6 +139,8 @@ open until their remaining acceptance requirements are met.
 | [x] | BUILD-01.4 | Complete the same-person reference review and select eight accepted references for seed authoring | 30 accepted references, 60 agreed comparison assessments and 42 reported second-review minutes frozen with exact evidence; catalog mapping, independent adjudication and publication remain pending |
 | [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
 | [x] | BUILD-02.1 | Implement explicit test-crawl planning and raw snapshot capture | Offline planning by default; explicit crawls retain exact HTML bytes and URL/time/hash manifests; fixtures verify language retention, German ordering, separate snapshots and failures |
+| [x] | BUILD-02.2 | Implement opt-in structured extraction and bounded assisted review | v4 logical blocks, scoped structured claims, separate semantic dimensions, source-block coverage audit, one bounded repair, visible gaps and preserved legacy checkpoints; offline fixtures only |
+| [x] | BUILD-02.3 | Export authoring review packets and import revision-bound annotations | Escaped source/evidence viewer and decision CSV; stale, duplicate and missing items rejected; human identity required; corrections, promotion and verified coverage remain separate |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
 | [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [x] | BUILD-04.1 | Define and validate the closed v3 language policy | Language-only role sets, tagged term routes, independent source filters and policy closure implemented and tested offline; source-language validation and evaluated retrieval/projections remain pending |
@@ -182,7 +184,8 @@ preserves scope limitations, assistance provenance and the completion artifacts.
 Independent adjudication, controlled reviewer comparison and unseen holdout remain
 pending. Neither BUILD-01 nor POC-01 is complete.
 
-BUILD-02 has acquisition scaffolding and an accepted authoring reference subset;
+BUILD-02 has acquisition scaffolding, opt-in v4 structured extraction with offline
+authoring-review import, and an accepted authoring reference subset;
 the release-bound evidence/promotion fixture remains to be implemented. FIX-01/02 are complete.
 BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
 The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
@@ -212,7 +215,9 @@ its citations. These gates remain pending; the current extractor groups proposal
 using language-dependent candidate metadata and does not create shared public IDs.
 
 The source review sets the following BUILD-02 implementation priorities. These
-are requirements from V20/V11, not capabilities already delivered by the worksheet:
+are requirements from V20/V11. The [v4 implementation and validation notes](docs/experiments/2026-09-06-structured-extraction.md)
+describe delivered authoring controls and their limits; the worksheet alone did
+not deliver these capabilities. Live quality comparison and release promotion remain pending:
 
 1. Add versioned, separate claim-support, scope, completeness and per-example-
    question assessments, bound to candidate and evidence revisions. Preserve
@@ -230,9 +235,10 @@ are requirements from V20/V11, not capabilities already delivered by the workshe
    a contact heading alone is not a reason to drop included substantive content.
    Report filtered, skipped, budget-limited, unproposed, rejected and differently
    represented content separately. Do not retroactively exclude gaps to raise scores.
-5. The offline second-review import and freeze are complete. Implement validated
-   production import of revision-bound decisions, turn agreed failures and correct controls into regression fixtures, and
-   enforce affected-claim/operation promotion gates. Complete text representation
+5. The offline second-review import/freeze and v4 revision-bound authoring decision
+   import are complete. Structural regressions and positive controls are implemented;
+   independent semantic fixtures and affected-claim/operation promotion gates remain
+   pending. Complete text representation
    in a rejected or partly unsupported proposal is not verified retained coverage.
 
 Keep comparison work outside the immutable packet inventory, under

@@ -66,6 +66,12 @@ def summarize_reports(reports: list[ConceptProposalReport]) -> dict[str, object]
                 report.language or "", candidate.preferred_label, candidate.scope,
                 candidate.concept_type, candidate.granularity, candidate.description,
             ))
+            if candidate.structured_claims or candidate.limitations:
+                # Never collapse different operators, roles or limitations merely
+                # because their rendered descriptions happen to match.
+                identity += (json.dumps({"claims": candidate.structured_claims,
+                                         "limitations": candidate.limitations},
+                                        ensure_ascii=False, sort_keys=True),)
             if identity not in groups:
                 digest = hashlib.sha256(json.dumps(identity, ensure_ascii=False).encode()).hexdigest()[:16]
                 groups[identity] = {
@@ -99,7 +105,8 @@ def summarize_reports(reports: list[ConceptProposalReport]) -> dict[str, object]
         return None if any(v is None for v in values) else sum(values)
 
     return {
-        "consolidation_policy": "exact_normalized_label_scope_type_granularity_description_language",
+        "consolidation_policy": "exact_normalized_label_scope_type_granularity_description_language" +
+                                ("_and_structured_claims" if any(c.structured_claims or c.limitations for c in candidates) else ""),
         "consolidated_concepts": list(groups.values()),
         "duplicate_review_pairs": review_pairs,
         "duplicate_review_pair_count": review_pair_count,

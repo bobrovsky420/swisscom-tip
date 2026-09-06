@@ -32,6 +32,13 @@ Windows executable path; activation is not required.
 
 ## Propose concepts from downloaded pages
 
+The opt-in `--structured` path adds logical source blocks, structured claims,
+separate semantic assessments, source coverage auditing and one bounded repair.
+Use `--structured --dry-run` to inspect the complete source inventory without a
+model call. The [v4 workflow](../../docs/experiments/2026-09-06-structured-extraction.md)
+includes offline review export/import commands and validation limits. The default
+v3 path remains available for comparisons with the frozen POC-01 evidence.
+
 `swisstip-concepts` accepts one or more local file paths, directory paths, or
 wildcard patterns. Eligible files have an `.html`, `.htm`, `.txt`, `.md`, or
 `.markdown` extension. Directory scanning recursively includes supported files
