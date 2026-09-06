@@ -15,9 +15,10 @@ operator-triggered knowledge-builder proofs:
   downloaded HTML, text, and Markdown pages.
 
 The shared core now defines versioned catalog, context, evidence and structured
-request contracts, with offline catalog/request validation. A source-only POC-01
-packet supports human labeling before model comparison. The seed catalog remains
-a draft pending review; release publication and the MCP tools are not implemented.
+request contracts, with offline catalog/request validation. POC-01 has 30 frozen
+source-first reference concepts and a draft comparison against the saved 8B/70B
+proposals. The user's second review and quality evaluation remain pending. The
+seed catalog is still a draft; release publication and the MCP tools are not implemented.
 
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)
@@ -27,6 +28,7 @@ a draft pending review; release publication and the MCP tools are not implemente
 - [Semantic-model profiles](config/semantic-models.toml)
 - [Core contracts and validation](packages/core/README.md)
 - [Prepare and complete the POC-01 review](scripts/test/poc01/README.md)
+- [POC-01 progress, draft findings and resulting requirements](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
 
 The concept extractor has three preconfigured model profiles: local Ollama,
 Hugging Face Apertus 8B, and Hugging Face Apertus 70B. Switching

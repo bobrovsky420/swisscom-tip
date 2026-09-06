@@ -1,7 +1,8 @@
 # POC-01: semantic reference labels and reviewer value
 
-Preparation date: 2026-09-06. Status: review preparation implemented; human labels and
-reviewer comparisons have not been completed. No quality decision is claimed.
+Experiment date: 2026-09-06. Status: 30 reference concepts frozen; assistant draft
+comparison prepared; the user's second pass and controlled reviewer evaluation
+remain pending. Current reviewer-value/model-selection decision: `INCONCLUSIVE`.
 
 ## Scope and review arrangement
 
@@ -37,11 +38,14 @@ Preparation records code/configuration and protocol identities. Historical
 requested model identities and unverifiable observed identities remain as
 recorded; they are not repaired by copying or hashing the old artifacts.
 
-The separate reviewer workspace contains source-only views and blank annotation
-rows. It exposes normalized sections for exact references and inert source HTML
-for inspecting anything normalization might have omitted. It contains no model
-proposals or assistant-authored gold claims. Normalized views are conveniences,
-not a claim that normalization preserves every condition.
+The reviewer workspace initially contained source-only views and blank annotation
+rows, without model proposals or prefilled claims. It exposes normalized sections
+for exact references and inert source HTML for checking normalization. The user
+subsequently supplied questions, quotations, risks, uncertainty and actual time;
+the assistant structured the authoring fields and documented scope corrections
+and confirmation boundaries. These annotations are human-led, assistant-assisted
+development references, not independently adjudicated gold. Normalized views do
+not establish that every condition or logical relationship has been preserved.
 
 No live source fetch, inference call or provider comparison is part of packet
 preparation. The current provider configuration is preserved as build context;
@@ -91,10 +95,111 @@ The eventual decision is `CONFIRMED_FOR_TESTED_SLICE`, `REJECTED` or
 reviewed 5-10-concept seed subset also remains pending; draft identifiers and
 passing contract tests do not establish semantic approval.
 
+## Frozen reference and draft comparison
+
+The full-gold snapshot contains 30 concepts, five per source, with 101 reported
+primary-review minutes and 41 validated evidence spans. It is preserved under
+`.local/experiments/poc-01/review-freezes/20260906T133038-b99b9023/`.
+Its `gold.csv` SHA-256 is
+`80c3cc45359f0e9d47cfc6e3c0af4d2640c724b903d9f3dbf1040d15b7fea37a`.
+The original ten-concept initial-batch snapshot is also preserved. Freezing checked
+completeness of annotation fields and exact spans; it did not approve semantics.
+
+The comparison lives outside the fixed packet inventory at
+`.local/experiments/poc-01-comparisons/20260906-full-gold-01/`.
+Its `input-manifest.json` SHA-256 is
+`0551d26a19efb465bc4df99801a58640e07602dab5e44fc29a8238c1f56ad142`.
+The manifest binds unchanged copies of the gold snapshot and both final reports,
+plus a common proposal inventory that preserves every retained/rejected proposal:
+
+| Historical run | Proposed | Retained | Rejected |
+|---|---:|---:|---:|
+| `8b-v3-02` | 59 | 47 | 12 |
+| `70b-v3-05` | 57 | 55 | 2 |
+
+There are 60 assistant draft alignments, one per gold concept and run. The
+inventory includes 305 example questions: 183 have assistant draft assessments
+against linked concepts and 122 remain unassessed. Every human second-review
+decision and timing cell is blank. These counts are preparation bookkeeping, not
+accuracy, reviewer agreement or an independently measured recall result.
+
+The retained-output representation counts are:
+
+| Draft representation against 30 reference concepts | 8B | 70B |
+|---|---:|---:|
+| Full claim content represented in retained output | 7 | 9 |
+| Partially represented in retained output | 12 | 12 |
+| No retained representation | 11 | 9 |
+
+The 8B gaps include four concepts found only in rejected proposals and seven with
+no identified proposal; the nine 70B gaps have no identified proposal. Searching
+the whole selected run distinguishes representation elsewhere from absence.
+Internal all-linked content counts also include rejected proposals: their nine
+complete 8B matches must not be reported as nine retained complete matches.
+Full content representation can coexist with citation, scope or example-question
+problems. No retained proposal is promoted by these draft classifications.
+
+The principal draft findings are:
+
+- Missing material conditions in close-relative, family-reunification and
+  medical-treatment concepts, including separate procedure branches.
+- Changes to population, logical prerequisites and time windows; a quota or
+  card/registration exemption is sometimes described as permit-free employment.
+- Missing municipal-registration obligations and the construction-sector
+  exception. Both runs also omit the selected skilled-worker restriction.
+- Three contact concepts are excluded before model extraction. This is a
+  mismatch between reviewed coverage expectations and historical filtering.
+  The historical runs had no frozen policy declaring these later reference
+  contacts required; this does not establish that the models failed to read
+  content they were never given or violated such a historical coverage policy.
+- Infobox headings split continued condition lists, and a general procedure
+  inherits a misleading heading. Normalized text presence alone does not prove
+  preserved logical applicability. Blanket primary-section evidence restrictions
+  also reject relevant multi-section content without establishing its invalidity.
+- Some example questions ask for an individual outcome, proof requirements or
+  details beyond the candidate's saved evidence. Source ambiguities, including an
+  unassigned exact-age boundary, remain unresolved in the reference notes.
+
+These observations motivate [Product Specification V20](../product/product-functional-specification.md)
+and [Technical Specification V11](../architecture/technical-specification.md):
+separate claim/question assessments, logical source blocks and bounded supporting
+evidence, versioned content policy and gap accounting, and finite semantic
+acceptance fixtures. [BUILD-02 and POC-01/03/05](../../TODO.md) track implementation
+and validation. Updating the requirements does not implement the controls or
+qualify the existing extractor for automatic promotion.
+
+Next, complete the user's same-person second pass and preserve any corrections
+in new snapshots. Confirm failures before using them as regression truth; retain
+correct controls and independently label unseen natural cases for later quality
+claims. Controlled reviewer arms, valid-content-loss/cost criteria, provider
+configuration and whole-run budgets must be fixed before fresh reviewer runs.
+The 101 minutes measure primary reference work, not total engineering effort or
+minutes per usable published concept. No model-size winner is established.
+
+## Artifact verification
+
+The comparison's `verification.json` records checked input/output hashes, local
+links, 60 comparison rows, 30 empty second-review rows, 116 proposals and 305
+questions. The offline browser view was rendered and its initial one-concept
+selection verified. The original packet still passes preservation verification
+for all six sources and 87 historical files; gold and source snapshots are unchanged.
+No new configured extraction/reviewer inference calls or live source fetches were
+run for this comparison. Assistant draft analysis is recorded as such.
+
+Recheck packet preservation with the repository environment:
+
+```shell
+./.venv/bin/python scripts/test/poc01/prepare_packet.py verify
+```
+
+On Windows, substitute `./.venv/Scripts/python.exe`. Internal comparison inputs,
+worksheets and generation instructions remain in the ignored directory; source
+text and individual annotations are not copied into this tracked report.
+
 ## Implementation verification
 
-The core contract suite passes 68 tests, ingestion passes 63 tests, and the builder
-suite passes 96 tests including 13 POC-01 preparation tests and the PowerShell
+The preparation implementation recorded 68 passing core tests, 63 ingestion
+tests and 96 builder tests including 13 POC-01 preparation tests and the PowerShell
 workflow against loopback fake Ollama. The generated contract schema bundle also
 matches its exporter. These are software checks, not semantic-quality results.
 
@@ -110,4 +215,6 @@ passed. The active packet is `.local/experiments/poc-01/`; its manifest SHA-256 
 The input metadata includes the pre-result version of this report. The first
 generated packet is retained separately as `poc-01-preparation-001` after the
 source views were improved for readability; no human annotations were replaced.
-There are zero completed human labels and zero new model-comparison calls.
+At that initial preparation point there were zero completed human labels. The
+subsequent frozen reference and draft-comparison progress is recorded above;
+the original preparation metadata remains unchanged.

@@ -18,6 +18,9 @@ directory. A nonempty destination is refused, including previously annotated
 packets. `verify` is read-only and permits changes only to `reviewer/gold.csv`
 and separately versioned `review-freezes/`. Keep original temporary artifacts
 untouched until independently satisfied with the preserved archive.
+The packet inventory is fixed: comparison worksheets, scripts, previews and
+scratch files belong in a separate sibling directory, such as
+`.local/experiments/poc-01-comparisons/`, not inside the preserved packet.
 
 The packet contains:
 
@@ -49,9 +52,35 @@ not rendered; original scripts remain readable as text for preservation.
 
 The source-only worksheet asks the user to select 10-15 high-risk concepts for
 the first batch and then 5-10 per page. The user supplies both passes; this is
-same-person re-review, not an independent reviewer. Independent adjudication,
-new held-out pages, a frozen common proposal set, comparison providers and
-whole-run budgets remain open prerequisites for the full POC-01 comparison.
+same-person re-review, not an independent reviewer. Assistant-structured fields,
+scope corrections and draft assessments must retain their provenance; assistant
+checks or a primary-review confirmation cannot populate second-review decisions
+or minutes. Independent adjudication, new held-out pages, a frozen common proposal
+set, comparison providers and whole-run budgets are prerequisites for the full
+POC-01 reviewer comparison; the current record below identifies what is ready.
+
+## Current internal review artifacts
+
+The [experiment record](../../../docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
+documents 30 frozen source concepts and 101 primary-review minutes, with an
+assistant draft comparison of the two final historical runs. The common set
+contains all 116 retained/rejected proposals; no fresh configured extraction or
+reviewer calls were made. The user's second pass and independent evaluation are
+pending.
+
+The full-gold freeze is
+`.local/experiments/poc-01/review-freezes/20260906T133038-b99b9023/`.
+The comparison browser view, CSVs, fixed inputs and hash manifests are under
+`.local/experiments/poc-01-comparisons/20260906-full-gold-01/`.
+Open its `index.html` directly in a browser; it displays one concept and both
+models at a time without a server. It does not save answers. Record feedback
+through the guided review or the CSV worksheets, with time recorded once per
+reference concept. The local `assemble.py` records how the view was generated
+and refuses to overwrite outputs; corrected drafts require a preserved revision.
+
+These internal artifacts and their original source text must remain ignored.
+Only sanitized findings and specification/backlog changes belong in tracked docs.
+New specification versions do not alter metadata already frozen in the packet.
 
 Offline tests use synthetic source data only:
 

@@ -89,6 +89,8 @@ The metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH
 
 An extracted candidate is a proposal. Exact source offsets alone do not prove that it captures every condition; evidence and semantic-completeness gates are required before publication.
 
+Those gates assess claim support, scope, conditions, alternatives and procedure branches, plus each proposed example question against its citations. Build coverage distinguishes excluded content, missing concepts, rejected proposals and partial representations; a model's approval alone does not qualify a claim for publication.
+
 No scheduler or incremental refresher is required in the MVP.
 
 ---

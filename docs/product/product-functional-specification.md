@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Product & Functional Specification - V19
+## Product & Functional Specification - V20
 
 **Hackathon:** Swiss Grounding MCP using selected `admin.ch` / SEM and `zh.ch` sources<br>
 **Primary deliverable:** Testable MCP server<br>
@@ -324,6 +324,10 @@ The product must:
 15. expose build progress, failures and freshness;
 16. publish the immutable catalog, context schemas, supported intents, rule versions and valid coverage combinations with the release.
 
+Each build must bind a versioned content policy to its declared coverage and operations. Normalization and extraction must preserve substantive authority contact information and procedures when those facts are included in that scope. Generic navigation, feedback controls and other page furniture may be removed, but a contact, footer or inherited heading alone cannot justify excluding substantive included facts. Record exclusions and incomplete processing with their reasons.
+
+Coverage evaluation must use the scope and content policy fixed before inspecting results. Distinguish source exclusions and skipped processing from concepts never proposed, rejected proposals, claims represented elsewhere, partial representations and claims missing from the retained set. Search the fixed proposal set for other representations before declaring a concept missing; shared labels or source sections alone do not establish coverage. A later scope revision requires a new version and cannot retroactively remove observed gaps to improve an earlier result.
+
 Normal MCP requests use the published release and do not scrape government sites at request time.
 
 ### Website language discovery
@@ -367,8 +371,8 @@ For example, `Residence` is a broad topic. `Residence permit`, `Municipal regist
 Concept governance states are:
 
 ```text
-CURATED             producer/admin defined and reviewed
-VERIFIED_AUTOMATIC  extracted automatically and accepted by configured validation
+CURATED             producer/admin defined and accepted through recorded semantic review
+VERIFIED_AUTOMATIC  extracted automatically and accepted by evaluated semantic validation
 CANDIDATE           unverified; usable only as a soft retrieval signal
 MERGED              redirected to another stable concept identifier
 DEPRECATED          retained for compatibility and audit history
@@ -378,6 +382,14 @@ REJECTED            excluded with recorded rationale
 The Knowledge Space producer owns the seed graph, granularity policy and P0 concepts. An administrator or delegated reviewer approves changes to curated concepts. Apertus may propose candidate concepts, terminology, translations, assignments and relationships, but model output does not automatically become declared coverage. During the hackathon, reviewed concepts may be maintained as repository configuration; authoring and review through the Admin Control Plane is a P1 capability. In the target product, publishers own their domain concept packs subject to platform validation and governance.
 
 Every concept and assignment records provenance, evidence references, extraction method, confidence, lifecycle status and version. Concept identifiers remain stable when labels change, and published Knowledge Releases reference the exact concept graph used for indexing and evaluation.
+
+Semantic acceptance applies to each claimed operation and scope:
+
+1. The claim must preserve every material population, condition and exception needed for that operation, including logical alternatives and conjunctions, strict or inclusive boundaries, quantities, units, duration windows and deadline starting events. Preserve distinctions between legal effects, such as permission, quota status, registration and document issuance. An overview must retain the associations needed for every item it claims to cover; a focused procedure step need not claim the entire procedure.
+2. Evidence must support the logical claim and its qualifications, even when they span normalized sections or resume after an embedded heading or information box. A primary heading cannot replace explicit body scope or justify losing conditions. Such evidence must retain governed source references and provenance; uncited context cannot silently repair a saved claim. Missing normalized content remains an explicit evidence limitation until a reviewed correction is recorded.
+3. Record claim support, scope alignment and completeness separately. Assess each candidate example question against the saved candidate and its cited evidence within the stated scope. A full citation does not make an incomplete structured claim complete, and a supported claim does not make every related question answerable. Preserve the original question when narrowing it or marking it unsupported, together with the revised scope, reason, author and review status. These questions are build-review aids and do not become MCP question inputs.
+4. Source ambiguity must remain explicit. Do not invent a threshold, combine uncertain conditions into an eligibility rule or fill an unspecified deadline trigger. Record unresolved source interpretation separately from missing user context and from model errors; collecting an already-known user fact cannot resolve a gap in the source rule.
+5. Promotion to `CURATED` or `VERIFIED_AUTOMATIC` requires recorded acceptance of the applicable material dimensions. Exact citation offsets, structural validity, confidence or approval by the extraction model alone are insufficient. A failed material dimension blocks the affected claim or operation; reviewed excerpts or narrower claims with their own recorded acceptance may remain available with their limitations, without publishing an unsupported structured conclusion. Corrections require a reviewed revision and do not count as support already present in the original candidate.
 
 ## 9.2 Localized Retrieval Metadata
 
@@ -476,6 +488,8 @@ Provider failure uses only a declared lexical/concept fallback that preserves co
 | `UNSUPPORTED_LANGUAGE` | An explicit retrieval-term or source-language tag is unsupported; the affected field and supported profiles are returned |
 
 `INVALID_ARGUMENT` is a boundary error for malformed or missing required envelope fields, wrong types, unknown IDs, inconsistent selectors and undeclared fields. Conditional applicability facts may be absent from an otherwise valid `context` object; that is `NEEDS_CONTEXT`, not a fabricated default. `RELEASE_UNAVAILABLE` is a typed tool error when a well-formed requested release reference cannot be served. The server never silently substitutes the active release.
+
+For an otherwise valid, covered request with adequate user context, unresolved source interpretation is an evidence limitation. Where verified evidence is insufficient, return `INSUFFICIENT_VERIFIED_EVIDENCE`, or `PARTIALLY_SUPPORTED` with the supported and unresolved parts separated; preserve explicit conflict and freshness outcomes where applicable. Do not substitute a repeated context request for that evidence limitation. Missing or excluded content does not establish that no obligation exists, and a covered topic does not establish a complete procedure or overview.
 
 Every resolution result carries requested/executed scope, schema/release identity, evidence/citations, authority/jurisdiction, applicability conditions, freshness and any missing context, conflict or limitation. Retrieval degradation is reported separately from factual status. A relevance score never establishes applicability, factual support or legal correctness.
 
@@ -680,6 +694,10 @@ Swisscom can:
 - verify exact scope, bounded requested descendant traversal, source-filter preservation and published applicability rules;
 - inspect requested/executed scope and versioned retrieval/ranking provenance, with explicit provider degradation or a typed error;
 - reproduce discovery, structured contract, multilingual recall/ranking, grounding, semantic-completeness, citation, freshness and integration evaluations.
+
+Semantic acceptance must run a finite, versioned regression set with frozen source references, scope, proposal inputs and acceptance criteria. Include correct controls and cases covering missing conditions or exceptions, changed populations or logical operators, altered quantities or time boundaries, confused legal effects, conditions split across sections, substantive contact information excluded as page furniture, and questions broader than their cited evidence. Every known critical mutation in that set must be caught, and no unresolved material error may enter its accepted subset. Report raw counts and denominators, including omissions and false rejection of valid proposals; rejecting every candidate does not satisfy acceptance.
+
+Record primary review, assistant drafting, model checks, same-person re-review and independent adjudication separately, including actual human review time. Assistant checks and a second pass by the same person do not establish independent agreement. Previously inspected development examples remain development evidence; claims about performance on unseen examples require a separately identified unseen reference set. Passing this finite regression set establishes only its tested scope and does not by itself establish independent review, generalization or complete product coverage.
 
 Semantic scores cannot relax hard constraints. Repeated or cross-language requests need not have identical ranking from nondeterministic models, but must remain within scope and meet evaluated relevance criteria. Time-dependent freshness is evaluated at an explicit recorded time.
 

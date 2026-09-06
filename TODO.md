@@ -1,7 +1,7 @@
 # Implementation alignment and validation plan
 
-Assessment date: 2026-09-06. Baseline: [Product Specification V19](docs/product/product-functional-specification.md),
-[Technical Specification V10](docs/architecture/technical-specification.md), current
+Assessment date: 2026-09-06. Baseline: [Product Specification V20](docs/product/product-functional-specification.md),
+[Technical Specification V11](docs/architecture/technical-specification.md), current
 source code and tests, and the recorded zh.ch experiment.
 
 This is an implementation and validation backlog. The unchecked work below has
@@ -36,7 +36,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Normalization and evidence spans | [Normalizer and extractor](packages/ingestion/src/swisstip/ingestion/concepts.py) read local files, record local paths and verify normalized offsets | Add authoritative URL/source identity, immutable snapshot binding, persisted normalized sections and release-associated evidence |
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
-| Review workflow | Model review, rejected proposals and `review.csv` annotations exist | Add validated import of reviewer decisions and explicit promotion gates; passing extraction/model review does not publish knowledge |
+| Review workflow | Model review, rejected proposals, 30 frozen reference labels and an assistant draft comparison exist | Implement separate support/scope/completeness/question assessments, validated human-review import and promotion gates; structural/model approval alone does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v2`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
 | Runtime/product | Crawler/concept CLIs plus shared versioned contracts and offline catalog/request validation are implemented | Reviewed seed coverage, catalog publisher/reader, immutable releases, scoped retrieval/rules and the three MCP tools remain unimplemented |
@@ -48,8 +48,10 @@ completeness by renaming proposal reports or their IDs.
 The [zh.ch experiment](docs/experiments/2026-09-05-zhch-concept-extraction.md)
 retained 47/55 candidates from six German pages with 8B/70B. Retained citation
 offset checks passed, but both models and reviewers accepted a material omission.
-The report records no populated human-review worksheet rows. These historical
-results establish neither semantic completeness nor superiority of either model.
+That historical report predates the source-first review. POC-01 now has 30 frozen
+reference concepts and an assistant draft comparison against both final runs;
+the user's second pass remains pending. These results establish neither semantic
+completeness nor superiority of either model.
 
 Original offline baseline, rerun for this review before FIX-01/02:
 
@@ -118,7 +120,7 @@ assumptions; POCs do not replace the implementation backlog.
 | Done | Order | Work item | Acceptance boundary |
 |---|---|---|---|
 | [ ] | BUILD-01 | Define versioned catalog, context, evidence and `structured-grounding/v1` contracts; curate a small seed catalog | Stable public domain/topic/concept IDs, supported finite intents, canonical jurisdictions, conditional context schemas, strict unknown-field/ID handling and explicit outcomes |
-| [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Bounded discovery/provenance reports, URL/authority/snapshot/evidence chain, candidate mappings, no promotion from model review alone, original-source citations and immutable catalog/schema/rule identities |
+| [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
 | [ ] | BUILD-04 | Add source-language validation, closed v2 policy, reviewed terminology and all five compact projections | Per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters and evaluated provider fallback |
@@ -126,11 +128,13 @@ assumptions; POCs do not replace the implementation backlog.
 
 BUILD-01 is in progress: shared contracts and offline boundary validation are
 implemented in [packages/core](packages/core/README.md). The seed catalog remains
-a draft pending source-based review. POC-01 preservation and source-only review
-preparation are available in [scripts/test/poc01](scripts/test/poc01/README.md);
-the [preparation record](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
-records the user's two passes as same-person review, with independent adjudication
-and comparison results still pending. Neither BUILD-01 nor POC-01 is complete.
+a draft pending reviewed promotion. POC-01 has 30 frozen reference concepts,
+five per source, with 101 reported primary-review minutes. The fixed comparison
+contains 116 historical proposals and 60 assistant draft alignments. The
+[experiment record](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
+preserves scope limitations and assistance provenance. The user's same-person
+second pass, independent adjudication, controlled reviewer comparison and unseen
+holdout remain pending. Neither BUILD-01 nor POC-01 is complete.
 
 BUILD-02 can begin with the first reviewed fixture. FIX-01/02 are complete.
 BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
@@ -142,6 +146,36 @@ and sitemap alternates, reviewed source-language hint mappings, explicitly scope
 adapters where needed, shared-budget scheduling and reports for discovered,
 fetched, validated, excluded, failed and unresolved variants. POC-09 validates
 these implementation outputs; fixed German seeds are only an early fixture.
+
+The source review sets the following BUILD-02 implementation priorities. These
+are requirements from V20/V11, not capabilities already delivered by the worksheet:
+
+1. Add versioned, separate claim-support, scope, completeness and per-example-
+   question assessments, bound to candidate and evidence revisions. Preserve
+   conditions, exceptions, AND/OR, population, units, time windows and deadline
+   triggers. Source ambiguity must remain unresolved rather than becoming a
+   guessed rule or a repeated request for facts already supplied.
+2. Preserve logical source blocks through normalization and chunking: tables,
+   conditional lists, resumed lists after infoboxes and body/heading relationships.
+   Retain raw/normalized identities and record loss, ambiguity and truncation.
+3. Allow necessary evidence from explicitly linked sections under validated scope.
+   A primary section is an anchor; neither arbitrary sibling mixing nor blanket
+   rejection of all multi-section evidence satisfies the acceptance boundary.
+4. Freeze content/operation expectations before extraction and comparison. Keep
+   actionable authority contacts and procedures when included in that policy;
+   a contact heading alone is not a reason to drop included substantive content.
+   Report filtered, skipped, budget-limited, unproposed, rejected and differently
+   represented content separately. Do not retroactively exclude gaps to raise scores.
+5. Import the user's second review with explicit decisions and actual time,
+   turn confirmed failures and correct controls into regression fixtures, and
+   enforce affected-claim/operation promotion gates. Complete text representation
+   in a rejected or partly unsupported proposal is not verified retained coverage.
+
+Keep comparison work outside the immutable packet inventory, under
+`.local/experiments/poc-01-comparisons/`. Preserve existing gold/proposal snapshots
+when implementing these changes; fresh outputs and corrected labels need new
+versioned artifacts. Prioritize these controls before scaling the corpus or
+treating model size as the primary improvement.
 
 ## Validation queue
 
@@ -223,22 +257,34 @@ strong version that all retained claims are correct and complete.
    concepts, then include model-specific concepts and rejected proposals.
 2. Annotate label, description, scope, candidate example questions, necessary
    conditions, exceptions and evidence separately. Also label domain/topic,
-   supported operation, typed applicability and required context for promotion. Distinguish never proposed, rejected, represented in
-   another concept and truly missing. Count review minutes per usable concept.
+   supported operation, typed applicability and required context for promotion.
+   Assess every example question against the saved candidate and cited evidence;
+   uncited source text may identify a correction but cannot silently repair the
+   original proposal. Keep proposal history separate from retained complete,
+   partial, missing or unresolved representation, including representation in
+   another concept. Record filter/skip/budget causes and actual human time.
 3. Freeze a common proposal set and compare structural validation alone, current
    same-model review, an independent reviewer configuration and structured
    condition/exception checking. Change one factor at a time; do not rerun
    generation for each reviewer comparison.
 4. Include correct claims and controlled mutations: omitted care/support condition,
    changed population, quota exemption changed to permit exemption, altered date
-   or number, misleading label and an unanswerable proposed question. Evaluate
-   natural failures on held-out pages separately from synthetic mutations.
+   or number, changed time-window unit, misleading label and an unanswerable
+   proposed question. Include valid cross-section evidence and invalid sibling-
+   population mixing, missing registration/sector exceptions, and source ambiguity
+   with all relevant user facts supplied. Evaluate natural failures on held-out
+   pages separately from synthetic mutations.
 
 **Measure/gate:** every known critical mutation must be caught; no unresolved
 material error may be promoted in the reviewed acceptance set. Report material
 false-acceptance rate, valid-proposal false-rejection rate, gold-topic recall and
 review cost. A reviewer is useful only if it reduces missed material errors on
 the holdout without excessive valid-content loss or human review cost.
+Declare required versus optional coverage and valid-content-loss/cost criteria
+before running each comparison. Report draft representation counts separately
+from adjudicated quality metrics; same-person review or assistant assessments do
+not satisfy independent-review requirements. The 101 primary-review minutes are
+not minutes per usable concept until the usable subset has been accepted.
 
 **Decision:** keep curated promotion as the baseline. If review still shares the
 generator's errors, use it for triage and leave output `CANDIDATE`; do not map it
@@ -304,6 +350,12 @@ inputs, unknown IDs, known unsupported combinations, required concepts omitted,
 exceptions, non-entailing citations, unsupported local detail and separately
 supported/unresolved portions of one declared operation.
 
+Include source-defined gaps such as an unassigned exact-age boundary and an
+unstated deadline trigger, with all applicable client facts already present.
+These must preserve an evidence limitation, not produce a guessed predicate or
+misleading `NEEDS_CONTEXT` for the same known facts. A permission to reside alone
+does not establish employment rights unless a reviewed rule supplies that link.
+
 Put conflicting place names, dates and personal facts in `retrieval_terms` and
 verify they cannot populate missing fields or override typed values. Compare
 `exact` with explicitly bounded `descendants`. Evaluate published curated
@@ -368,6 +420,10 @@ headers/rows, footnotes, adjacent population rules, mixed-language sections,
 encoding damage and relevant text resembling navigation/news. Include unseen
 SEM layouts. Add PDF samples only if needed by intended coverage; otherwise
 explicitly exclude their content and measure the resulting coverage gap.
+Include a condition list resumed after a deadline infobox, a general procedure
+under a misleading inherited heading, and substantive in-scope authority contact
+details under a contact/footer heading. Freeze the inclusion policy before the
+run so intentional exclusions are distinguishable from extraction failures.
 
 Trace required clauses from raw bytes through normalization, filtering, chunking,
 evidence selection and review. Compare current chunks with bounded full-section

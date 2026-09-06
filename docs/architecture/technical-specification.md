@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Technical & Solution Architecture Specification - V10
+## Technical & Solution Architecture Specification - V11
 
 **Hackathon:** Swiss Grounding MCP<br>
 **Product and functional specification:** [`product-functional-specification.md`](../product/product-functional-specification.md)<br>
@@ -14,6 +14,8 @@
 This document defines the implementation architecture and technical choices for the Trusted Information Platform (TIP). Functional scope, user-visible behaviour, priorities and product evolution are defined in the product and functional specification.
 
 The immediate technical outcome is a reproducible MCP server that Swisscom can run through its evaluation harness and standards-compatible MCP clients. This hackathon implementation is a vertical slice of the target product: it must be narrow enough to deliver while preserving the contracts, boundaries and traceability needed for further product evolution.
+
+V11 adds build-time source-structure, candidate-assessment and evaluation requirements whose implementation remains pending. The document revision does not change the structured MCP contract or its schema versions, supported operations, or the P0 five-language projection requirement. Historical extraction retention and assistant-drafted comparisons do not establish that these requirements have been implemented or passed.
 
 ---
 
@@ -648,8 +650,37 @@ ConceptDefinition
 
 CandidateConcept
   proposed labels, type, granularity, relations and terminology
-  source evidence references, extraction provider/model metadata
+  candidate identifier/revision, description, scope and example questions
+  primary section anchor, supporting source blocks and exact evidence references
+  extraction run/provider/model/configuration identities and dependency status
   confidence and validation state
+
+NormalizedSourceBlock
+  document/block identity, source snapshot and normalized content hashes
+  normalizer version, raw source locator and normalized evidence offsets
+  block kind/order, source container/parent/sibling and list-continuation relations
+  table row/column/header relationships, original text and scope-conflict/loss flags
+
+SourceContentDecision
+  source/build/block/chunk identity, content-policy and processing versions
+  inclusion/exclusion/skip disposition, reason code, limits and truncation details
+
+CandidateClaimAssessment
+  assessment identifier/schema version, exact candidate and claim revisions
+  claim text/scope, cited evidence identities/hashes/offsets and question references
+  separate support, scope and completeness judgments with reasons and dependencies
+  evaluator identity/type/version, protocol/configuration version and timestamp
+
+ExampleQuestionAssessment
+  assessment identifier/schema version, exact candidate revision and question index
+  immutable original question, proposed revised question and revision rationale
+  cited claim/evidence identities, answerability judgment and unresolved portions
+  evaluator identity/type/version, protocol/configuration version and timestamp
+
+ReviewProvenance
+  assessment references, assistant/model/human role and review relationship
+  primary/second/independent review status and explicitly reported human minutes
+  separate model execution/elapsed time, review decisions and correction history
 
 ConceptAssignment
   concept_id and document/evidence identifier
@@ -695,6 +726,8 @@ Only `CURATED` and `VERIFIED_AUTOMATIC` concepts contribute to declared coverage
 The graph supports multiple parents and typed `BROADER`, `NARROWER`, `RELATED` and `SAME_AS` edges. Broader/narrower edges must be acyclic; related and equivalence edges are validated separately. A normalized section or Evidence Object can have multiple assignments. Catalog discovery exposes the hierarchy with stable ordering, explicit parent identifiers and bounded pages; it does not require clients to load the entire graph.
 
 Governance is scoped by Knowledge Space. Producers own seed concepts, granularity, operations, context schemas and P0 coverage; reviewers approve curated changes. The immutable release references graph, assignment and terminology versions, extraction provenance and evaluation. Neither stable identifiers nor exact citations prove that an extracted fact includes every required condition.
+
+`VERIFIED_AUTOMATIC` requires the configured, versioned validation and evaluation gates for the exact candidate revision; model confidence, another model's endorsement and resolvable citations alone are insufficient. A material failure in claim support, scope or completeness prevents the affected structured claim from becoming approved knowledge, including through a curated promotion without correction and reassessment. Qualified source excerpts may remain available only through the published scope and evidence policy. Extraction retention, proposal history and candidate lifecycle approval are separate records. Assistant review and a person's second review of their own labels must not be recorded as independent adjudication.
 
 ---
 # 10. Source Registry and Acquisition
@@ -803,6 +836,32 @@ flowchart TB
 ```
 
 Municipal conduct rules may be related to residence or living in a municipality, but are not automatically children of `Residence permit`. A model suggestion is a candidate relation until it meets configured validation or receives review.
+
+### 10.1.1 Logical source blocks and content policy
+
+Normalization preserves ordered logical source blocks as well as display headings. Paragraphs, list introductions/items and continuations, table rows/columns and their headers, and source container/parent/sibling relationships retain stable identities within the normalized version. HTML records DOM relationships; other supported formats record their applicable structure without inventing a DOM. A heading inserted inside a list must not detach its resumed conditions from their governing introduction. A table row retains the associations between its category, affected population, duration and other cells.
+
+Each block links to the immutable raw snapshot and its locator, the normalized document/hash, and the normalizer version. Evidence references identify the exact normalized text representation and use zero-based, end-exclusive Unicode code-point offsets; raw byte positions or DOM locators are recorded separately rather than treated as interchangeable offsets. Normalization does not rewrite source wording to repair meaning. Suspected loss of substantive blocks or relationships, or a heading whose inherited population conflicts with the body, is flagged with the affected identities. Material unresolved loss or scope conflict prevents the affected structured claim from passing validation; a heading alone cannot override explicit body scope.
+
+The Knowledge Space defines a versioned source-content policy before extraction. In-scope actionable contact, authority and procedure facts remain eligible even under a contact heading; a heading keyword alone cannot classify them as page furniture. Navigation, duplicated general contact chrome, unrelated embedded news and generic links may be excluded when the policy supplies a specific reason. Duplicate suppression links to the retained equivalent occurrence and cannot remove the only evidence for an included fact. The report records included/excluded sections, skipped chunks and budget limits separately, with reason codes such as `navigation_furniture`, `duplicate_contact_chrome`, `outside_scope`, `generic_link_only`, `budget_exhausted`, `normalization_loss` and `unresolved_dependency`. Every decision names its source blocks, processing stage and policy version. Exclusion, lack of a proposal, structural rejection and semantic rejection are distinct outcomes.
+
+### 10.1.2 Evidence dependencies and bounded extraction
+
+The primary section anchors a candidate; it does not prohibit necessary supporting evidence from other sections. A candidate may cite bounded related blocks that establish its heading context, governing conditions, exceptions or continued procedure. Each span must resolve to its own immutable source identity and be assessed for the candidate's population, action, jurisdiction and time scope. Sharing a label or adjacent DOM container does not permit importing conditions from a sibling population or procedure. Necessary cross-source dependencies retain their own authority and revision identities and require an explicit, validated relationship.
+
+Chunking uses the logical block relationships to preserve governing introductions, complete conditional lists and associated table cells, or supplies explicit dependency references when configured limits require a split. Per-chunk concept limits, input/output limits and per-page/run request budgets are recorded. If required context cannot fit or cannot be acquired within the authorized build scope, the candidate records the unresolved dependency and the affected coverage gap. Truncation or an exhausted output budget cannot silently turn a partial condition list into a complete claim. A later evidence addition or corrected claim creates a new revision for reassessment; it does not retroactively repair the original proposal or its score.
+
+The proposal ledger retains every retained and rejected proposal with its run, candidate revision, cited evidence, processing stage and reason-coded decision history. Corpus comparison searches the fixed set of pages and both retained and rejected proposals before classifying an expected claim as never proposed. Standalone, embedded and distributed representations are recorded separately. Coverage from retained proposals is assessed independently: a rejected-only representation is missing from retained coverage, and related or partially retained claims do not earn complete coverage merely because a source section or label matches.
+
+### 10.1.3 Claim and example-question assessment
+
+Assessment is a versioned build contract, separate from extraction confidence and source-location validation. Each material claim receives separate support, scope and completeness judgments against its exact candidate revision, intended operation and cited evidence. Every example question proposed for the included candidate/operation receives its own answerability judgment, including questions not matched to a reference concept; an overall candidate verdict cannot substitute for question-level assessment. An unsupported question cannot be published as a supported coverage example: omit or revise it in a new assessed revision while retaining its original history. Records preserve the original question, any proposed revision and its reason, exact claim/evidence identities, evaluator identity and role, evaluation protocol/configuration and timestamps. Human decisions and explicitly reported review minutes remain separate from assistant suggestions, model execution time and elapsed session time; absent human values remain unset.
+
+The assessment checks material conditions and exceptions, affected populations and actor roles, AND/OR structure, negation, strict/inclusive numeric boundaries, units, reference windows and deadline starting events. It distinguishes prerequisite authorization from permit issuance, quota status, registration duties and the format or replacement of a residence document. Examination conditions do not become guarantees of approval. Unsupported definitions, proof-document checklists, deadlines and consequences cannot be inferred from a topic mention or link title.
+
+A question is assessed against the saved candidate and its cited evidence, with gaps identified separately when the claim is stated but its support is uncited. A relevant uncited paragraph may identify a proposed correction, but cannot silently supply an answer or complete the original assessment. Conversely, a complete citation does not mean the candidate description preserved all its conditions. Additional questions about documents, impediments or procedures require their own supported scope; broad individualized questions are not accepted merely because a narrower source-level question can be answered.
+
+Source ambiguity and missing user context are different records. An unresolved source boundary, contradiction or undefined relationship between alternatives cannot be converted into a deterministic applicability rule by asking for more personal facts. Preserve the unresolved source portion until reviewed evidence resolves it. `NEEDS_CONTEXT` remains reserved for missing declared user facts within a supported operation and context schema. The assessment protocol records primary review, same-person second review and independent adjudication distinctly and does not infer independence from using a second model or an assistant.
 
 ## 10.2 Localized retrieval projection compilation
 
@@ -1086,6 +1145,8 @@ Evaluation separates server responsibilities from caller integration. Server fix
 | Grounding | Factual support, authority, applicability, temporal validity, citation completeness, explicit partial/conflicting/unsupported/stale outcomes |
 | Context | Conditional missing fields and allowed values; no personal-fact inference from retrieval text |
 | Concept quality | P0 assignments, duplicates/orphans, graph consistency, reviewed alias correctness and stable identity across releases |
+| Source structure and extraction | Logical block/list/table preservation, heading/body conflicts, content-policy dispositions, bounded multi-section dependencies, omissions and proposal decision history |
+| Candidate assessment | Separate claim support/scope/completeness, each example question's cited answerability, material conditions/exceptions and distinct source ambiguity/user-context gaps |
 | Multilingual retrieval | Original/expanded lexical, routed projection, concept and vector recall; semantic ranking; evaluated term/source combinations and scoped leakage |
 | Language policy | Closed v2 role sets, canonical tag/alias mapping, policy immutability, per-term routes, provider isolation and no source-filter inference |
 | Source integrity | Declaration/detection mismatch, quarantine, mixed-section segmentation, encoding and parallel-page revision compatibility |
@@ -1098,6 +1159,25 @@ Evaluation separates server responsibilities from caller integration. Server fix
 | Caller integration | User intent and place disambiguation, valid catalog selection, factual context collection, final-answer citation/limitation preservation |
 
 Thresholds are explicit release configuration. For the finite P0 multilingual golden set, every required authoritative document must appear in the top 20 candidate pool and every required supported fact must have a supporting document in the final top 5 evidence objects. Every citation resolves to original-language evidence. Compare hybrid retrieval and semantic ranking with identifier/lexical baselines; quantify gains, latency and degradation. Calibrate operational targets against available infrastructure before the event.
+
+The build adds semantic preparation gates alongside these multilingual retrieval gates. Before a measured run, freeze the finite source-backed reference set, selected corpus, candidate/protocol versions, metric definitions, denominators, required coverage and promotion thresholds. Record extraction history, retained representation/completeness, claim support/scope failures and example-question answerability as distinct measures. Document presence in the candidate pool or evidence bundle does not establish preservation of every required condition. Model selection or threshold tuning uses declared development data; an untouched holdout and any independent adjudication must be identified before their results are reported. Assistant drafts and same-person re-review cannot establish independent agreement or an evaluation pass.
+
+For every structured claim proposed for publication, the gate permits zero unresolved material support, scope or completeness failures. Every required reference obligation must be completely represented and pass assessment within the declared scope; a missing or unresolved required obligation blocks that coverage profile. Optional unsupported portions are excluded from structured coverage and reported as gaps. Changing required/optional scope requires a new version and cannot repair the earlier run's result. Positive controls must still be accepted, so rejecting every candidate cannot pass. Source ambiguities must produce qualified evidence or explicit unresolved results rather than invented boundaries. A correction requires a new assessed revision, and the gate records the frozen inputs and actual evaluator/review provenance used.
+
+The finite regression set includes the following paired failure cases and correct controls, derived from preserved source fixtures rather than current-law assumptions:
+
+| Fixture | Required behavior |
+|---|---|
+| Family conditions resumed after an embedded deadline heading | Preserve the governing sponsor/population and complete resumed list; accept a correctly scoped complete extraction. |
+| Ordinary permit procedure under an inherited asylum heading | Flag the heading/body conflict and retain explicit body populations; do not assign asylum-only scope automatically. |
+| Non-quota status and permit/card relief after prior authorization | Reject quota-free-to-permit-free inference; preserve authorization prerequisites and distinct document/registration consequences. |
+| Four months within 12 months | Preserve the stated quantity and reference window; reject substitution of a calendar year or a changed strict boundary. |
+| Children under 12 and over 12 with exactly 12 unspecified | Preserve the unresolved exact-age boundary and assessment-date limitation; do not invent an inclusive branch. |
+| Municipal registration and construction-sector exception | Detect missing independently actionable obligations despite retained neighboring topics; accept each complete correctly scoped control. |
+| Required evidence across multiple sections versus sibling populations | Accept a bounded, fully evidenced same-scope dependency; reject otherwise similar cross-population condition mixing. |
+| Example question requesting an unstated document, deadline or definition | Mark the unsupported portion separately; accept the narrower source-answerable question without rewriting the original review record. |
+
+Additional boundary controls cover all material AND/OR conditions, authorization-versus-approval wording, working-day versus calendar-day units, deadline start events, and missing conditions that remain present only in a candidate's citations. Content-policy fixtures retain actionable contact/procedure facts and exclude actual furniture with traceable reasons. Budget and truncation fixtures must report the affected blocks and unresolved dependencies. These preparation gates supplement, and do not replace or reduce, the existing P0 five-language and top-20/top-5 retrieval requirements. Their implementation and a passing evaluation remain pending.
 
 Server fixtures cover every declared term/source profile, with terminology, abbreviations, spelling variants, German compounds, Swiss German forms and declared Romansh forms. Residence-permit fixtures use identical explicit scope with separately tagged terms such as `residence permit`, `Aufenthaltsbewilligung`, `Aufenthaltserlaubnis`, `Ausländerausweis`, `Bewilligung B/L/C`, `autorisation de séjour`, `permis de séjour` and evaluated Italian, Swiss German and Romansh variants. An alias applies only within its reviewed concept/jurisdiction; a request about an existing foreign legal status must retain that caller-selected scope.
 
@@ -1126,6 +1206,9 @@ requested/executed scope; conditional missing fields without unnecessary persona
 term profiles/routes; requested/effective source-language filters
 candidate/evidence counts, retrieval channels, ranking configuration and provider versions
 concept candidates/assignments/promotions; graph validation and descendant traversal
+logical block preservation/loss; content-policy exclusions, skipped chunks and budget truncation
+proposal history versus retained coverage; claim/question judgments and unresolved dependencies
+assessment revisions/evaluator provenance; reported human minutes separate from model time
 source quarantine/override/parallel-version decisions
 projection language/method/completeness and failures
 provider latency/errors, evaluated fallbacks and typed degradation

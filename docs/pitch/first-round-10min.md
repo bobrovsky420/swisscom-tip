@@ -71,6 +71,8 @@ flowchart LR
 
 Broad topics organize discovery; independently supported concepts carry evidence and declare supported operations. Model proposals require review and publication gates before callers can use them.
 
+The gates check claim scope, conditions, alternatives and procedure branches, and verify each proposed example question against its citations. Build reports distinguish excluded content, rejected proposals and missing or partial concepts.
+
 **Speaker note (~75s):** Builds are on demand. Normal requests use a published release and do not scrape government websites. Apertus is a candidate for knowledge preparation: concepts, classifications, terminology and compact metadata. Original source text remains authoritative. Scheduled and incremental Knowledge CI/CD is future work.
 
 ---
@@ -173,7 +175,7 @@ flowchart LR
 Acceptance evidence must show:
 
 - Discovery supplies enough identifiers and required fields to construct a valid request.
-- Complete requests return compact evidence, supported facts and exact citations; incomplete requests return declared missing fields.
+- Valid requests within covered scope, with adequate context and sufficient verified support, return compact evidence, supported facts and exact citations. Missing conditional facts return declared fields; complete context can still leave an evidence limitation.
 - Scope, release, date and source-language constraints remain enforced, including on failures and retries.
 - Evaluated multilingual term/projection/source combinations retrieve relevant evidence without client translation into a common language.
 - Missing coverage, insufficient evidence, partial support, conflicts and stale evidence remain explicit.
