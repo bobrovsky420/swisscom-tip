@@ -1,9 +1,9 @@
 {
   "schema_version": "language-policy/v1",
   "identity": {
-    "artifact_id": "zh-residence-language-policy",
+    "artifact_id": "hackathon-language-policy",
     "version": "draft-1",
-    "sha256": "7bf61346ef42a58275baa77b27f2a5b924ce191a6d32bac0aeab8be4b79084de"
+    "sha256": "2ce80f08728adb003e9ec242e6d793ae744d3b9dddeafebb6c97e3c5c473fc46"
   },
   "platform_catalog": "tip-language-catalog/v2",
   "term_languages": [],

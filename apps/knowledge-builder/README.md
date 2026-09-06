@@ -259,6 +259,25 @@ environment is used directly; the application does not load `.env` files.
 
 ## Bounded crawler
 
+### Hackathon residence source catalogue
+
+The [residence catalogue](../../config/catalogs/README.md) prepares 59 official
+source references across all 26 cantons for later crawling and concept
+extraction. It includes exact host/path scopes, language hints, discovery
+references, crawl budgets and explicit access/adapter exclusions.
+
+```shell
+./.venv/Scripts/python.exe -m swisstip.builder.source_cli --dry-run
+```
+
+The command defaults to an offline five-source smoke plan. Later, explicitly
+add `--crawl --output .local/crawls/residence-smoke-001` to save exact HTML
+response bytes and provenance manifests in a new directory. Pass that directory
+to `swisstip.builder.concept_cli` for a separate model-backed extraction run.
+The [catalogue guide](../../config/catalogs/README.md) documents selection,
+budget profiles, extraction and limitations. No live crawl or inference is
+needed to validate or maintain the source catalogue.
+
 ### Inspect the safety policy without making a request
 
 ```powershell

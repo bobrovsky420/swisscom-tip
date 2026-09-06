@@ -7,10 +7,13 @@ evidence, citations, applicability and limitations. The calling LLM interprets
 the user's question, selects catalog identifiers, collects missing facts and
 composes the final answer.
 
-The repository currently contains the TIP specifications and two
+The repository currently contains the TIP specifications and
 operator-triggered knowledge-builder proofs:
 
 - A bounded crawler that reports source and snapshot metadata.
+- A source-only residence catalogue for the `hackathon` Knowledge Space, with
+  59 official source references across all 26 cantons, offline crawl plans and
+  an opt-in runner that saves HTML snapshots for later extraction.
 - A concept extractor that proposes evidence-backed candidate concepts from
   downloaded HTML, text, and Markdown pages.
 
@@ -24,6 +27,7 @@ seed catalog is still a draft; release publication and the MCP tools are not imp
 - [Technical specification](docs/architecture/technical-specification.md)
 - [Implementation gaps and validation plan](TODO.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
+- [Hackathon residence source catalogue and later crawl/extraction commands](config/catalogs/README.md)
 - [zh.ch Apertus 8B/70B experiment results](docs/experiments/2026-09-05-zhch-concept-extraction.md)
 - [Semantic-model profiles](config/semantic-models.toml)
 - [Core contracts and validation](packages/core/README.md)

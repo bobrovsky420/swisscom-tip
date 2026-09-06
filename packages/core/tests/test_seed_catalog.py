@@ -15,18 +15,19 @@ ROOT = Path(__file__).resolve().parents[3]
 class DraftSeedTests(unittest.TestCase):
     def setUp(self) -> None:
         directory = ROOT / "config/catalogs"
-        self.catalog = KnowledgeCatalog.model_validate_json((directory / "zh-residence.seed.json").read_bytes())
-        self.policy = LanguagePolicy.model_validate_json((directory / "zh-residence.language-policy.json").read_bytes())
+        self.catalog = KnowledgeCatalog.model_validate_json((directory / "hackathon.seed.json").read_bytes())
+        self.policy = LanguagePolicy.model_validate_json((directory / "hackathon.language-policy.json").read_bytes())
         self.authoring_ref = ArtifactRef(
-            artifact_id="zh-residence-seed-authoring", version="1",
-            sha256=json_content_hash(json.loads((directory / "zh-residence.authoring.json").read_text(encoding="utf-8"))),
+            artifact_id="hackathon-sources", version="draft-1",
+            sha256=json_content_hash(json.loads((directory / "hackathon.sources.json").read_text(encoding="utf-8"))),
         )
 
     def test_seed_is_integral_but_has_no_approved_coverage(self) -> None:
         self.assertEqual(validate_catalog(self.catalog, self.policy, artifacts={
             self.authoring_ref.artifact_id: self.authoring_ref,
         }), ())
-        self.assertEqual(len([entry for entry in self.catalog.entries if entry.kind == "concept"]), 6)
+        self.assertEqual(len([entry for entry in self.catalog.entries if entry.kind == "concept"]), 0)
+        self.assertEqual([entry.entry_id for entry in self.catalog.entries if entry.kind == "knowledge_space"], ["hackathon"])
         self.assertTrue(all(entry.lifecycle == "CANDIDATE" for entry in self.catalog.entries))
         self.assertEqual(self.catalog.coverage_profiles, [])
         self.assertEqual(self.policy.approval_status, "DRAFT")
@@ -35,7 +36,7 @@ class DraftSeedTests(unittest.TestCase):
     def test_draft_candidate_is_not_a_selectable_public_concept(self) -> None:
         assessment = validate_request({
             "schema_version": "structured-grounding/v1", "release_id": self.catalog.release_id,
-            "knowledge_space_id": "swiss-public", "domain_id": "immigration", "topic_id": "residence",
+            "knowledge_space_id": "hackathon", "domain_id": "immigration", "topic_id": "residence",
             "concept_ids": ["residence-eu-efta"], "intent": "requirements",
             "jurisdiction": {"country_code": "CH", "canton_code": "CH-ZH"},
             "context": {}, "as_of": "2026-09-06", "scope_mode": "exact",

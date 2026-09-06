@@ -27,8 +27,9 @@ the Python models also enforce canonicalization and cross-field invariants, and
 `swisstip.core.validation` enforces catalog-dependent boundaries. JSON Schema
 validation alone does not establish catalog integrity or accepted coverage.
 
-The initial authoring scope is Swiss public information, immigration/residence,
-and Canton Zurich. The proposed seed catalog is a draft. Candidate entries and
+The `hackathon` authoring scope is residence in Switzerland, with federal sources,
+all 26 cantonal entry points and deeper Zurich sources. The proposed seed catalog
+contains only the space/domain/topic scaffold and no preselected concepts. Candidate entries and
 proposed operations do not establish supported coverage. Human review must supply
 the source-backed concepts, conditions, exceptions and evidence before curated
 coverage can be declared.
@@ -42,10 +43,10 @@ from swisstip.core import KnowledgeCatalog, LanguagePolicy
 from swisstip.core.validation import validate_catalog, validate_request
 
 catalog = KnowledgeCatalog.model_validate_json(
-    Path("config/catalogs/zh-residence.seed.json").read_bytes()
+    Path("config/catalogs/hackathon.seed.json").read_bytes()
 )
 policy = LanguagePolicy.model_validate_json(
-    Path("config/catalogs/zh-residence.language-policy.json").read_bytes()
+    Path("config/catalogs/hackathon.language-policy.json").read_bytes()
 )
 assert not validate_catalog(catalog, policy)
 # assessment = validate_request(request_dict, catalog, policy)

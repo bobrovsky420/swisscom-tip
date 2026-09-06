@@ -1,0 +1,92 @@
+{
+  "schema_version": "knowledge-catalog/v1",
+  "identity": {
+    "artifact_id": "hackathon-catalog",
+    "version": "draft-1",
+    "sha256": "1387703353cac4180057d8ee8cfdfb8affa05e0b8bc7c4b918d7ae7feb36a65a"
+  },
+  "release_id": "hackathon-draft-001",
+  "entries": [
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "hackathon",
+      "kind": "knowledge_space",
+      "parent_ids": [],
+      "labels": {
+        "en": {
+          "label": "Hackathon - Residence in Switzerland",
+          "aliases": [],
+          "description": "Operator-defined planning scope. Sources await crawling and source-first concept extraction; no supported coverage is declared.",
+          "provenance": [
+            {
+              "artifact_id": "hackathon-sources",
+              "version": "draft-1",
+              "sha256": "6d8920874918a1bc352a6e98df8251d10819e933833f8c428cf99787012127aa"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "immigration",
+      "kind": "domain",
+      "parent_ids": [
+        "hackathon"
+      ],
+      "labels": {
+        "en": {
+          "label": "Immigration and settling in Switzerland",
+          "aliases": [],
+          "description": "Operator-defined planning scope. Sources await crawling and source-first concept extraction; no supported coverage is declared.",
+          "provenance": [
+            {
+              "artifact_id": "hackathon-sources",
+              "version": "draft-1",
+              "sha256": "6d8920874918a1bc352a6e98df8251d10819e933833f8c428cf99787012127aa"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence",
+      "kind": "topic",
+      "parent_ids": [
+        "immigration"
+      ],
+      "labels": {
+        "en": {
+          "label": "Residence in Switzerland",
+          "aliases": [],
+          "description": "Operator-defined planning scope. Sources await crawling and source-first concept extraction; no supported coverage is declared.",
+          "provenance": [
+            {
+              "artifact_id": "hackathon-sources",
+              "version": "draft-1",
+              "sha256": "6d8920874918a1bc352a6e98df8251d10819e933833f8c428cf99787012127aa"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    }
+  ],
+  "context_schemas": [],
+  "coverage_profiles": [],
+  "language_policy_ref": {
+    "artifact_id": "hackathon-language-policy",
+    "version": "draft-1",
+    "sha256": "2ce80f08728adb003e9ec242e6d793ae744d3b9dddeafebb6c97e3c5c473fc46"
+  },
+  "max_evidence": 5,
+  "discovery_default_limit": 20,
+  "discovery_max_limit": 100,
+  "ordering": "entry_id_ascending"
+}

@@ -32,7 +32,8 @@ the governed publication and structured serving layer around reviewed knowledge.
 
 | Area | Observed implementation | Alignment and next boundary |
 |---|---|---|
-| Acquisition | [Crawler](packages/ingestion/src/swisstip/ingestion/crawler.py) emits bounded crawl/hash metadata and enforces robots per origin/hop; raw response bytes are not retained as snapshots | Keep operator-triggered acquisition; add durable raw snapshots/source manifests |
+| Acquisition | [Crawler](packages/ingestion/src/swisstip/ingestion/crawler.py) emits bounded metadata and enforces robots per origin/hop; the [source catalogue runner](config/catalogs/README.md) can retain exact HTML bytes and source manifests on explicit runs | Bind experimental snapshots into immutable release contracts; add PDF/JavaScript adapters and governed language discovery |
+| Source planning | The `hackathon` residence catalogue has 59 official source references covering all 26 cantons, crawl sets/budgets and offline validation; no pages or extracted concepts are included | Run selected test crawls, review discovered scope and source-first topic/concept proposals |
 | Normalization and evidence spans | [Normalizer and extractor](packages/ingestion/src/swisstip/ingestion/concepts.py) read local files, record local paths and verify normalized offsets | Add authoritative URL/source identity, immutable snapshot binding, persisted normalized sections and release-associated evidence |
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
@@ -79,7 +80,8 @@ The BUILD-01 update adds the core suite. Install and test it in the same environ
 ```
 
 Current verification: 68 core, 63 ingestion
-and 96 builder tests pass, including POC-01 preparation and the loopback workflow.
+and 104 builder tests pass, including source catalogue planning/snapshot fixtures,
+POC-01 preparation and the loopback workflow.
 These counts do not establish semantic review or complete a POC.
 
 ## Immediate fixes supported by the review

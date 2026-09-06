@@ -252,7 +252,12 @@ class _LinkExtractor(HTMLParser):
 
 
 class SafeCrawler:
-    """Breadth-first crawler with enforced scope, etiquette, and traffic budgets."""
+    """Breadth-first crawler with enforced scope, etiquette, and traffic budgets.
+
+    Optional ``on_page`` receives accepted, parsed HTML and its original bytes
+    after metadata hashing. It enables snapshot storage without a second fetch;
+    storage failures propagate to the caller. The default retains metadata only.
+    """
 
     def __init__(
         self,
@@ -264,6 +269,7 @@ class SafeCrawler:
         allow_private_networks: bool = False,
         opener: urllib.request.OpenerDirector | None = None,
         resolver: Callable[..., Iterable[tuple]] = socket.getaddrinfo,
+        on_page: Callable[[CrawledPage, bytes], None] | None = None,
     ) -> None:
         if not user_agent.strip():
             raise CrawlConfigurationError("user_agent cannot be empty")
@@ -274,6 +280,7 @@ class SafeCrawler:
         self.allow_private_networks = allow_private_networks
         self._opener = opener or urllib.request.build_opener(_NoRedirectHandler())
         self._resolver = resolver
+        self._on_page = on_page
         self._report = CrawlReport(
             source_id=source.source_id,
             start_url=source.start_url,
@@ -368,6 +375,8 @@ class SafeCrawler:
                 page.sha256 = hashlib.sha256(result.body).hexdigest()
                 page.title = extractor.title
                 page.links_found = extractor.links_found
+                if self._on_page is not None:
+                    self._on_page(page, result.body)
                 if depth >= self.limits.max_depth or extractor.no_follow:
                     continue
 
