@@ -244,6 +244,8 @@ class OllamaSemanticModelProvider(SemanticModelProvider):
                 if isinstance(request_id, str) and request_id.strip()
                 else None
             ),
+            requested_model=self.options.model,
+            observed_model=response_model,
         )
 
     @staticmethod

@@ -36,6 +36,11 @@ are checkpointed separately, so a failed review does not require regenerating
 its proposals. Proposal artifacts are written only when the entire batch succeeds;
 this does not publish a Knowledge Release.
 Runs made before checkpoint support cannot be resumed from their logs.
+Checkpoint v2 also starts a new cache namespace: v1 files lack verifiable
+observed HF model identity and are preserved but never reused. New responses
+retain requested and observed names, and every cache hit validates them against
+the selected model/provider and the explicit alias policy. Historical reports
+remain as recorded; their HF observed identity cannot be recovered from v1 data.
 
 Checkpoint matching includes the original input hash, normalized page, selected
 profile, generation and extraction settings that affect output, and exact prompt

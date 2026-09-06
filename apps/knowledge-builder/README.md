@@ -103,6 +103,9 @@ hashes, semantic operation, prompt profile, request identifiers when available,
 token usage when available, and validation warnings. A candidate with
 unsupported or non-exact evidence is rejected instead of being silently
 accepted; other valid candidates in the same response remain available.
+The ordered `model_identities` entries retain the configured `model`, exact
+wire `requested_model`, raw response `observed_model`, provider and request ID
+for each generation or review completion. Missing observations remain unknown.
 
 The default `concept_extraction_v3` prompt selects numbered source spans and
 Python attaches the original quotations. Paragraphs, lists and table rows are
@@ -156,6 +159,15 @@ Selection is explicit and fail-closed. The command does not fall back to another
 profile or model after an authentication, quota, availability, transport, or
 response-validation failure.
 
+Hugging Face response identity must equal the configured model or that model
+with its selected `:provider` suffix. The explicit compatibility alias list in
+[`huggingface_provider.py`](src/swisstip/builder/huggingface_provider.py) also
+accepts the existing `swiss-ai/apertus-8b-instruct` response fixture only for
+PublicAI requests to `swiss-ai/Apertus-8B-Instruct-2509`. This is a deliberate
+alias policy, not a general case-folding or revision-stripping rule. Other
+aliases need an explicit reviewed mapping; unexplained mismatches fail without
+retry or checkpointing. Both requested and observed names remain visible.
+
 The extraction section also places hard limits on pages, normalized input
 characters, requests per page, and requests per run. Every page is chunked and
 the complete batch is checked before the first model call. An over-budget batch
@@ -167,6 +179,11 @@ prompt, schema and output-affecting settings reuse previous responses. The zh.ch
 wrapper supplies a shared checkpoint directory automatically. Use
 `--fresh-inference` (PowerShell wrapper: `-FreshInference`) for independent tests;
 omit it to resume. Existing logs without checkpoints cannot reconstruct results.
+Checkpoint v2 retains requested and observed model identities and revalidates
+them against the selected profile and current alias policy on every cache hit.
+The older v1 cache namespace is not reused because its observed HF identity
+cannot be established. Old files and historical experiment artifacts remain
+unchanged; the first new run makes fresh calls within the configured budgets.
 
 The optional `[recovery]` table controls `max_retries`, `backoff_seconds`,
 `max_backoff_seconds` and `max_retry_after_seconds`. Ordinary backoff is capped
@@ -185,6 +202,9 @@ successful batch is checkpointed; split markers allow interrupted work to
 resume without repeating its parent. All calls share the existing attempt
 budgets. `execution.review_fallbacks` records this work separately from logical
 review counts; invalid verdicts and single-proposal truncation still fail.
+Each fallback event retains `child_model_identities`. A combined review with
+different approved observed names has `observed_model: null`; the child records
+preserve each exact name, including through nested splits.
 V3 skips structurally identified generic link-only HTML chunks before inference,
 records them in `skipped_chunks`, and preserves unaffected checkpoint keys.
 See the [recovery and comparison details](../../scripts/test/zhch/README.md).
@@ -270,8 +290,10 @@ link discovery is required.
 The command emits JSON to stdout. It includes the effective source scope and
 limits, each response's URL/status/media type/size/hash/title, `ETag` and
 `Last-Modified` values when supplied, skipped URLs with reasons, and aggregate
-request/payload-byte counts. Redirects and the `robots.txt` lookup are included
-in the request budget.
+request/payload-byte counts. Redirects and every origin's `robots.txt` lookup
+share the request, payload-byte and duration budgets. `robots_status_by_origin`
+records each policy acquisition; `robots_url` and `robots_status` describe the
+seed origin.
 
 ### Controls that prevent runaway crawling
 
@@ -289,9 +311,12 @@ in the request budget.
   crawler traps.
 - Public IP addresses only by default, which blocks loopback/private targets and
   reduces SSRF risk. `--allow-private-networks` exists solely for local testing.
-- `robots.txt` is mandatory and failures are fail-closed. `rel=nofollow` and page
+- `robots.txt` is loaded once per origin (scheme, host and standard port) per
+  crawl and checked before every content request, including redirect targets.
+  Acquisition failures are cached and fail-closed for that origin. The largest
+  loaded robots delay applies to all subsequent requests. `rel=nofollow` and page
   `nofollow` directives are honored.
-- HTTP 429 and 503 responses stop the run immediately; there are no automatic
+- HTTP 429 and 503 content responses stop the run immediately; there are no automatic
   retries.
 - Non-HTML response bodies are not downloaded by this discovery proof.
 

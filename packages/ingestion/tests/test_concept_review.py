@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 from swisstip.ingestion.concept_review import parse_verdicts
@@ -93,6 +94,7 @@ class ReviewExtractionTests(unittest.TestCase):
         self.assertEqual(report.request_count, 0)
         self.assertEqual((report.prompt_tokens, report.output_tokens), (0, 0))
         self.assertEqual((report.provider, report.model), ("not_called", "not_called"))
+        self.assertEqual(report.model_identities, ())
 
     def test_mixed_chunks_and_legacy_prompts_are_not_skipped(self):
         source = page(NormalizedSection("section-0001", "Rules", "Apply online."),
@@ -113,6 +115,41 @@ class ReviewExtractionTests(unittest.TestCase):
         self.assertEqual(report.candidates[0].primary_section_id, "section-0001")
         self.assertEqual(report.quality_metrics["review_request_count"], 1)
         self.assertEqual(report.semantic_reviews[0]["decision"], "supported")
+
+    def test_report_preserves_requested_and_observed_generation_and_review_identity(self):
+        class IdentityProvider(ReviewProvider):
+            def generate_structured(self, **request):
+                completion = super().generate_structured(**request)
+                return replace(
+                    completion,
+                    requested_model="fake:provider-route",
+                    observed_model="Fake/Model" if len(self.calls) == 1 else "fake-model",
+                    request_id=f"request-{len(self.calls)}",
+                )
+
+        report = extractor(IdentityProvider()).extract(page())
+        self.assertEqual(report.model, "fake")
+        expected_identities = [
+            {
+                "provider": "fake",
+                "model": "fake",
+                "requested_model": "fake:provider-route",
+                "observed_model": "Fake/Model",
+                "request_id": "request-1",
+            },
+            {
+                "provider": "fake",
+                "model": "fake",
+                "requested_model": "fake:provider-route",
+                "observed_model": "fake-model",
+                "request_id": "request-2",
+            },
+        ]
+        self.assertEqual(report.model_identities, tuple(expected_identities))
+        self.assertEqual(
+            json.loads(json.dumps(report.to_dict()))["model_identities"],
+            expected_identities,
+        )
 
     def test_reviewer_rejections_and_uncertainty_are_retained_as_diagnostics(self):
         for decision, issue in (("unsupported", "unsupported_claim"), ("unsupported", "wrong_language"),

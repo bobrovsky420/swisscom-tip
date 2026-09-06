@@ -32,13 +32,13 @@ the governed publication and structured serving layer around reviewed knowledge.
 
 | Area | Observed implementation | Alignment and next boundary |
 |---|---|---|
-| Acquisition | [Crawler](packages/ingestion/src/swisstip/ingestion/crawler.py) emits bounded crawl/hash metadata; raw response bytes are not retained as snapshots | Keep operator-triggered acquisition; fix robots enforcement and add durable raw snapshots/source manifests |
+| Acquisition | [Crawler](packages/ingestion/src/swisstip/ingestion/crawler.py) emits bounded crawl/hash metadata and enforces robots per origin/hop; raw response bytes are not retained as snapshots | Keep operator-triggered acquisition; add durable raw snapshots/source manifests |
 | Normalization and evidence spans | [Normalizer and extractor](packages/ingestion/src/swisstip/ingestion/concepts.py) read local files, record local paths and verify normalized offsets | Add authoritative URL/source identity, immutable snapshot binding, persisted normalized sections and release-associated evidence |
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
 | Review workflow | Model review, rejected proposals and `review.csv` annotations exist | Add validated import of reviewer decisions and explicit promotion gates; passing extraction/model review does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v2`, five projections and published term routes |
-| Provider/recovery | Explicit profiles, request budgets, retries and generation/review checkpoints exist | Repair HF observed-model attribution and invalidate unverifiable checkpoints; include identity in published provenance |
+| Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
 | Runtime/product | Only crawler and concept CLI entry points are implemented | Catalog publisher/reader, immutable releases, strict structured validation, scoped retrieval/rules and the three MCP tools remain unimplemented |
 
 The proposed workspace tree in the technical specification is not the implemented
@@ -51,7 +51,7 @@ offset checks passed, but both models and reviewers accepted a material omission
 The report records no populated human-review worksheet rows. These historical
 results establish neither semantic completeness nor superiority of either model.
 
-Current offline baseline, rerun for this review:
+Original offline baseline, rerun for this review before FIX-01/02:
 
 - 47 ingestion tests passed.
 - 75 builder tests passed, including the PowerShell workflow with loopback fake
@@ -73,30 +73,31 @@ On Unix use `./.venv/bin/python` for the same commands.
 
 These are demonstrated defects, not open hypotheses requiring another POC.
 
-- [ ] **FIX-01: enforce robots per origin and before every content hop.**
-  In [crawler.py](packages/ingestion/src/swisstip/ingestion/crawler.py), `crawl()`
-  checks its single robots parser before `_fetch()`, while redirected requests
-  recheck scope/DNS only. A redirect from an allowed path to an expressly
+- [x] **FIX-01: enforce robots per origin and before every content hop.**
+  Previously, [crawler.py](packages/ingestion/src/swisstip/ingestion/crawler.py)
+  checked a single robots parser before `_fetch()`, while redirected requests
+  rechecked scope/DNS only. A redirect from an allowed path to an expressly
   disallowed path was fetched. A linked page on a configured secondary host was
-  also fetched without requesting that host's robots file. Load/cache policy by
-  origin, enforce it before every content request/redirect and include robots
-  acquisition in the declared budgets. Add both offline regressions and preserve
-  scope, redirect-loop, timeout and request-limit safeguards.
-- [ ] **FIX-02: preserve and validate requested versus observed model identity.**
+  also fetched without requesting that host's robots file. Policies are now
+  cached by origin and enforced before every content hop. Policy acquisition
+  shares the declared budgets; per-origin status is reported. Offline regressions
+  cover both defects plus scope/DNS, loops, timeout, request/byte limits, policy
+  ownership, cache reset and crawl delays.
+- [x] **FIX-02: preserve and validate requested versus observed model identity.**
   [huggingface_provider.py](apps/knowledge-builder/src/swisstip/builder/huggingface_provider.py)
-  checks response `model` only for a nonempty string and reports the configured
+  previously checked response `model` only for a nonempty string and reported the configured
   model. A payload naming `completely-different/model` was attributed to the
-  configured Apertus model. Define approved provider aliases, retain requested
-  and observed identities, and reject unexplained mismatches. The existing
-  lowercase/shortened alias fixture must be handled deliberately. Version or
-  invalidate legacy [checkpoints](apps/knowledge-builder/src/swisstip/builder/concept_recovery.py)
-  whose observed identity cannot be established; otherwise cached completions
-  bypass repaired decoding. Test exact identity, approved aliases, mismatch and
-  reuse of an unverifiable old checkpoint.
+  configured Apertus model. Requested and raw observed names are now retained in
+  completions, reports and [checkpoints](apps/knowledge-builder/src/swisstip/builder/concept_recovery.py).
+  Exact identities and explicitly approved provider aliases are accepted; the
+  existing shortened lowercase name is scoped to PublicAI's configured 8B model.
+  Unexplained mismatches fail. Checkpoint v2 isolates unverifiable v1 files and
+  revalidates identity on every hit. Regressions cover exact names, aliases,
+  mismatches, legacy reuse, valid-checksum invalid identities and split reviews.
 
-Complete FIX-01 before affected live crawls, and FIX-02 before new model-quality
-comparisons or trustworthy provider-attribution claims. Preserve historical
-artifacts; label uncertainty rather than rewriting their recorded provenance.
+Both fixes are implemented with offline regressions. Historical artifacts remain
+unchanged; these fixes do not establish their missing observed model identities
+or validate historical model-quality comparisons.
 
 ## Implementation queue
 
@@ -563,12 +564,13 @@ is a separate integration assessment in 12.
 **Assumption:** provider switching preserves the contract, selected model identity
 is auditable, and recovery makes an affordable build likely to finish.
 
-**Known prerequisite:** in
+**Completed prerequisite (FIX-02):** in
 [huggingface_provider.py](apps/knowledge-builder/src/swisstip/builder/huggingface_provider.py),
-the response model is checked only for a nonempty string while `ModelCompletion`
-reports the configured identity. Complete FIX-02, including approved alias handling,
-requested/observed identity and invalidation of unverifiable legacy checkpoints,
-before new model-comparison claims.
+response identity is now validated against the requested model and explicit
+provider aliases. `ModelCompletion` retains requested and observed names;
+checkpoint v2 prevents reuse of unverifiable legacy completions. Historical
+attribution remains uncertain, and new model-comparison claims still need the
+experiment below.
 
 **Experiment:** after semantic labels exist, run at least three paired builds per
 eligible configuration on identical inputs/settings and comparable operational
@@ -677,7 +679,7 @@ requirements; they do not silently amend those requirements.
 | Candidate IDs or proposal groups are stable selectable catalog concepts | False; IDs depend on content and editorial fields | Reviewed mappings into stable public IDs and release-associated evidence |
 | Quotes and model review establish semantic completeness | Rejected by the recorded experiment | POC-01/05; independent reviewed promotion |
 | More retained concepts or larger models prove higher accuracy or speed | Unproven by counts and resumed timings | POC-01/11 with independent labels and full accounting |
-| Existing robots/model checks cover their advertised behavior | Three offline probes expose two defect classes | FIX-01 per-origin/per-hop policy; FIX-02 identity plus checkpoint invalidation |
+| Existing robots/model checks cover their advertised behavior | FIX-01/02 repair the two demonstrated defect classes with offline regressions | Validate affected live scenarios and new provider comparisons using the repaired code |
 | Typed requests eliminate multilingual retrieval needs | Incorrect for retained original-language terms | Five P0 projections and scoped hybrid ranking, POC-06/07/10 |
 | The five-language P0 service is already demonstrated | Not implemented or evaluated | Build required capabilities and narrow corpus/operations as needed; mark incomplete gates honestly |
 | Whole-question detectors or server answer rendering are next runtime tasks | Outside the accepted server boundary | Per-term routing/source validation in 06; caller interpretation/fidelity in 12 |

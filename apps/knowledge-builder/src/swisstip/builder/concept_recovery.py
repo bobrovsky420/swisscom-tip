@@ -19,11 +19,15 @@ from pathlib import Path
 
 from swisstip.ingestion.concepts import ModelCompletion, NormalizedPage, SemanticModelError, SemanticModelProvider
 from swisstip.ingestion.concept_review import REVIEW_SYSTEM_PROMPT, parse_verdicts, review_schema
-from .huggingface_provider import HuggingFaceHTTPError, HuggingFaceTransportError, HuggingFaceIncompleteCompletionError
+from .huggingface_provider import (
+    HuggingFaceHTTPError, HuggingFaceTransportError, HuggingFaceIncompleteCompletionError,
+    is_approved_model_identity,
+)
 from .model_profiles import SemanticModelConfig
 
 
-CHECKPOINT_VERSION = "swisstip.model-response-checkpoint/v1"
+# v1 discarded the observed HF model. Keep old files, but never reuse them.
+CHECKPOINT_VERSION = "swisstip.model-response-checkpoint/v2"
 TRANSIENT_HTTP = {408, 429, 500, 502, 503, 504}
 WAIT_PROGRESS_SECONDS = 15.0
 
@@ -148,6 +152,7 @@ class RecoverableProvider:
                               f"run_attempts_remaining={limits.max_model_requests_per_run - self.attempts}")
                 self._wait_for_retry(delay)
                 continue
+            self._validate_model_identity(completion)
             self.new_completions.append(completion)
             if review is not None:
                 # Invalid schemas/verdicts are fatal, not another fallback trigger.
@@ -182,7 +187,7 @@ class RecoverableProvider:
         size = min(self.config.recovery.review_fallback_batch_size, max(1, len(proposals) // 2))
         self.progress(f"Review fallback {key[:12]}: {len(proposals)} proposals in batches of at most {size}; existing budgets apply")
         event = {"request_key": key[:12], "proposal_count": len(proposals), "batch_size": size,
-                 "status": "incomplete", "child_request_ids": []}
+                 "status": "incomplete", "child_request_ids": [], "child_model_identities": []}
         self.review_fallbacks.append(event)
         completions = []
         verdicts = []
@@ -198,12 +203,18 @@ class RecoverableProvider:
                 response_schema=review_schema(len(batch)),
             )
             completions.append(completion)
+            event["child_model_identities"].append({
+                "provider": completion.provider, "model": completion.model,
+                "requested_model": completion.requested_model,
+                "observed_model": completion.observed_model, "request_id": completion.request_id,
+            })
             if completion.request_id is not None:
                 event["child_request_ids"].append(completion.request_id)
             for verdict in parse_verdicts(completion.content, len(batch)):
                 verdicts.append({**verdict, "review_id": batch[verdict["review_id"] - 1]["review_id"]})
         first = completions[0]
-        if any((c.provider, c.model) != (first.provider, first.model) for c in completions):
+        if any((c.provider, c.model, c.requested_model) !=
+               (first.provider, first.model, first.requested_model) for c in completions):
             raise SemanticModelError("Inconsistent model identity across smaller review batches")
         content = json.dumps({"verdicts": verdicts}, ensure_ascii=False)
         parse_verdicts(content, len(proposals))
@@ -214,7 +225,11 @@ class RecoverableProvider:
         event["status"] = "complete"
         self.progress(f"Review fallback {key[:12]} completed: {len(verdicts)} verdicts validated")
         return ModelCompletion(content, first.provider, first.model,
-                               prompt_tokens=total("prompt_tokens"), output_tokens=total("output_tokens"))
+                               prompt_tokens=total("prompt_tokens"), output_tokens=total("output_tokens"),
+                               requested_model=first.requested_model,
+                               observed_model=(first.observed_model if all(
+                                   c.observed_model == first.observed_model for c in completions
+                               ) else None))
 
     def _retry_delay(self, exc: HuggingFaceHTTPError | HuggingFaceTransportError,
                      retry: int) -> float | None:
@@ -253,6 +268,20 @@ class RecoverableProvider:
             self.progress(f"Retry wait: {delay - remaining:g}/{delay:g}s elapsed; "
                           f"{remaining:g}s remaining; no new provider attempt yet")
 
+    def _validate_model_identity(self, completion: ModelCompletion) -> None:
+        profile = self.config.active_profile
+        provider = profile.provider if profile.adapter == "huggingface" else "ollama"
+        requested = f"{profile.model}:{provider}" if profile.adapter == "huggingface" else profile.model
+        if (completion.provider != provider or completion.model != profile.model
+                or completion.requested_model != requested):
+            raise SemanticModelError("Completion model identity does not match the selected profile")
+        if profile.adapter == "huggingface":
+            approved = is_approved_model_identity(provider, profile.model, completion.observed_model)
+        else:
+            approved = completion.observed_model == profile.model
+        if not approved:
+            raise SemanticModelError("Completion has an unverifiable observed model identity")
+
     def _read(self, path: Path, key: str) -> ModelCompletion | None:
         try:
             if path.stat().st_size > 2_000_000:
@@ -271,8 +300,11 @@ class RecoverableProvider:
                     raise ValueError("invalid usage")
             if completion.request_id is not None and not isinstance(completion.request_id, str):
                 raise ValueError("invalid request ID")
+            # Integrity alone cannot establish attribution. Apply today's policy
+            # to every cache hit, including the configured provider and model.
+            self._validate_model_identity(completion)
             return completion
-        except (OSError, ValueError, KeyError, TypeError):
+        except (OSError, ValueError, KeyError, TypeError, SemanticModelError):
             self.progress(f"Ignoring unreadable or invalid checkpoint {key[:12]}")
             return None
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import tempfile
 import unittest
@@ -9,7 +10,7 @@ from email.utils import format_datetime
 from pathlib import Path
 from unittest.mock import patch
 
-from swisstip.builder.concept_recovery import RecoverableProvider
+from swisstip.builder.concept_recovery import CHECKPOINT_VERSION, RecoverableProvider
 from swisstip.builder.huggingface_provider import (
     HuggingFaceHTTPError, HuggingFaceResponseError, HuggingFaceTransportError, HuggingFaceIncompleteCompletionError,
 )
@@ -20,7 +21,9 @@ ROOT = Path(__file__).resolve().parents[3]
 REQUEST = {"system_prompt": "Extract", "user_prompt": "Source", "response_schema": {"type": "object"}}
 PAGE = NormalizedPage("page-1", "source.html", "Title", "en", "a" * 64,
                       (NormalizedSection("section-0001", "Heading", "Content"),))
-COMPLETION = ModelCompletion('{"concepts": []}', "fake", "fake", 10, 5, "request-1")
+MODEL = "swiss-ai/Apertus-8B-Instruct-2509"
+COMPLETION = ModelCompletion('{"concepts": []}', "publicai", MODEL, 10, 5, "request-1",
+                             requested_model=f"{MODEL}:publicai", observed_model=MODEL)
 
 
 class Provider:
@@ -208,7 +211,9 @@ class RecoveryTests(unittest.TestCase):
             replace(self.config, extraction=replace(self.config.extraction, chunk_content_characters=6000)),
         ]
         for config in configurations:
-            provider = Provider()
+            model = config.active_profile.model
+            provider = Provider(replace(COMPLETION, model=model, requested_model=f"{model}:publicai",
+                                        observed_model=model))
             self.wrapper(provider, config=config).generate_structured(**REQUEST)
             self.assertEqual(provider.calls, 1)
         for changed in (replace(PAGE, content_hash="b" * 64), replace(PAGE, language="de")):
@@ -236,6 +241,90 @@ class RecoveryTests(unittest.TestCase):
         self.wrapper(provider).generate_structured(**REQUEST)
         self.assertEqual(provider.calls, 1)
         self.assertTrue(any("invalid checkpoint" in line for line in self.logs))
+
+    def test_legacy_checkpoint_without_observed_identity_is_preserved_and_not_reused(self):
+        # Recreate the old key namespace and envelope; its checksum is valid.
+        with patch("swisstip.builder.concept_recovery.CHECKPOINT_VERSION",
+                   "swisstip.model-response-checkpoint/v1"):
+            self.wrapper(Provider()).generate_structured(**REQUEST)
+        old_path = next(self.path.glob("*.json"))
+        payload = json.loads(old_path.read_text(encoding="utf-8"))
+        del payload["completion"]["requested_model"]
+        del payload["completion"]["observed_model"]
+        self.write_checkpoint(old_path, payload)
+        original = old_path.read_bytes()
+
+        provider = Provider()
+        resumed = self.wrapper(provider)
+        result = resumed.generate_structured(**REQUEST)
+        self.assertEqual(provider.calls, 1)
+        self.assertEqual(resumed.hits, 0)
+        self.assertEqual(result.requested_model, f"{MODEL}:publicai")
+        self.assertEqual(result.observed_model, MODEL)
+        self.assertEqual(old_path.read_bytes(), original)
+        self.assertEqual(len(list(self.path.glob("*.json"))), 2)
+        current_path = next(p for p in self.path.glob("*.json") if p != old_path)
+        self.assertEqual(json.loads(current_path.read_text(encoding="utf-8"))["version"], CHECKPOINT_VERSION)
+        warm = self.wrapper(Provider())
+        self.assertEqual(warm.generate_structured(**REQUEST), result)
+        self.assertEqual(warm.hits, 1)
+
+    @staticmethod
+    def write_checkpoint(path, payload):
+        encoded = json.dumps(payload["completion"], sort_keys=True, ensure_ascii=False,
+                             separators=(",", ":")).encode("utf-8")
+        payload["completion_hash"] = hashlib.sha256(encoded).hexdigest()
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+    def test_valid_checksum_cannot_bypass_checkpoint_model_validation(self):
+        alterations = (
+            ("version", "swisstip.model-response-checkpoint/v1"),
+            ("observed_model", None),
+            ("observed_model", ""),
+            ("observed_model", [MODEL]),
+            ("observed_model", "completely-different/model"),
+            ("observed_model", f"{MODEL}:another-provider"),
+            ("requested_model", None),
+            ("requested_model", "other/model:publicai"),
+            ("model", "other/model"),
+            ("provider", "another-provider"),
+        )
+        for field, value in alterations:
+            with self.subTest(field=field, value=value):
+                self.wrapper(Provider(), fresh=True).generate_structured(**REQUEST)
+                path = next(self.path.glob("*.json"))
+                payload = json.loads(path.read_text(encoding="utf-8"))
+                if field == "version":
+                    payload[field] = value
+                else:
+                    payload["completion"][field] = value
+                self.write_checkpoint(path, payload)
+                provider = Provider()
+                resumed = self.wrapper(provider)
+                self.assertEqual(resumed.generate_structured(**REQUEST), COMPLETION)
+                self.assertEqual(provider.calls, 1)
+                self.assertEqual(resumed.hits, 0)
+
+    def test_approved_alias_retains_requested_and_observed_identity_on_reuse(self):
+        completion = replace(COMPLETION, observed_model="swiss-ai/apertus-8b-instruct")
+        self.wrapper(Provider(completion)).generate_structured(**REQUEST)
+        provider = Provider(HuggingFaceResponseError("must not call provider"))
+        resumed = self.wrapper(provider)
+        self.assertEqual(resumed.generate_structured(**REQUEST), completion)
+        self.assertEqual(provider.calls, 0)
+        self.assertEqual(resumed.hits, 1)
+
+    def test_unverifiable_fresh_completion_is_not_retried_or_checkpointed(self):
+        for completion in (replace(COMPLETION, observed_model=None),
+                           replace(COMPLETION, observed_model="completely-different/model"),
+                           replace(COMPLETION, requested_model="other/model:publicai")):
+            with self.subTest(completion=completion):
+                provider = Provider(completion)
+                run = self.wrapper(provider)
+                with self.assertRaisesRegex(SemanticModelError, "model identity"):
+                    run.generate_structured(**REQUEST)
+                self.assertEqual(provider.calls, 1)
+                self.assertEqual(list(self.path.iterdir()), [])
 
     def test_retry_policy_and_budget_changes_preserve_completed_work(self):
         self.wrapper(Provider()).generate_structured(**REQUEST)

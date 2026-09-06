@@ -20,6 +20,7 @@ from swisstip.builder.huggingface_provider import (  # noqa: E402
     HuggingFaceRateLimitError,
     HuggingFaceResponseError,
     HuggingFaceIncompleteCompletionError,
+    HuggingFaceModelIdentityError,
     HuggingFaceRouterProvider,
     HuggingFaceTransportError,
 )
@@ -157,6 +158,8 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
         )
         self.assertEqual(completion.provider, "publicai")
         self.assertEqual(completion.model, "swiss-ai/Apertus-70B-Instruct-2509")
+        self.assertEqual(completion.requested_model, "swiss-ai/Apertus-70B-Instruct-2509:publicai")
+        self.assertEqual(completion.observed_model, completion.requested_model)
         self.assertEqual(completion.prompt_tokens, 42)
         self.assertEqual(completion.output_tokens, 17)
         self.assertEqual(completion.request_id, "router-request-id")
@@ -199,6 +202,48 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
         self.assertEqual(completion.prompt_tokens, 5)
         self.assertEqual(completion.output_tokens, 2)
         self.assertEqual(completion.request_id, "completion-id")
+        self.assertEqual(completion.requested_model, "swiss-ai/Apertus-8B-Instruct-2509:publicai")
+        self.assertEqual(completion.observed_model, "swiss-ai/apertus-8b-instruct")
+
+    def test_exact_model_identity_with_or_without_router_suffix(self) -> None:
+        for model in ("swiss-ai/Apertus-8B-Instruct-2509", "swiss-ai/Apertus-70B-Instruct-2509",
+                      "another/exact-model"):
+            for observed in (model, f"{model}:publicai"):
+                with self.subTest(model=model, observed=observed):
+                    response = FakeResponse({"model": observed, "choices": [
+                        {"finish_reason": "stop", "message": {"content": "{}"}},
+                    ]})
+                    completion = make_provider(FakeOpener(response), model=model).generate_structured(
+                        system_prompt="System", user_prompt="User", response_schema={"type": "object"},
+                    )
+                    self.assertEqual(completion.model, model)
+                    self.assertEqual(completion.requested_model, f"{model}:publicai")
+                    self.assertEqual(completion.observed_model, observed)
+
+    def test_unexplained_model_mismatches_retain_identity_and_reject_content(self) -> None:
+        model = "swiss-ai/Apertus-8B-Instruct-2509"
+        for provider, observed in (
+            ("publicai", "completely-different/model"),
+            ("publicai", "swiss-ai/Apertus-70B-Instruct-2509"),
+            ("publicai", "swiss-ai/Apertus-8B-Instruct-2609"),
+            ("publicai", "swiss-ai/apertus-8b-instruct-2509"),
+            ("publicai", f"{model}:another-provider"),
+            ("publicai", f" {model}"),
+            ("another-provider", "swiss-ai/apertus-8b-instruct"),
+        ):
+            with self.subTest(provider=provider, observed=observed):
+                response = FakeResponse({"model": observed, "choices": [
+                    {"finish_reason": "stop", "message": {"content": "private completion"}},
+                ]})
+                adapter = make_provider(FakeOpener(response), model=model, provider=provider)
+                with self.assertRaises(HuggingFaceModelIdentityError) as raised:
+                    adapter.generate_structured(
+                        system_prompt="System", user_prompt="User", response_schema={"type": "object"},
+                    )
+                self.assertEqual(raised.exception.requested_model, f"{model}:{provider}")
+                self.assertEqual(raised.exception.observed_model, observed)
+                self.assertNotIn("private completion", str(raised.exception))
+                self.assertTrue(response.closed)
 
     def test_maps_authentication_errors_without_exposing_response_body(self) -> None:
         url = "https://router.example/v1/chat/completions"

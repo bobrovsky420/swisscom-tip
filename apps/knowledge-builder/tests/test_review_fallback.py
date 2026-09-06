@@ -13,8 +13,16 @@ from swisstip.ingestion.concept_review import REVIEW_SYSTEM_PROMPT, parse_verdic
 from swisstip.ingestion.concepts import CandidateConceptExtractor, REVIEW_PROMPT_PROFILE, ModelCompletion, NormalizedPage, NormalizedSection, SemanticModelError
 
 ROOT = Path(__file__).resolve().parents[3]
+MODEL = "swiss-ai/Apertus-8B-Instruct-2509"
+REQUESTED_MODEL = f"{MODEL}:publicai"
+MODEL_ALIAS = "swiss-ai/apertus-8b-instruct"
 PAGE = NormalizedPage("page-1", "source.html", "Title", "en", "a" * 64,
                       (NormalizedSection("section-0001", "Heading", "Content"),))
+
+
+def model_identity(request_id, observed_model=MODEL):
+    return {"provider": "publicai", "model": MODEL, "requested_model": REQUESTED_MODEL,
+            "observed_model": observed_model, "request_id": request_id}
 
 
 def truncated(reason="length"):
@@ -35,9 +43,10 @@ def request(count=4):
 
 
 class ReviewProvider:
-    def __init__(self, *, threshold=2, fail_label=None, malformed=False):
+    def __init__(self, *, threshold=2, fail_label=None, malformed=False, observed_models=None):
         self.calls = []
         self.threshold, self.fail_label, self.malformed = threshold, fail_label, malformed
+        self.observed_models = observed_models or {}
 
     def generate_structured(self, **request):
         review = json.loads(request["user_prompt"])["untrusted_review"]
@@ -51,8 +60,10 @@ class ReviewProvider:
                      "reason": p["candidate"]["preferred_label"]} for p in proposals]
         if self.malformed:
             verdicts = []
-        return ModelCompletion(json.dumps({"verdicts": verdicts}), "fake", "fake", 10, 5,
-                               f"request-{len(self.calls)}")
+        return ModelCompletion(json.dumps({"verdicts": verdicts}), "publicai", MODEL, 10, 5,
+                               f"request-{len(self.calls)}", requested_model=REQUESTED_MODEL,
+                               observed_model=self.observed_models.get(
+                                   proposals[0]["candidate"]["preferred_label"], MODEL))
 
 
 class ReviewFallbackTests(unittest.TestCase):
@@ -80,12 +91,51 @@ class ReviewFallbackTests(unittest.TestCase):
         self.assertEqual([p["review_id"] for p in provider.calls[2]["proposals"]], [1, 2])
         self.assertEqual((result.prompt_tokens, result.output_tokens), (20, 10))
         self.assertIsNone(result.request_id)
+        self.assertEqual((result.provider, result.model), ("publicai", MODEL))
+        self.assertEqual(result.requested_model, REQUESTED_MODEL)
+        self.assertEqual(result.observed_model, MODEL)
         stats = run.statistics()
         self.assertEqual(stats["network_attempts"], 3)
         self.assertEqual(stats["retry_attempts"], 0)
         self.assertEqual(len(stats["incomplete_completions"]), 1)
         self.assertEqual(stats["review_fallbacks"][0]["status"], "complete")
         self.assertEqual(stats["review_fallbacks"][0]["child_request_ids"], ["request-2", "request-3"])
+        self.assertEqual(stats["review_fallbacks"][0]["child_model_identities"],
+                         [model_identity("request-2"), model_identity("request-3")])
+
+    def test_split_preserves_distinct_approved_observed_models(self):
+        provider = ReviewProvider(observed_models={"Proposal 3": MODEL_ALIAS})
+        run = self.wrapper(provider)
+        result = run.generate_structured(**request())
+
+        self.assertEqual(len(parse_verdicts(result.content, 4)), 4)
+        self.assertEqual((result.provider, result.model), ("publicai", MODEL))
+        self.assertEqual(result.requested_model, REQUESTED_MODEL)
+        self.assertIsNone(result.observed_model)
+        self.assertIsNone(result.request_id)
+        self.assertEqual(run.statistics()["review_fallbacks"][0]["child_model_identities"],
+                         [model_identity("request-2"), model_identity("request-3", MODEL_ALIAS)])
+
+    def test_nested_splits_preserve_exact_leaf_model_identities(self):
+        provider = ReviewProvider(threshold=1, observed_models={
+            "Proposal 2": MODEL_ALIAS, "Proposal 4": REQUESTED_MODEL,
+        })
+        run = self.wrapper(provider)
+        result = run.generate_structured(**request())
+
+        self.assertEqual(len(parse_verdicts(result.content, 4)), 4)
+        self.assertEqual((result.provider, result.model), ("publicai", MODEL))
+        self.assertEqual(result.requested_model, REQUESTED_MODEL)
+        self.assertIsNone(result.observed_model)
+        self.assertIsNone(result.request_id)
+        events = run.statistics()["review_fallbacks"]
+        self.assertEqual(len(events), 3)
+        self.assertEqual(events[0]["child_model_identities"],
+                         [model_identity(None, None), model_identity(None, None)])
+        self.assertEqual(events[1]["child_model_identities"],
+                         [model_identity("request-3"), model_identity("request-4", MODEL_ALIAS)])
+        self.assertEqual(events[2]["child_model_identities"],
+                         [model_identity("request-6"), model_identity("request-7", REQUESTED_MODEL)])
 
     def test_interrupted_split_resumes_only_unfinished_child(self):
         provider = ReviewProvider(fail_label="Proposal 3")
@@ -174,10 +224,11 @@ class ReviewFallbackTests(unittest.TestCase):
                     "scope": "Residents", "user_questions": ["How do I apply?"], "confidence": 0.8,
                     "primary_section_id": span["section_id"], "evidence": [{"evidence_id": span["evidence_id"]}],
                     "relations": []} for i in range(1, 5)]
-                return ModelCompletion(json.dumps({"concepts": candidates}), "fake", "fake", 10, 5)
+                return ModelCompletion(json.dumps({"concepts": candidates}), "publicai", MODEL, 10, 5,
+                                       requested_model=REQUESTED_MODEL, observed_model=MODEL)
 
         run = self.wrapper(ExtractionProvider())
-        result = CandidateConceptExtractor(run, active_profile="fake", prompt_profile=REVIEW_PROMPT_PROFILE).extract(PAGE)
+        result = CandidateConceptExtractor(run, active_profile="apertus_8b", prompt_profile=REVIEW_PROMPT_PROFILE).extract(PAGE)
         self.assertEqual([c.preferred_label for c in result.candidates], ["Proposal 1", "Proposal 3", "Proposal 4"])
         self.assertEqual(len(result.semantic_reviews), 4)
         self.assertEqual(result.rejected_candidates[0]["proposal"]["preferred_label"], "Proposal 2")

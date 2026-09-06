@@ -51,7 +51,13 @@ class SemanticModelError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class ModelCompletion:
-    """Normalized completion metadata returned by every semantic provider."""
+    """Normalized completion metadata returned by every semantic provider.
+
+    ``model`` is the configured canonical identifier, ``requested_model`` is
+    the exact model sent to the provider, and ``observed_model`` is the raw
+    identity in its response. Missing observed identity remains unknown; it
+    must never be inferred from the configured or requested model.
+    """
 
     content: str
     provider: str
@@ -59,6 +65,8 @@ class ModelCompletion:
     prompt_tokens: int | None = None
     output_tokens: int | None = None
     request_id: str | None = None
+    requested_model: str | None = None
+    observed_model: str | None = None
 
 
 class SemanticModelProvider(Protocol):
@@ -163,6 +171,8 @@ class ConceptProposalReport:
     quality_metrics: dict[str, object] = field(default_factory=dict)
     semantic_reviews: tuple[dict[str, object], ...] = ()
     skipped_chunks: tuple[dict[str, object], ...] = ()
+    # One entry per logical completion, including generation and review, in order.
+    model_identities: tuple[dict[str, str | None], ...] = ()
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -904,6 +914,16 @@ class CandidateConceptExtractor:
             quality_metrics=quality_metrics,
             semantic_reviews=tuple(reviews),
             skipped_chunks=tuple(skipped.values()),
+            model_identities=tuple(
+                {
+                    "provider": item.provider,
+                    "model": item.model,
+                    "requested_model": item.requested_model,
+                    "observed_model": item.observed_model,
+                    "request_id": item.request_id,
+                }
+                for item in completions
+            ),
         )
 
     def planned_request_count(self, page: NormalizedPage) -> int:

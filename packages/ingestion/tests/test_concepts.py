@@ -194,6 +194,19 @@ class CandidateConceptExtractorTests(unittest.TestCase):
         self.assertEqual(report.prompt_tokens, 10)
         self.assertEqual(report.output_tokens, 5)
         self.assertEqual(report.request_ids, ("request-1",))
+        # Legacy providers cannot establish observed identity from model alone.
+        expected_identities = [{
+            "provider": "test-provider",
+            "model": "test-model",
+            "requested_model": None,
+            "observed_model": None,
+            "request_id": "request-1",
+        }]
+        self.assertEqual(report.model_identities, tuple(expected_identities))
+        self.assertEqual(
+            json.loads(json.dumps(report.to_dict()))["model_identities"],
+            expected_identities,
+        )
         self.assertEqual(report.generated_at, "2026-09-05T12:00:00+00:00")
         self.assertEqual(len(report.candidates), 1)
         candidate = report.candidates[0]

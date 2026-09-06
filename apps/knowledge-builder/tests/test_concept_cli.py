@@ -40,11 +40,18 @@ class FakeProvider:
         self.calls += 1
         request = json.loads(user_prompt)
         if "untrusted_review" in request:
-            return ModelCompletion(json.dumps({"verdicts": [
-                {"review_id": item["review_id"], "decision": "supported",
-                 "issue": "none", "reason": "Supported by the test evidence."}
-                for item in request["untrusted_review"]["proposals"]
-            ]}), "fake", "fake-model")
+            return ModelCompletion(
+                content=json.dumps({"verdicts": [
+                    {"review_id": item["review_id"], "decision": "supported",
+                     "issue": "none", "reason": "Supported by the test evidence."}
+                    for item in request["untrusted_review"]["proposals"]
+                ]}),
+                provider="publicai",
+                model="swiss-ai/Apertus-8B-Instruct-2509",
+                requested_model="swiss-ai/Apertus-8B-Instruct-2509:publicai",
+                observed_model="swiss-ai/Apertus-8B-Instruct-2509",
+                request_id=f"request-{self.calls}",
+            )
         payload = {
             "concepts": [
                 {
@@ -75,8 +82,10 @@ class FakeProvider:
                 payload["concepts"][0]["primary_section_id"] = span["section_id"]
         return ModelCompletion(
             content=json.dumps(payload),
-            provider="fake",
-            model="fake-model",
+            provider="publicai",
+            model="swiss-ai/Apertus-8B-Instruct-2509",
+            requested_model="swiss-ai/Apertus-8B-Instruct-2509:publicai",
+            observed_model="swiss-ai/Apertus-8B-Instruct-2509",
             request_id=f"request-{self.calls}",
         )
 
@@ -156,13 +165,25 @@ class ConceptCliTests(unittest.TestCase):
             payload["model_config_schema_version"],
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertIn(payload["active_profile"], ("apertus_8b", "apertus_70b", "ollama_local"))
+        self.assertEqual(payload["active_profile"], "apertus_8b")
         self.assertEqual(payload["report_count"], 2)
         self.assertEqual(len(payload["reports"]), 2)
         self.assertEqual(provider.calls, 4)
         for report in payload["reports"]:
-            self.assertEqual(report["provider"], "fake")
-            self.assertEqual(report["model"], "fake-model")
+            self.assertEqual(report["provider"], "publicai")
+            self.assertEqual(report["model"], "swiss-ai/Apertus-8B-Instruct-2509")
+            self.assertEqual(len(report["model_identities"]), 2)
+            for identity in report["model_identities"]:
+                self.assertEqual(identity["provider"], "publicai")
+                self.assertEqual(identity["model"], "swiss-ai/Apertus-8B-Instruct-2509")
+                self.assertEqual(
+                    identity["requested_model"],
+                    "swiss-ai/Apertus-8B-Instruct-2509:publicai",
+                )
+                self.assertEqual(
+                    identity["observed_model"],
+                    "swiss-ai/Apertus-8B-Instruct-2509",
+                )
             self.assertEqual(
                 report["candidates"][0]["validation_state"],
                 "CANDIDATE",

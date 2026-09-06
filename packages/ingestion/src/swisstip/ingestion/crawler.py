@@ -42,6 +42,15 @@ class ScopeViolation(RuntimeError):
     """Raised when a URL or redirect leaves the configured source scope."""
 
 
+class RobotsViolation(RuntimeError):
+    """Raised before a content hop that its origin's robots policy forbids."""
+
+    def __init__(self, url: str, reason: str) -> None:
+        super().__init__(reason)
+        self.url = url
+        self.reason = reason
+
+
 @dataclass(frozen=True, slots=True)
 class SourceDefinition:
     """The acquisition-relevant subset of the specification's source contract."""
@@ -172,6 +181,7 @@ class CrawlReport:
     failures: int = 0
     robots_url: str | None = None
     robots_status: str = "not-checked"
+    robots_status_by_origin: dict[str, str] = field(default_factory=dict)
     effective_delay_seconds: float = 0.0
     pages: list[CrawledPage] = field(default_factory=list)
     skipped: list[SkippedUrl] = field(default_factory=list)
@@ -271,7 +281,9 @@ class SafeCrawler:
         )
         self._started_monotonic = 0.0
         self._last_request_monotonic: float | None = None
-        self._robots: urllib.robotparser.RobotFileParser | None = None
+        self._robots_by_origin: dict[
+            str, urllib.robotparser.RobotFileParser | None
+        ] = {}
         self._effective_delay_seconds = self.limits.delay_seconds
 
     def crawl(self) -> CrawlReport:
@@ -284,6 +296,7 @@ class SafeCrawler:
         )
         self._started_monotonic = time.monotonic()
         self._last_request_monotonic = None
+        self._robots_by_origin = {}
         self._effective_delay_seconds = self.limits.delay_seconds
         self._report.effective_delay_seconds = self._effective_delay_seconds
 
@@ -310,12 +323,11 @@ class SafeCrawler:
                     raise CrawlBudgetReached("failure-limit")
 
                 url, depth = frontier.popleft()
-                if not self._robots_can_fetch(url):
-                    self._skip(url, "robots-disallowed", depth)
-                    continue
-
                 try:
                     result = self._fetch(url, self.limits.max_response_bytes)
+                except RobotsViolation as exc:
+                    self._skip(exc.url, exc.reason, depth)
+                    continue
                 except ScopeViolation as exc:
                     self._skip(url, f"redirect-out-of-scope: {exc}", depth)
                     continue
@@ -383,12 +395,23 @@ class SafeCrawler:
         self._report.finished_at = datetime.now(UTC).isoformat()
         return self._report
 
-    def _load_robots(self, start_url: str) -> None:
-        parsed = urllib.parse.urlsplit(start_url)
-        robots_url = urllib.parse.urlunsplit(
-            (parsed.scheme, parsed.netloc, "/robots.txt", "", "")
-        )
-        self._report.robots_url = robots_url
+    @staticmethod
+    def _origin(url: str) -> str:
+        parsed = urllib.parse.urlsplit(url)
+        return urllib.parse.urlunsplit((parsed.scheme, parsed.netloc, "", "", ""))
+
+    def _record_robots_status(self, origin: str, status: str) -> None:
+        self._report.robots_status_by_origin[origin] = status
+        if self._report.robots_url == f"{origin}/robots.txt":
+            self._report.robots_status = status
+
+    def _load_robots(self, url: str) -> urllib.robotparser.RobotFileParser | None:
+        origin = self._origin(url)
+        if origin in self._robots_by_origin:
+            return self._robots_by_origin[origin]
+        robots_url = f"{origin}/robots.txt"
+        if self._report.robots_url is None:
+            self._report.robots_url = robots_url
         parser = urllib.robotparser.RobotFileParser()
         parser.set_url(robots_url)
         try:
@@ -398,18 +421,20 @@ class SafeCrawler:
                 allow_robots_path=True,
             )
         except CrawlBudgetReached:
+            self._record_robots_status(origin, "budget-exhausted")
             raise
         except (OSError, ScopeViolation, urllib.error.URLError):
             self._report.failures += 1
-            self._report.robots_status = "unavailable-fail-closed"
-            return
+            self._record_robots_status(origin, "unavailable-fail-closed")
+            self._robots_by_origin[origin] = None
+            return None
 
         if result.status == 200 and result.outcome == "fetched":
             parser.parse(result.body.decode("utf-8", errors="replace").splitlines())
-            self._report.robots_status = "loaded"
+            self._record_robots_status(origin, "loaded")
             crawl_delay = parser.crawl_delay(self.user_agent)
             request_rate = parser.request_rate(self.user_agent)
-            declared_delays = [self.limits.delay_seconds]
+            declared_delays = [self._effective_delay_seconds]
             if crawl_delay is not None:
                 declared_delays.append(float(crawl_delay))
             if request_rate is not None and request_rate.requests > 0:
@@ -418,18 +443,21 @@ class SafeCrawler:
             self._report.effective_delay_seconds = self._effective_delay_seconds
         elif result.status in {404, 410}:
             parser.parse([])
-            self._report.robots_status = "not-published"
+            self._record_robots_status(origin, "not-published")
         elif result.status in {401, 403}:
             parser.parse(["User-agent: *", "Disallow: /"])
-            self._report.robots_status = "access-denied"
+            self._record_robots_status(origin, "access-denied")
         else:
             self._report.failures += 1
-            self._report.robots_status = "unavailable-fail-closed"
-            return
-        self._robots = parser
+            self._record_robots_status(origin, "unavailable-fail-closed")
+            self._robots_by_origin[origin] = None
+            return None
+        self._robots_by_origin[origin] = parser
+        return parser
 
     def _robots_can_fetch(self, url: str) -> bool:
-        return self._robots is not None and self._robots.can_fetch(self.user_agent, url)
+        parser = self._load_robots(url)
+        return parser is not None and parser.can_fetch(self.user_agent, url)
 
     def _candidate_url(self, base_url: str, href: str, depth: int) -> str | None:
         try:
@@ -533,6 +561,24 @@ class SafeCrawler:
             self._validate_network_target(
                 current_url, allow_robots_path=allow_robots_path
             )
+            # Policy acquisition uses the same request, byte, duration and redirect
+            # budgets, but must not recursively try to load its own robots policy.
+            if not allow_robots_path:
+                origin = self._origin(current_url)
+                policy_cached = origin in self._robots_by_origin
+                if not self._robots_can_fetch(current_url):
+                    status = self._report.robots_status_by_origin[origin]
+                    reason = (
+                        "robots-unavailable"
+                        if status == "unavailable-fail-closed"
+                        else "robots-disallowed"
+                    )
+                    raise RobotsViolation(current_url, reason)
+                # A newly loaded policy can consume the remaining budgets or
+                # involve another origin. Recheck before the content request.
+                self._check_common_budgets()
+                if not policy_cached:
+                    self._validate_network_target(current_url)
             self._throttle()
             self._check_common_budgets()
             self._report.requests_sent += 1

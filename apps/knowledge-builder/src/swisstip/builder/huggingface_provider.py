@@ -23,6 +23,24 @@ USER_AGENT = "SwissTIP/0.1"
 _MAX_ERROR_BODY_BYTES = 4_096
 _MAX_RESPONSE_BYTES = 1_000_000
 
+# Explicit compatibility policy for the existing PublicAI 8B response fixture.
+# Aliases are scoped to the selected provider and exact configured revision;
+# never infer equivalence by lowercasing or dropping a revision/model size.
+_APPROVED_MODEL_ALIASES = {
+    ("publicai", "swiss-ai/Apertus-8B-Instruct-2509"): frozenset({
+        "swiss-ai/apertus-8b-instruct",
+    }),
+}
+
+
+def is_approved_model_identity(provider: str, model: str, observed: object) -> bool:
+    """Accept exact HF/router identities or an explicitly listed provider alias."""
+    if not isinstance(observed, str):
+        return False
+    return observed in {model, f"{model}:{provider}"} or observed in _APPROVED_MODEL_ALIASES.get(
+        (provider, model), ()
+    )
+
 
 class HuggingFaceConfigurationError(ValueError):
     """Raised when the router adapter is configured unsafely or incompletely."""
@@ -62,6 +80,18 @@ class HuggingFaceRateLimitError(HuggingFaceHTTPError):
 
 class HuggingFaceResponseError(HuggingFaceProviderError):
     """Raised when a successful response does not match the chat contract."""
+
+
+class HuggingFaceModelIdentityError(HuggingFaceResponseError):
+    """Rejected attribution, retaining identities without completion content."""
+
+    def __init__(self, *, requested_model: str, observed_model: str) -> None:
+        self.requested_model = requested_model
+        self.observed_model = observed_model
+        super().__init__(
+            "Hugging Face router returned an unexpected model identity "
+            f"(requested={requested_model!r}, observed={observed_model!r})"
+        )
 
 
 class HuggingFaceIncompleteCompletionError(HuggingFaceResponseError):
@@ -250,6 +280,11 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             raise HuggingFaceResponseError(
                 "Hugging Face router response has no model identity"
             )
+        if not is_approved_model_identity(self._provider, self._model, response_model):
+            raise HuggingFaceModelIdentityError(
+                requested_model=f"{self._model}:{self._provider}",
+                observed_model=response_model,
+            )
 
         try:
             choice = payload["choices"][0]
@@ -290,6 +325,8 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             content=content,
             provider=self._provider,
             model=self._model,
+            requested_model=f"{self._model}:{self._provider}",
+            observed_model=response_model,
             prompt_tokens=_optional_token_count(
                 usage.get("prompt_tokens", usage.get("input_tokens"))
             ),

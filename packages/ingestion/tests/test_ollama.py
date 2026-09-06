@@ -131,6 +131,8 @@ class OllamaProviderTests(unittest.TestCase):
         self.assertEqual(completion.content, '{"concepts": []}')
         self.assertEqual(completion.provider, "ollama")
         self.assertEqual(completion.model, "apertus-test")
+        self.assertEqual(completion.requested_model, payload["model"])
+        self.assertEqual(completion.observed_model, "apertus-test")
         self.assertEqual(completion.prompt_tokens, 27)
         self.assertEqual(completion.output_tokens, 8)
         self.assertIsNone(completion.request_id)
