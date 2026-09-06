@@ -6,9 +6,9 @@ source code and tests, and the recorded zh.ch experiment.
 
 This is an implementation and validation backlog. Parent items stay unchecked
 until their full acceptance boundary is met; completed steps are checked separately.
-Existing build proofs remain useful; there is
-no implemented MCP runtime or conversational server to migrate. The new work is
-the governed publication and structured serving layer around reviewed knowledge.
+Existing build proofs remain useful. BUILD-03 now implements a structured runtime
+and stdio MCP adapter over synthetic serving releases. Governed publication and
+reviewed production knowledge remain pending; no conversational server is needed.
 
 ## Product boundary to preserve
 
@@ -47,7 +47,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Review workflow | Model review, rejected proposals, 30 references accepted in a completed same-person second pass, 60 agreed comparison assessments and an eight-reference authoring seed selection exist | Implement separate support/scope/completeness/question assessments, validated production review import and promotion gates; the offline review does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v3`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
-| Runtime/product | Crawler/concept CLIs plus shared versioned contracts and offline catalog/request validation are implemented | Reviewed seed coverage, catalog publisher/reader, immutable releases, scoped retrieval/rules and the three MCP tools remain unimplemented |
+| Runtime/product | Shared contracts, validated local release reader, structured resolution and three stdio MCP tools are implemented with synthetic fixtures | Reviewed seed coverage, production publication, multilingual hybrid retrieval and independent client qualification remain pending |
 
 The proposed workspace tree in the technical specification is not the implemented
 tree. Reuse the existing modules as build components; do not manufacture runtime
@@ -86,9 +86,10 @@ The BUILD-01 update adds the core suite. Install and test it in the same environ
 ./.venv/Scripts/python.exe -m unittest discover -s packages/core/tests -v
 ```
 
-Current verification (rerun 2026-09-06): 71 core, 63 ingestion
-and 110 builder tests pass, including source catalogue planning/snapshot fixtures,
-POC-01 preparation and the loopback workflow.
+Current verification (rerun for BUILD-03 on 2026-09-06): 71 core, 83 ingestion,
+135 builder, 28 runtime and one MCP integration test pass, including source
+catalogue fixtures, POC-01 preparation, the loopback workflow and actual stdio
+discovery/resolution/evidence round-trips.
 These counts do not establish semantic review or complete a POC.
 The schema export and source catalogue freshness checks also pass. POC-01 packet
 preservation verification passes for six sources and 87 historical artifacts.
@@ -142,7 +143,7 @@ open until their remaining acceptance requirements are met.
 | [x] | BUILD-02.2 | Implement opt-in structured extraction and bounded assisted review | v4 logical blocks, scoped structured claims, separate semantic dimensions, source-block coverage audit, one bounded repair, visible gaps and preserved legacy checkpoints; offline fixtures only |
 | [x] | BUILD-02.3 | Export authoring review packets and import revision-bound annotations | Escaped source/evidence viewer and decision CSV; stale, duplicate and missing items rejected; human identity required; corrections, promotion and verified coverage remain separate |
 | [x] | BUILD-02.4 | Add a short path for hackathon and testing data without human review | Deterministic experimental bundles from retained v1-v4 candidates, archived reports, provenance and evidence; Python/CLI catalog, search and lookup; unreviewed metadata preserved and production approval gates unchanged |
-| [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
+| [x] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Implemented over validated synthetic serving releases: bounded discovery and inline schemas, signed release-bound cursors, typed context, exact/descendant scope, published facts/rules, evidence round-trips and stdio MCP; production data/promotion remain BUILD-02/06 |
 | [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [x] | BUILD-04.1 | Define and validate the closed v3 language policy | Language-only role sets, tagged term routes, independent source filters and policy closure implemented and tested offline; source-language validation and evaluated retrieval/projections remain pending |
 | [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters, verified equivalent evidence grouping, conditional German tie-breaker and evaluated provider fallback |
@@ -150,6 +151,15 @@ open until their remaining acceptance requirements are met.
 
 Completed steps within the open implementation items:
 
+- [x] **BUILD-03: implement the structured serving baseline and stdio MCP tools.**
+  The [runtime](packages/runtime/README.md) validates serving artifact hashes,
+  manifest references and normalized evidence spans before reading a release.
+  Discovery, conditional context, bounded scope, finite rules and evidence lookup
+  share core contracts. Identifier/lexical fixtures cover partial, insufficient,
+  stale and conflicting outcomes without widening eligibility. The
+  [MCP adapter](apps/mcp-server/README.md) passes actual SDK stdio round-trips.
+  These are fabricated evaluation/knowledge fixtures, not promotion of the draft
+  residence catalog or experimental candidates. BUILD-02/04/05/06 gates remain.
 - [x] **BUILD-01: define shared versioned contracts and export JSON Schema.**
   [Core contracts](packages/core/src/swisstip/core/contracts.py) cover catalog,
   context, release, evidence, discovery and structured request/result shapes.
@@ -190,10 +200,10 @@ authoring-review import, and an accepted authoring reference subset;
 the release-bound evidence/promotion fixture remains to be implemented. FIX-01/02 are complete.
 The [experimental short path](docs/experiments/2026-09-06-experimental-knowledge.md)
 lets hackathon and test applications consume extractor candidates without human
-review now. Its local catalog/search/evidence adapter is not completion of BUILD-03
-or production release publication.
-BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
-The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
+review now. Its local catalog/search/evidence adapter remains separate from the
+BUILD-03 serving-release format and does not publish production knowledge.
+BUILD-04 can progress using the BUILD-03 boundary; BUILD-05 integrates both.
+The implemented identifier/lexical fixture in BUILD-03 proves contracts, not completion
 of the multilingual P0 service.
 
 Remaining BUILD-02 work includes parsers for supported language selectors, HTML/HTTP `hreflang`
@@ -847,7 +857,7 @@ requirements; they do not silently amend those requirements.
 
 | Expectation | Assessment | Next evidence or action |
 |---|---|---|
-| The existing code implements the governed MCP service | False; current entry points crawl and extract candidate proposals | BUILD-01 through BUILD-06; retain accurate README/status wording |
+| The existing code implements the governed MCP service | Partial: BUILD-03 provides a validated local reader, structured runtime and stdio tools with synthetic fixtures; reviewed production publication is absent | Remaining BUILD-01/02/04/05/06 gates; retain accurate README/status wording |
 | Candidate IDs or proposal groups are stable selectable catalog concepts | False; IDs depend on content and editorial fields | Reviewed mappings into stable public IDs and release-associated evidence |
 | Quotes and model review establish semantic completeness | Rejected by the recorded experiment | POC-01/05; independent reviewed promotion |
 | More retained concepts or larger models prove higher accuracy or speed | Unproven by counts and resumed timings | POC-01/11 with independent labels and full accounting |

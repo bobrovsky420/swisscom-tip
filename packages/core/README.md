@@ -87,7 +87,10 @@ itself have sufficient verified evidence or a `SUPPORTED` factual outcome.
 Context schemas intentionally use a closed subset of scalar types, enums, bounds,
 conditional requirements and consistency rules. They are not arbitrary executable
 rules or unrestricted JSON Schema. The schema and validator reject unsupported
-constructs. BUILD-02/03 will bind reviewed rules/evidence and perform resolution.
+constructs. BUILD-03 adds closed published-rule, resolution-graph and normalized
+document/section contracts. The [runtime](../runtime/README.md) binds them to
+loaded releases and performs structured resolution; reviewed promotion remains
+BUILD-02 work.
 
 The `tip-language-catalog/v3` roles use `en`, `de`, `fr`, `it` and `rm` for
 sources and projections, plus `gsw` for evaluated Swiss German term routes to

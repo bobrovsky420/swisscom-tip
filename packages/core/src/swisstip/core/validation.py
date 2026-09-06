@@ -134,13 +134,13 @@ def validate_catalog(
         fields = {item.name: item for item in schema.fields}
         for spec in schema.fields:
             for value in spec.enum or ():
-                errors, _ = _validate_context({spec.name: value}, schema)
+                errors, _ = validate_context({spec.name: value}, schema)
                 if errors:
                     issue(f"context_schemas.{index}.fields.{spec.name}.enum", "invalid_context_schema", "Enum value does not satisfy its declared field type and bounds.")
         for requirement in schema.conditional_requirements:
             for condition in requirement.when:
                 for value in condition.values:
-                    errors, _ = _validate_context({condition.field: value}, schema)
+                    errors, _ = validate_context({condition.field: value}, schema)
                     if errors:
                         issue(f"context_schemas.{index}.conditional_requirements", "invalid_context_schema", "Condition value does not satisfy its declared field type and allowed values.")
         for rule in schema.consistency_rules:
@@ -289,7 +289,8 @@ def _scalar_equal(left: Any, right: Any) -> bool:
     )
 
 
-def _matches_condition(condition: ContextCondition, context: Mapping[str, Any]) -> bool:
+def matches_condition(condition: ContextCondition, context: Mapping[str, Any]) -> bool:
+    """Evaluate a closed scalar predicate without inferring missing values."""
     present = condition.field in context
     if condition.operator == "present":
         return present
@@ -302,9 +303,10 @@ def _matches_condition(condition: ContextCondition, context: Mapping[str, Any]) 
     return not matches if condition.operator in {"not_equals", "not_in"} else matches
 
 
-def _validate_context(
+def validate_context(
     context: Mapping[str, Any], schema: ContextSchema,
 ) -> tuple[list[ValidationIssue], list[MissingContext]]:
+    """Validate scalar facts against the published closed context schema."""
     issues: list[ValidationIssue] = []
     missing: list[MissingContext] = []
     fields = {item.name: item for item in schema.fields}
@@ -355,7 +357,7 @@ def _validate_context(
         if spec.required and spec.name not in context:
             missing.append(MissingContext("context." + spec.name, spec.reason_code, tuple(spec.enum or ()), schema.identity))
     for requirement in schema.conditional_requirements:
-        if all(_matches_condition(condition, context) for condition in requirement.when):
+        if all(matches_condition(condition, context) for condition in requirement.when):
             for name in requirement.required_fields:
                 if name not in context:
                     missing.append(MissingContext("context." + name, requirement.reason_code, tuple(fields[name].enum or ()), schema.identity, tuple(requirement.rule_refs), tuple(requirement.evidence_refs)))
@@ -423,7 +425,7 @@ def validate_request(
         request = request.model_copy(update={"max_evidence": catalog.max_evidence})
     compatible = [profile for profile in applicable if (not profile.concept_selection_required or request.concept_ids) and set(request.concept_ids or ()) <= set(profile.concept_ids)]
     schemas = {schema.identity.artifact_id: schema for schema in catalog.context_schemas}
-    context_checks = [(profile, *_validate_context(request.context, schemas[profile.context_schema_ref.artifact_id])) for profile in compatible]
+    context_checks = [(profile, *validate_context(request.context, schemas[profile.context_schema_ref.artifact_id])) for profile in compatible]
     valid_context = [item for item in context_checks if not item[1]]
     if context_checks and not valid_context:
         return ValidationAssessment("INVALID_ARGUMENT", request=request, issues=tuple(context_checks[0][1]))

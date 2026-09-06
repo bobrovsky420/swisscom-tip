@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "swisstip-runtime"
+version = "0.1.0"
+description = "Release-pinned structured knowledge resolution for SwissTIP"
+requires-python = ">=3.11"
+dependencies = ["swisstip-core==0.1.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+namespaces = true

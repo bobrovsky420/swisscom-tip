@@ -1000,6 +1000,28 @@
       "title": "EvidenceObject",
       "type": "object"
     },
+    "FactConflict": {
+      "additionalProperties": false,
+      "properties": {
+        "fact_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 2,
+          "title": "Fact Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "fact_ids"
+      ],
+      "title": "FactConflict",
+      "type": "object"
+    },
     "Freshness": {
       "additionalProperties": false,
       "properties": {
@@ -1882,6 +1904,83 @@
       "title": "MissingContextField",
       "type": "object"
     },
+    "NormalizedEvidenceDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "normalized-evidence-document/v1",
+          "default": "normalized-evidence-document/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/NormalizedSection"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Sections",
+          "type": "array"
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "source_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 10000000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "snapshot_ref",
+        "source_id",
+        "text",
+        "sections"
+      ],
+      "title": "NormalizedEvidenceDocument",
+      "type": "object"
+    },
+    "NormalizedSection": {
+      "additionalProperties": false,
+      "properties": {
+        "end_offset": {
+          "exclusiveMinimum": 0,
+          "title": "End Offset",
+          "type": "integer"
+        },
+        "section_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Section Id",
+          "type": "string"
+        },
+        "start_offset": {
+          "minimum": 0,
+          "title": "Start Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "section_id",
+        "start_offset",
+        "end_offset"
+      ],
+      "title": "NormalizedSection",
+      "type": "object"
+    },
     "ProviderDegradation": {
       "additionalProperties": false,
       "properties": {
@@ -1988,6 +2087,189 @@
         "evidence_ids"
       ],
       "title": "PublishedFact",
+      "type": "object"
+    },
+    "PublishedRule": {
+      "additionalProperties": false,
+      "description": "All-of scalar predicates selecting pre-authored facts, never executable code.",
+      "properties": {
+        "fact_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Fact Ids",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "rule_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "published-rule/v1",
+          "default": "published-rule/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "when": {
+          "items": {
+            "$ref": "#/$defs/ContextCondition"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "When",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "rule_id",
+        "when",
+        "fact_ids"
+      ],
+      "title": "PublishedRule",
+      "type": "object"
+    },
+    "ResolutionGraph": {
+      "additionalProperties": false,
+      "description": "Runtime graph bound by KnowledgeRelease.concept_graph_ref.",
+      "properties": {
+        "conflicts": {
+          "items": {
+            "$ref": "#/$defs/FactConflict"
+          },
+          "maxItems": 10000,
+          "title": "Conflicts",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "plans": {
+          "items": {
+            "$ref": "#/$defs/ResolutionPlan"
+          },
+          "maxItems": 10000,
+          "title": "Plans",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "resolution-graph/v1",
+          "default": "resolution-graph/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "release_id",
+        "plans"
+      ],
+      "title": "ResolutionGraph",
+      "type": "object"
+    },
+    "ResolutionPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "coverage_profile_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Coverage Profile Id",
+          "type": "string"
+        },
+        "portions": {
+          "items": {
+            "$ref": "#/$defs/ResolutionPortion"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Portions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "coverage_profile_id",
+        "portions"
+      ],
+      "title": "ResolutionPlan",
+      "type": "object"
+    },
+    "ResolutionPortion": {
+      "additionalProperties": false,
+      "description": "One required, reviewed portion of an operation's finite coverage.",
+      "properties": {
+        "concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "fact_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Fact Ids",
+          "type": "array"
+        },
+        "portion_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Portion Id",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Rule Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "portion_id",
+        "concept_ids"
+      ],
+      "title": "ResolutionPortion",
       "type": "object"
     },
     "RetrievalTerm": {
@@ -2846,6 +3128,18 @@
     },
     {
       "$ref": "#/$defs/GetEvidenceResult"
+    },
+    {
+      "$ref": "#/$defs/PublishedFact"
+    },
+    {
+      "$ref": "#/$defs/PublishedRule"
+    },
+    {
+      "$ref": "#/$defs/ResolutionGraph"
+    },
+    {
+      "$ref": "#/$defs/NormalizedEvidenceDocument"
     }
   ],
   "description": "Structural schemas. Canonicalization, cross-field invariants and catalog-aware validation additionally apply.",
@@ -2889,6 +3183,18 @@
     },
     "LanguagePolicy": {
       "$ref": "#/$defs/LanguagePolicy"
+    },
+    "NormalizedEvidenceDocument": {
+      "$ref": "#/$defs/NormalizedEvidenceDocument"
+    },
+    "PublishedFact": {
+      "$ref": "#/$defs/PublishedFact"
+    },
+    "PublishedRule": {
+      "$ref": "#/$defs/PublishedRule"
+    },
+    "ResolutionGraph": {
+      "$ref": "#/$defs/ResolutionGraph"
     },
     "StructuredGroundingRequest": {
       "$ref": "#/$defs/StructuredGroundingRequest"

@@ -23,14 +23,18 @@ operator-triggered knowledge-builder proofs:
 - An [experimental short path](docs/experiments/2026-09-06-experimental-knowledge.md)
   that builds searchable test bundles directly from extractor candidates without
   human review, with Python/CLI concept and evidence lookup.
+- A [structured knowledge runtime](packages/runtime/README.md) and
+  [stdio MCP server](apps/mcp-server/README.md) implementing release-pinned
+  discovery, resolution and evidence lookup, tested with synthetic releases.
 
 The shared core now defines versioned catalog, context, evidence and structured
 request contracts, with offline catalog/request validation. POC-01 has 30 frozen
 source-first reference concepts. The user's same-person second review accepted
 all 30 references and agreed with 60 comparisons against the saved 8B/70B proposals;
 eight references are selected for seed authoring. Independent quality evaluation
-remains pending. The seed catalog is still a draft; release publication and the
-MCP tools are not implemented.
+remains pending. The seed catalog is still a draft; production release publication
+is not implemented. The MCP tools currently have a deterministic identifier/lexical
+baseline; multilingual hybrid retrieval and real reviewed coverage remain pending.
 
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)

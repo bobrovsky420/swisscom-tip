@@ -580,6 +580,68 @@ class PublishedFact(StrictModel):
     applicability_conditions: Annotated[list[ShortText], Field(max_length=30)] = Field(default_factory=list)
 
 
+class PublishedRule(StrictModel):
+    """All-of scalar predicates selecting pre-authored facts, never executable code."""
+
+    schema_version: Literal["published-rule/v1"] = "published-rule/v1"
+    identity: ArtifactRef
+    rule_id: StableId
+    when: Annotated[list[ContextCondition], Field(min_length=1, max_length=20)]
+    fact_ids: Annotated[list[StableId], Field(min_length=1, max_length=50)]
+
+
+class ResolutionPortion(StrictModel):
+    """One required, reviewed portion of an operation's finite coverage."""
+
+    portion_id: StableId
+    concept_ids: Annotated[list[StableId], Field(max_length=50)]
+    fact_ids: Annotated[list[StableId], Field(max_length=50)] = Field(default_factory=list)
+    rule_refs: Annotated[list[ArtifactRef], Field(max_length=20)] = Field(default_factory=list)
+    evidence_ids: Annotated[list[StableId], Field(max_length=50)] = Field(default_factory=list)
+
+
+class ResolutionPlan(StrictModel):
+    coverage_profile_id: StableId
+    portions: Annotated[list[ResolutionPortion], Field(min_length=1, max_length=50)]
+
+
+class FactConflict(StrictModel):
+    fact_ids: Annotated[list[StableId], Field(min_length=2, max_length=50)]
+
+
+class ResolutionGraph(StrictModel):
+    """Runtime graph bound by KnowledgeRelease.concept_graph_ref."""
+
+    schema_version: Literal["resolution-graph/v1"] = "resolution-graph/v1"
+    identity: ArtifactRef
+    release_id: StableId
+    plans: Annotated[list[ResolutionPlan], Field(max_length=10000)]
+    conflicts: Annotated[list[FactConflict], Field(max_length=10000)] = Field(default_factory=list)
+
+
+class NormalizedSection(StrictModel):
+    section_id: StableId
+    start_offset: Annotated[int, Field(ge=0)]
+    end_offset: Annotated[int, Field(gt=0)]
+
+
+class NormalizedEvidenceDocument(StrictModel):
+    schema_version: Literal["normalized-evidence-document/v1"] = "normalized-evidence-document/v1"
+    identity: ArtifactRef
+    snapshot_ref: ArtifactRef
+    source_id: StableId
+    text: Annotated[str, StringConstraints(min_length=1, max_length=10000000)]
+    sections: Annotated[list[NormalizedSection], Field(min_length=1, max_length=10000)]
+
+    @model_validator(mode="after")
+    def valid_sections(self) -> NormalizedEvidenceDocument:
+        if len({s.section_id for s in self.sections}) != len(self.sections):
+            raise ValueError("duplicate_normalized_section")
+        if any(not 0 <= s.start_offset < s.end_offset <= len(self.text) for s in self.sections):
+            raise ValueError("invalid_normalized_section_span")
+        return self
+
+
 class UnresolvedPortion(StrictModel):
     concept_ids: Annotated[list[StableId], Field(max_length=50)]
     reason_code: FieldName
@@ -678,4 +740,5 @@ CONTRACT_MODELS = (
     KnowledgeCatalog, LanguagePolicy, KnowledgeRelease, EvidenceObject,
     StructuredGroundingRequest, StructuredGroundingResult, ToolError,
     GetCoverageRequest, GetCoverageResult, GetEvidenceRequest, GetEvidenceResult,
+    PublishedFact, PublishedRule, ResolutionGraph, NormalizedEvidenceDocument,
 )
