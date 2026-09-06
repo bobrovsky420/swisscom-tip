@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import sys
 import tempfile
 import unittest
@@ -106,6 +107,16 @@ class FailingProvider:
 
 
 class ConceptCliTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.config_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.config_directory.cleanup)
+        self.config_path = Path(self.config_directory.name) / "semantic-models.toml"
+        document = (REPOSITORY_ROOT / "config" / "semantic-models.toml").read_text(encoding="utf-8")
+        # Fake completions identify HF Apertus 8B, regardless of the operator's
+        # current profile. Preserve the real file and exercise the normal loader.
+        document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)
+        self.config_path.write_text(document, encoding="utf-8")
+
     def test_empty_input_is_rejected_in_cli_and_direct_resolution(self) -> None:
         stderr = io.StringIO()
         with (
@@ -152,7 +163,7 @@ class ConceptCliTests(unittest.TestCase):
                         str(first),
                         str(second),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--compact",
                     ]
                 )
@@ -212,7 +223,7 @@ class ConceptCliTests(unittest.TestCase):
                     [
                         str(page),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--compact",
                         "--verbose",
                     ]
@@ -254,7 +265,7 @@ class ConceptCliTests(unittest.TestCase):
                     [
                         str(page),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--verbose",
                     ]
                 )
@@ -286,7 +297,7 @@ class ConceptCliTests(unittest.TestCase):
                     [
                         str(page),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                     ]
                 )
 
@@ -305,9 +316,7 @@ class ConceptCliTests(unittest.TestCase):
             first.write_text("First useful page.", encoding="utf-8")
             second.write_text("Second useful page.", encoding="utf-8")
             config_path = Path(directory) / "semantic-models.toml"
-            config_document = (
-                REPOSITORY_ROOT / "config" / "semantic-models.toml"
-            ).read_text(encoding="utf-8")
+            config_document = self.config_path.read_text(encoding="utf-8")
             config_document = config_document.replace(
                 "max_model_requests_per_page = 12",
                 "max_model_requests_per_page = 2",
@@ -347,9 +356,7 @@ class ConceptCliTests(unittest.TestCase):
                 "A second useful page with enough text.",
                 encoding="utf-8",
             )
-            original_config = (
-                REPOSITORY_ROOT / "config" / "semantic-models.toml"
-            ).read_text(encoding="utf-8")
+            original_config = self.config_path.read_text(encoding="utf-8")
 
             cases = {
                 "page limit": (
@@ -428,7 +435,7 @@ class ConceptCliTests(unittest.TestCase):
                     [
                         str(input_directory),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--compact",
                     ]
                 )
@@ -477,7 +484,7 @@ class ConceptCliTests(unittest.TestCase):
                         str(last),
                         str(input_directory / "*.html"),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--compact",
                     ]
                 )
@@ -546,7 +553,7 @@ class ConceptCliTests(unittest.TestCase):
                     [
                         str(input_directory / "**" / "*.html"),
                         "--config",
-                        str(REPOSITORY_ROOT / "config" / "semantic-models.toml"),
+                        str(self.config_path),
                         "--compact",
                     ]
                 )
@@ -609,11 +616,7 @@ class ConceptCliTests(unittest.TestCase):
                             [
                                 page_input,
                                 "--config",
-                                str(
-                                    REPOSITORY_ROOT
-                                    / "config"
-                                    / "semantic-models.toml"
-                                ),
+                                str(self.config_path),
                                 "--compact",
                             ]
                         )
@@ -694,11 +697,7 @@ class ConceptCliTests(unittest.TestCase):
                             [
                                 page_input,
                                 "--config",
-                                str(
-                                    REPOSITORY_ROOT
-                                    / "config"
-                                    / "semantic-models.toml"
-                                ),
+                                str(self.config_path),
                             ]
                         )
 
@@ -754,9 +753,7 @@ class ConceptCliTests(unittest.TestCase):
             )
             lexical_alias = nested_directory / ".." / page.name
             config_path = root / "semantic-models.toml"
-            config_document = (
-                REPOSITORY_ROOT / "config" / "semantic-models.toml"
-            ).read_text(encoding="utf-8")
+            config_document = self.config_path.read_text(encoding="utf-8")
             config_path.write_text(
                 config_document.replace(
                     "max_pages_per_run = 10",

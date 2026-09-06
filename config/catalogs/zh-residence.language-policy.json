@@ -1,0 +1,18 @@
+{
+  "schema_version": "language-policy/v1",
+  "identity": {
+    "artifact_id": "zh-residence-language-policy",
+    "version": "draft-1",
+    "sha256": "7bf61346ef42a58275baa77b27f2a5b924ce191a6d32bac0aeab8be4b79084de"
+  },
+  "platform_catalog": "tip-language-catalog/v2",
+  "term_languages": [],
+  "source_languages": [],
+  "projection_languages": [],
+  "term_aliases": {},
+  "routes": [],
+  "source_detector_mappings": {},
+  "source_declaration_aliases": {},
+  "evaluation_ref": null,
+  "approval_status": "DRAFT"
+}

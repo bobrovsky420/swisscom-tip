@@ -1,0 +1,14 @@
+{
+  "schema_version": "swisstip.poc01-suite/v1",
+  "hypothesis": "Independent source labeling can expose material omissions and measure the value of model review.",
+  "corpus_role": "development only; previously observed historical failures are not holdout evidence",
+  "initial_batch_concepts": [10, 15],
+  "full_gold_concepts_per_page": [5, 10],
+  "planned_conditions": ["structural validation", "same-model review", "independent reviewer configuration", "structured condition and exception checking"],
+  "comparison": "Freeze one common proposal set after source-only gold freeze; change one factor at a time.",
+  "metrics": ["material false acceptance", "valid proposal false rejection", "gold concept recall", "review minutes per usable concept", "reviewer disagreement"],
+  "proposed_gate": "Catch every known critical mutation and leave no unresolved material error in the reviewed acceptance set; holdout evidence is needed for reviewer-value claims.",
+  "human_review": {"primary": "user", "second_pass": "same-person re-review", "independent_adjudication": "pending"},
+  "pending": ["human source labels", "independent second review", "independent natural holdout", "frozen proposal comparison set", "comparison provider and budget", "live reviewer comparison"],
+  "status": "PREPARED_NOT_EVALUATED"
+}

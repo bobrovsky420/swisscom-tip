@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import tempfile
 import unittest
 from dataclasses import replace
@@ -71,7 +72,14 @@ class ReviewFallbackTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.path = Path(self.temporary.name)
-        self.config = load_model_profiles(ROOT / "config/semantic-models.toml")
+        # Fake completions below identify the HF 8B profile, independently of
+        # the operator's selected profile in the repository configuration.
+        with tempfile.TemporaryDirectory() as config_directory:
+            config_path = Path(config_directory) / "semantic-models.toml"
+            document = (ROOT / "config/semantic-models.toml").read_text(encoding="utf-8")
+            document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)
+            config_path.write_text(document, encoding="utf-8")
+            self.config = load_model_profiles(config_path)
         self.logs = []
 
     def wrapper(self, provider, config=None, **kwargs):

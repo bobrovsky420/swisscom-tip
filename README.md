@@ -14,12 +14,19 @@ operator-triggered knowledge-builder proofs:
 - A concept extractor that proposes evidence-backed candidate concepts from
   downloaded HTML, text, and Markdown pages.
 
+The shared core now defines versioned catalog, context, evidence and structured
+request contracts, with offline catalog/request validation. A source-only POC-01
+packet supports human labeling before model comparison. The seed catalog remains
+a draft pending review; release publication and the MCP tools are not implemented.
+
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)
 - [Implementation gaps and validation plan](TODO.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
 - [zh.ch Apertus 8B/70B experiment results](docs/experiments/2026-09-05-zhch-concept-extraction.md)
 - [Semantic-model profiles](config/semantic-models.toml)
+- [Core contracts and validation](packages/core/README.md)
+- [Prepare and complete the POC-01 review](scripts/test/poc01/README.md)
 
 The concept extractor has three preconfigured model profiles: local Ollama,
 Hugging Face Apertus 8B, and Hugging Face Apertus 70B. Switching

@@ -1,0 +1,2903 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "description": "Immutable dependency identity with canonical-content or raw-byte SHA-256.\n\nThe artifact kind defines the hashing convention; model artifacts use\nidentity.py canonical JSON, while preserved source files use raw bytes.",
+      "properties": {
+        "artifact_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 80,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "version",
+        "sha256"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "CatalogEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "entry_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Entry Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "knowledge_space",
+            "domain",
+            "topic",
+            "concept"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "labels": {
+          "maxProperties": 20,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$": {
+              "$ref": "#/$defs/LocalizedMetadata"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 2
+          },
+          "title": "Labels",
+          "type": "object"
+        },
+        "lifecycle": {
+          "default": "CANDIDATE",
+          "enum": [
+            "CURATED",
+            "VERIFIED_AUTOMATIC",
+            "CANDIDATE",
+            "MERGED",
+            "DEPRECATED",
+            "REJECTED"
+          ],
+          "title": "Lifecycle",
+          "type": "string"
+        },
+        "parent_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Parent Ids",
+          "type": "array"
+        },
+        "replacement_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Replacement Ids",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "catalog-entry/v1",
+          "default": "catalog-entry/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry_id",
+        "kind",
+        "labels"
+      ],
+      "title": "CatalogEntry",
+      "type": "object"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "accessed_at": {
+          "title": "Accessed At",
+          "type": "string"
+        },
+        "authority": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Authority",
+          "type": "string"
+        },
+        "source_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 2000,
+          "pattern": "^https?://[^\\s]+$",
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "authority",
+        "url",
+        "title",
+        "accessed_at"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "ConditionalRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "required_fields": {
+          "items": {
+            "maxLength": 64,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Required Fields",
+          "type": "array"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Rule Refs",
+          "type": "array"
+        },
+        "when": {
+          "items": {
+            "$ref": "#/$defs/ContextCondition"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "When",
+          "type": "array"
+        }
+      },
+      "required": [
+        "when",
+        "required_fields",
+        "reason_code"
+      ],
+      "title": "ConditionalRequirement",
+      "type": "object"
+    },
+    "ContextCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Field",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            "equals",
+            "not_equals",
+            "in",
+            "not_in",
+            "present",
+            "absent"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "values": {
+          "items": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxItems": 100,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "field",
+        "operator"
+      ],
+      "title": "ContextCondition",
+      "type": "object"
+    },
+    "ContextConsistencyRule": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "left_field": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Left Field",
+          "type": "string"
+        },
+        "operator": {
+          "enum": [
+            "equals",
+            "not_equals",
+            "lt",
+            "lte",
+            "gt",
+            "gte"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "right_field": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Right Field",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Rule Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "left_field",
+        "operator",
+        "right_field",
+        "reason_code"
+      ],
+      "title": "ContextConsistencyRule",
+      "type": "object"
+    },
+    "ContextField": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "enum": {
+          "anyOf": [
+            {
+              "items": {
+                "anyOf": [
+                  {
+                    "maxLength": 1000,
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enum"
+        },
+        "kind": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "date",
+            "identifier"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "max_length": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Length"
+        },
+        "maximum": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum"
+        },
+        "min_length": {
+          "anyOf": [
+            {
+              "maximum": 1000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Length"
+        },
+        "minimum": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum"
+        },
+        "name": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "required": {
+          "default": false,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "kind",
+        "description",
+        "reason_code"
+      ],
+      "title": "ContextField",
+      "type": "object"
+    },
+    "ContextSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "additional_properties": {
+          "const": false,
+          "default": false,
+          "title": "Additional Properties",
+          "type": "boolean"
+        },
+        "conditional_requirements": {
+          "items": {
+            "$ref": "#/$defs/ConditionalRequirement"
+          },
+          "maxItems": 100,
+          "title": "Conditional Requirements",
+          "type": "array"
+        },
+        "consistency_rules": {
+          "items": {
+            "$ref": "#/$defs/ContextConsistencyRule"
+          },
+          "maxItems": 100,
+          "title": "Consistency Rules",
+          "type": "array"
+        },
+        "fields": {
+          "items": {
+            "$ref": "#/$defs/ContextField"
+          },
+          "maxItems": 64,
+          "title": "Fields",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "context-schema/v1",
+          "default": "context-schema/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "fields"
+      ],
+      "title": "ContextSchema",
+      "type": "object"
+    },
+    "CoverageProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_status": {
+          "default": "DRAFT",
+          "enum": [
+            "DRAFT",
+            "APPROVED"
+          ],
+          "title": "Approval Status",
+          "type": "string"
+        },
+        "catalog_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "concept_selection_required": {
+          "default": false,
+          "title": "Concept Selection Required",
+          "type": "boolean"
+        },
+        "context_schema_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "coverage_profile_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Coverage Profile Id",
+          "type": "string"
+        },
+        "domain_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Domain Id",
+          "type": "string"
+        },
+        "evaluation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "exclusions": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Exclusions",
+          "type": "array"
+        },
+        "freshness_policy": {
+          "$ref": "#/$defs/FreshnessPolicy"
+        },
+        "intent": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Intent",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "$ref": "#/$defs/Jurisdiction"
+        },
+        "knowledge_space_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Knowledge Space Id",
+          "type": "string"
+        },
+        "max_concepts": {
+          "default": 20,
+          "maximum": 50,
+          "minimum": 1,
+          "title": "Max Concepts",
+          "type": "integer"
+        },
+        "max_descendant_depth": {
+          "default": 0,
+          "maximum": 20,
+          "minimum": 0,
+          "title": "Max Descendant Depth",
+          "type": "integer"
+        },
+        "projection_languages_complete": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Projection Languages Complete",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100,
+          "title": "Rule Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "coverage-profile/v1",
+          "default": "coverage-profile/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope_modes": {
+          "items": {
+            "enum": [
+              "exact",
+              "descendants"
+            ],
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Scope Modes",
+          "type": "array"
+        },
+        "source_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "source_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Source Languages",
+          "type": "array"
+        },
+        "temporal_coverage": {
+          "$ref": "#/$defs/DateRange"
+        },
+        "term_routes": {
+          "items": {
+            "$ref": "#/$defs/EvaluatedTermRoute"
+          },
+          "maxItems": 40,
+          "title": "Term Routes",
+          "type": "array"
+        },
+        "topic_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Topic Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "coverage_profile_id",
+        "release_id",
+        "catalog_ref",
+        "knowledge_space_id",
+        "domain_id",
+        "topic_id",
+        "intent",
+        "jurisdiction",
+        "context_schema_ref",
+        "scope_modes",
+        "source_ids",
+        "source_languages",
+        "temporal_coverage",
+        "freshness_policy"
+      ],
+      "title": "CoverageProfile",
+      "type": "object"
+    },
+    "DateRange": {
+      "additionalProperties": false,
+      "properties": {
+        "valid_from": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "title": "Valid From",
+          "type": "string"
+        },
+        "valid_through": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid Through"
+        }
+      },
+      "required": [
+        "valid_from"
+      ],
+      "title": "DateRange",
+      "type": "object"
+    },
+    "EvaluatedTermRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "dialect_profile": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dialect Profile"
+        },
+        "evaluation_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "idiom_profile": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idiom Profile"
+        },
+        "projection_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Projection Language",
+          "type": "string"
+        },
+        "source_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Source Languages",
+          "type": "array"
+        },
+        "term_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Term Language",
+          "type": "string"
+        },
+        "terminology_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Terminology Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "term_language",
+        "projection_language",
+        "source_languages",
+        "evaluation_ref"
+      ],
+      "title": "EvaluatedTermRoute",
+      "type": "object"
+    },
+    "EvidenceObject": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Canonical Concept Ids",
+          "type": "array"
+        },
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        },
+        "declared_language": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Declared Language",
+          "type": "array"
+        },
+        "detected_language": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 2,
+              "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Detected Language"
+        },
+        "effective_source_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Effective Source Language",
+          "type": "string"
+        },
+        "end_offset": {
+          "exclusiveMinimum": 0,
+          "title": "End Offset",
+          "type": "integer"
+        },
+        "evidence_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "jurisdiction": {
+          "$ref": "#/$defs/Jurisdiction"
+        },
+        "language_confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Language Confidence",
+          "type": "number"
+        },
+        "language_detection_method": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Language Detection Method",
+          "type": "string"
+        },
+        "normalized_document_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "original_excerpt": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Original Excerpt",
+          "type": "string"
+        },
+        "provenance_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "title": "Provenance Refs",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "reviewed_language_override_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_version": {
+          "const": "evidence-object/v1",
+          "default": "evidence-object/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "section_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Section Id",
+          "type": "string"
+        },
+        "snapshot_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "start_offset": {
+          "minimum": 0,
+          "title": "Start Offset",
+          "type": "integer"
+        },
+        "temporal_coverage": {
+          "$ref": "#/$defs/DateRange"
+        }
+      },
+      "required": [
+        "identity",
+        "evidence_id",
+        "release_id",
+        "snapshot_ref",
+        "normalized_document_ref",
+        "section_id",
+        "start_offset",
+        "end_offset",
+        "original_excerpt",
+        "citation",
+        "declared_language",
+        "detected_language",
+        "effective_source_language",
+        "language_detection_method",
+        "language_confidence",
+        "canonical_concept_ids",
+        "jurisdiction",
+        "temporal_coverage",
+        "provenance_refs"
+      ],
+      "title": "EvidenceObject",
+      "type": "object"
+    },
+    "Freshness": {
+      "additionalProperties": false,
+      "properties": {
+        "checked_at": {
+          "title": "Checked At",
+          "type": "string"
+        },
+        "oldest_source_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Oldest Source At"
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "status": {
+          "enum": [
+            "FRESH",
+            "STALE",
+            "UNKNOWN"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "checked_at",
+        "policy_ref"
+      ],
+      "title": "Freshness",
+      "type": "object"
+    },
+    "FreshnessPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "max_age_days": {
+          "maximum": 3650,
+          "minimum": 1,
+          "title": "Max Age Days",
+          "type": "integer"
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "max_age_days",
+        "policy_ref"
+      ],
+      "title": "FreshnessPolicy",
+      "type": "object"
+    },
+    "GetCoverageRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cursor"
+        },
+        "knowledge_space_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Knowledge Space Id"
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Limit",
+          "type": "integer"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "release_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Release Id"
+        },
+        "schema_version": {
+          "const": "get-coverage/v1",
+          "default": "get-coverage/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "title": "GetCoverageRequest",
+      "type": "object"
+    },
+    "GetCoverageResult": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "context_schemas": {
+          "items": {
+            "$ref": "#/$defs/ContextSchema"
+          },
+          "maxItems": 1000,
+          "title": "Context Schemas",
+          "type": "array"
+        },
+        "coverage_profiles": {
+          "items": {
+            "$ref": "#/$defs/CoverageProfile"
+          },
+          "maxItems": 1000,
+          "title": "Coverage Profiles",
+          "type": "array"
+        },
+        "default_limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Default Limit",
+          "type": "integer"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/CatalogEntry"
+          },
+          "maxItems": 100,
+          "title": "Entries",
+          "type": "array"
+        },
+        "knowledge_space_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Knowledge Space Id"
+        },
+        "language_policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "maximum_limit": {
+          "default": 100,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Maximum Limit",
+          "type": "integer"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Next Cursor"
+        },
+        "ordering": {
+          "const": "entry_id_ascending",
+          "default": "entry_id_ascending",
+          "title": "Ordering",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CatalogEntry"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "release_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "get-coverage-result/v1",
+          "default": "get-coverage-result/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release_id",
+        "release_ref",
+        "catalog_ref",
+        "language_policy_ref",
+        "entries",
+        "coverage_profiles",
+        "context_schemas"
+      ],
+      "title": "GetCoverageResult",
+      "type": "object"
+    },
+    "GetEvidenceRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "get-evidence/v1",
+          "default": "get-evidence/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release_id",
+        "evidence_ids"
+      ],
+      "title": "GetEvidenceRequest",
+      "type": "object"
+    },
+    "GetEvidenceResult": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceObject"
+          },
+          "maxItems": 5,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "release_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "get-evidence-result/v1",
+          "default": "get-evidence-result/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "release_id",
+        "release_ref",
+        "evidence"
+      ],
+      "title": "GetEvidenceResult",
+      "type": "object"
+    },
+    "Jurisdiction": {
+      "additionalProperties": false,
+      "properties": {
+        "canton_code": {
+          "anyOf": [
+            {
+              "enum": [
+                "CH-AG",
+                "CH-AI",
+                "CH-AR",
+                "CH-BE",
+                "CH-BL",
+                "CH-BS",
+                "CH-FR",
+                "CH-GE",
+                "CH-GL",
+                "CH-GR",
+                "CH-JU",
+                "CH-LU",
+                "CH-NE",
+                "CH-NW",
+                "CH-OW",
+                "CH-SG",
+                "CH-SH",
+                "CH-SO",
+                "CH-SZ",
+                "CH-TG",
+                "CH-TI",
+                "CH-UR",
+                "CH-VD",
+                "CH-VS",
+                "CH-ZG",
+                "CH-ZH"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Canton Code"
+        },
+        "country_code": {
+          "pattern": "^[A-Z]{2}$",
+          "title": "Country Code",
+          "type": "string"
+        },
+        "municipality_id": {
+          "anyOf": [
+            {
+              "pattern": "^[1-9][0-9]{0,3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Municipality Id"
+        }
+      },
+      "required": [
+        "country_code"
+      ],
+      "title": "Jurisdiction",
+      "type": "object"
+    },
+    "KnowledgeCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "context_schemas": {
+          "items": {
+            "$ref": "#/$defs/ContextSchema"
+          },
+          "maxItems": 1000,
+          "title": "Context Schemas",
+          "type": "array"
+        },
+        "coverage_profiles": {
+          "items": {
+            "$ref": "#/$defs/CoverageProfile"
+          },
+          "maxItems": 10000,
+          "title": "Coverage Profiles",
+          "type": "array"
+        },
+        "discovery_default_limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Discovery Default Limit",
+          "type": "integer"
+        },
+        "discovery_max_limit": {
+          "default": 100,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Discovery Max Limit",
+          "type": "integer"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/CatalogEntry"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "language_policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "max_evidence": {
+          "default": 5,
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Max Evidence",
+          "type": "integer"
+        },
+        "ordering": {
+          "const": "entry_id_ascending",
+          "default": "entry_id_ascending",
+          "title": "Ordering",
+          "type": "string"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "knowledge-catalog/v1",
+          "default": "knowledge-catalog/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "release_id",
+        "entries",
+        "language_policy_ref"
+      ],
+      "title": "KnowledgeCatalog",
+      "type": "object"
+    },
+    "KnowledgeRelease": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "concept_graph_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "context_schema_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 1000,
+          "title": "Context Schema Refs",
+          "type": "array"
+        },
+        "contract_schema_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Contract Schema Refs",
+          "type": "array"
+        },
+        "created_at": {
+          "title": "Created At",
+          "type": "string"
+        },
+        "evaluation_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "fact_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Fact Refs",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "index_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100,
+          "title": "Index Refs",
+          "type": "array"
+        },
+        "language_policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "normalized_document_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Normalized Document Refs",
+          "type": "array"
+        },
+        "projection_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Projection Refs",
+          "type": "array"
+        },
+        "provider_configuration_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "ranking_configuration_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Rule Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "knowledge-release/v1",
+          "default": "knowledge-release/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshot_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Snapshot Refs",
+          "type": "array"
+        },
+        "terminology_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 10000,
+          "title": "Terminology Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "release_id",
+        "identity",
+        "created_at",
+        "catalog_ref",
+        "context_schema_refs",
+        "language_policy_ref",
+        "snapshot_refs",
+        "normalized_document_refs",
+        "evidence_refs",
+        "concept_graph_ref",
+        "terminology_refs",
+        "fact_refs",
+        "rule_refs",
+        "projection_refs",
+        "index_refs",
+        "contract_schema_refs",
+        "provider_configuration_ref",
+        "ranking_configuration_ref",
+        "evaluation_ref"
+      ],
+      "title": "KnowledgeRelease",
+      "type": "object"
+    },
+    "LanguagePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_status": {
+          "default": "DRAFT",
+          "enum": [
+            "DRAFT",
+            "APPROVED"
+          ],
+          "title": "Approval Status",
+          "type": "string"
+        },
+        "evaluation_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "platform_catalog": {
+          "const": "tip-language-catalog/v2",
+          "default": "tip-language-catalog/v2",
+          "title": "Platform Catalog",
+          "type": "string"
+        },
+        "projection_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Projection Languages",
+          "type": "array"
+        },
+        "routes": {
+          "items": {
+            "$ref": "#/$defs/TermProjectionRoute"
+          },
+          "maxItems": 20,
+          "title": "Routes",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "language-policy/v1",
+          "default": "language-policy/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_declaration_aliases": {
+          "maxProperties": 0,
+          "patternProperties": {
+            "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$": {
+              "maxLength": 128,
+              "minLength": 2,
+              "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 2
+          },
+          "title": "Source Declaration Aliases",
+          "type": "object"
+        },
+        "source_detector_mappings": {
+          "additionalProperties": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxProperties": 100,
+          "propertyNames": {
+            "maxLength": 500,
+            "minLength": 1
+          },
+          "title": "Source Detector Mappings",
+          "type": "object"
+        },
+        "source_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "title": "Source Languages",
+          "type": "array"
+        },
+        "term_aliases": {
+          "maxProperties": 8,
+          "patternProperties": {
+            "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$": {
+              "maxLength": 128,
+              "minLength": 2,
+              "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+              "type": "string"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 128,
+            "minLength": 2
+          },
+          "title": "Term Aliases",
+          "type": "object"
+        },
+        "term_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 9,
+          "title": "Term Languages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "term_languages",
+        "source_languages",
+        "projection_languages",
+        "routes"
+      ],
+      "title": "LanguagePolicy",
+      "type": "object"
+    },
+    "LocalizedMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "aliases": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Aliases",
+          "type": "array"
+        },
+        "description": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "provenance": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Provenance",
+          "type": "array"
+        }
+      },
+      "required": [
+        "label",
+        "description",
+        "provenance"
+      ],
+      "title": "LocalizedMetadata",
+      "type": "object"
+    },
+    "MissingContextField": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_values": {
+          "items": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxItems": 100,
+          "title": "Allowed Values",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "path": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Rule Refs",
+          "type": "array"
+        },
+        "schema_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "path",
+        "reason_code",
+        "schema_ref"
+      ],
+      "title": "MissingContextField",
+      "type": "object"
+    },
+    "ProviderDegradation": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluated_fallback_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "omitted_channels": {
+          "items": {
+            "enum": [
+              "lexical",
+              "concept",
+              "vector",
+              "semantic_ranking"
+            ],
+            "type": "string"
+          },
+          "maxItems": 4,
+          "title": "Omitted Channels",
+          "type": "array"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason_code",
+        "omitted_channels",
+        "evaluated_fallback_ref"
+      ],
+      "title": "ProviderDegradation",
+      "type": "object"
+    },
+    "PublishedFact": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability_conditions": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Applicability Conditions",
+          "type": "array"
+        },
+        "evidence_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "fact_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Fact Id",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Language",
+          "type": "string"
+        },
+        "rule_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Rule Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "published-fact/v1",
+          "default": "published-fact/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "fact_id",
+        "statement",
+        "language",
+        "evidence_ids"
+      ],
+      "title": "PublishedFact",
+      "type": "object"
+    },
+    "RetrievalTerm": {
+      "additionalProperties": false,
+      "properties": {
+        "language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Language",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "language"
+      ],
+      "title": "RetrievalTerm",
+      "type": "object"
+    },
+    "RetrievalTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_count": {
+          "minimum": 0,
+          "title": "Candidate Count",
+          "type": "integer"
+        },
+        "channels": {
+          "items": {
+            "enum": [
+              "lexical",
+              "concept",
+              "vector",
+              "semantic_ranking"
+            ],
+            "type": "string"
+          },
+          "maxItems": 4,
+          "title": "Channels",
+          "type": "array"
+        },
+        "degradations": {
+          "items": {
+            "$ref": "#/$defs/ProviderDegradation"
+          },
+          "maxItems": 10,
+          "title": "Degradations",
+          "type": "array"
+        },
+        "effective_source_languages": {
+          "anyOf": [
+            {
+              "items": {
+                "maxLength": 128,
+                "minLength": 2,
+                "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+                "type": "string"
+              },
+              "maxItems": 5,
+              "minItems": 1,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Effective Source Languages"
+        },
+        "evidence_count": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Evidence Count",
+          "type": "integer"
+        },
+        "index_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Index Refs",
+          "type": "array"
+        },
+        "provider_configuration_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "ranking_configuration_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "term_routes": {
+          "items": {
+            "$ref": "#/$defs/TermRoute"
+          },
+          "maxItems": 20,
+          "title": "Term Routes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "term_routes",
+        "effective_source_languages",
+        "channels",
+        "index_refs",
+        "provider_configuration_ref",
+        "ranking_configuration_ref",
+        "candidate_count",
+        "evidence_count"
+      ],
+      "title": "RetrievalTrace",
+      "type": "object"
+    },
+    "ScopeSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "title": "As Of",
+          "type": "string"
+        },
+        "concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "domain_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Domain Id",
+          "type": "string"
+        },
+        "intent": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Intent",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "$ref": "#/$defs/Jurisdiction"
+        },
+        "knowledge_space_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Knowledge Space Id",
+          "type": "string"
+        },
+        "scope_mode": {
+          "enum": [
+            "exact",
+            "descendants"
+          ],
+          "title": "Scope Mode",
+          "type": "string"
+        },
+        "topic_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Topic Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "knowledge_space_id",
+        "domain_id",
+        "topic_id",
+        "intent",
+        "jurisdiction",
+        "as_of",
+        "scope_mode"
+      ],
+      "title": "ScopeSelection",
+      "type": "object"
+    },
+    "StructuredGroundingRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "title": "As Of",
+          "type": "string"
+        },
+        "concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "context": {
+          "maxProperties": 64,
+          "patternProperties": {
+            "^[a-z][a-z0-9_]*$": {
+              "anyOf": [
+                {
+                  "maxLength": 1000,
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "propertyNames": {
+            "maxLength": 64
+          },
+          "title": "Context",
+          "type": "object"
+        },
+        "domain_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Domain Id",
+          "type": "string"
+        },
+        "intent": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Intent",
+          "type": "string"
+        },
+        "jurisdiction": {
+          "$ref": "#/$defs/Jurisdiction"
+        },
+        "knowledge_space_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Knowledge Space Id",
+          "type": "string"
+        },
+        "max_evidence": {
+          "default": 5,
+          "maximum": 5,
+          "minimum": 1,
+          "title": "Max Evidence",
+          "type": "integer"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "retrieval_terms": {
+          "items": {
+            "$ref": "#/$defs/RetrievalTerm"
+          },
+          "maxItems": 20,
+          "title": "Retrieval Terms",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "structured-grounding/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope_mode": {
+          "enum": [
+            "exact",
+            "descendants"
+          ],
+          "title": "Scope Mode",
+          "type": "string"
+        },
+        "source_languages": {
+          "anyOf": [
+            {
+              "items": {
+                "maxLength": 128,
+                "minLength": 2,
+                "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+                "type": "string"
+              },
+              "maxItems": 20,
+              "minItems": 1,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Languages"
+        },
+        "topic_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Topic Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "knowledge_space_id",
+        "domain_id",
+        "topic_id",
+        "intent",
+        "jurisdiction",
+        "as_of",
+        "scope_mode",
+        "schema_version",
+        "release_id",
+        "context"
+      ],
+      "title": "StructuredGroundingRequest",
+      "type": "object"
+    },
+    "StructuredGroundingResult": {
+      "additionalProperties": false,
+      "properties": {
+        "catalog_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "coverage_profile_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Coverage Profile Ids",
+          "type": "array"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceObject"
+          },
+          "maxItems": 5,
+          "title": "Evidence",
+          "type": "array"
+        },
+        "executed_scope": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ScopeSelection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "freshness": {
+          "$ref": "#/$defs/Freshness"
+        },
+        "missing_context": {
+          "items": {
+            "$ref": "#/$defs/MissingContextField"
+          },
+          "maxItems": 64,
+          "title": "Missing Context",
+          "type": "array"
+        },
+        "release_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "release_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "requested_scope": {
+          "$ref": "#/$defs/ScopeSelection"
+        },
+        "schema_version": {
+          "const": "structured-grounding-result/v1",
+          "default": "structured-grounding-result/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "NEEDS_CONTEXT",
+            "OUT_OF_COVERAGE",
+            "INSUFFICIENT_VERIFIED_EVIDENCE",
+            "PARTIALLY_SUPPORTED",
+            "CONFLICTING_EVIDENCE",
+            "STALE",
+            "SUPPORTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "supported_portions": {
+          "items": {
+            "$ref": "#/$defs/PublishedFact"
+          },
+          "maxItems": 50,
+          "title": "Supported Portions",
+          "type": "array"
+        },
+        "trace": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RetrievalTrace"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "trust": {
+          "$ref": "#/$defs/TrustEnvelope"
+        },
+        "unresolved_portions": {
+          "items": {
+            "$ref": "#/$defs/UnresolvedPortion"
+          },
+          "maxItems": 50,
+          "title": "Unresolved Portions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "release_id",
+        "release_ref",
+        "catalog_ref",
+        "requested_scope",
+        "executed_scope",
+        "coverage_profile_ids",
+        "status",
+        "supported_portions",
+        "unresolved_portions",
+        "evidence",
+        "missing_context",
+        "freshness",
+        "trust",
+        "trace"
+      ],
+      "title": "StructuredGroundingResult",
+      "type": "object"
+    },
+    "TermProjectionRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "dialect_profile": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dialect Profile"
+        },
+        "idiom_profile": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Idiom Profile"
+        },
+        "projection_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Projection Language",
+          "type": "string"
+        },
+        "term_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Term Language",
+          "type": "string"
+        },
+        "terminology_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Terminology Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "term_language",
+        "projection_language"
+      ],
+      "title": "TermProjectionRoute",
+      "type": "object"
+    },
+    "TermRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "effective_term_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Effective Term Language",
+          "type": "string"
+        },
+        "evaluation_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "input_index": {
+          "exclusiveMaximum": 20,
+          "minimum": 0,
+          "title": "Input Index",
+          "type": "integer"
+        },
+        "language_policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "original_text": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Original Text",
+          "type": "string"
+        },
+        "projection_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Projection Language",
+          "type": "string"
+        },
+        "requested_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Requested Language",
+          "type": "string"
+        },
+        "source_languages": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 2,
+            "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Source Languages",
+          "type": "array"
+        },
+        "terminology_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "title": "Terminology Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "input_index",
+        "original_text",
+        "requested_language",
+        "effective_term_language",
+        "projection_language",
+        "source_languages",
+        "terminology_refs",
+        "language_policy_ref",
+        "evaluation_ref"
+      ],
+      "title": "TermRoute",
+      "type": "object"
+    },
+    "ToolError": {
+      "additionalProperties": false,
+      "properties": {
+        "active_release_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Active Release Id"
+        },
+        "code": {
+          "enum": [
+            "INVALID_ARGUMENT",
+            "RELEASE_UNAVAILABLE",
+            "UNSUPPORTED_LANGUAGE",
+            "OPERATIONAL_ERROR"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "issues": {
+          "items": {
+            "$ref": "#/$defs/ValidationIssue"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Issues",
+          "type": "array"
+        },
+        "release_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Release Id"
+        },
+        "schema_version": {
+          "const": "tool-error/v1",
+          "default": "tool-error/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "issues"
+      ],
+      "title": "ToolError",
+      "type": "object"
+    },
+    "TrustEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluation_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "fact_support": {
+          "enum": [
+            "PUBLISHED_FACTS_OR_RULES",
+            "EXCERPTS_ONLY",
+            "NONE"
+          ],
+          "title": "Fact Support",
+          "type": "string"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "source_authorities": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Source Authorities",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_authorities",
+        "evaluation_ref",
+        "fact_support",
+        "limitations"
+      ],
+      "title": "TrustEnvelope",
+      "type": "object"
+    },
+    "UnresolvedPortion": {
+      "additionalProperties": false,
+      "properties": {
+        "concept_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Concept Ids",
+          "type": "array"
+        },
+        "limitation": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Limitation",
+          "type": "string"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "concept_ids",
+        "reason_code",
+        "limitation"
+      ],
+      "title": "UnresolvedPortion",
+      "type": "object"
+    },
+    "ValidationIssue": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_values": {
+          "items": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "maxItems": 100,
+          "title": "Allowed Values",
+          "type": "array"
+        },
+        "message": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "path": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "reason_code": {
+          "maxLength": 64,
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Reason Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "reason_code",
+        "message"
+      ],
+      "title": "ValidationIssue",
+      "type": "object"
+    }
+  },
+  "$id": "urn:swisstip:contracts:v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "anyOf": [
+    {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    {
+      "$ref": "#/$defs/Jurisdiction"
+    },
+    {
+      "$ref": "#/$defs/ContextSchema"
+    },
+    {
+      "$ref": "#/$defs/CatalogEntry"
+    },
+    {
+      "$ref": "#/$defs/CoverageProfile"
+    },
+    {
+      "$ref": "#/$defs/KnowledgeCatalog"
+    },
+    {
+      "$ref": "#/$defs/LanguagePolicy"
+    },
+    {
+      "$ref": "#/$defs/KnowledgeRelease"
+    },
+    {
+      "$ref": "#/$defs/EvidenceObject"
+    },
+    {
+      "$ref": "#/$defs/StructuredGroundingRequest"
+    },
+    {
+      "$ref": "#/$defs/StructuredGroundingResult"
+    },
+    {
+      "$ref": "#/$defs/ToolError"
+    },
+    {
+      "$ref": "#/$defs/GetCoverageRequest"
+    },
+    {
+      "$ref": "#/$defs/GetCoverageResult"
+    },
+    {
+      "$ref": "#/$defs/GetEvidenceRequest"
+    },
+    {
+      "$ref": "#/$defs/GetEvidenceResult"
+    }
+  ],
+  "description": "Structural schemas. Canonicalization, cross-field invariants and catalog-aware validation additionally apply.",
+  "title": "SwissTIP contract bundle v1",
+  "x-contracts": {
+    "ArtifactRef": {
+      "$ref": "#/$defs/ArtifactRef"
+    },
+    "CatalogEntry": {
+      "$ref": "#/$defs/CatalogEntry"
+    },
+    "ContextSchema": {
+      "$ref": "#/$defs/ContextSchema"
+    },
+    "CoverageProfile": {
+      "$ref": "#/$defs/CoverageProfile"
+    },
+    "EvidenceObject": {
+      "$ref": "#/$defs/EvidenceObject"
+    },
+    "GetCoverageRequest": {
+      "$ref": "#/$defs/GetCoverageRequest"
+    },
+    "GetCoverageResult": {
+      "$ref": "#/$defs/GetCoverageResult"
+    },
+    "GetEvidenceRequest": {
+      "$ref": "#/$defs/GetEvidenceRequest"
+    },
+    "GetEvidenceResult": {
+      "$ref": "#/$defs/GetEvidenceResult"
+    },
+    "Jurisdiction": {
+      "$ref": "#/$defs/Jurisdiction"
+    },
+    "KnowledgeCatalog": {
+      "$ref": "#/$defs/KnowledgeCatalog"
+    },
+    "KnowledgeRelease": {
+      "$ref": "#/$defs/KnowledgeRelease"
+    },
+    "LanguagePolicy": {
+      "$ref": "#/$defs/LanguagePolicy"
+    },
+    "StructuredGroundingRequest": {
+      "$ref": "#/$defs/StructuredGroundingRequest"
+    },
+    "StructuredGroundingResult": {
+      "$ref": "#/$defs/StructuredGroundingResult"
+    },
+    "ToolError": {
+      "$ref": "#/$defs/ToolError"
+    }
+  }
+}

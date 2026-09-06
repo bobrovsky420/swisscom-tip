@@ -1,0 +1,93 @@
+# SwissTIP core contracts
+
+BUILD-01 defines the versioned data contracts and validates structured requests
+against an explicit catalog. It does not fetch sources, publish releases, retrieve
+evidence or run an MCP server.
+
+Install from the repository root:
+
+```shell
+./.venv/Scripts/python.exe -m pip install -e packages/core
+./.venv/Scripts/python.exe -m unittest discover -s packages/core/tests -v
+```
+
+On Unix use `./.venv/bin/python` for the same commands. Python 3.11 or newer is
+required. Pydantic 2 supplies strict boundary validation and JSON Schema export.
+
+Export or verify the checked-in bundle:
+
+```shell
+./.venv/Scripts/python.exe -m swisstip.core.schemas --output packages/core/schemas
+./.venv/Scripts/python.exe -m swisstip.core.schemas --output packages/core/schemas --check
+```
+
+The [schema bundle](schemas/contracts-v1.schema.json) shares definitions and maps
+each root contract through `x-contracts`. It describes structural validation;
+the Python models also enforce canonicalization and cross-field invariants, and
+`swisstip.core.validation` enforces catalog-dependent boundaries. JSON Schema
+validation alone does not establish catalog integrity or accepted coverage.
+
+The initial authoring scope is Swiss public information, immigration/residence,
+and Canton Zurich. The proposed seed catalog is a draft. Candidate entries and
+proposed operations do not establish supported coverage. Human review must supply
+the source-backed concepts, conditions, exceptions and evidence before curated
+coverage can be declared.
+
+The [seed files](../../config/catalogs/README.md) can be loaded without network
+or model access:
+
+```python
+from pathlib import Path
+from swisstip.core import KnowledgeCatalog, LanguagePolicy
+from swisstip.core.validation import validate_catalog, validate_request
+
+catalog = KnowledgeCatalog.model_validate_json(
+    Path("config/catalogs/zh-residence.seed.json").read_bytes()
+)
+policy = LanguagePolicy.model_validate_json(
+    Path("config/catalogs/zh-residence.language-policy.json").read_bytes()
+)
+assert not validate_catalog(catalog, policy)
+# assessment = validate_request(request_dict, catalog, policy)
+```
+
+`validate_catalog` checks hashes, hierarchy, referenced inline schemas and policy
+closure. Its optional `artifacts` registry checks exact external references;
+existence and semantic verification of external source/rule/evidence content
+remain build responsibilities. `validate_request` returns a `ValidationAssessment`
+with typed issues, missing-context fields and bounded scope. `READY` is an
+internal validation outcome for later execution, never a public factual result.
+Invalid stored catalog data raises `CatalogIntegrityError` rather than becoming
+a client coverage claim.
+
+For contract artifacts, `swisstip.core.identity.seal_artifact` hashes canonical
+JSON after model validation, including defaults. It excludes only the root self
+hash and embedded catalog self-reference hashes. Other dependency hashes remain
+bound. Raw source snapshot hashes continue to refer to original bytes. Sealing
+neither approves content nor publishes a release.
+
+The source-only review workflow is documented in
+[POC-01 preparation](../../scripts/test/poc01/README.md). Original source pages,
+model responses and human annotations stay in the ignored `.local/` workspace.
+
+The public request is `structured-grounding/v1`. Its required envelope includes
+the pinned release, Knowledge Space, domain, topic, finite intent, canonical
+jurisdiction, typed context, applicability date and scope mode. Concept selectors
+are required only by profiles that declare them necessary. The optional tagged
+retrieval terms never fill in missing context or change explicit scope.
+
+Request-shape errors, unknown fields/IDs and inconsistent selectors produce
+`INVALID_ARGUMENT`. Missing conditional facts inside a valid context produce
+`NEEDS_CONTEXT`. Known but unsupported combinations produce `OUT_OF_COVERAGE`.
+An unavailable requested release produces `RELEASE_UNAVAILABLE`; validation never
+substitutes the active release. A request ready for later processing does not by
+itself have sufficient verified evidence or a `SUPPORTED` factual outcome.
+
+Context schemas intentionally use a closed subset of scalar types, enums, bounds,
+conditional requirements and consistency rules. They are not arbitrary executable
+rules or unrestricted JSON Schema. The schema and validator reject unsupported
+constructs. BUILD-02/03 will bind reviewed rules/evidence and perform resolution.
+
+All five metadata projection languages remain P0. This package defines language
+and coverage boundaries; it does not establish source-language validation,
+translation fidelity, multilingual retrieval or evaluated term routes.

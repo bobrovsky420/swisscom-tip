@@ -1,0 +1,6 @@
+{
+    "dictation.enabled": false,
+    "dictation.experimental.llmCleanup": false,
+    "dictation.showButton": false,
+    "dictation.showTranscript": false
+}

@@ -39,7 +39,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Review workflow | Model review, rejected proposals and `review.csv` annotations exist | Add validated import of reviewer decisions and explicit promotion gates; passing extraction/model review does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v2`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
-| Runtime/product | Only crawler and concept CLI entry points are implemented | Catalog publisher/reader, immutable releases, strict structured validation, scoped retrieval/rules and the three MCP tools remain unimplemented |
+| Runtime/product | Crawler/concept CLIs plus shared versioned contracts and offline catalog/request validation are implemented | Reviewed seed coverage, catalog publisher/reader, immutable releases, scoped retrieval/rules and the three MCP tools remain unimplemented |
 
 The proposed workspace tree in the technical specification is not the implemented
 tree. Reuse the existing modules as build components; do not manufacture runtime
@@ -68,6 +68,17 @@ Reproduce the existing suites using the repository environment. On Windows:
 ```
 
 On Unix use `./.venv/bin/python` for the same commands.
+
+The BUILD-01 update adds the core suite. Install and test it in the same environment:
+
+```shell
+./.venv/Scripts/python.exe -m pip install -e packages/core
+./.venv/Scripts/python.exe -m unittest discover -s packages/core/tests -v
+```
+
+Current verification: 68 core, 63 ingestion
+and 96 builder tests pass, including POC-01 preparation and the loopback workflow.
+These counts do not establish semantic review or complete a POC.
 
 ## Immediate fixes supported by the review
 
@@ -113,8 +124,16 @@ assumptions; POCs do not replace the implementation backlog.
 | [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters and evaluated provider fallback |
 | [ ] | BUILD-06 | Complete on-demand release publication, retention, observability and client qualification | Atomic promotion, historical reads, no silent release substitution, fresh/stale reporting, external-client setup and separate caller evaluation |
 
-BUILD-01/02 can begin with reviewed fixtures while acquisition and model fixes
-proceed. BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
+BUILD-01 is in progress: shared contracts and offline boundary validation are
+implemented in [packages/core](packages/core/README.md). The seed catalog remains
+a draft pending source-based review. POC-01 preservation and source-only review
+preparation are available in [scripts/test/poc01](scripts/test/poc01/README.md);
+the [preparation record](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
+records the user's two passes as same-person review, with independent adjudication
+and comparison results still pending. Neither BUILD-01 nor POC-01 is complete.
+
+BUILD-02 can begin with the first reviewed fixture. FIX-01/02 are complete.
+BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
 The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
 of the multilingual P0 service.
 
@@ -148,7 +167,7 @@ Existing POC identifiers are retained so previous references remain meaningful.
 | [ ] | 12 | Clean deployment, catalog usability and separate caller behavior | 02, 03, 05-10 plus focused 04/11 | 0.5-1 day |
 | [ ] | 13 | Typed Arrival Checklist/MCP/REST contract reuse | Passing core service; P1 only | 0.5 day |
 
-Start 01 and the acquisition fixes in parallel. Feed a small reviewed fixture
+Continue 01 alongside BUILD-01 and acquisition validation. Feed a small reviewed fixture
 into 02 immediately, then develop typed applicability handling in 03. Develop 06
 and 10 in parallel with the MCP path, followed by the full multilingual comparison
 in 07. Validate release lifecycle and source discovery independently. Finish with

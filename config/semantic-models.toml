@@ -1,7 +1,7 @@
 schema_version = "swisstip.semantic-model-profiles/v1"
 
 [semantic_model]
-active_profile = "apertus_8b"
+active_profile = "ollama_local"
 
 [generation]
 temperature = 0.0

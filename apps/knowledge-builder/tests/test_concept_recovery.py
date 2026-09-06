@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import tempfile
 import unittest
 from dataclasses import replace
@@ -44,7 +45,14 @@ class RecoveryTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.path = Path(self.directory.name)
-        self.config = load_model_profiles(ROOT / "config/semantic-models.toml")
+        # Fake completions below identify the HF 8B profile, independently of
+        # the operator's selected profile in the repository configuration.
+        with tempfile.TemporaryDirectory() as config_directory:
+            config_path = Path(config_directory) / "semantic-models.toml"
+            document = (ROOT / "config/semantic-models.toml").read_text(encoding="utf-8")
+            document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)
+            config_path.write_text(document, encoding="utf-8")
+            self.config = load_model_profiles(config_path)
         self.waits, self.logs = [], []
 
     def wrapper(self, provider, **kwargs):

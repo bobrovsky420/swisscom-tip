@@ -9,3 +9,5 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+# Internal experiment archives and human review workspaces
+.local/

@@ -1,0 +1,53 @@
+{
+  "schema_version": "swisstip.seed-authoring/v1",
+  "status": "DRAFT_NOT_REVIEWED",
+  "method": "assistant-authored scaffold based on documented source-page topics",
+  "proposed_operation": "requirements",
+  "jurisdiction": {
+    "country_code": "CH",
+    "canton_code": "CH-ZH"
+  },
+  "target_projection_languages": [
+    "en",
+    "de-CH",
+    "fr-CH",
+    "it-CH",
+    "rm-CH"
+  ],
+  "reviewer": "user",
+  "second_pass": "same-person re-review",
+  "independent_adjudication": "PENDING",
+  "notes": [
+    "Source-page topics are provisional grouping choices, not reviewed answerable concepts.",
+    "Labels and descriptions are draft metadata; no legal claims, facts or rules are approved.",
+    "No supported coverage, evaluated languages or published release exists.",
+    "Review source-only gold labels before this scaffold to avoid leading the source review.",
+    "Finalize granularity, supported operations and conditional context from source review."
+  ],
+  "source_pages": [
+    {
+      "proposed_concept_id": "residence-overview",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt.html"
+    },
+    {
+      "proposed_concept_id": "residence-eu-efta",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-fuer-euefta-staatsangehoerige.html"
+    },
+    {
+      "proposed_concept_id": "residence-third-country-employment",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-mit-erwerbstaetigkeit-fuer-drittstaatsangehoerige.html"
+    },
+    {
+      "proposed_concept_id": "residence-third-country-no-employment",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-ohne-erwerbstaetigkeit-fuer-drittstaatsangehoerige.html"
+    },
+    {
+      "proposed_concept_id": "residence-family-reunification-third-country",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt/familiennachzug-von-drittstaatsangehoerigen.html"
+    },
+    {
+      "proposed_concept_id": "biometric-residence-document",
+      "url": "https://www.zh.ch/de/migration-integration/aufenthalt/biometrische-auslaenderausweise.html"
+    }
+  ]
+}

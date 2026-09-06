@@ -1,0 +1,308 @@
+{
+  "schema_version": "knowledge-catalog/v1",
+  "identity": {
+    "artifact_id": "zh-residence-catalog",
+    "version": "draft-1",
+    "sha256": "ddb1069deeafbdfd30f483092228f23fe050e685c2e26f0bae8ccfcce04b0b56"
+  },
+  "release_id": "zh-residence-draft-001",
+  "entries": [
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "biometric-residence-document",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "Biometric residence documents",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Biometrische Auslaenderausweise",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "immigration",
+      "kind": "domain",
+      "parent_ids": [
+        "swiss-public"
+      ],
+      "labels": {
+        "en": {
+          "label": "Immigration",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence",
+      "kind": "topic",
+      "parent_ids": [
+        "immigration"
+      ],
+      "labels": {
+        "en": {
+          "label": "Residence",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence-eu-efta",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "EU/EFTA residence",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Aufenthalt fuer EU/EFTA-Staatsangehoerige",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence-family-reunification-third-country",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "Third-country family reunification",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Familiennachzug von Drittstaatsangehoerigen",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence-overview",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "Residence overview",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Aufenthalt",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence-third-country-employment",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "Third-country residence with employment",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Aufenthalt mit Erwerbstaetigkeit fuer Drittstaatsangehoerige",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "residence-third-country-no-employment",
+      "kind": "concept",
+      "parent_ids": [
+        "residence"
+      ],
+      "labels": {
+        "en": {
+          "label": "Third-country residence without employment",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        },
+        "de-CH": {
+          "label": "Aufenthalt ohne Erwerbstaetigkeit fuer Drittstaatsangehoerige",
+          "aliases": [],
+          "description": "Entwurf; fachlicher Umfang und Quellenabdeckung sind noch nicht geprueft.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    },
+    {
+      "schema_version": "catalog-entry/v1",
+      "entry_id": "swiss-public",
+      "kind": "knowledge_space",
+      "parent_ids": [],
+      "labels": {
+        "en": {
+          "label": "Swiss public information",
+          "aliases": [],
+          "description": "Draft authoring label; scope and source coverage await human review.",
+          "provenance": [
+            {
+              "artifact_id": "zh-residence-seed-authoring",
+              "version": "1",
+              "sha256": "492ea565bd17ff1c4edea2bf24e944f7835e9a4d67f1d0ef087001ea92e7bcfb"
+            }
+          ]
+        }
+      },
+      "lifecycle": "CANDIDATE",
+      "replacement_ids": []
+    }
+  ],
+  "context_schemas": [],
+  "coverage_profiles": [],
+  "language_policy_ref": {
+    "artifact_id": "zh-residence-language-policy",
+    "version": "draft-1",
+    "sha256": "7bf61346ef42a58275baa77b27f2a5b924ce191a6d32bac0aeab8be4b79084de"
+  },
+  "max_evidence": 5,
+  "discovery_default_limit": 20,
+  "discovery_max_limit": 100,
+  "ordering": "entry_id_ascending"
+}
