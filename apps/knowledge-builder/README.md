@@ -3,13 +3,20 @@
 These CLIs are small proofs of the acquisition and concept proposal stages
 described in the product and technical specifications:
 
-```text
-Source Registry -> scan / crawl / fetch -> snapshot metadata
-Downloaded page -> normalize -> model-assisted extraction -> candidate concepts
+```mermaid
+flowchart LR
+    Registry["Source Registry"] --> Acquire["Scan / crawl / fetch"] --> Snapshot["Snapshot metadata"]
+    Page["Downloaded page"] --> Normalize["Normalize"] --> Extract["Model-assisted extraction"] --> Candidates["Candidate concepts"]
 ```
 
 They run only as operator-triggered knowledge-builder commands. They are not
 imported by, or suitable for, request-time MCP handling.
+
+Candidate concepts and their generated questions are authoring and evaluation
+aids. The calling LLM will interpret user questions and select published catalog
+identifiers. Reviewed promotion into stable concept identifiers, catalog
+operations and context schemas, and immutable Knowledge Release publication
+are not yet implemented; see the [implementation plan](../../TODO.md).
 
 ## Install
 

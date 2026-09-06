@@ -33,7 +33,8 @@ A provider failure leaves the run log, downloaded fixture and successful model
 responses available. Rerun with a new name to resume using the shared
 `checkpoints/` directory beneath the fixture root. Generation and semantic review
 are checkpointed separately, so a failed review does not require regenerating
-its proposals. Results are still published only when the entire batch succeeds.
+its proposals. Proposal artifacts are written only when the entire batch succeeds;
+this does not publish a Knowledge Release.
 Runs made before checkpoint support cannot be resumed from their logs.
 
 Checkpoint matching includes the original input hash, normalized page, selected
