@@ -98,6 +98,8 @@ The runtime data plane reads only published releases. A failed build must not in
 | Semantic model | Apertus preferred | Accessed through a provider interface |
 | Agent interface | MCP | Primary challenge deliverable |
 | Structured application interface | REST | Secondary interface over the same runtime |
+| Admin GUI (P1) | React, TypeScript, Vite and Mantine | Control API client; see section 16 for supporting libraries and initial screens |
+| Control API (P1) | FastAPI and Pydantic | Python API contracts with a generated TypeScript SDK |
 | Reference validation client | OpenCode as one example | The server must not depend on OpenCode-specific behaviour |
 
 These are implementation recommendations, not challenge requirements. A simpler substitute is valid if it reduces delivery risk or demonstrably meets the evaluation criteria better. Replaceable adapters protect the target product from becoming permanently coupled to hackathon technology choices.
@@ -417,7 +419,8 @@ Implements the storage and model ports declared by `swisstip.core`. Optional dep
 - `knowledge-builder` is a CLI or one-shot job that composes ingestion with source, storage and model integrations.
 - `mcp-server` is a thin protocol adapter over runtime use cases. It contains MCP registration and translation, not grounding rules.
 - `control-api` is a P1 FastAPI application for build initiation, evidence inspection, releases and structured Information Products.
-- `admin-console` and `arrival-checklist` are P1 TypeScript clients of the Control API.
+- `admin-console` is a P1 React/TypeScript application built with Vite and Mantine, consuming the Control API through a generated SDK.
+- `arrival-checklist` is a P1 TypeScript client of the Control API.
 - `swiss-hike` is the P2 Flutter client.
 
 Suggested executable entry points are defined in their owning application distributions:
@@ -1142,6 +1145,37 @@ The optional MVP Admin UI uses control-plane APIs for:
 12. MCP/REST integration examples.
 
 The UI is not required for MCP runtime availability.
+
+## 16.1 Recommended implementation stack
+
+The Admin GUI is a browser application in `apps/admin-console`, backed by the Python Control API in `apps/control-api`. These are P1 implementation recommendations; the applications are not yet implemented.
+
+| Layer | Recommended implementation | Purpose |
+|---|---|---|
+| Frontend | React, TypeScript and Vite | Typed browser UI with a straightforward development and build setup |
+| UI components | Mantine | Forms, tables, dialogs and application layout for configuration and review workflows |
+| API state | TanStack Query | Fetching, caching, mutation-driven refresh and polling of build progress |
+| Backend | FastAPI and Pydantic | Expose existing Python use cases through validated API contracts |
+| TypeScript SDK | Hey API, generated from OpenAPI | Keep frontend request and response types aligned with the Python API contract |
+| Persistence | PostgreSQL | Use the planned operational store for source metadata, build status, review decisions and releases |
+
+Mantine supplies common admin components so implementation effort can focus on TIP's evidence-review workflow. The frontend uses API contracts and does not import database models or internal domain objects. See the [Mantine Vite guide](https://mantine.dev/guides/vite/), [TanStack Query polling documentation](https://tanstack.com/query/latest/docs/framework/react/guides/polling) and [FastAPI TypeScript SDK generation guide](https://fastapi.tiangolo.com/advanced/generate-clients/).
+
+## 16.2 Build execution and progress
+
+The primary operation is **Build / Full Reload**. The Control API accepts a build request and returns a job identifier. A separate Python worker or one-shot `knowledge-builder` process performs crawling and extraction, with job status persisted in PostgreSQL. The GUI initially polls the Control API for progress, failures and results using TanStack Query. Build execution continues independently of the browser session and does not run inside the HTTP request handler.
+
+The Control API composes existing build services; the GUI does not duplicate ingestion or semantic-processing logic. Build completion does not bypass review or publication gates, and a failed build preserves the last successful published release.
+
+## 16.3 Initial screen scope
+
+The first P1 GUI increment implements three screens within the broader control-plane scope above:
+
+1. **Sources** - inspect source configuration, crawl scope and refresh state.
+2. **Builds** - start a build and inspect progress, failures and results.
+3. **Concept review** - display each candidate beside its source evidence and record review decisions.
+
+The remaining control-plane capabilities can be added in later P1 increments. This initial scope does not change the P0 priority of the knowledge pipeline and MCP runtime.
 
 ---
 
