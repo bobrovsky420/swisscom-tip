@@ -334,6 +334,8 @@ Normal MCP requests use the published release and do not scrape government sites
 
 Website language discovery is a P0 acquisition requirement. Given a configured website root such as `https://admin.ch/`, the builder must inspect the root and subsequently fetched pages for language selectors and alternate-language links, inspect permitted sitemaps, and add discovered eligible language entry URLs to the crawl. An operator must not need to supply a separate seed URL for every language exposed through supported discovery mechanisms. A redirect to one default language must not restrict discovery to that language.
 
+For the hackathon, prefer a verified German version when selecting just one page version for a limited MVP run. Multilingual selections retain every selected official version, and broader discovery retains all admitted variants within its declared scope and budgets. German can determine initial crawl order; it cannot silently replace another selected language or turn a multilingual build into a German-only build. Where no German equivalent is verified, retain the available official language. Report budget exhaustion and failed variants explicitly.
+
 The builder must:
 
 - discover variants from HTML and HTTP `hreflang` links, language-selector links or URL-valued options in returned HTML, and sitemap alternate-language entries; record page-language declarations and redirect observations as supporting hints;
@@ -352,6 +354,8 @@ For the root-scan acceptance scenario, a fixture representing a multilingual gov
 Concept extraction occurs during the knowledge build after crawling, snapshotting, normalization and language detection. It is not part of source acquisition. This separation allows extraction to be retried, evaluated or rerun with another provider without fetching the source again.
 
 The published representation is a language-neutral, versioned concept graph rather than a flat keyword list or a strict single-parent tree. A document or evidence object may be assigned to several concepts, and concepts may have `BROADER`, `NARROWER`, `RELATED` and `SAME_AS` relationships.
+
+Official language variants can share canonical concept IDs only after reviewed alignment establishes the same scoped concepts. Candidate parallel-page groups, matching titles or shared translated keywords are insufficient. Documents, snapshots, sections and Evidence Objects retain separate identities, URLs, original languages, revisions and hashes. Concept equivalence does not establish equivalent claims, applicability conditions or synchronized source revisions.
 
 The granularity model is:
 
@@ -451,6 +455,19 @@ The compact projection languages remain `en`, `de`, `fr`, `it` and `rm`. An Engl
 `source_languages` is independent of term language. Omission or `null` means no evidence-language restriction; an explicit non-empty list is canonicalized and deduplicated. An empty list or malformed tag is `INVALID_ARGUMENT`. Unsupported term/source tags produce `UNSUPPORTED_LANGUAGE` with the affected field and supported profiles. Individually enabled profiles whose requested combination is not covered produce `OUT_OF_COVERAGE`. No unsupported term or explicit filter is silently dropped.
 
 Projection text and machine translations remain derivative retrieval metadata. Citations always identify original-language evidence or an eligible official parallel-language source, with provenance.
+
+### Selecting evidence across language versions
+
+Matching multilingual metadata locates candidate evidence; it does not decide which page supports the answer. Eligible sections use a common projection schema and the five target languages, but their field values and provenance remain specific to each source section. Shared canonical concept IDs or translated terms never merge document/evidence identities or establish interchangeable factual support.
+
+The release's evidence policy must:
+
+1. Enforce explicit scope, jurisdiction, applicability, effective date and any `source_languages` filter before ranking. Neither retrieval-term language nor the caller's answer language supplies an implicit filter.
+2. Select authoritative, current evidence that actually supports the requested claim and its conditions. Among verified equivalent, equally suitable official versions, prefer German as the final language tie-breaker, followed by stable evidence identity. This preference gives German no legal precedence and cannot displace more suitable evidence in another language.
+3. Group verified equivalent sections of compatible revisions when assembling the evidence bundle. Retain alternate references while avoiding repeated translations crowding the evidence limit or counting as independent corroboration. Same-topic or same-concept pages alone are not equivalent evidence.
+4. Preserve material differences, conflicting claims and revision mismatches for evaluation under the existing support and conflict rules. Do not resolve them through language preference. Record the selection policy and reasons in the retrieval trace.
+
+The calling LLM composes the answer in its chosen language and cites the returned original evidence. An English answer can therefore cite a German page. An explicit English-only source filter must instead restrict eligible evidence to English, including the normal coverage or insufficient-evidence outcome when necessary. German is a crawl preference and a conditional evidence tie-breaker, never a fixed answer language.
 
 ## 10.2 Explicit Topic and Concept Scope
 

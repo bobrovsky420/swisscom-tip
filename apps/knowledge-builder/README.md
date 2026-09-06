@@ -270,7 +270,14 @@ references, crawl budgets and explicit access/adapter exclusions.
 ./.venv/Scripts/python.exe -m swisstip.builder.source_cli --dry-run
 ```
 
-The command defaults to an offline five-source smoke plan. Later, explicitly
+The command defaults to an offline five-source smoke plan with German preferred
+when choosing one verified language version. Every selected version is retained
+in named sets and explicit `--source` selections, with German scheduled first.
+Use `--set multilingual --dry-run` for all four SEM residence overview languages.
+Candidate parallel-page groups remain unevaluated; snapshots and source identities
+stay separate. Later concept alignment, multilingual projections and evidence
+ranking are specified in the catalogue guide and remain unimplemented.
+Later, explicitly
 add `--crawl --output .local/crawls/residence-smoke-001` to save exact HTML
 response bytes and provenance manifests in a new directory. Pass that directory
 to `swisstip.builder.concept_cli` for a separate model-backed extraction run.

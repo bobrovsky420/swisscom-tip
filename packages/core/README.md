@@ -99,3 +99,12 @@ policies require migration and resealing before use with these validators.
 All five metadata projection languages remain P0. This package defines language
 and coverage boundaries; it does not establish source-language validation,
 translation fidelity, multilingual retrieval or evaluated term routes.
+
+Reviewed concept alignment may give official translations shared canonical
+concept IDs and multilingual terms. Their document, snapshot and evidence
+identities remain separate. The planned runtime applies scope, applicability,
+authority, freshness and claim support before using German as a tie-breaker
+between verified equivalent versions. Explicit source-language filters take
+precedence; the caller chooses the answer language. Alignment, grouping equivalent
+evidence and selecting that evidence are later build/runtime work, not behavior
+implemented by these contract validators.

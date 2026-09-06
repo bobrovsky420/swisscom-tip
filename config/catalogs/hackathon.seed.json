@@ -3,7 +3,7 @@
   "identity": {
     "artifact_id": "hackathon-catalog",
     "version": "draft-1",
-    "sha256": "6888edcc79b0eadbbcc5f1a69197875005d895c75560734fdeefffa3e550d9af"
+    "sha256": "fc1d4bd87142594fe75ee8f970959ff29c7ef03d5109bb634e02be3109fd475c"
   },
   "release_id": "hackathon-draft-001",
   "entries": [
@@ -21,7 +21,7 @@
             {
               "artifact_id": "hackathon-sources",
               "version": "draft-1",
-              "sha256": "1fb473bba8cb37c192dcee8ae05b533741bbdf31fa474ab8985789c66c01226c"
+              "sha256": "28e466e79b2645ae4af5a1abb3e3ff463c05c3078df285cf51d00931762a8173"
             }
           ]
         }
@@ -45,7 +45,7 @@
             {
               "artifact_id": "hackathon-sources",
               "version": "draft-1",
-              "sha256": "1fb473bba8cb37c192dcee8ae05b533741bbdf31fa474ab8985789c66c01226c"
+              "sha256": "28e466e79b2645ae4af5a1abb3e3ff463c05c3078df285cf51d00931762a8173"
             }
           ]
         }
@@ -69,7 +69,7 @@
             {
               "artifact_id": "hackathon-sources",
               "version": "draft-1",
-              "sha256": "1fb473bba8cb37c192dcee8ae05b533741bbdf31fa474ab8985789c66c01226c"
+              "sha256": "28e466e79b2645ae4af5a1abb3e3ff463c05c3078df285cf51d00931762a8173"
             }
           ]
         }

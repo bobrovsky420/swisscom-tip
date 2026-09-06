@@ -13,7 +13,8 @@ operator-triggered knowledge-builder proofs:
 - A bounded crawler that reports source and snapshot metadata.
 - A source-only residence catalogue for the `hackathon` Knowledge Space, with
   59 official source references across all 26 cantons, offline crawl plans and
-  an opt-in runner that saves HTML snapshots for later extraction.
+  an opt-in runner that saves HTML snapshots for later extraction. Limited seeds
+  prefer German; multilingual selections retain every chosen official version.
 - A concept extractor that proposes evidence-backed candidate concepts from
   downloaded HTML, text, and Markdown pages.
 

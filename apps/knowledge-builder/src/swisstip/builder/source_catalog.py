@@ -61,6 +61,8 @@ def load_source_catalog(path: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf-8"))
     _require(data["schema_version"] == SOURCE_SCHEMA, "Unsupported source catalog schema")
     _require(data["status"] == "SOURCES_ONLY", "Expected a source-only catalog")
+    preferred_language = data["language_discovery"].get("preferred_seed_language", "de")
+    _require(preferred_language in {"en", "de", "fr", "it", "rm"}, "Invalid preferred seed language")
     _require(_identifier(data["knowledge_space_id"]) and _identifier(data["artifact_id"]), "Invalid catalog ID")
     topics = [item["topic_id"] for item in data["planning_topics"]]
     _require(all(_identifier(topic) for topic in topics) and len(set(topics)) == len(topics),
@@ -80,6 +82,7 @@ def load_source_catalog(path: Path) -> dict:
     urls: set[str] = set()
     _require(bool(data["sources"]), "Source list cannot be empty")
     for entry in data["sources"]:
+        _require("preferred_source_id" not in entry, "Use parallel_page_groups; language variants cannot replace selected sources")
         source = source_definition(entry)
         _require(_identifier(source.source_id) and source.source_id not in ids, "Invalid or duplicate source ID")
         _https_url(source.start_url)
@@ -111,6 +114,28 @@ def load_source_catalog(path: Path) -> dict:
                  "Unknown discovery method")
         ids.add(source.source_id)
         urls.add(source.start_url)
+    by_id = {entry["definition"]["source_id"]: entry for entry in data["sources"]}
+    group_ids: set[str] = set()
+    grouped_sources: set[str] = set()
+    for group in data.get("parallel_page_groups", []):
+        group_id, members = group["group_id"], group["source_ids"]
+        _require(_identifier(group_id) and group_id not in group_ids, "Invalid or duplicate parallel page group ID")
+        _require(len(members) >= 2 and len(set(members)) == len(members) and set(members) <= ids,
+                 "Parallel page groups require at least two unique, known source IDs")
+        _require(not grouped_sources.intersection(members), "A seed can belong to only one parallel page group")
+        _require(group["alignment_status"] == "NOT_EVALUATED" and bool(group["notes"]),
+                 "Source-only page groups cannot assert evaluated content equivalence")
+        entries = [by_id[member] for member in members]
+        first = entries[0]
+        _require(len({entry["definition"]["language"] for entry in entries}) == len(entries),
+                 "Parallel page group seeds must use distinct language hints")
+        _require(all(all(entry["definition"][key] == first["definition"][key]
+                         for key in ("jurisdiction", "canonical_authority"))
+                     and entry["authority_level"] == first["authority_level"]
+                     and entry.get("municipality") == first.get("municipality") for entry in entries),
+                 "Parallel page groups must preserve authority and jurisdiction")
+        group_ids.add(group_id)
+        grouped_sources.update(members)
     for name, members in data["scan_sets"].items():
         _require(_identifier(name) and bool(members) and len(set(members)) == len(members) and set(members) <= ids,
                  "Scan sets require unique, known source IDs")
@@ -124,10 +149,12 @@ def build_plan(data: dict, *, scan_set: str = "smoke", source_ids: list[str] | N
     if source_ids is None and scan_set not in data["scan_sets"]:
         raise ValueError(f"Unknown scan set: {scan_set}")
     selected = set(source_ids if source_ids is not None else data["scan_sets"][scan_set])
-    known = {entry["definition"]["source_id"] for entry in data["sources"]}
-    _require(bool(selected) and selected <= known, "Select at least one known source ID")
+    known = {entry["definition"]["source_id"]: entry for entry in data["sources"]}
+    _require(bool(selected) and selected <= known.keys(), "Select at least one known source ID")
+    preferred_language = data["language_discovery"].get("preferred_seed_language", "de")
     entries = sorted((entry for entry in data["sources"] if entry["definition"]["source_id"] in selected),
-                     key=lambda entry: entry["definition"]["source_id"])
+                     key=lambda entry: (entry["definition"]["language"] != preferred_language,
+                                        entry["definition"]["source_id"]))
     ready = [entry for entry in entries if entry["scan_status"] == "ready"]
     limits = asdict(CrawlLimits(**data["crawl_profiles"][profile]))
     return {
@@ -135,6 +162,17 @@ def build_plan(data: dict, *, scan_set: str = "smoke", source_ids: list[str] | N
         "knowledge_space_id": data["knowledge_space_id"],
         "catalog_ref": {"artifact_id": data["artifact_id"], "version": data["version"], "sha256": content_hash(data)},
         "profile": profile, "limits_per_source": limits,
+        "language_selection": {
+            "preferred_seed_language": preferred_language,
+            "mode": "explicit_sources" if source_ids is not None else "named_set",
+            "variant_policy": "retain_all_selected",
+            "ordering": "preferred_seed_language_first_then_source_id",
+        },
+        "parallel_page_groups": [
+            {**group, "selected_source_ids": [entry["definition"]["source_id"] for entry in entries
+                                              if entry["definition"]["source_id"] in group["source_ids"]]}
+            for group in data.get("parallel_page_groups", []) if selected.intersection(group["source_ids"])
+        ],
         "aggregate_ceilings": {key: limits[key] * len(ready) for key in
                                ("max_pages", "max_requests", "max_total_bytes", "max_duration_seconds")},
         "policies": {"robots_txt": "required; failures deny crawling", "concurrency": 1,

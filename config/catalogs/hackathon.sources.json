@@ -115,7 +115,9 @@
       "it",
       "rm"
     ],
-    "evaluated_routes": []
+    "evaluated_routes": [],
+    "preferred_seed_language": "de",
+    "selection_policy": "Prefer a verified official German seed when choosing only one language version for a limited MVP run. Named scan sets and explicit --source selectors retain every selected language version, with German seeds scheduled first. Keep the recorded local language when no German equivalent has been verified; never guess translated URL slugs or silently fall back after a failed crawl."
   },
   "crawl_profiles": {
     "smoke": {
@@ -149,7 +151,7 @@
   },
   "scan_sets": {
     "smoke": [
-      "ch-sem-residence-en",
+      "ch-sem-residence-de",
       "zh-overview",
       "vd-residence",
       "ti-residence",
@@ -168,10 +170,7 @@
       "zurich-city-arrival"
     ],
     "federal": [
-      "ch-sem-residence-en",
       "ch-sem-residence-de",
-      "ch-sem-residence-fr",
-      "ch-sem-residence-it",
       "ch-sem-eu-efta",
       "ch-sem-third-country",
       "ch-sem-work-third-country",
@@ -187,11 +186,14 @@
       "ch-chch-permits",
       "ch-chch-family",
       "ch-chch-work",
-      "ch-chch-first-pillar",
+      "ch-bsv-ahv",
       "ch-bag-health-insurance",
       "ch-bazg-moving",
       "ch-bwo-housing",
-      "ch-estv-tax-at-source"
+      "ch-estv-tax-at-source",
+      "ch-sem-residence-en",
+      "ch-sem-residence-fr",
+      "ch-sem-residence-it"
     ],
     "cantons": [
       "ag-residence",
@@ -230,9 +232,9 @@
       "bs-residence",
       "ch-bag-health-insurance",
       "ch-bazg-moving",
+      "ch-bsv-ahv",
       "ch-bwo-housing",
       "ch-chch-family",
-      "ch-chch-first-pillar",
       "ch-chch-permits",
       "ch-chch-work",
       "ch-estv-tax-at-source",
@@ -281,6 +283,12 @@
       "zh-welcome-residence",
       "zh-work-third-country",
       "zurich-city-arrival"
+    ],
+    "multilingual": [
+      "ch-sem-residence-de",
+      "ch-sem-residence-en",
+      "ch-sem-residence-fr",
+      "ch-sem-residence-it"
     ]
   },
   "build_notes": [
@@ -291,7 +299,8 @@
     "Planning topic hints are for operator selection only. Do not feed them as expected concepts to source-first extraction or human annotation.",
     "HTML content capture is opt-in at a later operator run. PDF documents and JavaScript-only applications need later adapters; record exclusions instead of claiming successful extraction.",
     "Record requested/final URL, retrieval time, byte hash, content type, declared/detected language, source identity and jurisdiction with every later snapshot. Preserve municipal applicability.",
-    "Run the existing concepts CLI on saved pages. Cross-document topic clustering, review, supported operations and release publication remain later build stages."
+    "Run the existing concepts CLI on saved pages. Cross-document topic clustering, review, supported operations and release publication remain later build stages.",
+    "German is preferred for single-version MVP seeds and crawl ordering. Multilingual selections retain all chosen official versions; candidate parallel page groups require later content alignment. Evidence selection is a planned separate policy and must not equate German preference with legal precedence."
   ],
   "sources": [
     {
@@ -318,7 +327,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -378,7 +387,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -414,7 +423,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -444,7 +453,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -483,16 +492,16 @@
     {
       "definition": {
         "source_id": "ch-bag-health-insurance",
-        "start_url": "https://www.bag.admin.ch/en/health-insurance-requirement-to-obtain-insurance-for-persons-resident-in-switzerland",
+        "start_url": "https://www.bag.admin.ch/de/krankenversicherung-versicherungspflicht-fuer-in-der-schweiz-wohnhafte-versicherte",
         "allowed_hosts": [
           "www.bag.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/en/health-insurance-requirement-to-obtain-insurance-for-persons-resident-in-switzerland"
+          "/de/krankenversicherung-versicherungspflicht-fuer-in-der-schweiz-wohnhafte-versicherte"
         ],
         "canonical_authority": "Federal Office of Public Health (FOPH/BAG)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Health insurance for persons resident in Switzerland",
       "authority_level": "federal",
@@ -503,7 +512,7 @@
       ],
       "discovery": {
         "method": "official_search_result",
-        "reference_url": "https://www.bag.admin.ch/en/health-insurance-requirement-to-obtain-insurance-for-persons-resident-in-switzerland",
+        "reference_url": "https://www.bag.admin.ch/de/krankenversicherung-versicherungspflicht-fuer-in-der-schweiz-wohnhafte-versicherte",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -512,16 +521,16 @@
     {
       "definition": {
         "source_id": "ch-bazg-moving",
-        "start_url": "https://www.bazg.admin.ch/en/relocation-import-switzerland-procedure",
+        "start_url": "https://www.bazg.admin.ch/de/vorgehen-umzug-in-die-schweiz",
         "allowed_hosts": [
           "www.bazg.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/en/relocation-import-switzerland-procedure"
+          "/de/vorgehen-umzug-in-die-schweiz"
         ],
         "canonical_authority": "Federal Office for Customs and Border Security (FOCBS/BAZG)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Moving to Switzerland: customs procedure",
       "authority_level": "federal",
@@ -532,11 +541,40 @@
       ],
       "discovery": {
         "method": "official_search_result",
-        "reference_url": "https://www.bazg.admin.ch/en/relocation-import-switzerland-procedure",
+        "reference_url": "https://www.bazg.admin.ch/de/vorgehen-umzug-in-die-schweiz",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
       "notes": "Seed located on an official site; crawler accessibility and content language must be checked at build time."
+    },
+    {
+      "definition": {
+        "source_id": "ch-bsv-ahv",
+        "start_url": "https://www.bsv.admin.ch/de/ahv-uebersicht",
+        "allowed_hosts": [
+          "www.bsv.admin.ch"
+        ],
+        "allowed_path_prefixes": [
+          "/de/ahv-uebersicht"
+        ],
+        "canonical_authority": "Federal Social Insurance Office (FSIO/BSV)",
+        "jurisdiction": "CH",
+        "language": "de"
+      },
+      "title": "Old-age and survivors insurance (AHV) overview",
+      "authority_level": "federal",
+      "source_kind": "official_guidance",
+      "priority": "P1",
+      "topic_hints": [
+        "tax-social-insurance"
+      ],
+      "discovery": {
+        "method": "official_search_result",
+        "reference_url": "https://www.bsv.admin.ch/de/ahv-uebersicht",
+        "located_on": "2026-09-06"
+      },
+      "scan_status": "ready",
+      "notes": "German official AHV overview from BSV selected for first-pillar source planning. Replaces the English ch.ch first-pillar seed; no German ch.ch counterpart was verified. Crawler access and content language remain build-time checks."
     },
     {
       "definition": {
@@ -570,16 +608,16 @@
     {
       "definition": {
         "source_id": "ch-chch-family",
-        "start_url": "https://www.ch.ch/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/family-reunification/",
+        "start_url": "https://www.ch.ch/de/auslander-in-der-schweiz/einreise-in-die-schweiz/familiennachzug/",
         "allowed_hosts": [
           "www.ch.ch"
         ],
         "allowed_path_prefixes": [
-          "/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/family-reunification/"
+          "/de/auslander-in-der-schweiz/einreise-in-die-schweiz/familiennachzug/"
         ],
         "canonical_authority": "ch.ch - Swiss authorities' information portal",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Family reunification",
       "authority_level": "federal",
@@ -589,37 +627,8 @@
         "family-reunification"
       ],
       "discovery": {
-        "method": "official_search_result",
-        "reference_url": "https://www.ch.ch/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/family-reunification/",
-        "located_on": "2026-09-06"
-      },
-      "scan_status": "ready",
-      "notes": "Seed located on an official site; crawler accessibility and content language must be checked at build time."
-    },
-    {
-      "definition": {
-        "source_id": "ch-chch-first-pillar",
-        "start_url": "https://www.ch.ch/en/retirement/old-age-pension/the-first-pillar/",
-        "allowed_hosts": [
-          "www.ch.ch"
-        ],
-        "allowed_path_prefixes": [
-          "/en/retirement/old-age-pension/the-first-pillar/"
-        ],
-        "canonical_authority": "ch.ch - Swiss authorities' information portal",
-        "jurisdiction": "CH",
-        "language": "en"
-      },
-      "title": "First pillar social insurance overview",
-      "authority_level": "federal",
-      "source_kind": "official_guidance",
-      "priority": "P1",
-      "topic_hints": [
-        "tax-social-insurance"
-      ],
-      "discovery": {
-        "method": "official_search_result",
-        "reference_url": "https://www.ch.ch/en/retirement/old-age-pension/the-first-pillar/",
+        "method": "official_page_link",
+        "reference_url": "https://www.ch.ch/de/auslander-in-der-schweiz/einreise-in-die-schweiz/aufenthaltsbewilligung/",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -628,16 +637,16 @@
     {
       "definition": {
         "source_id": "ch-chch-permits",
-        "start_url": "https://www.ch.ch/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/permits-for-living-in-switzerland/",
+        "start_url": "https://www.ch.ch/de/auslander-in-der-schweiz/einreise-in-die-schweiz/aufenthaltsbewilligung/",
         "allowed_hosts": [
           "www.ch.ch"
         ],
         "allowed_path_prefixes": [
-          "/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/permits-for-living-in-switzerland/"
+          "/de/auslander-in-der-schweiz/einreise-in-die-schweiz/aufenthaltsbewilligung/"
         ],
         "canonical_authority": "ch.ch - Swiss authorities' information portal",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Residence permits: application and renewal",
       "authority_level": "federal",
@@ -648,8 +657,8 @@
         "settlement-renewal"
       ],
       "discovery": {
-        "method": "official_search_result",
-        "reference_url": "https://www.ch.ch/en/foreign-nationals-in-switzerland/entry-and-stay-in-switzerland/permits-for-living-in-switzerland/",
+        "method": "official_page_link",
+        "reference_url": "https://www.ch.ch/de/auslander-in-der-schweiz/in-der-schweiz-arbeiten/",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -658,16 +667,16 @@
     {
       "definition": {
         "source_id": "ch-chch-work",
-        "start_url": "https://www.ch.ch/en/work/working-in-switzerland-as-a-foreign-national/",
+        "start_url": "https://www.ch.ch/de/auslander-in-der-schweiz/in-der-schweiz-arbeiten/",
         "allowed_hosts": [
           "www.ch.ch"
         ],
         "allowed_path_prefixes": [
-          "/en/work/working-in-switzerland-as-a-foreign-national/"
+          "/de/auslander-in-der-schweiz/in-der-schweiz-arbeiten/"
         ],
         "canonical_authority": "ch.ch - Swiss authorities' information portal",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Working in Switzerland as a foreign national",
       "authority_level": "federal",
@@ -679,7 +688,7 @@
       ],
       "discovery": {
         "method": "official_search_result",
-        "reference_url": "https://www.ch.ch/en/work/working-in-switzerland-as-a-foreign-national/",
+        "reference_url": "https://www.ch.ch/de/auslander-in-der-schweiz/in-der-schweiz-arbeiten/",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -804,17 +813,17 @@
     {
       "definition": {
         "source_id": "ch-sem-authorities",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
-          "/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und/"
+          "/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+          "/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Cantonal immigration and employment authorities",
       "authority_level": "federal",
@@ -825,7 +834,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -834,17 +843,17 @@
     {
       "definition": {
         "source_id": "ch-sem-biometric-documents",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/biometr_auslaenderausweis.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/biometr_auslaenderausweis.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/aufenthalt/biometr_auslaenderausweis.html",
-          "/sem/en/home/themen/aufenthalt/biometr_auslaenderausweis/"
+          "/sem/de/home/themen/aufenthalt/biometr_auslaenderausweis.html",
+          "/sem/de/home/themen/aufenthalt/biometr_auslaenderausweis/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Biometric residence permits",
       "authority_level": "federal",
@@ -855,7 +864,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/biometr_auslaenderausweis.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/biometr_auslaenderausweis.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -895,17 +904,17 @@
     {
       "definition": {
         "source_id": "ch-sem-entry",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/einreise.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/einreise.html",
-          "/sem/en/home/themen/einreise/"
+          "/sem/de/home/themen/einreise.html",
+          "/sem/de/home/themen/einreise/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Entry and visa information",
       "authority_level": "federal",
@@ -916,7 +925,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/einreise.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -925,17 +934,17 @@
     {
       "definition": {
         "source_id": "ch-sem-entry-faq",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/einreise/faq.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise/faq.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/einreise/faq.html",
-          "/sem/en/home/themen/einreise/faq/"
+          "/sem/de/home/themen/einreise/faq.html",
+          "/sem/de/home/themen/einreise/faq/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Entry FAQ",
       "authority_level": "federal",
@@ -946,7 +955,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/einreise/faq.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise/faq.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -955,17 +964,17 @@
     {
       "definition": {
         "source_id": "ch-sem-eu-efta",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/eu_efta.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/eu_efta.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/aufenthalt/eu_efta.html",
-          "/sem/en/home/themen/aufenthalt/eu_efta/"
+          "/sem/de/home/themen/aufenthalt/eu_efta.html",
+          "/sem/de/home/themen/aufenthalt/eu_efta/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Residence permits for EU/EFTA nationals",
       "authority_level": "federal",
@@ -978,7 +987,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/eu_efta.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/eu_efta.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -987,17 +996,17 @@
     {
       "definition": {
         "source_id": "ch-sem-free-movement-faq",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
-          "/sem/en/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq/"
+          "/sem/de/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
+          "/sem/de/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Free movement of persons FAQ",
       "authority_level": "federal",
@@ -1010,7 +1019,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1045,7 +1054,7 @@
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
-      "notes": "Language entry point only. Discover actual language links later; parallel pages require independent snapshots and semantic comparison."
+      "notes": "German entry point preferred for a single-version MVP selection. Capture independently; candidate page grouping does not prove equivalent sections, synchronized revisions or concept identity."
     },
     {
       "definition": {
@@ -1076,7 +1085,7 @@
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
-      "notes": "Language entry point only. Discover actual language links later; parallel pages require independent snapshots and semantic comparison."
+      "notes": "Official language version retained in multilingual, federal and all scan sets. Capture independently; candidate page grouping does not prove equivalent sections, synchronized revisions or concept identity."
     },
     {
       "definition": {
@@ -1107,7 +1116,7 @@
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
-      "notes": "Language entry point only. Discover actual language links later; parallel pages require independent snapshots and semantic comparison."
+      "notes": "Official language version retained in multilingual, federal and all scan sets. Capture independently; candidate page grouping does not prove equivalent sections, synchronized revisions or concept identity."
     },
     {
       "definition": {
@@ -1138,22 +1147,22 @@
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
-      "notes": "Language entry point only. Discover actual language links later; parallel pages require independent snapshots and semantic comparison."
+      "notes": "Official language version retained in multilingual, federal and all scan sets. Capture independently; candidate page grouping does not prove equivalent sections, synchronized revisions or concept identity."
     },
     {
       "definition": {
         "source_id": "ch-sem-third-country",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/nicht_eu_efta.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/nicht_eu_efta.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/aufenthalt/nicht_eu_efta.html",
-          "/sem/en/home/themen/aufenthalt/nicht_eu_efta/"
+          "/sem/de/home/themen/aufenthalt/nicht_eu_efta.html",
+          "/sem/de/home/themen/aufenthalt/nicht_eu_efta/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Residence permits for non-EU/EFTA nationals",
       "authority_level": "federal",
@@ -1166,7 +1175,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt/nicht_eu_efta.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/nicht_eu_efta.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1175,17 +1184,17 @@
     {
       "definition": {
         "source_id": "ch-sem-work-third-country",
-        "start_url": "https://www.sem.admin.ch/sem/en/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
+        "start_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
         "allowed_hosts": [
           "www.sem.admin.ch"
         ],
         "allowed_path_prefixes": [
-          "/sem/en/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
-          "/sem/en/home/themen/arbeit/nicht-eu_efta-angehoerige/"
+          "/sem/de/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
+          "/sem/de/home/themen/arbeit/nicht-eu_efta-angehoerige/"
         ],
         "canonical_authority": "State Secretariat for Migration (SEM)",
         "jurisdiction": "CH",
-        "language": "en"
+        "language": "de"
       },
       "title": "Admission to work for non-EU/EFTA nationals",
       "authority_level": "federal",
@@ -1196,7 +1205,7 @@
       ],
       "discovery": {
         "method": "official_page_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1205,16 +1214,16 @@
     {
       "definition": {
         "source_id": "fr-residence",
-        "start_url": "https://www.fr.ch/dsjs/spomi",
+        "start_url": "https://www.fr.ch/de/sjsd/bma",
         "allowed_hosts": [
           "www.fr.ch"
         ],
         "allowed_path_prefixes": [
-          "/dsjs/spomi"
+          "/de/sjsd/bma"
         ],
         "canonical_authority": "Canton Fribourg",
         "jurisdiction": "CH-FR",
-        "language": "fr"
+        "language": "de"
       },
       "title": "Fribourg - residence and migration",
       "authority_level": "cantonal",
@@ -1225,8 +1234,8 @@
         "competent-authorities"
       ],
       "discovery": {
-        "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "method": "official_page_link",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1256,7 +1265,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1286,7 +1295,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1466,7 +1475,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1528,7 +1537,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1588,7 +1597,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1618,7 +1627,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "needs_access_review",
@@ -1678,7 +1687,7 @@
       ],
       "discovery": {
         "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -1717,16 +1726,16 @@
     {
       "definition": {
         "source_id": "vs-residence",
-        "start_url": "https://www.vs.ch/web/spm",
+        "start_url": "https://www.vs.ch/de/web/spm/",
         "allowed_hosts": [
           "www.vs.ch"
         ],
         "allowed_path_prefixes": [
-          "/web/spm"
+          "/de/web/spm/"
         ],
         "canonical_authority": "Canton Valais",
         "jurisdiction": "CH-VS",
-        "language": "fr"
+        "language": "de"
       },
       "title": "Valais - residence and migration",
       "authority_level": "cantonal",
@@ -1737,8 +1746,8 @@
         "competent-authorities"
       ],
       "discovery": {
-        "method": "official_directory_link",
-        "reference_url": "https://www.sem.admin.ch/sem/en/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+        "method": "official_page_link",
+        "reference_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
         "located_on": "2026-09-06"
       },
       "scan_status": "ready",
@@ -2085,5 +2094,26 @@
         "bfs_code": "0261"
       }
     }
-  ]
+  ],
+  "parallel_page_groups": [
+    {
+      "group_id": "ch-sem-residence-overview",
+      "source_ids": [
+        "ch-sem-residence-de",
+        "ch-sem-residence-en",
+        "ch-sem-residence-fr",
+        "ch-sem-residence-it"
+      ],
+      "alignment_status": "NOT_EVALUATED",
+      "notes": "Official language entry points for the SEM residence overview. Candidate grouping only: later compare independently captured page versions and align supported sections and concepts. Group membership alone establishes neither content equivalence nor a shared concept, document or evidence ID."
+    }
+  ],
+  "evidence_selection_policy": {
+    "status": "PLANNED_NOT_IMPLEMENTED",
+    "eligibility": "Apply explicit scope, jurisdiction, applicability, effective date and source_languages filters before ranking evidence. Query and answer languages never imply a source-language filter.",
+    "ranking": "Prefer authoritative, current evidence that supports the requested claim. German is only a final tie-breaker among verified equivalent, equally suitable official versions.",
+    "duplicate_support": "Group verified equivalent sections of compatible source revisions when selecting evidence; translations of one source do not count as independent corroboration. Retain all source references and expose material differences or conflicts.",
+    "identity": "Reviewed concept equivalence permits shared language-neutral concept IDs and multilingual term metadata. Documents, snapshots, sections, evidence IDs, URLs, source languages and hashes remain independently identified.",
+    "answer_language": "The calling LLM chooses the answer language independently and cites the selected original evidence. Localized retrieval metadata is not factual evidence."
+  }
 }

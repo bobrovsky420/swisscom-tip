@@ -56,7 +56,69 @@ class SourceCatalogTests(unittest.TestCase):
         plan = json.loads(stdout.getvalue())
         self.assertEqual(plan["mode"], "dry-run")
         self.assertEqual(plan["ready_source_count"], 5)
-        self.assertEqual({entry["definition"]["language"] for entry in plan["sources"]}, {"en", "de", "fr", "it"})
+        self.assertEqual({entry["definition"]["language"] for entry in plan["sources"]}, {"de", "fr", "it"})
+        self.assertIn("ch-sem-residence-de", {entry["definition"]["source_id"] for entry in plan["sources"]})
+
+    def test_named_sets_preserve_all_selected_variants_and_schedule_german_first(self) -> None:
+        for scan_set in self.catalog["scan_sets"]:
+            with self.subTest(scan_set=scan_set):
+                plan = build_plan(self.catalog, scan_set=scan_set)
+                self.assertEqual({entry["definition"]["source_id"] for entry in plan["sources"]},
+                                 set(self.catalog["scan_sets"][scan_set]))
+                languages = [entry["definition"]["language"] for entry in plan["sources"]]
+                self.assertEqual(languages[:languages.count("de")], ["de"] * languages.count("de"))
+                self.assertEqual(plan["language_selection"]["variant_policy"], "retain_all_selected")
+        plan = build_plan(self.catalog, scan_set="all")
+        self.assertEqual(len(plan["sources"]), 59)
+        self.assertEqual(plan["ready_source_count"], 53)
+        self.assertEqual(plan["language_selection"]["preferred_seed_language"], "de")
+        federal = build_plan(self.catalog, scan_set="federal")
+        self.assertEqual({entry["definition"]["source_id"] for entry in federal["sources"]},
+                         {entry["definition"]["source_id"] for entry in self.catalog["sources"]
+                          if entry["authority_level"] == "federal"})
+
+    def test_multilingual_plan_retains_candidate_group_without_asserting_equivalence(self) -> None:
+        plan = build_plan(self.catalog, scan_set="multilingual")
+        ids = [entry["definition"]["source_id"] for entry in plan["sources"]]
+        self.assertEqual(ids, [f"ch-sem-residence-{language}" for language in ("de", "en", "fr", "it")])
+        self.assertEqual(plan["aggregate_ceilings"]["max_pages"], 4)
+        self.assertEqual(plan["aggregate_ceilings"]["max_requests"], 20)
+        group = plan["parallel_page_groups"][0]
+        self.assertEqual(group["selected_source_ids"], ids)
+        self.assertEqual(group["alignment_status"], "NOT_EVALUATED")
+        smoke_group = build_plan(self.catalog)["parallel_page_groups"][0]
+        self.assertEqual(smoke_group["selected_source_ids"], ["ch-sem-residence-de"])
+        self.assertEqual(len(smoke_group["source_ids"]), 4)
+
+    def test_explicit_sources_retain_requested_languages(self) -> None:
+        plan = build_plan(self.catalog, source_ids=["ch-sem-residence-en", "ch-sem-residence-de"])
+        self.assertEqual({entry["definition"]["language"] for entry in plan["sources"]}, {"en", "de"})
+        self.assertEqual(plan["language_selection"]["mode"], "explicit_sources")
+        english_only = build_plan(self.catalog, source_ids=["ch-sem-residence-en"])
+        self.assertEqual([entry["definition"]["source_id"] for entry in english_only["sources"]],
+                         ["ch-sem-residence-en"])
+        self.assertEqual(english_only["parallel_page_groups"][0]["selected_source_ids"], ["ch-sem-residence-en"])
+
+    def test_parallel_group_validation_rejects_dangling_or_unsupported_alignment(self) -> None:
+        mutations = [
+            lambda data: data["parallel_page_groups"][0]["source_ids"].append("missing"),
+            lambda data: data["parallel_page_groups"][0]["source_ids"].append("ch-sem-residence-de"),
+            lambda data: data["parallel_page_groups"][0].update(source_ids=["ch-sem-residence-en", "zh-overview"]),
+            lambda data: data["parallel_page_groups"][0].update(source_ids=["ch-sem-residence-de", "ch-sem-entry"]),
+            lambda data: data["parallel_page_groups"][0].update(source_ids=["ch-sem-residence-de"]),
+            lambda data: data["parallel_page_groups"][0].update(alignment_status="VERIFIED"),
+            lambda data: data["parallel_page_groups"].append(deepcopy(data["parallel_page_groups"][0])),
+            lambda data: data["parallel_page_groups"].append({**data["parallel_page_groups"][0], "group_id": "overlap"}),
+            lambda data: data["sources"][0].update(preferred_source_id="ch-sem-residence-de"),
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            for mutate in mutations:
+                data = deepcopy(self.catalog)
+                mutate(data)
+                path.write_text(json.dumps(data), encoding="utf-8")
+                with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                    load_source_catalog(path)
 
     def test_bad_selectors_fail_before_execution(self) -> None:
         for values in ({"scan_set": "missing"}, {"source_ids": ["missing"]}, {"profile": "missing"}):
@@ -126,6 +188,58 @@ class SourceCatalogTests(unittest.TestCase):
         self.assertEqual(result["saved_html_pages"], 0)
         self.assertEqual(result["results"][0]["status"], "incomplete")
         self.assertEqual(opener.requested, ["https://www.zh.ch/robots.txt"])
+
+    def test_multilingual_capture_keeps_independent_snapshots_and_entry_only_group_hints(self) -> None:
+        plan = build_plan(self.catalog, scan_set="multilingual", profile="sample")
+        body = b'<html><title>Fixture</title><p>Shared fixture bytes.</p></html>'
+
+        def crawler(source, limits, **kwargs):
+            child_url = source.start_url.removesuffix(".html") + "/fixture.html"
+            entry_body = f'<html><a href="{child_url}">Detail</a></html>'.encode()
+            opener = FakeOpener({
+                "https://www.sem.admin.ch/robots.txt": FakeResponse(200, b"User-agent: *\nAllow: /\n", content_type="text/plain"),
+                source.start_url: FakeResponse(200, entry_body),
+                child_url: FakeResponse(200, body),
+            })
+            return SafeCrawler(source, replace(limits, delay_seconds=0), opener=opener,
+                               resolver=public_resolver, **kwargs)
+
+        with tempfile.TemporaryDirectory() as directory, patch("swisstip.builder.source_cli.time.sleep"), \
+                patch("swisstip.builder.source_cli.SafeCrawler", side_effect=crawler):
+            output = Path(directory) / "multilingual-run"
+            result = crawl_plan(plan, output)
+            self.assertEqual(result["saved_html_pages"], 8)
+            snapshots = [snapshot for item in result["results"] for snapshot in item["snapshots"]]
+            self.assertEqual(len({snapshot["relative_path"] for snapshot in snapshots}), 8)
+            for item in result["results"]:
+                self.assertEqual(item["status"], "captured")
+                entry_snapshot, child_snapshot = item["snapshots"]
+                self.assertEqual(entry_snapshot["candidate_parallel_page_group_id"], "ch-sem-residence-overview")
+                self.assertIsNone(child_snapshot["candidate_parallel_page_group_id"])
+                self.assertEqual((output / child_snapshot["relative_path"]).read_bytes(), body)
+                self.assertEqual(child_snapshot["sha256"], hashlib.sha256(body).hexdigest())
+                self.assertEqual(entry_snapshot["source_language_hint"], item["source"]["definition"]["language"])
+
+    def test_failed_german_version_does_not_suppress_or_substitute_selected_english(self) -> None:
+        plan = build_plan(self.catalog, source_ids=["ch-sem-residence-de", "ch-sem-residence-en"])
+        requested_sources = []
+
+        def crawler(source, limits, **kwargs):
+            requested_sources.append(source.source_id)
+            opener = FakeOpener({
+                "https://www.sem.admin.ch/robots.txt": FakeResponse(200, b"User-agent: *\nAllow: /\n", content_type="text/plain"),
+                source.start_url: FakeResponse(503 if source.language == "de" else 200,
+                                               b'<html lang="en"><p>Offline fixture.</p></html>'),
+            })
+            return SafeCrawler(source, replace(limits, delay_seconds=0), opener=opener,
+                               resolver=public_resolver, **kwargs)
+
+        with tempfile.TemporaryDirectory() as directory, patch("swisstip.builder.source_cli.time.sleep"), \
+                patch("swisstip.builder.source_cli.SafeCrawler", side_effect=crawler):
+            result = crawl_plan(plan, Path(directory) / "partial-run")
+        self.assertEqual(requested_sources, ["ch-sem-residence-de", "ch-sem-residence-en"])
+        self.assertEqual([item["status"] for item in result["results"]], ["incomplete", "captured"])
+        self.assertEqual(result["saved_html_pages"], 1)
 
     def test_manual_sources_never_reach_crawler(self) -> None:
         plan = build_plan(self.catalog, source_ids=["ch-fedlex-aig"])

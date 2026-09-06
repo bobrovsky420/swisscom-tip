@@ -32,6 +32,8 @@ def crawl_plan(plan: dict, output: Path) -> dict:
     output.mkdir(parents=True, exist_ok=False)
     _write_json(output / "plan.json", plan)
     limits = CrawlLimits(**plan["limits_per_source"])
+    seed_groups = {source_id: group["group_id"] for group in plan.get("parallel_page_groups", [])
+                   for source_id in group["selected_source_ids"]}
     results = []
     for index, entry in enumerate(ready):
         # Each SafeCrawler enforces its origin's robots delay internally. Preserve
@@ -55,6 +57,10 @@ def crawl_plan(plan: dict, output: Path) -> dict:
                 "catalog_ref": plan["catalog_ref"],
                 "relative_path": destination.relative_to(output).as_posix(),
                 "source_language_hint": definition.language,
+                # Only the configured entry page has this candidate relationship.
+                # Deeper pages require their own discovery and alignment review.
+                "candidate_parallel_page_group_id": seed_groups.get(definition.source_id)
+                if page.requested_url == definition.start_url else None,
                 "declared_language": None, "detected_language": None,
                 "language_validation_status": "PENDING_NORMALIZATION",
             })

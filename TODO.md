@@ -18,6 +18,12 @@ the governed publication and structured serving layer around reviewed knowledge.
   release. A form can submit the same contract directly.
 - Original-language `retrieval_terms` are optional scoped relevance signals. They
   never establish or override intent, jurisdiction, date or applicability facts.
+- German is preferred for a single-version MVP seed; multilingual selections
+  retain all chosen official versions. Reviewed concepts may share language-neutral
+  IDs and multilingual terms, while source/evidence identities remain separate.
+  Evidence eligibility and claim support precede a German tie-breaker among
+  verified equivalent versions; explicit source filters and caller answer language
+  remain independent.
 - Five compact metadata projections (`en`, `de`, `fr`, `it`, `rm`)
   and scoped multilingual lexical/concept/vector retrieval with semantic ranking
   remain P0. No common-language or source-language translation is required from
@@ -33,7 +39,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Area | Observed implementation | Alignment and next boundary |
 |---|---|---|
 | Acquisition | [Crawler](packages/ingestion/src/swisstip/ingestion/crawler.py) emits bounded metadata and enforces robots per origin/hop; the [source catalogue runner](config/catalogs/README.md) can retain exact HTML bytes and source manifests on explicit runs | Bind experimental snapshots into immutable release contracts; add PDF/JavaScript adapters and governed language discovery |
-| Source planning | The `hackathon` residence catalogue has 59 official source references covering all 26 cantons, crawl sets/budgets and offline validation; no pages or extracted concepts are included | Run selected test crawls, review discovered scope and source-first topic/concept proposals |
+| Source planning | The `hackathon` residence catalogue has 59 official source references covering all 26 cantons; multilingual sets retain chosen versions, schedule German first and carry unevaluated parallel-page groups; no pages or extracted concepts are included | Run selected test crawls, review discovered scope and source-first topic/concept proposals; catalogue grouping does not prove content equivalence |
 | Normalization and evidence spans | [Normalizer and extractor](packages/ingestion/src/swisstip/ingestion/concepts.py) read local files, record local paths and verify normalized offsets | Add authoritative URL/source identity, immutable snapshot binding, persisted normalized sections and release-associated evidence |
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
@@ -79,8 +85,8 @@ The BUILD-01 update adds the core suite. Install and test it in the same environ
 ./.venv/Scripts/python.exe -m unittest discover -s packages/core/tests -v
 ```
 
-Current verification: 68 core, 63 ingestion
-and 104 builder tests pass, including source catalogue planning/snapshot fixtures,
+Current verification: 71 core, 63 ingestion
+and 110 builder tests pass, including source catalogue planning/snapshot fixtures,
 POC-01 preparation and the loopback workflow.
 These counts do not establish semantic review or complete a POC.
 
@@ -124,8 +130,8 @@ assumptions; POCs do not replace the implementation backlog.
 | [ ] | BUILD-01 | Define versioned catalog, context, evidence and `structured-grounding/v1` contracts; curate a small seed catalog | Stable public domain/topic/concept IDs, supported finite intents, canonical jurisdictions, conditional context schemas, strict unknown-field/ID handling and explicit outcomes |
 | [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
-| [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed terminology and all five compact projections | Per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
-| [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters and evaluated provider fallback |
+| [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
+| [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters, verified equivalent evidence grouping, conditional German tie-breaker and evaluated provider fallback |
 | [ ] | BUILD-06 | Complete on-demand release publication, retention, observability and client qualification | Atomic promotion, historical reads, no silent release substitution, fresh/stale reporting, external-client setup and separate caller evaluation |
 
 BUILD-01 is in progress: shared contracts and offline boundary validation are
@@ -148,6 +154,23 @@ and sitemap alternates, reviewed source-language hint mappings, explicitly scope
 adapters where needed, shared-budget scheduling and reports for discovered,
 fetched, validated, excluded, failed and unresolved variants. POC-09 validates
 these implementation outputs; fixed German seeds are only an early fixture.
+
+The source catalogue now offers a four-language SEM `multilingual` set. `all`
+retains 59 references with 53 eligible sources and six explicit exclusions;
+`smoke` selects five seeds, including the German SEM version. Offline fixtures
+cover exact selection retention, German ordering, group validation, independent
+snapshot capture and a failed German version alongside selected English content.
+They do not establish live availability, translation fidelity or concept alignment.
+
+BUILD-04 must distinguish reviewed concept equivalence from revision-bound claim
+equivalence, including unequal conditions across official translations. BUILD-05
+must avoid counting equivalent translations as independent corroboration, keep
+alternate evidence references and expose conflicts. Add runtime regressions for
+explicit English-only filters, multilingual terms matching the same concept,
+equally suitable German evidence, better or newer non-German evidence, missing
+German content, partial translations and a caller answer language different from
+its citations. These gates remain pending; the current extractor groups proposals
+using language-dependent candidate metadata and does not create shared public IDs.
 
 The source review sets the following BUILD-02 implementation priorities. These
 are requirements from V20/V11, not capabilities already delivered by the worksheet:

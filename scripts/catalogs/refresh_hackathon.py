@@ -37,15 +37,21 @@ def main() -> int:
              "The machine-readable [registry](hackathon.sources.json) contains exact allowlists,",
              "discovery references, topic hints, scan sets, limits and per-source caveats.",
              "`ready` means eligible for a test; access and robots policy are checked at run time.", "",
-             "| ID | Official source | Jurisdiction | Seed language hint | Priority | Scan status |",
-             "| --- | --- | --- | --- | --- | --- |"]
+             "German is preferred when selecting a single version for a limited run. Every selected",
+             "language version is retained; German seeds run first. Parallel page groups are candidates",
+             "for later alignment, not verified content equivalence or shared evidence identity.", "",
+             "| ID | Official source | Jurisdiction | Seed language hint | Priority | Scan status | Candidate parallel page group |",
+             "| --- | --- | --- | --- | --- | --- | --- |"]
+    groups = {source_id: group["group_id"] for group in data.get("parallel_page_groups", [])
+              for source_id in group["source_ids"]}
     for source in sorted(data["sources"], key=lambda item: item["definition"]["source_id"]):
         definition = source["definition"]
         jurisdiction = definition["jurisdiction"]
         if source["authority_level"] == "municipal":
             jurisdiction += " / city " + source["municipality"]["name"]
         lines.append(f"| `{definition['source_id']}` | [{source['title']}]({definition['start_url']}) | "
-                     f"{jurisdiction} | {definition['language']} | {source['priority']} | {source['scan_status']} |")
+                     f"{jurisdiction} | {definition['language']} | {source['priority']} | {source['scan_status']} | "
+                     f"{groups.get(definition['source_id'], '-')} |")
     outputs = {
         "hackathon.sources.md": "\n".join(lines) + "\n",
         "hackathon.language-policy.json": policy.model_dump_json(indent=2) + "\n",

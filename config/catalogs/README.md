@@ -11,7 +11,7 @@ the other cantons initially have one migration/residence entry point each.
 - [Draft KnowledgeCatalog contract](hackathon.seed.json).
 - [Draft language policy](hackathon.language-policy.json).
 
-The sources include SEM/admin.ch, Fedlex, BAG, BAZG, BWO, ESTV, ch.ch, zh.ch and
+The sources include SEM/admin.ch, Fedlex, BAG, BAZG, BSV, BWO, ESTV, ch.ch, zh.ch and
 official cantonal sites. Discovery references and dates are recorded per source.
 These files contain URLs and planning metadata only. No source pages, extracts,
 quotations, legal rules, facts or model-generated concepts are included.
@@ -46,8 +46,27 @@ of Zurich source has an explicit municipality; its procedures must not become
 canton-wide claims. All 26 cantons being listed does not establish complete
 cantonal or municipal coverage.
 
-German, French, Italian and English seed language hints support later language
-discovery. SEM has four explicit language seeds. URL patterns do not establish
+German is preferred when selecting one version of a page for a limited MVP run.
+Federal topic seeds use verified
+German URLs, including SEM, BAG, BAZG and ch.ch. First-pillar planning uses BSV's
+German AHV overview. The bilingual Fribourg and Valais sources also use their
+German entry points. French and Italian cantonal seeds remain where a German
+equivalent has not been verified.
+
+The catalogue retains SEM's German, French, Italian and English residence
+overviews in the `multilingual`, `federal` and `all` sets. Every selected version
+is kept, with German seeds scheduled first; an explicit English-only selection
+stays English-only. The five-source `smoke` set deliberately chooses the German
+SEM overview. Per-source budgets never remove other selected language versions.
+
+`parallel_page_groups` records the four SEM entry points as one candidate group
+with alignment status `NOT_EVALUATED`. This is a discovery relationship for later
+comparison, not proof of equivalent content or synchronized revisions. Group
+hints apply only to those entry pages, not every page crawled beneath them.
+The catalogue is not an exhaustive inventory of every translation on every site;
+later language discovery must report missing, excluded and unresolved variants.
+
+Language hints support later discovery. URL patterns do not establish
 parallel equivalence or availability of Romansh. The builder must later record
 declared/detected languages and compare independently versioned parallel pages.
 The five metadata projection targets are `en`, `de`, `fr`, `it` and `rm`.
@@ -55,6 +74,41 @@ Language identifiers carry no location; jurisdiction and reviewed dialect/idiom
 coverage are separate metadata. Raw website tags are retained as provenance and
 require reviewed mappings to enabled language-only source tags. These targets
 remain planned; the language policy enables no evaluated routes.
+
+## Concepts, multilingual metadata and answer evidence
+
+The intended build separates these identities and language choices:
+
+| Layer | Planned behavior |
+| --- | --- |
+| Canonical concept | One stable, language-neutral ID for a reviewed scoped concept, with reviewed multilingual labels and aliases. A page can discuss several concepts. |
+| Source document and evidence | Separate document, snapshot, section and evidence identities for each version, retaining URL, source language, authority, jurisdiction, dates and byte hash. |
+| Retrieval metadata | The same field schema and five target languages can apply to each eligible section. Values and provenance remain section-specific; shared terms or concept IDs do not prove equal claims. |
+| Answer language | Chosen by the calling LLM independently of source language, with citations to the selected original evidence. |
+
+The planned evidence-selection policy is recorded in the registry as
+`PLANNED_NOT_IMPLEMENTED`. It first enforces explicit scope, applicability date,
+jurisdiction and any `source_languages` filter, then ranks authoritative, current
+evidence supporting the requested claim. German is a final tie-breaker only
+between verified equivalent, equally suitable official versions. English terms
+or an English answer do not implicitly filter evidence to English. An explicit
+English-only source filter must be honored, including an insufficient-evidence or
+coverage outcome when appropriate.
+
+When equivalent translations of the same source revision support the same claim,
+the future retriever should select a representative and retain alternate
+references. They must not crowd the evidence limit or count as independent
+corroboration. Different conditions, newer revisions or conflicts remain visible;
+language preference cannot resolve them. Metadata projections help locate the
+original evidence and cannot themselves support factual claims.
+
+For example, reviewed German and English sections can share a concept ID and
+English retrieval terms while retaining different evidence IDs and URLs. If both
+support the claim equally, German can supply the citation even when the caller
+writes an English answer. If only the English section supports it, the German
+preference cannot displace that evidence. No cross-language concept alignment,
+projection generation or answer-evidence selection runs during catalogue planning
+or the current extraction CLI.
 
 ## Validate and inspect without downloading
 
@@ -70,12 +124,24 @@ Python; on Unix substitute `./.venv/bin/python`.
 Omitting `--dry-run` still produces an offline plan. Validation checks unique
 source IDs/URLs, jurisdictions, source scope, selectors, planning references
 and explicit numeric budgets. It performs no DNS, HTTP, source download or
-model calls. Plans include exclusions and aggregate crawler budgets.
+model calls. Plans include selection/order policy, candidate parallel groups,
+exclusions and aggregate crawler budgets. The `all` set retains all 59 catalogue
+references, of which 53 are eligible for a test and six retain their access/adapter
+exclusions. Crawling does not automatically switch languages after a failure.
 
-Available scan sets are `smoke` (default), `zurich`, `federal`, `cantons` and
-`all`. Use repeatable `--source SOURCE_ID` instead of a set for precise selection.
-The default `smoke` set selects SEM English, Zurich German, Vaud French, Ticino
+Available scan sets are `smoke` (default), `multilingual`, `zurich`, `federal`,
+`cantons` and `all`. Use repeatable `--source SOURCE_ID` instead of a set for precise selection.
+The default `smoke` set selects SEM German, Zurich German, Vaud French, Ticino
 Italian and Graubunden German.
+
+A four-language SEM comparison plan is available without making requests. Its
+default profile permits four HTML pages and 20 requests in total. Use explicit
+source selectors to narrow that comparison:
+
+```shell
+./.venv/Scripts/python.exe -m swisstip.builder.source_cli --set multilingual --dry-run
+./.venv/Scripts/python.exe -m swisstip.builder.source_cli --source ch-sem-residence-de --source ch-sem-residence-en --dry-run
+```
 
 | Profile | Depth | Pages per source | Requests per source | Bytes per source | Crawler time per source |
 | --- | --- | --- | --- | --- | --- |
@@ -110,6 +176,9 @@ same requests, without a separate download. Non-HTML responses are not saved
 as extraction inputs. `plan.json`, each source's `manifest.json`, and `scan.json`
 record the source catalogue hash, source metadata, requested/final URLs,
 retrieval times, content types, byte hashes, crawl outcomes and exclusions.
+Entry-page snapshots also retain `candidate_parallel_page_group_id` when
+configured. Identical bytes do not merge snapshots from different source entries;
+fetched child pages receive no inherited parallel-page assertion.
 An eligible source that yields no HTML or encounters failures produces an
 `incomplete` result and a nonzero CLI exit. A saved page can still be a navigation
 page or application shell; inspect content before inference.
@@ -131,9 +200,11 @@ input paths: join them to snapshot `relative_path` entries to recover official
 URLs and source provenance. Automatic manifest binding into normalized evidence
 and release contracts is still a later build stage.
 
-Extraction proposes evidence-backed candidate concepts; cross-document topic
-clustering, human review, stable concept IDs, applicability, operations and
-publication remain later stages. Review source-only annotations before model
+Extraction proposes evidence-backed candidate concepts. Its current batch groups
+depend on language and extracted content; they are not stable public concept IDs
+and do not automatically merge translations. Cross-language concept alignment,
+cross-document topic clustering, human review, stable concept IDs, applicability,
+operations and publication remain later stages. Review source-only annotations before model
 proposals or planning groups. The historical
 [POC-01 review](../../scripts/test/poc01/README.md) and zh.ch experiment remain
 available independently of this catalogue.
@@ -141,7 +212,14 @@ available independently of this catalogue.
 ## Maintain the catalogue
 
 Edit `hackathon.sources.json`, including discovery references, reviewed URLs,
-allowlists and scan status. Then regenerate the readable index and reseal the
+allowlists and scan status. When choosing a single version, prefer a verified
+German URL and update its language hint and path allowlist together. Retain all
+selected versions in multilingual sets. Use `parallel_page_groups` for candidate
+translations with distinct language hints and matching authority/jurisdiction;
+each seed can belong to one group, whose alignment remains `NOT_EVALUATED`.
+The former `preferred_source_id` substitution field is rejected by validation.
+Verify actual source links before changing translated URL
+slugs. Then regenerate the readable index and reseal the
 draft language policy/catalog and their source-reference hash:
 
 ```shell
