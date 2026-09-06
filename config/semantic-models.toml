@@ -10,6 +10,10 @@ max_output_tokens = 4096
 [extraction]
 # Keep the frozen v3 baseline; --structured selects the separately versioned v4 path.
 prompt_profile = "concept_extraction_v3"
+# Optional UTF-8 files replacing the complete system prompt for each role.
+# Paths are relative to this TOML file; omit to use packaged defaults.
+# extraction_prompt_file = "prompts/my-extraction.md"
+# review_prompt_file = "prompts/my-review.md"
 max_repair_attempts = 1
 chunk_content_characters = 6400
 chunk_overlap_characters = 400

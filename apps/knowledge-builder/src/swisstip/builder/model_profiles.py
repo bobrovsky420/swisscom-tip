@@ -57,6 +57,8 @@ class ExtractionConfig:
     max_model_requests_per_page: int
     max_model_requests_per_run: int
     max_repair_attempts: int = 1
+    extraction_prompt_file: str | None = None
+    review_prompt_file: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -133,7 +135,7 @@ def load_model_profiles(path: str | Path) -> SemanticModelConfig:
         _required_table(document, "generation", "configuration")
     )
     extraction = _load_extraction(
-        _required_table(document, "extraction", "configuration")
+        _required_table(document, "extraction", "configuration"), config_path.parent
     )
     profile_tables = _required_table(document, "profiles", "configuration")
     if not profile_tables:
@@ -204,7 +206,7 @@ def _load_generation(table: Mapping[str, object]) -> GenerationConfig:
     )
 
 
-def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
+def _load_extraction(table: Mapping[str, object], config_directory: Path) -> ExtractionConfig:
     path = "extraction"
     _reject_unknown_fields(
         table,
@@ -218,6 +220,8 @@ def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
             "max_model_requests_per_page",
             "max_model_requests_per_run",
             "max_repair_attempts",
+            "extraction_prompt_file",
+            "review_prompt_file",
         },
         path,
     )
@@ -271,7 +275,14 @@ def _load_extraction(table: Mapping[str, object]) -> ExtractionConfig:
         max_model_requests_per_page=max_model_requests_per_page,
         max_model_requests_per_run=max_model_requests_per_run,
         max_repair_attempts=max_repair_attempts,
+        extraction_prompt_file=_prompt_path(table, "extraction_prompt_file", config_directory),
+        review_prompt_file=_prompt_path(table, "review_prompt_file", config_directory),
     )
+
+
+def _prompt_path(table: Mapping[str, object], key: str, config_directory: Path) -> str | None:
+    value = _optional_non_empty_string(table, key, "extraction")
+    return str((config_directory / value).resolve()) if value is not None else None
 
 
 def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:

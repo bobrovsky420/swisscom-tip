@@ -107,6 +107,47 @@ class FailingProvider:
 
 
 class ConceptCliTests(unittest.TestCase):
+    def test_custom_prompts_are_sent_and_saved_in_reports_and_dry_run(self):
+        directory = self.config_path.parent
+        extraction = directory / "extract.md"
+        review = directory / "review.md"
+        extraction.write_text("Custom extraction instructions.\n", encoding="utf-8")
+        review.write_text("Custom review instructions.\n", encoding="utf-8")
+        document = self.config_path.read_text(encoding="utf-8").replace(
+            "[extraction]", '[extraction]\nextraction_prompt_file = "extract.md"\nreview_prompt_file = "review.md"')
+        self.config_path.write_text(document, encoding="utf-8")
+        page = directory / "page.md"
+        page.write_text("# Requirements\nA residence permit is required.\n", encoding="utf-8")
+        provider = FakeProvider()
+        with (patch("swisstip.builder.concept_cli.create_semantic_model_provider", return_value=provider),
+              patch.object(provider, "generate_structured", wraps=provider.generate_structured) as generate,
+              redirect_stdout(io.StringIO()) as stdout):
+            self.assertEqual(main([str(page), "--config", str(self.config_path)]), 0)
+        output = json.loads(stdout.getvalue())
+        report = output["reports"][0]
+        self.assertEqual(len(report["candidates"]), 1)
+        self.assertEqual([call.kwargs["system_prompt"] for call in generate.call_args_list],
+                         [extraction.read_text(), review.read_text()])
+        effective = report["effective_prompts"]
+        self.assertEqual(effective["extraction"]["text"], extraction.read_text())
+        self.assertEqual(effective["review"]["text"], review.read_text())
+        self.assertEqual(output["effective_config"]["extraction"]["extraction_prompt_file"], str(extraction.resolve()))
+        with (patch("swisstip.builder.concept_cli.create_semantic_model_provider") as factory,
+              redirect_stdout(io.StringIO()) as stdout):
+            self.assertEqual(main([str(page), "--config", str(self.config_path), "--dry-run"]), 0)
+        factory.assert_not_called()
+        self.assertEqual(json.loads(stdout.getvalue())["effective_prompts"], effective)
+
+    def test_missing_override_fails_before_provider_creation(self):
+        document = self.config_path.read_text(encoding="utf-8").replace(
+            "[extraction]", '[extraction]\nextraction_prompt_file = "missing.md"')
+        self.config_path.write_text(document, encoding="utf-8")
+        with (patch("swisstip.builder.concept_cli.create_semantic_model_provider") as factory,
+              redirect_stderr(io.StringIO()) as stderr):
+            self.assertEqual(main(["unused.md", "--config", str(self.config_path)]), 2)
+        factory.assert_not_called()
+        self.assertIn("cannot read UTF-8 prompt file", stderr.getvalue())
+
     def setUp(self) -> None:
         self.config_directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.config_directory.cleanup)

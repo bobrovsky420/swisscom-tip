@@ -134,6 +134,54 @@ saved logs, review worksheets and 8B/70B comparison instructions, see the
 The [2026-09-05 experiment report](../../docs/experiments/2026-09-05-zhch-concept-extraction.md)
 records the completed 8B/70B comparison, failure history and remaining quality issues.
 
+### Find and customize extraction prompts
+
+The system prompts live in
+[`packages/ingestion/src/swisstip/ingestion/prompts`](../../packages/ingestion/src/swisstip/ingestion/prompts/README.md)
+as bundled Markdown resources. That directory's README maps every profile to
+its extraction and review files. The v3 extraction prompt combines the v2 base
+and a v3 extension; the other extraction profiles use a single file.
+
+To customize prompts without editing application code, add either or both
+optional fields to the existing `[extraction]` table in your model config:
+
+```toml
+[extraction]
+prompt_profile = "concept_extraction_v3"
+extraction_prompt_file = "prompts/my-extraction.md"
+review_prompt_file = "prompts/my-review.md"
+# Keep the existing extraction limits here as well.
+```
+
+Paths resolve relative to the TOML file, independently of the working directory.
+Absolute paths also work. Each file replaces the complete system prompt for its
+role. Omitted fields retain the bundled defaults. Files must contain non-empty
+UTF-8 text; a UTF-8 BOM is accepted and line endings are normalized to LF.
+Missing, unreadable, empty or invalid UTF-8 files stop the run before provider
+creation. Review overrides require v3 or v4. Overrides also apply when
+`--structured` selects v4, so keep profile-specific customizations in separate
+configuration files.
+
+Inspect the complete effective prompts locally before running inference:
+
+```sh
+swisstip-concepts downloaded-page.html --config config/semantic-models.toml \
+  --dry-run > extraction-plan.json
+```
+
+The dry-run plan and each page report include `effective_prompts`, with the exact
+system text, SHA-256 hash of its UTF-8 encoding, and source files for extraction
+and review. Copy the desired `text` value into your override file as a starting
+point. Files are loaded once per CLI run; later edits take effect on the next run.
+Checkpoint keys already include the actual system prompt, user payload and
+response schema, so changed prompt text cannot reuse the old request's response.
+
+Prompts can change extraction priorities and model review behavior. Output
+schemas, evidence validation, request budgets and human-review requirements
+remain implemented in Python. Preserve the defaults' evidence and scope
+instructions when editing: schema-valid output alone does not establish factual
+support. This provides file-based customization; there is no app prompt editor yet.
+
 ### Select one of the three model profiles
 
 All non-secret model settings are in

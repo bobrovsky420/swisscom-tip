@@ -42,8 +42,10 @@ class RecoverableProvider:
                  checkpoint_dir: Path | None = None, fresh: bool = False,
                  progress: Callable[[str], None] = lambda message: None,
                  sleep: Callable[[float], None] = time.sleep,
-                 now: Callable[[], datetime] = lambda: datetime.now(UTC)) -> None:
+                 now: Callable[[], datetime] = lambda: datetime.now(UTC),
+                 review_system_prompt: str | None = REVIEW_SYSTEM_PROMPT) -> None:
         self.provider, self.config = provider, config
+        self.review_system_prompt = review_system_prompt
         self.directory = Path(checkpoint_dir).resolve() if checkpoint_dir is not None else None
         self.fresh, self.progress, self.sleep = fresh, progress, sleep
         self.now = now
@@ -168,9 +170,8 @@ class RecoverableProvider:
             return completion
         raise SemanticModelError("Invalid model retry configuration")
 
-    @staticmethod
-    def _review_payload(request: dict[str, object]) -> dict[str, object] | None:
-        if request["system_prompt"] != REVIEW_SYSTEM_PROMPT:
+    def _review_payload(self, request: dict[str, object]) -> dict[str, object] | None:
+        if request["system_prompt"] != self.review_system_prompt:
             return None
         try:
             review = json.loads(request["user_prompt"])["untrusted_review"]

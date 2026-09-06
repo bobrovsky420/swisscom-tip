@@ -352,6 +352,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
         )
         progress(f"Prompt profile={extraction.prompt_profile}")
+        from swisstip.ingestion.prompt_templates import load_prompts
+        prompts = load_prompts(
+            extraction.prompt_profile,
+            extraction_prompt_file=extraction.extraction_prompt_file,
+            review_prompt_file=extraction.review_prompt_file,
+        )
         progress(f"Resolving {len(args.pages)} input specification(s)")
         page_paths = resolve_page_inputs(
             args.pages,
@@ -395,6 +401,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         extractor_options = dict(
             active_profile=config.active_profile.name,
             prompt_profile=extraction.prompt_profile,
+            prompts=prompts,
             chunk_content_characters=extraction.chunk_content_characters,
             chunk_overlap_characters=extraction.chunk_overlap_characters,
             max_concepts_per_chunk=extraction.max_concepts_per_chunk,
@@ -425,6 +432,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             from swisstip.ingestion.structured_extraction import StructuredExtraction
             json.dump({"schema_version": "swisstip.concept-extraction-plan/v1",
                        "prompt_profile": extraction.prompt_profile,
+                       "effective_prompts": prompts.to_dict(),
                        "planned_request_ceiling": planned_requests,
                        "model_requests_sent": 0,
                        "pages": [{"source": page.source, "input_hash": page.content_hash,
@@ -441,6 +449,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         recovery_provider = RecoverableProvider(
             provider, config, checkpoint_dir=args.checkpoint_dir,
             fresh=args.fresh_inference, progress=progress,
+            review_system_prompt=prompts.review.text if prompts.review is not None else None,
         )
         extractor = CandidateConceptExtractor(recovery_provider, **extractor_options)
         reports = []

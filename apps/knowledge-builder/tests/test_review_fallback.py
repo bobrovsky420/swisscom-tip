@@ -68,6 +68,15 @@ class ReviewProvider:
 
 
 class ReviewFallbackTests(unittest.TestCase):
+    def test_custom_review_prompt_preserves_split_recovery(self):
+        provider = ReviewProvider()
+        run = self.wrapper(provider, review_system_prompt="Custom review instructions.")
+        custom_request = dict(request(), system_prompt="Custom review instructions.")
+        result = run.generate_structured(**custom_request)
+        self.assertEqual(len(parse_verdicts(result.content, 4)), 4)
+        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(len(run.statistics()["review_fallbacks"]), 1)
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)

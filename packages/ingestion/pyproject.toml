@@ -12,3 +12,5 @@ requires-python = ">=3.11"
 where = ["src"]
 namespaces = true
 
+[tool.setuptools.package-data]
+"swisstip.ingestion" = ["prompts/*.md"]

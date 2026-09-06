@@ -64,6 +64,20 @@ class Provider:
 
 
 class StructuredTests(unittest.TestCase):
+    def test_custom_prompts_are_used_for_extraction_review_and_repair(self):
+        from swisstip.ingestion.prompt_templates import load_prompts
+        with tempfile.TemporaryDirectory() as directory:
+            extraction, review = Path(directory) / "extract.md", Path(directory) / "review.md"
+            extraction.write_text("Custom structured extraction.", encoding="utf-8")
+            review.write_text("Custom structured review.", encoding="utf-8")
+            prompts = load_prompts(STRUCTURED_PROMPT_PROFILE, extraction_prompt_file=extraction,
+                                   review_prompt_file=review)
+        provider = Provider(generate=lambda result, payload: result.update(saturated=True))
+        report = self.engine(provider, prompts=prompts).extract(self.page("<p>Apply online.</p>"))
+        self.assertEqual([call["system_prompt"] for call in provider.calls],
+                         [prompts.extraction.text, prompts.review.text] * 2)
+        self.assertEqual(report.to_dict()["effective_prompts"], prompts.to_dict())
+
     def page(self, html):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "fixture.html"
