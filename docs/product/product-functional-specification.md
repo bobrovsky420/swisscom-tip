@@ -1,5 +1,5 @@
 # Swisscom Trusted Information Platform
-## Product & Functional Specification - V18
+## Product & Functional Specification - V19
 
 **Hackathon:** Swiss Grounding MCP using selected `admin.ch` / SEM and `zh.ch` sources<br>
 **Primary deliverable:** Testable MCP server<br>
@@ -13,15 +13,17 @@
 
 # 1. Summary
 
-The Trusted Information Platform (TIP) turns authoritative knowledge, live data, private context and services into trustworthy structured Information Products for applications and AI agents.
+> **Beyond search and retrieval: governed knowledge for AI.**
 
-> **AI is infrastructure, not the interface.**
+The Trusted Information Platform (TIP) publishes versioned, authoritative knowledge for AI clients and applications. Its MCP interface accepts explicitly scoped, structured requests identifying a Knowledge Space, domain, topic or concept, supported information intent, jurisdiction, applicability date and typed context.
 
-TIP is the target product. The hackathon delivers a narrow vertical slice of it: a working MCP server for focused Swiss public information. That slice builds a versioned knowledge release from selected official sources, resolves requests across declared query and source languages, returns compact evidence with citations, distinguishes jurisdiction and applicability, reports freshness and explicitly declines unsupported questions.
+The calling LLM interprets the user's question, discovers the catalog, selects identifiers, obtains missing facts and composes the final answer. A form or workflow can construct the same request directly. TIP validates supplied scope, retrieves and ranks eligible evidence, executes published rules where available, and returns compact evidence, verified facts, citations, freshness and explicit limitations.
 
-Verified cross-language grounding across a predefined, closed Swiss language catalog is a key TIP differentiator. Within a release's evaluated profile, a user can ask in one supported query language, retrieve authoritative evidence published in another declared source language and receive the result in a supported response language while citations remain linked to original-language evidence. TIP is not a general-purpose translator and provides no standalone translation capability. A provider's capabilities, model training coverage or deployment configuration cannot add a language to the product catalog or an active release.
+> **Your assistant understands the question. TIP supplies the authoritative evidence for the scope it requests.**
 
-The vertical slice is not a throwaway demonstration or the complete definition of the product. It is designed to validate the foundation for structured applications, private and enterprise knowledge, automated Knowledge CI/CD, and a publisher Data Product marketplace. Delivery discipline and product ambition are therefore treated as complementary horizons.
+Requests may preserve extracted retrieval terms in supported languages. Five-language metadata projections, reviewed terminology and multilingual semantic retrieval remain core capabilities within declared, evaluated coverage. The caller need not translate terms into one common language or into the source language. Similarity scores cannot establish intent, jurisdiction or applicability.
+
+The hackathon delivers a focused Swiss-grounding MCP server built from selected `admin.ch` / SEM and `zh.ch` sources. It proves on-demand knowledge preparation, catalog discovery, structured grounding and traceable results. Private knowledge, live capabilities, automated Knowledge CI/CD and a publisher marketplace remain target-product extensions.
 
 ---
 
@@ -29,46 +31,62 @@ The vertical slice is not a throwaway demonstration or the complete definition o
 
 **Decision class: Team product hypothesis**
 
-TIP is envisioned as trusted-information infrastructure between authoritative data providers and the applications, workflows and AI agents that need reliable, governed and application-ready information.
+TIP provides governed knowledge between authoritative publishers and the applications, workflows and AI agents that consume it.
+
+## Product positioning
+
+TIP is a governed knowledge service for AI clients and applications. Its product is the published knowledge catalog, evidence and structured contract that callers consume. Search and vector retrieval support this service; RAG applications can use its results as grounded context for generation.
+
+| Capability | Role in the overall solution |
+|---|---|
+| Web search | Discover pages and potential sources |
+| Vector storage and similarity retrieval | Index representations and find relevant candidate content |
+| Retrieval-augmented generation (RAG) | Supply retrieved context to a model that composes an answer |
+| TIP | Publish versioned knowledge with discoverable concepts, supported operations, explicit applicability, original-source citations, freshness and declared coverage limits |
+
+The distinction is the knowledge product and its acceptance contract, rather than a particular retrieval algorithm or database. A relevant passage alone does not establish whether it applies to the requested jurisdiction, date and context. TIP validates that scope against published coverage and returns supported evidence or explicit missing-context, coverage and evidence limitations. These obligations define the service even when its retrieval components change.
+
+Search systems and RAG applications can incorporate governance themselves. TIP makes these knowledge preparation, publication and evidence obligations a reusable service across callers. The calling application continues to own question interpretation and answer composition.
 
 ## Target users and value
 
 | User or customer | Need | TIP value |
 |---|---|---|
-| AI assistants and application teams | Reliable Swiss and domain-specific answers across supported languages | Verified cross-language grounding, compact evidence, citations, context and structured results without client-side translation for declared combinations |
-| Enterprises and regulated teams | Governed external and internal knowledge | Versioning, provenance, applicability, auditability and private overlays |
+| AI assistants and application teams | Evidence for explicitly scoped information operations | Discoverable topics and concepts, multilingual retrieval, compact facts and citations without required client translation of supported terms |
+| Enterprises and regulated teams | Governed external and internal knowledge | Versioning, provenance, applicability, auditability and future private overlays |
 | Authorities and data publishers | Reusable machine-consumption channel | Maintained Data Products, declared coverage and distribution |
-| Swisscom | Reusable trusted-information platform | Hosting, integration, sovereign AI consumption and future commercial services |
+| Swisscom | Reusable trusted-information infrastructure | Hosting, integration, sovereign AI consumption and future commercial services |
 
 ## Target-product capabilities
 
 1. **Trusted supply:** onboard authoritative sources, datasets and live capabilities.
-2. **Knowledge lifecycle:** version, evaluate, refresh and publish governed knowledge releases.
-3. **Product composition:** combine Knowledge Spaces, Data Products, rules, capabilities and optional AI into Information Products.
-4. **Verified cross-language grounding:** resolve supported queries against authoritative evidence across declared source languages and render results in supported response languages while preserving original-language citations.
-5. **Distribution:** serve agents, applications and workflows through MCP, REST and future SDKs.
-6. **Governance:** enforce provenance, coverage, trust, licensing and entitlements.
-7. **Economics:** support usage attribution, commercial models, billing and publisher settlement where appropriate.
+2. **Knowledge lifecycle:** version, evaluate, refresh and publish governed releases.
+3. **Discoverability:** publish identifiers, localized labels, scope combinations, supported operations and context schemas.
+4. **Product composition:** combine Knowledge Spaces, Data Products and declared rules into typed Information Products.
+5. **Multilingual grounding:** retrieve and rank original-source evidence using explicit scope and supported retrieval terms.
+6. **Distribution and governance:** serve clients through MCP, REST and future SDKs with provenance, coverage, licensing and entitlements.
+7. **Future economics:** support usage attribution, billing and publisher settlement where appropriate.
 
 ## Closed language catalog and release profiles
 
-TIP applies language support at two governed levels:
-
-1. The **product language catalog** is a closed, versioned allowlist of exact language tags, accepted aliases, dialect or idiom profiles, role eligibility and routing rules approved by product governance. The initial `tip-language-catalog/v1` catalog permits the client query tags `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH`. It also defines bare `fr`, `it` and `rm` as detector-only aliases for the corresponding Swiss profiles; they are not accepted client query tags or source-declaration aliases. The catalog permits the exact tags `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH` for response, source and metadata-projection roles. The v1 source-declaration alias set is empty. Source support is still declared independently by registered authoritative sources and the active release; it is not inferred from query or response support.
-2. An **active release language profile**, represented technically by an immutable `LanguagePolicy`, is an evaluated, referentially closed subset of that catalog. It declares the exact supported tags, mixed-query profile combinations and query/response/source combinations for the release's sources, concepts and jurisdictions. Every enabled alias, detector or source mapping, query-to-projection route, response default, fixed response and allowed combination must resolve entirely to role-specific tags enabled by that release. Every published release enables `en` for query and response roles, evaluates the `en` query-to-`en` response route, publishes an otherwise equivalent English-query/English-response counterpart for every natural-language coverage profile and advertises `fallback_query_language=en`. This mandatory fallback baseline does not imply English source coverage. An Information Product may declare a default response language only when that language is enabled for the product's applicable coverage profiles. Publication fails if any reference points outside the enabled subset. A tag being present in the product catalog does not by itself claim that every release, dialect, idiom, source or language combination supports it. Each Knowledge Release references the exact catalog and policy versions that governed its build and evaluation.
-
-The language roles are independent and must be declared separately:
+The versioned `tip-language-catalog/v2` catalog replaces the earlier question/response language roles with server-owned retrieval roles. It permits retrieval-term tags `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH`. Source and metadata-projection roles permit the exact tags `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The source-declaration alias set remains empty. Bare `fr`, `it` and `rm` are not accepted client term tags; the earlier whole-question detector-only aliases no longer apply.
 
 | Role | Product meaning |
 |---|---|
-| Query language | A language or accepted input profile in which TIP can interpret a request. Input-only variants may route to another projection and response language. |
-| Response language | A language in which TIP may generate optional prose and derivative user-facing fields. |
-| Source language | The original language of authoritative evidence admitted by a registered source and the active release. It is never implied by the query or response language. |
-| Projection language | A standard language used for compact derived retrieval metadata. A projection is a candidate-retrieval aid, not evidence. |
+| Retrieval-term language | Caller-supplied language profile for an extracted term or short phrase used inside validated scope |
+| Source language | Original language of authoritative evidence admitted by the registered source and release |
+| Projection language | Standard language of compact derived retrieval metadata; metadata is a retrieval aid, not evidence |
+| Catalog labels | Reviewed multilingual names, descriptions and aliases for discovery, using declared metadata languages |
 
-Neither provider metadata, model training coverage, runtime language detection nor operator configuration can expand either governed level. Adding a language requires an explicit product-catalog version change, implementation support, evaluation criteria and release-gating tests before a release may enable it. The catalog exists to support verified Swiss information retrieval, not open-ended translation.
+An immutable release-specific `LanguagePolicy` enables an evaluated subset of the catalog and declares valid term/projection/source combinations for each covered space, topic, concept, intent, jurisdiction and temporal scope. Every term alias, projection route and combination must refer to enabled roles. Publication fails for dangling references or missing required evaluations. The P0 target requires complete compact projections in all five standard languages for included P0 sections; no release may advertise that target as achieved before validation passes.
 
-The product hypothesis is that Swisscom can provide the trusted infrastructure and distribution layer while authorities, enterprises and other publishers remain responsible for their canonical information. Government information may remain free while managed hosting, service levels, inference, enterprise overlays and derived Information Products create business value.
+Generic German, German (Germany) and declared Swiss German term profiles route through reviewed terminology to the `de-CH` projection. This routing does not prescribe the language of the caller's answer. Exact Swiss German dialect and Romansh idiom coverage is declared and evaluated, rather than inferred from a broad tag.
+
+End-user question language, conversation handling and answer language belong to the caller. TIP has no whole-question language detector, mixed-span planner, fixed generated-response mapping or whole-question English fallback. Source-language detection during knowledge preparation remains part of the builder.
+
+Term language never implicitly restricts source language. A German term can retrieve an eligible French original through evaluated metadata or embeddings. Neither model training coverage, provider metadata nor runtime configuration can add languages to the catalog or release. TIP exposes no standalone translation operation.
+
+The business hypothesis is that Swisscom provides infrastructure and distribution while publishers remain responsible for canonical information. Managed hosting, service levels, enterprise overlays and derived Information Products can create value even when public information is free.
 
 ---
 
@@ -76,7 +94,7 @@ The product hypothesis is that Swisscom can provide the trusted infrastructure a
 
 **Published challenge requirement:** deliver an accessible, reproducible and testable Swiss-grounding MCP server.
 
-**Team validation thesis:** a focused implementation can prove both immediate grounding quality and foundational capabilities of the larger TIP product, including verified cross-language grounding within a finite, release-gated Swiss language profile.
+**Team validation thesis:** a focused implementation can prove both immediate grounding quality and foundational capabilities of the larger TIP product, including catalog discovery and multilingual retrieval within a finite, release-gated profile.
 
 The primary outcome is a GitHub repository that Swisscom can access, start and test with its evaluation harness and standards-compatible MCP clients.
 
@@ -108,7 +126,7 @@ The solution must demonstrate:
 - efficient tool selection and compact responses;
 - reproducible setup, refresh and caching behaviour;
 - resilience, monitoring, source etiquette and maintainability;
-- a coherent, extensible MCP contract.
+- a coherent, extensible MCP contract with discoverable identifiers and typed context requirements.
 
 OpenCode is one supported example and test client. It is not a required or privileged integration, and the server must not rely on OpenCode-specific behaviour.
 
@@ -118,45 +136,70 @@ OpenCode is one supported example and test client. It is not a required or privi
 
 ## Knowledge Space
 
-An internal, compiled body of knowledge containing sources, snapshots, evidence, concepts, versions, coverage and tests. Examples include `swiss-public`, `emir-core` and `finma`.
+A compiled body of sources, snapshots, evidence, concepts, coverage, versions and tests. Examples include `swiss-public`, `emir-core` and `finma`.
 
 ## Data Product
 
-A distributable publisher artifact containing knowledge, datasets and/or capabilities together with coverage, license, entitlement and commercial metadata. Examples include `Swiss Public Official`, `Swiss Hiking Routes Pro` and `SIX Market Data`.
+A distributable publisher artifact containing knowledge, datasets or capabilities together with coverage, license, entitlement and commercial metadata. Examples include `Swiss Public Official`, `Swiss Hiking Routes Pro` and `SIX Market Data`.
 
 ## Information Product
 
-An application capability combining typed inputs, Knowledge Spaces or Data Products, live capabilities, deterministic rules, optional AI and typed output. Examples include `swiss-arrival-checklist`, `swiss-hike-finder` and `emir-applicability`.
+An application capability combining typed inputs, Knowledge Spaces or Data Products, published rules and typed output. Examples include `swiss-arrival-checklist`, `swiss-hike-finder` and `emir-applicability`. Conversation and answer composition remain in the consuming application; optional AI may prepare knowledge or rank eligible evidence.
 
-```text
-Publisher Data Products ─┐
-Live Capabilities ───────┼→ Information Product → Any Application
-Private Knowledge ───────┘
+```mermaid
+flowchart LR
+    Publishers["Publisher Data Products"] --> Product["Information Product"]
+    Live["Future live capabilities"] --> Product
+    Private["Future private knowledge"] --> Product
+    Product --> App["Applications and workflows"]
+```
+
+## Caller and MCP responsibilities
+
+| Task | Calling LLM or application | TIP |
+|---|---|---|
+| Interpret the question | Identifies intent, terminology and needed context | Publishes supported operations and scope descriptions |
+| Select scope | Discovers identifiers and disambiguates place names | Validates IDs, hierarchy, coverage and jurisdiction codes |
+| Collect facts | Obtains user or form input without inventing missing values | Publishes typed schemas and reports missing fields |
+| Retrieve evidence | Supplies scope and optional original-language terms | Uses multilingual projections, reviewed expansion and semantic ranking within that scope |
+| Establish applicability | Supplies asserted context | Validates consistency and applies declared evidence-backed rules; does not certify user assertions |
+| Explain or clarify | Asks follow-up questions and composes the answer | Returns facts, original evidence, citations, status and machine-readable limitations |
+
+```mermaid
+flowchart LR
+    User["User question"] --> Caller["Calling LLM"]
+    Caller -->|"Discover topics and context schemas"| Catalog["Published catalog"]
+    Caller -->|"Structured scope and retrieval terms"| MCP["TIP MCP"]
+    Form["Typed form or workflow"] -->|"Same structured contract"| MCP
+    Build["Build and validate knowledge"] --> Release["Immutable release"]
+    Release --> Catalog
+    Release --> MCP
+    MCP -->|"Evidence, facts, status and citations"| Caller
+    Caller --> Answer["Answer or clarification"]
 ```
 
 ---
 
 # 5. Core Principles
 
-1. Stable authoritative information is prepared before request time.
-2. Inherently live information uses registered capabilities.
-3. External publishers remain the canonical authorities.
-4. Deterministic logic handles deterministic problems.
-5. Semantic models handle semantic uncertainty only where they add value.
-6. Apertus is preferred for relevant semantic tasks, while the core remains compatible with other providers.
-7. Cross-language retrieval is a server capability; clients are not required to translate or expand requests.
-8. Concept extraction may propose structure, but evidence and evaluation determine what is published.
-9. Broad concepts support navigation; answerable concepts support grounded resolution.
-10. Search returns evidence, not unsupported answers.
-11. Runtime normally uses a small set of high-quality evidence.
-12. Structured output precedes optional prose.
-13. Original-language evidence remains authoritative; full source content is not machine-translated for retrieval.
-14. Compact retrieval metadata is projected only into the standard languages enabled by the active release from the product catalog; generic German, German (Germany) and Swiss German inputs use tested terminology and normalize to Swiss Standard German.
-15. Translations are labelled derivative content.
-16. Every result carries a Trust Envelope.
-17. MCP is the primary hackathon interface, not the entire product architecture.
-18. Publisher licensing and entitlements are full-product concerns.
-19. Marketplace features and autonomous refresh are post-MVP.
+1. Stable authoritative information is prepared before request time; live information uses separately registered capabilities.
+2. Publishers remain the canonical authorities.
+3. The caller interprets user questions, selects scope, collects facts and composes answers.
+4. The MCP publishes its vocabulary and context schemas so callers do not invent identifiers.
+5. Deterministic validation and hard constraints govern scope, jurisdiction, date and declared rule execution.
+6. Semantic retrieval and ranking improve relevance within those constraints and cannot override them.
+7. Supported retrieval terms require no client translation into a common language or expansion into source-language synonyms.
+8. Apertus is preferred where evaluated value is demonstrated; the core and embedding/ranking contracts remain provider-independent.
+9. Concept extraction proposes structure; provenance, review and evaluation determine publication.
+10. Broad topics support navigation; independently supported concepts organize grounded operations.
+11. Runtime uses a compact set of high-quality evidence and returns structured results with a Trust Envelope.
+12. The MCP does not generate user-facing answer prose or infer missing applicability facts from retrieval terms.
+13. Original-language evidence remains authoritative. Full source pages are not machine-translated as the default retrieval representation.
+14. Compact five-language metadata projections and reviewed term routes preserve source provenance. Translations are labelled derivative content.
+15. Missing context, coverage gaps, insufficient evidence, conflicts and stale evidence remain explicit outcomes.
+16. Scope is never silently widened to improve a semantic match.
+17. MCP is the primary hackathon interface. REST and typed applications reuse the same grounding contract.
+18. Publisher licensing, autonomous refresh and marketplace economics remain post-MVP.
 
 ---
 
@@ -175,21 +218,23 @@ Private Knowledge ───────┘
 
 # 7. Hackathon Scenario and Coverage
 
-Primary scenario:
+Primary end-user scenario, interpreted by the calling application:
 
 > **I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?**
 
-```text
-Swiss Confederation → SEM / federal context
-                           ↓
-                    Canton Zurich
-                           ↓
-              declared local limitations
+The caller discovers relevant topics and supported operations, obtains additional required facts, and sends a typed request. TIP receives that structured scope rather than the question. Federal/cantonal relationships and local limitations are explicit coverage data.
+
+```mermaid
+flowchart TD
+    Federal["Swiss Confederation / SEM context"] --> Canton["Canton Zurich coverage"]
+    Canton --> Local["Declared municipal coverage and exclusions"]
 ```
 
-The demo tests authority, federal/cantonal applicability, citations, unsupported handling, multilingual queries and efficient retrieval. Its query-language matrix includes English (`en`), generic German (`de`), Swiss Standard German (`de-CH`), German (Germany) (`de-DE`), French (`fr-CH`), Italian (`it-CH`), Swiss German (`gsw` and `gsw-CH`) and Romansh (`rm-CH`) against the source languages declared by the active release. Generic German, German (Germany) and Swiss German are input-only query variants whose generated response prose is always Swiss Standard German (`de-CH`); original-language evidence remains unchanged. Exact Swiss German dialect and Romansh idiom coverage is reported rather than implied.
+The shorter question `How to get Aufenthaltsbewilligung in Zurich?` is also a caller example. The caller can retain `Aufenthaltsbewilligung` as a `de-CH` retrieval term, but must disambiguate city versus canton when material and must not infer nationality, purpose or duration. Missing facts produce typed missing-field results that the caller turns into clarification.
 
-The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` material. It does not claim complete Swiss, cantonal or municipal coverage. Exact sources, topics, languages, jurisdictions, exclusions and last refresh are exposed through the product and documented in the repository.
+The server demonstration tests discovery, authoritative evidence, scope/applicability checks, multilingual retrieval and efficient tool use. Its declared retrieval-term profiles include English, German variants, French, Italian, evaluated Swiss German forms and the declared Romansh idiom. These are term-retrieval profiles, not a promise that TIP understands complete user questions in those languages.
+
+Coverage begins with selected `admin.ch` / SEM and `zh.ch` material. Sources, topics, concepts, intents, jurisdictions, required context, language combinations, temporal scope, exclusions and last refresh are exposed by the catalog. Complete Swiss, cantonal or municipal coverage is not implied.
 
 ---
 
@@ -212,17 +257,18 @@ The solution deliberately begins with selected `admin.ch` / SEM and `zh.ch` mate
 - focused `admin.ch` / SEM and `zh.ch` coverage;
 - operator-triggered, on-demand knowledge builds;
 - traceable source versions and immutable published releases;
-- a versioned, closed product language catalog and an immutable release-specific profile for evaluated query, response, source and projection roles;
+- a versioned product language catalog and immutable release profile for evaluated retrieval-term, source and projection roles;
 - normalized evidence with source-language, authority, jurisdiction, applicability and temporal metadata;
 - a reviewed seed concept graph and multilingual terminology for the principal scenario;
+- hierarchical catalog discovery with stable IDs, supported intents, context schemas, valid combinations and release pinning;
 - post-normalization candidate concept extraction and corpus-level aggregation;
 - compact retrieval metadata projections for English (`en`), Swiss Standard German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and Romansh (`rm-CH`);
 - tested generic German and German (Germany) terminology plus Swiss German dialect aliases, normalized to Swiss Standard German retrieval terms;
-- language-aware lexical, canonical-concept and multilingual vector retrieval;
+- scoped language-aware lexical, canonical-concept and multilingual vector retrieval with semantic ranking/reranking;
 - automated grounding, citation, multilingual retrieval, efficiency, freshness and integration tests;
-- compact Trust Envelopes and high-level resolution calls.
+- structured resolution calls, typed missing-field outcomes and compact Trust Envelopes.
 
-Cross-language retrieval is a P0 functional requirement for the language combinations and concepts declared by the active release. Curated terminology and canonical-concept lookup provide the reproducible baseline. Semantic enrichment, multilingual embeddings and reranking are used only when they improve measured results. Apertus is the preferred semantic provider, while vector retrieval uses a separately evaluated multilingual embedding provider; either provider may be replaced without changing the platform's functional contracts.
+Cross-language retrieval, five-language metadata projections and scoped semantic ranking are P0 capabilities for declared coverage. Curated terminology and canonical-concept lookup complement multilingual embeddings and reranking. Release evaluations measure relevance, recall, precision, latency and scope compliance. Apertus is the preferred semantic provider; vector retrieval uses a separately evaluated multilingual embedding provider. Either provider may be replaced without changing the functional contracts. User-question interpretation, clarification and answer rendering belong to the caller.
 
 ## P1 - Product-validation extensions
 
@@ -275,7 +321,8 @@ The product must:
 12. evaluate the candidate release against its declared concept and cross-language matrices;
 13. publish it only if the evaluation gate passes;
 14. preserve the last successful release if a build fails;
-15. expose build progress, failures and freshness.
+15. expose build progress, failures and freshness;
+16. publish the immutable catalog, context schemas, supported intents, rule versions and valid coverage combinations with the release.
 
 Normal MCP requests use the published release and do not scrape government sites at request time.
 
@@ -307,13 +354,13 @@ The granularity model is:
 | Level | Purpose | Examples |
 |---|---|---|
 | Domain | Top-level coverage and navigation | Immigration, Health, Housing |
-| Topic or journey | Broad request routing | Residence, Healthcare access |
+| Topic or journey | Catalog discovery and explicit request scope | Residence, Healthcare access |
 | Answerable concept | Independent action, obligation or question with its own evidence | Residence permit, Municipal registration, Health insurance |
 | Detail | A subtype, deadline, exemption or other precise fact | Permit B, Registration deadline, Insurance exemption |
 
-`ANSWERABLE` is the default grounding level. Broad domain and topic concepts organize coverage and expand broad requests into relevant descendants; they are not sufficient by themselves to support a factual answer.
+`ANSWERABLE` is the default grounding level. Domains and topics organize coverage and discovery. Descendant expansion requires an explicit scope mode; a broad label alone cannot support a factual conclusion.
 
-A candidate becomes a separate answerable concept when one or more of the following differs: required user action, responsible authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful user question. Translations, synonyms, abbreviations, spelling variants and dialect variants of the same administrative or legal object are merged as terminology for one concept. For the Swiss residence-permit concept, for example, `Aufenthaltsbewilligung` is the preferred `de-CH` term and `Aufenthaltserlaubnis` can be a reviewed `de-DE` query alias only when it semantically names the Swiss permit being sought or required. This is a concept- and semantic-role-scoped mapping, not a global word replacement: a foreign permit or status mentioned as an existing entity remains distinct even when the request also has Swiss intent.
+A candidate becomes a separate answerable concept when one or more of the following differs: required user action, responsible authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful user question. Translations, synonyms, abbreviations, spelling variants and dialect variants of the same administrative or legal object are merged as terminology for one concept. For the Swiss residence-permit concept, for example, `Aufenthaltsbewilligung` is the preferred `de-CH` term and `Aufenthaltserlaubnis` can be a reviewed `de-DE` retrieval alias within that declared concept scope. A foreign permit supplied as typed context remains a distinct entity; terminology expansion cannot reinterpret that fact or establish Swiss intent.
 
 For example, `Residence` is a broad topic. `Residence permit`, `Municipal registration`, `Change of address` and `Deregistration` are separate answerable concepts. Municipal conduct rules may be related to living in a municipality but are not automatically children of `Residence permit`. Likewise, `Health` is a domain while `Health insurance`, `Healthcare access`, `Emergency care` and `Public health` are separate concepts.
 
@@ -349,124 +396,163 @@ The default projection languages are English (`en`), German (`de-CH`), French (`
 
 For each field whose target language equals its source language, TIP uses the unchanged normalized original and records `ORIGINAL_SAME_LANGUAGE`. For another target language, it prefers an eligible official parallel-language version published by the same authority, then curated terminology, then a machine-generated translation. Every projected field records its method, provider/model where applicable, review status and original content hash. Canonical concept identifiers, authorities, jurisdictions, dates and other structured values are not translated.
 
-Generic German (`de`), German (Germany) (`de-DE`) and Swiss German (`gsw` and `gsw-CH`) are explicitly supported input-only query variants. They do not receive separate metadata projections or output variants. TIP preserves the supplied or detected query tag, uses reviewed standard-language terminology or dialect aliases, and routes all four tags to Swiss Standard German terminology and the `de-CH` projection. Their effective response language is always `de-CH`, so generated prose and translated user-facing fields use `de-CH`; original-language evidence remains unchanged. Coverage lists the accepted German query tags and tested Swiss German dialect forms.
+Generic German (`de`), German (Germany) (`de-DE`) and declared Swiss German (`gsw` and `gsw-CH`) are retrieval-term profiles. They use reviewed terminology or dialect aliases and route to the `de-CH` projection without separate metadata variants. TIP preserves each supplied term tag. The caller controls answer language; routing does not generate or prescribe a response. Coverage lists accepted term tags and evaluated dialect forms.
 
 Localized projections are candidate-retrieval aids, not evidence. Results and citations always resolve to the original source section or an official parallel-language source section.
 
 ---
 
-# 10. Resolution Behaviour
+# 10. Structured Resolution Behaviour
 
-For a natural-language request, TIP must:
+TIP establishes scope from schema-validated selectors and asserted context. It must:
 
-1. identify or request necessary context;
-2. constrain evidence by coverage, authority, jurisdiction, applicability and date;
-3. retrieve a small, relevant and diverse evidence bundle;
-4. apply deterministic rules where appropriate;
-5. expose unresolved uncertainty or conflicts;
-6. return structured facts, evidence references and Trust Envelope;
-7. generate optional prose only after the supported result is established.
+1. validate schema/release references, required fields, identifiers and hierarchy consistency;
+2. locate the published coverage profile and its supported intent/context schema;
+3. report missing conditional applicability fields without inferring their values;
+4. constrain eligible evidence by explicit topic/concepts, jurisdiction, date, supplied facts and source-language restrictions;
+5. route optional tagged retrieval terms, expand reviewed terminology and retrieve lexical/concept/vector candidates within that scope;
+6. rank eligible evidence, apply published rules where available and preserve source qualifications;
+7. return available verified facts or rule outputs, compact original-language evidence, citations and a Trust Envelope.
 
-Structured applications normally provide the relevant context directly and receive typed results without requiring a chat prompt.
+The server does not accept a user question as its resolution contract, classify user intent, infer place names from prose or generate the final answer. Text inside `retrieval_terms` is a bounded relevance signal, even if it resembles a sentence. It cannot repair missing scope/context or override structured values.
 
-## 10.1 Multilingual Resolution Behaviour
+```mermaid
+flowchart TD
+    Request["Typed scope and optional tagged terms"] --> Validate["Validate schema, catalog and coverage"]
+    Validate --> Context{"Required context available?"}
+    Context -->|"No"| Missing["NEEDS_CONTEXT with fields and reasons"]
+    Context -->|"Yes"| Filter["Apply scope and eligibility constraints"]
+    Filter --> Retrieve["Multilingual lexical, concept and vector retrieval"]
+    Retrieve --> Rank["Semantic ranking within scope"]
+    Rank --> Rules["Declared applicability rules and evidence checks"]
+    Rules --> Result["Facts, original evidence, citations and trust status"]
+```
 
-TIP treats query language, requested response language, effective response language and source language as distinct properties.
+## 10.1 Multilingual Retrieval Behaviour
 
-For a natural-language request, TIP must:
+The request can contain terms in several languages, each explicitly tagged. No whole-question language detection, carrier language or mixed-span classification is required. The release publishes supported term profiles and term-to-projection routes.
 
-1. accept or detect the query language and preserve the supplied or detected tag;
-2. canonicalize BCP 47 casing and apply only the explicitly declared tag aliases;
-3. reject an unsupported query language with English query-fallback guidance;
-4. preserve and canonicalize an explicitly requested response language before deriving the effective response language;
-5. for `de`, `de-DE`, `gsw` and `gsw-CH` queries, reject any explicit response other than `de-CH`, then set the retrieval projection and effective response language to `de-CH`;
-6. for other supported queries, validate the requested response language and default the effective response language to the query language when it is absent;
-7. map the request to canonical domain concepts and normalize Swiss jurisdiction names;
-8. expand resolved concepts using reviewed terminology for languages declared by the active release;
-9. search the routed localized metadata projection, with `de`, `de-DE`, `gsw` and `gsw-CH` routed to `de-CH`;
-10. retrieve evidence across all declared source languages unless the client explicitly restricts them;
-11. combine localized-metadata, original-query lexical, expanded-query lexical, canonical-concept and multilingual vector candidates;
-12. establish supported facts from original authoritative evidence;
-13. render optional prose and translated user-facing fields in the effective response language only after the supported result is established.
+For each supplied term, TIP canonicalizes BCP 47 casing, validates the exact enabled tag, routes it to the declared metadata projection and preserves the original term. Reviewed terminology expansion and multilingual embeddings improve recall inside the explicit scope. `de`, `de-DE`, `gsw` and `gsw-CH` route to `de-CH` metadata using evaluated terminology or dialect aliases. This has no effect on the language chosen by the caller for its answer.
 
-Terminology expansion is a server responsibility. MCP and REST clients are not required to translate a request, supply synonyms or know the source languages for declared combinations. Query language and response language must not act as implicit filters on source language.
+The compact projection languages remain `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. An English term can match an English projection of a German original. A German term can retrieve a French original through an evaluated route. The caller does not translate supported terms into a common language or know the source languages.
 
-The product catalog defines role eligibility, while each active release enables and evaluates an explicit subset. The initial catalog's query-language set is `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH`; its response-language and projection-language sets are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The hackathon release declares which of those tags and source languages it enables and the exact combinations it has passed. The `de`, `de-DE`, `gsw` and `gsw-CH` tags are input-only and have a fixed effective response language of `de-CH`; an explicitly supplied `response_language` must therefore be `de-CH`. Supplying another response language for one of these fixed-query mappings returns `UNSUPPORTED_LANGUAGE` with `unsupported_component=language_combination`, the supported response languages and `required_response_language=de-CH`. Selecting an input-only tag as the response language for any other query returns `unsupported_component=response_language` and the supported response-language list.
+`source_languages` is independent of term language. Omission or `null` means no evidence-language restriction; an explicit non-empty list is canonicalized and deduplicated. An empty list or malformed tag is `INVALID_ARGUMENT`. Unsupported term/source tags produce `UNSUPPORTED_LANGUAGE` with the affected field and supported profiles. Individually enabled profiles whose requested combination is not covered produce `OUT_OF_COVERAGE`. No unsupported term or explicit filter is silently dropped.
 
-BCP 47 tags are parsed and compared case-insensitively and returned with canonical casing, so `DE-de` becomes `de-DE`. The initial contract uses exact matching after canonicalization rather than accepting every `de-*` or `gsw-*` tag. Bare `gsw` is an explicit application alias for `gsw-CH` in this Swiss Knowledge Space. `de-AT` and every other tag absent from the product catalog remain unsupported; enabling a new variant requires a catalog change followed by release gating. When region cannot be determined reliably, language detection emits `de` for Standard German and the canonical `gsw-CH` profile for detected Swiss German. High-confidence detector output `fr`, `it` or `rm` may use the catalog's detector-only mapping to `fr-CH`, `it-CH` or `rm-CH`; a client that explicitly supplies one of those bare tags still receives `UNSUPPORTED_LANGUAGE`.
+Projection text and machine translations remain derivative retrieval metadata. Citations always identify original-language evidence or an eligible official parallel-language source, with provenance.
 
-The server guarantees direct handling only for language roles and combinations permitted by the product catalog and declared by the active release. When the query language is unsupported, `UNSUPPORTED_LANGUAGE` includes `unsupported_component=query_language` and `fallback_query_language=en`; the client may translate its request to English and resubmit it as `query_language=en`. An unsupported response language returns `unsupported_component=response_language` and the supported response-language list instead. English is not presented as the remedy for an invalid response language, source-language filter or forbidden query-response combination.
+## 10.2 Explicit Topic and Concept Scope
 
-Original-language source excerpts and citations remain authoritative. A translated excerpt is derivative content, uses the effective response language, must be labelled as a machine translation, must identify its provider and model version, and must retain a reference to the original excerpt. A translation is never presented as the cited source.
+`domain` names the main knowledge area, `topic` the broader theme, and `concept` an independently supported unit. Callers discover this hierarchy before selecting identifiers.
 
-The functional guarantee applies only within the source, topic, jurisdiction, concept and language matrix declared by the active release. Swiss German is treated as a family of input dialects, never as a standardized output language, and Romansh coverage identifies Rumantsch Grischun and any supported idioms explicitly.
+A supported topic-level operation may omit `concept_ids` and use retrieval terms to rank evidence already assigned to that topic. A missing operation-required concept selector produces `INVALID_ARGUMENT` with the affected field; the server does not guess it from prose. `NEEDS_CONTEXT` applies to missing conditional applicability facts inside an otherwise valid context envelope.
 
-TIP exposes no standalone translate operation. Translation may be used only for bounded retrieval metadata or derivative presentation after supported facts have been established, and it never expands the product catalog or the active release's evaluated coverage.
+`scope_mode=exact` uses only the selected scope and its published direct evidence assignments. `scope_mode=descendants` permits bounded traversal through declared narrower concepts, with results grouped by concept. Related or sibling topics are not automatically included. Published applicability rules may admit federal evidence for a cantonal scope while retaining its actual authority and jurisdiction.
 
-### User-visible language and rendering outcomes
+Unknown identifiers, inconsistent domain/topic/concept relationships and undeclared fields are validation errors. Missing concept assignments remain build/coverage quality issues. Lexical/vector recall paths may recover evidence with verified assignments inside the requested scope, but cannot escape that scope.
 
-- An empty or whitespace-only question, a malformed supplied BCP 47 tag or an explicitly empty `source_languages` list is rejected before factual resolution with `INVALID_ARGUMENT`, the affected field and correction guidance. A well-formed tag outside the product catalog or not enabled by the active release returns `UNSUPPORTED_LANGUAGE`, the affected component and the relevant supported list. Only an unsupported query language receives `fallback_query_language=en`.
-- Numeric-only, acronym-only, very short or otherwise linguistically indeterminate input without a query tag returns `NEEDS_CONTEXT` with the supported query profiles and asks the user or client to identify the language or restate the request. TIP does not silently pivot to English.
-- A mixed-language query succeeds when one enabled query profile is the deterministic carrier language and every other-language semantic span belongs to an evaluated mixed-query combination or is a protected span. Protected spans are limited to release-approved terminology, reviewed jurisdictions or entities, exact schema-validated non-free-text structured-context values and neutral literals such as URLs or identifiers. They are preserved and remain available to concept and entity resolution, but they do not change the carrier language or response default. The initial hackathon profile guarantees this protected-span behavior and declares no free-form mixed-query combinations; later releases may enable only explicitly evaluated carrier/secondary-profile sets.
-- For example, `How to get Aufenthaltsbewilligung in Zurich?` has effective query language `en`, records `mixed_language=true`, preserves the reviewed `de-CH` term, resolves it to the Swiss residence-permit concept, searches the source languages permitted by the matching coverage profile and defaults to an English response. This behavior also applies when the client explicitly supplies `query_language=en`.
-- The active `LanguagePolicy` defines the minimum classifiable content, span confidence, dominant share and runner-up margin used to select the carrier language. Without a supplied tag, failure to select one returns `NEEDS_CONTEXT` with `reason=mixed_query_language`. With a supplied supported tag, a protected term or registered name in another language does not create a mismatch; a threshold-passing incompatible carrier language returns `NEEDS_CONTEXT` with `reason=query_language_mismatch` and does not retrieve evidence.
-- If the same protected text has reviewed mappings to different concepts or entities and structured context and coverage cannot resolve them uniquely, TIP returns `NEEDS_CONTEXT` with `reason=ambiguous_protected_span`. It never selects the highest-scoring mapping silently.
-- A term-only query uses `PROTECTED_TERM_PROFILE` only when all retained reviewed matches leave exactly one query-enabled profile. Multiple eligible profiles return `NEEDS_CONTEXT`; no query-enabled profile returns `UNSUPPORTED_LANGUAGE` with English whole-query fallback guidance. De-duplicating matches to one concept never discards their language-profile provenance.
-- A material free-form span confidently identified as a language outside the active release returns `UNSUPPORTED_LANGUAGE` with `reason=unsupported_embedded_language`. If a supported carrier is known, remediation asks the client to restate only that span in `required_query_language`; it does not redundantly return English fallback guidance for an already-English carrier. If no supported carrier exists, the response asks the client to restate the entire query in `fallback_query_language=en`. A material unresolved span returns `NEEDS_CONTEXT` with `reason=unresolved_embedded_span`. Free-form spans in individually enabled profiles whose combination has not been evaluated return `OUT_OF_COVERAGE` with `reason=unsupported_mixed_query_combination`. TIP never drops, silently translates or guesses the meaning of such a span. The protected-span exception is bounded terminology and entity handling, not universal translation.
-- A Swiss German dialect or Romansh idiom is supported only when the active release names and evaluates it. A clearly identified but unevaluated dialect or idiom returns `OUT_OF_COVERAGE` with the evaluated forms and supported standard-language alternatives. If the form cannot be identified reliably, TIP returns `NEEDS_CONTEXT` instead of claiming support.
-- Omitting `source_languages` searches across all source languages declared by the active release. An explicit non-empty list is canonicalized and deduplicated. A well-formed catalog-external or release-disabled source-language tag returns `UNSUPPORTED_LANGUAGE` with `unsupported_component=source_languages` and no English query-fallback guidance. A valid filter whose intersection with the applicable release coverage is empty returns `OUT_OF_COVERAGE`; when covered sources exist but yield no sufficient evidence for the request, TIP returns `INSUFFICIENT_VERIFIED_EVIDENCE`. TIP never retries without the requested filter silently.
-- If optional response rendering or derivative excerpt translation fails after facts have been established, TIP returns the established structured facts, original-language evidence and citations, omits the failed derivative content and sets `presentation_status=DEGRADED` with a typed warning identifying the missing presentation field. The factual result status remains unchanged, and TIP never silently substitutes another response language.
+## 10.3 Result Guarantees and Retrieval Reliability
 
-## 10.2 Concept-Aware Resolution Behaviour
+Every returned fact or rule output references supporting evidence and applicable rule versions. Exact citation offsets alone do not establish semantic completeness. If only excerpts are verified, TIP returns those excerpts without inventing a structured conclusion.
 
-The planner maps a request to the most specific supported concept that preserves the user's meaning.
+`SUPPORTED` applies to the executed information operation under supplied context. It does not certify the caller's interpretation, the truth of user assertions or the final client answer. The result echoes requested/executed scope and limitations so the client can inspect the boundary.
 
-- A broad request such as `What should I know about residence in Zurich?` expands the `Residence` topic into a bounded and diverse set of answerable descendants, such as permits, municipal registration, address changes and deregistration. The result is grouped by concept and may return `NEEDS_CONTEXT` when a decision requires more detail.
-- A narrow request such as `How do I obtain a residence permit?` starts at `Residence permit` and its relevant details. It must not include unrelated municipal topics merely because they share the word `residence`.
-- If concept resolution is uncertain, lexical and vector retrieval remain available and the uncertainty is recorded. A missing or incorrect concept assignment must not make an otherwise relevant document undiscoverable.
+Hard scope constraints and published rule execution are deterministic. Semantic scores or order may vary with model-based ranking; record release, projections, index, model and ranking configuration. Exact replay is guaranteed only for deterministic or recorded ranking paths. Cross-language evaluations measure relevant evidence and scope compliance rather than requiring identical ordering.
+
+Provider failure uses only a declared lexical/concept fallback that preserves constraints and reports retrieval degradation; otherwise return a typed retrieval error. Build failures preserve the last successfully published release.
 
 ---
 
 # 11. Result Statuses
 
-```text
-SUPPORTED
-PARTIALLY_SUPPORTED
-NEEDS_CONTEXT
-OUT_OF_COVERAGE
-INSUFFICIENT_VERIFIED_EVIDENCE
-CONFLICTING_EVIDENCE
-STALE
-UNSUPPORTED_LANGUAGE
-```
+| Status | Meaning |
+|---|---|
+| `SUPPORTED` | The structured operation is supported within its returned scope and limitations |
+| `PARTIALLY_SUPPORTED` | Supported and unresolved parts of the requested operation are explicitly separated |
+| `NEEDS_CONTEXT` | A valid scoped request lacks conditional applicability facts; returns field paths, reasons and allowed values |
+| `OUT_OF_COVERAGE` | Recognized selectors form an unsupported combination, date falls outside coverage, or an explicit source filter leaves no covered sources |
+| `INSUFFICIENT_VERIFIED_EVIDENCE` | A covered operation lacks sufficient verified evidence for this request |
+| `CONFLICTING_EVIDENCE` | Applicable sources conflict and no published rule resolves the conflict |
+| `STALE` | Available evidence fails the declared freshness policy |
+| `UNSUPPORTED_LANGUAGE` | An explicit retrieval-term or source-language tag is unsupported; the affected field and supported profiles are returned |
 
-A nearest semantic match must never be silently presented as applicable truth.
+`INVALID_ARGUMENT` is a boundary error for malformed or missing required envelope fields, wrong types, unknown IDs, inconsistent selectors and undeclared fields. Conditional applicability facts may be absent from an otherwise valid `context` object; that is `NEEDS_CONTEXT`, not a fabricated default. `RELEASE_UNAVAILABLE` is a typed tool error when a well-formed requested release reference cannot be served. The server never silently substitutes the active release.
 
-Each result includes enough Trust Envelope information for a client to understand:
-
-- the status;
-- the active release and freshness;
-- the relevant authority and jurisdiction;
-- the supporting evidence and citations;
-- any missing context, conflict, limitation or warning.
-
-`UNSUPPORTED_LANGUAGE` identifies `unsupported_component` as `query_language`, `response_language`, `source_languages` or `language_combination`. It applies to well-formed tags that are outside the product catalog or not enabled by the active release; malformed tags are invalid arguments rather than unsupported-language results. For an unsupported embedded language, it also returns `reason=unsupported_embedded_language`, the detected tag and span offsets without echoing or translating the span. An unsupported whole-query language or an embedded case with no supported carrier returns `fallback_query_language=en`; an unsupported embedded span with a supported carrier instead returns `required_query_language` and `remediation=restate_span_in_required_query_language`. An unsupported response returns the supported response languages, an unsupported source filter returns the supported source languages, and a forbidden fixed mapping returns `required_response_language=de-CH`. It does not claim that the topic itself is out of coverage.
-
-`INVALID_ARGUMENT` is a boundary validation error returned before factual resolution, not a factual result status. Presentation is reported independently as `presentation_status=COMPLETE|DEGRADED`; a degraded presentation contains typed warnings while preserving the established factual status.
+Every resolution result carries requested/executed scope, schema/release identity, evidence/citations, authority/jurisdiction, applicability conditions, freshness and any missing context, conflict or limitation. Retrieval degradation is reported separately from factual status. A relevance score never establishes applicability, factual support or legal correctness.
 
 ---
 
-# 12. MCP Capability
+# 12. MCP Capability and Catalog Discovery
 
-The MCP server provides three user-facing capabilities:
+The primary tools are:
 
-1. resolve a Swiss-information request;
-2. inspect cited evidence and provenance;
-3. inspect declared coverage, limitations and freshness.
+1. `swiss_information.get_coverage`: discover the published knowledge catalog, coverage, context schemas and freshness.
+2. `swiss_information.resolve`: execute a structured information request against a pinned release.
+3. `swiss_information.get_evidence`: inspect cited original evidence and provenance within its release.
 
-A normal supported request, including a cross-language request, should require one high-level resolution call whenever possible. The requesting application supplies the question and optional context or language preferences; the server performs language detection, canonical-concept resolution, terminology expansion and cross-language retrieval. Client-side translation or terminology expansion must not be required for declared languages. For an unsupported query language only, the client may translate the request to English and resubmit it with `query_language=en`; TIP does not provide that translation. Evidence and coverage inspection remain available when the client or evaluator needs more detail.
+## 12.1 How Callers Discover Topics and Concepts
 
-Exact tool names, schemas, transports and client configuration are defined in the technical specification.
+The MCP tool description directs callers to `get_coverage` before constructing unfamiliar requests. The initial bounded response lists Knowledge Spaces and top-level domains. A caller then inspects the relevant parent to obtain topics and concepts. Tool field schemas explain the request shape; the release catalog provides dynamic allowed values and combinations.
+
+Discovery accepts optional `release_id`, `knowledge_space_id`, `parent_id`, `cursor` and `limit`. Omitted release selects the active release for initial discovery and returns its immutable identity; all continuation and child calls must use that identity. Pagination is stable within that release. A cursor cannot be reused against another release or filter scope.
+
+Catalog entries include:
+
+- stable identifiers, type, parent/broader relationships and localized labels, aliases and descriptions;
+- supported information intents, such as `requirements` or `procedure`, when evaluated for that scope;
+- jurisdiction codes, temporal coverage, federal/cantonal applicability and municipal exclusions;
+- inline typed context schemas in topic/concept details, with stable schema identifiers, conditional required fields and allowed values;
+- valid scope/operation/language combinations, evidence/rule availability and limitations;
+- supported retrieval-term profiles, five-language metadata routes, source languages, provenance and freshness.
+
+Clients can cache the catalog by release identity. They need not load the whole graph or choose the finest-grained concept where a topic-level operation is supported. They must not invent IDs or treat the existence of a topic as coverage of every possible operation.
+
+```mermaid
+sequenceDiagram
+    participant Caller as Calling LLM or application
+    participant MCP as TIP MCP
+    Caller->>MCP: get_coverage()
+    MCP-->>Caller: Release identity and bounded top-level catalog
+    Caller->>MCP: get_coverage(release_id, parent_id)
+    MCP-->>Caller: Topics, concepts, operations and context schemas
+    Note over Caller: Interpret user intent and obtain required facts
+    Caller->>MCP: resolve(structured scope, context, tagged terms)
+    MCP-->>Caller: Evidence, facts, citations and status
+    Note over Caller: Compose answer or ask for missing context
+```
+
+## 12.2 Structured Request
+
+The `structured-grounding/v1` envelope includes required `schema_version`, `release_id`, `knowledge_space_id`, `domain_id`, `topic_id`, `intent`, `jurisdiction`, `context`, `as_of` and `scope_mode`. `concept_ids` is optional unless the operation requires it. Optional `retrieval_terms` entries contain bounded `text` and a required supported `language` tag. Optional `source_languages` constrains original evidence; `max_evidence` is a positive count capped by published server limits.
+
+There is no `question`, conversational history, whole-question `query_language`, generated-answer `response_language` or arbitrary prose context field. Domain/topic/intent/jurisdiction/context must be schema-valid even when terms are supplied.
+
+Illustrative identifiers below are contract examples, not claims of current published coverage. After clarifying Canton Zurich and the requested applicability date, the caller could preserve the original German term:
+
+```json
+{
+  "schema_version": "structured-grounding/v1",
+  "release_id": "example-release-001",
+  "knowledge_space_id": "swiss-public",
+  "domain_id": "immigration",
+  "topic_id": "residence",
+  "concept_ids": ["residence-permit"],
+  "intent": "requirements",
+  "jurisdiction": {"country_code": "CH", "canton_code": "CH-ZH"},
+  "context": {},
+  "as_of": "2026-09-06",
+  "scope_mode": "exact",
+  "retrieval_terms": [
+    {"text": "Aufenthaltsbewilligung", "language": "de-CH"}
+  ],
+  "max_evidence": 5
+}
+```
+
+If that operation requires nationality group or purpose, `context: {}` produces `NEEDS_CONTEXT` identifying those field paths and reasons. The caller asks the user and resubmits. Those illustrative requirements are determined by the published schema, not asserted here as legal requirements.
+
+One high-level resolution call is the normal target after the caller knows the catalog and has required facts. Discovery, pagination, clarification, evidence inspection and retries are counted separately in end-to-end efficiency reporting.
+
+Exact schemas, output fields, transport and client setup are defined in the technical specification. This version replaces the previous required-question input contract; it describes intended behavior, not implementation verification. Harness input expectations must be checked during integration. Any conversational harness adapter belongs outside the MCP core.
 
 ---
 
@@ -481,7 +567,7 @@ The P1 Admin UI makes platform state inspectable through:
 5. Source snapshots and freshness
 6. Evidence Explorer
 7. Concept Registry, candidate review and graph changes
-8. Product language catalog, active `LanguagePolicy`, coverage combinations and tested variants
+8. Catalog IDs, supported operations, context schemas, active `LanguagePolicy` and term/projection/source coverage
 9. Localized metadata projections and language coverage
 10. Evaluations
 11. Knowledge Releases
@@ -493,19 +579,11 @@ Its primary operation is **Build / Full Reload**. The Admin UI is not required f
 
 # 14. Swiss Arrival Checklist
 
-The P1 structured application accepts:
+The P1 structured application collects nationality group, purpose, duration, canton/municipality, arrival date and work-start date as required by its published operation schemas. It discovers the catalog and submits the same typed scope/context contract through MCP or the P1 REST adapter.
 
-- nationality group;
-- purpose;
-- duration;
-- canton and municipality, within declared coverage;
-- arrival date;
-- work start date;
-- optional response language from the active release's response-language set, defaulting to the Information Product's declared `en` setting.
+The backend returns supported requirements, deadlines, evidence identifiers, citations and a Trust Envelope. Missing municipality coverage is an explicit limitation. A form cannot imply a local requirement or invent an unspecified user fact.
 
-It returns typed requirements, deadlines, evidence identifiers, citations, optional localized presentation and a Trust Envelope. It does not require a natural-language prompt or query language, so query detection, query-to-projection routing and fixed query-response mappings are not applicable to this Information Product request. It validates only the optional response language against the product's applicable coverage profiles and otherwise uses the product's publication-validated default. Original-language evidence remains authoritative. The hackathon form chrome may remain English-only, but the response-language selector exposes only languages enabled for the product and does not offer input-only or arbitrary tags.
-
-If municipal information is not included in the published coverage, the result must declare that limitation rather than infer a local requirement.
+The client owns interface language, explanation and any derivative presentation. The hackathon form chrome may remain English-only. The backend neither accepts a chat prompt nor requires a special queryless exception; structured requests are the general interface.
 
 ---
 
@@ -535,17 +613,12 @@ This is a strategic extension of the repeatable on-demand build proven during th
 
 TIP may evolve into a multi-sided platform:
 
-```text
-Consumers / Apps / Enterprises
-             │ consume
-             ▼
-        Swisscom TIP
- hosting │ trust │ distribution │ metering │ billing
-             │
-      licensing / settlement
-             ▼
-Publishers / Data Providers
-Government │ Companies │ Experts │ Individuals
+```mermaid
+flowchart TD
+    Consumers["Consumers, applications and enterprises"] -->|"Consume Data Products"| TIP["Swisscom TIP: hosting, trust and distribution"]
+    Publishers["Government, companies, experts and individuals"] -->|"Publish governed Data Products"| TIP
+    TIP -->|"Future licensing and settlement"| Publishers
+    Consumers -->|"Future usage and billing"| TIP
 ```
 
 Future publishers could create Data Products, connect sources, declare coverage and maintenance policy, configure licensing, publish versions and inspect usage or revenue. Public publication may require Swisscom review or certification.
@@ -593,51 +666,50 @@ The reusable functional concepts are authority, jurisdiction, applicability, evi
 
 Swisscom can:
 
-- clone and start the repository from clear instructions;
-- understand declared coverage and limitations;
-- run an on-demand refresh of configured `admin.ch` / SEM and `zh.ch` sources;
-- start a configured website scan from its root, discover eligible language variants without separate language seeds, and inspect discovery provenance, exclusions and completeness limits;
-- observe source versions, freshness, build outcome and the active release;
-- inspect the published concept graph, concept provenance and lifecycle status;
-- inspect localized metadata provenance and completeness for each declared language;
-- inspect the versioned product language catalog and the active release's role-specific, evaluated language profile;
-- connect its evaluation harness or another standard MCP client;
-- obtain compact grounded results with exact citations;
-- issue an English, generic German, Swiss Standard German, German (Germany), French, Italian, Swiss German or Romansh query for a declared P0 concept and retrieve relevant evidence in another declared source language;
-- receive optional prose in the effective response language while retaining original-language evidence and citations, with `de`, `de-DE`, `gsw` and `gsw-CH` queries always rendered in `de-CH`;
-- receive `UNSUPPORTED_LANGUAGE` with English query-fallback guidance for an unsupported query language and precise remediation for an unsupported response, source-language filter or language combination;
-- receive deterministic clarification or coverage outcomes for ambiguous detection, tag mismatch, unevaluated dialect or idiom forms and explicit source-language filters;
-- retain structured facts and original-language evidence with a typed warning if optional supported-language rendering degrades;
-- receive a grouped overview for a broad concept and precise evidence for a narrow answerable concept without unrelated topic leakage;
-- see explicit unsupported, insufficient, conflicting and stale states;
-- reproduce the supplied grounding, multilingual retrieval, efficiency and integration tests.
+- clone and start the repository, understand declared limitations and connect a standard MCP client;
+- run on-demand builds of configured `admin.ch` / SEM and `zh.ch` sources;
+- start a root-seeded website scan, discover eligible language variants and inspect provenance, exclusions, incomplete discovery and source validation;
+- observe source versions, freshness, build outcome and preservation of the last successful release;
+- discover the catalog hierarchically with pagination, cache it by release and obtain valid IDs, supported operations and conditional context schemas;
+- inspect concept provenance/lifecycle and complete, provenance-linked P0 metadata projections in all five standard languages;
+- inspect the closed catalog and evaluated retrieval-term/projection/source combinations;
+- submit typed scope and terms in supported languages without translating to a common or source language;
+- retrieve and rank eligible original-language evidence across each evaluated combination, preserving citations;
+- obtain machine-readable missing fields without inferred nationality, purpose, place or date;
+- receive explicit invalid-argument, unavailable-release, unsupported-language, coverage, insufficient-evidence, partial, conflicting and stale outcomes;
+- verify exact scope, bounded requested descendant traversal, source-filter preservation and published applicability rules;
+- inspect requested/executed scope and versioned retrieval/ranking provenance, with explicit provider degradation or a typed error;
+- reproduce discovery, structured contract, multilingual recall/ranking, grounding, semantic-completeness, citation, freshness and integration evaluations.
 
-OpenCode is demonstrated as one compatible client, not treated as a required integration. Apertus is preferred where it adds evaluated value, while the server remains functional with another compatible semantic provider.
+Semantic scores cannot relax hard constraints. Repeated or cross-language requests need not have identical ranking from nondeterministic models, but must remain within scope and meet evaluated relevance criteria. Time-dependent freshness is evaluated at an explicit recorded time.
 
-P1 completion additionally provides the Admin Control Plane and structured Swiss Arrival Checklist. P2 completion provides the clearly labelled mock Swiss Hike demonstration.
+Client interpretation is evaluated separately: selecting catalog entries from English, German or mixed-language questions, obtaining facts, preparing equivalent structured scope and composing faithful cited answers. Those tests do not make the MCP a question interpreter.
+
+OpenCode remains one example client. Apertus is preferred where evaluated value is demonstrated; compatible alternatives can be configured. P1 additionally provides Admin Control Plane, REST and Arrival Checklist. The mock Swiss Hike demonstration remains P2. Integration must verify the external harness's input expectations; a question-to-request adapter, if needed, remains outside the MCP server.
 
 ---
 
 # 21. Product Evolution Roadmap
 
-```text
-1  Hackathon: focused Swiss public MCP server and on-demand releases
-2  production hardening and broader declared Swiss coverage
-3  scheduled/incremental Knowledge CI/CD
-4  live capabilities and consumer Information Products
-5  enterprise/private overlays
-6  publisher self-service and Data Product entitlements
-7  metering, billing, settlement and marketplace
-8  regulatory impact and workflows
+```mermaid
+flowchart TD
+    MVP["Focused structured Swiss MCP and on-demand releases"] --> Harden["Production hardening and broader evaluated coverage"]
+    Harden --> CICD["Scheduled and incremental Knowledge CI/CD"]
+    CICD --> Live["Live capabilities and consumer Information Products"]
+    Live --> Private["Enterprise and private overlays"]
+    Private --> Publishers["Publisher onboarding and entitlements"]
+    Publishers --> Market["Metering, billing, settlement and marketplace"]
+    Market --> Workflow["Regulatory impact and workflows"]
 ```
 
 ---
 
 # 22. Final Positioning
 
-> **Apertus is the preferred semantic model; the platform remains model-independent.**<br>
-> **TIP provides verified cross-language grounding across a predefined, closed Swiss language catalog; it is not a general-purpose translator.**<br>
-> **TIP provides trusted information, context and orchestration while original-language evidence remains authoritative.**<br>
+> **Beyond search and retrieval: governed knowledge for AI.**<br>
+> **Your assistant understands the question. TIP supplies the authoritative evidence for the scope it requests.**<br>
+> **Five-language metadata and scoped semantic retrieval preserve multilingual access without required client translation.**<br>
+> **Apertus supports knowledge preparation and scoped ranking; the platform remains model-independent.**<br>
 > **Swisscom provides infrastructure, trust, distribution and commercial reach.**
 
-The hackathon vertical slice proves the working Swiss-grounding MCP foundation and tests the concepts on which the target product depends. Its language profile is an evaluated subset of the governed product catalog; no provider, model or runtime configuration may expand it. Structured applications, autonomous Knowledge CI/CD, enterprise overlays and the publisher marketplace are the intended product evolution - not prerequisites for a credible two-day implementation.
+The hackathon validates a discoverable structured MCP contract, published evidence and traceable scope checks. The caller owns interpretation, clarification and answer composition. Automated Knowledge CI/CD, enterprise overlays and the publisher marketplace extend the same evidence and governance foundation after the focused delivery.

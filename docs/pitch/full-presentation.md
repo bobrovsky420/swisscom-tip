@@ -1,452 +1,462 @@
-# Full Pitch Presentation - Swisscom Trusted Information Platform
+﻿# Full Pitch Presentation - Swisscom Trusted Information Platform
+
+This deck describes the proposed product and acceptance evidence. It does not establish implementation validation. Slide 12 is optional P2 stretch material; slides 13-22 cover the future product. These appendix topics are outside P0/P1 acceptance scope.
 
 ## Slide 1 - Trusted Information Infrastructure
 
 # Swisscom Trusted Information Platform
 
-**Turning authoritative and live information into trustworthy services for any application.**
+**Beyond search and retrieval: governed knowledge for AI.**
 
-**Verified cross-language grounding across a predefined Swiss language catalog - not universal translation.**
+TIP publishes versioned knowledge and accepts explicitly scoped requests. It returns compact evidence, available verified facts, citations, freshness and limitations.
 
-> **AI is infrastructure, not the interface.**
+**The product is a governed knowledge service:** a discoverable catalog and structured evidence contract with versions, applicability and coverage limits. Search and vector retrieval power that service; RAG applications can consume it.
+
+> **Your assistant understands the question. TIP supplies the authoritative evidence for the scope it requests.**
+
+Supported original-language retrieval terms use multilingual metadata and semantic retrieval without mandatory translation into a common language.
 
 ---
 
-## Slide 2 - Published Challenge
+## Slide 2 - Published Challenge and Team Design
 
-Build an MCP server that makes authoritative public Swiss information accessible effectively: grounded, cited, jurisdiction-aware, fresh, efficient, operable and easy to integrate.
+The documented challenge asks for an MCP server that makes authoritative public Swiss information accessible: grounded, cited, jurisdiction-aware, fresh, efficient, operable and easy to integrate.
 
-Our insight:
+**Our team design:** compile governed releases and publish a structured evidence contract. This boundary and its schema are team choices, not asserted challenge requirements.
 
-> **The hard problem is not search. It is turning sources into trusted, maintainable, application-ready information.**
+| Calling LLM or application | TIP builder and MCP |
+|---|---|
+| Interprets user wording and intent | Publishes a versioned knowledge catalog |
+| Selects published identifiers and clarifies geography | Validates identifiers, hierarchy and jurisdiction |
+| Obtains scenario facts | Publishes typed context schemas and reports missing fields |
+| Supplies original-language retrieval terms | Retrieves and ranks evidence within explicit scope |
+| Composes the final answer | Returns supported facts, evidence, citations and limitations |
+
+A form can construct the same request without an LLM. Compatibility with the challenge harness must be checked during implementation; any conversational harness adapter remains outside the MCP core.
 
 ---
 
 ## Slide 3 - Team MVP: A Focused Vertical Slice
 
-```text
-admin.ch / SEM
-      +
-Canton Zurich / zh.ch
+Start with **admin.ch / SEM** and **Canton Zurich / zh.ch**. Coverage must be published and evaluated for the selected operations.
+
+The user message is input to the caller:
+
+> How to get Aufenthaltsbewilligung in Zurich?
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Caller as Calling LLM
+    participant TIP as TIP MCP
+    User->>Caller: How to get Aufenthaltsbewilligung in Zurich?
+    Caller->>TIP: get_coverage: discover topics, concepts and required fields
+    TIP-->>Caller: Versioned catalog and context schemas
+    Caller->>User: Clarify geography and scenario facts as needed
+    User-->>Caller: Supply known facts
+    Caller->>TIP: resolve: typed scope and original-language retrieval term
+    TIP-->>Caller: Evidence, available facts, status and citations
+    Caller-->>User: Explain supported result or ask for missing facts
 ```
 
-Scenario:
+The caller establishes whether Zurich means city or canton when that matters. It cannot infer nationality, purpose, permit category or intended duration from this sentence.
 
-> I am an EU/EFTA national moving to Canton Zurich for a job. What do I need to do after arriving?
+The multilingual proof tests supported language-tagged terms against eligible original sources. TIP retains five-language metadata projections and scoped semantic ranking; the caller owns mixed-language conversation and final response language.
 
-Focused coverage demonstrates federal/cantonal authority, applicability and citations. It is the first vertical slice of TIP, not the limit of the product vision.
-
-Multilingual proof: within a matching evaluated coverage profile, ask the same question in one of its declared query languages - including a declared Swiss German variant - retrieve evidence in another source language declared by that profile, and receive prose in a response language that profile permits, with the original citations preserved.
-
-TIP's language catalog is finite and release-gated. Each release enables only an evaluated subset, and model or provider capabilities cannot expand it.
-
-**Speaker note:** The hackathon target release accepts `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH` for queries. Its response and metadata-projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The input-only `de`, `de-DE`, `gsw` and `gsw-CH` variants route through the `de-CH` projection and always generate Swiss Standard German prose. A bounded mixed query such as `How to get Aufenthaltsbewilligung in Zurich?` keeps English as its carrier language while the reviewed German term resolves the Swiss permit concept; free-form clause mixing remains release-gated and arbitrary unsupported-language clauses are not translated. Only a client with an unsupported query language receives guidance to translate the request into English and resubmit it; unsupported response languages, source-language filters and forbidden combinations receive their own explicit remediation.
+**Speaker note:** Visibly label caller interpretation/clarification, structured MCP request, TIP evidence result and caller answer. Use the same sequence in the first-round demo. Client-language fixtures can exercise English, German and mixed-language wording; server fixtures begin with their resulting structured requests.
 
 ---
 
 ## Slide 4 - On-Demand Knowledge Build
 
-For the hackathon:
-
-```text
-[ BUILD / FULL RELOAD ]
-       ↓
-scan / crawl / fetch
-       ↓
-immutable snapshots
-       ↓
-normalize
-       ↓
-language detection
-       ↓
-per-section concept candidates (Apertus assisted)
-       ↓
-cross-document/language aggregation
-       ↓
-granularity + graph validation
-       ↓
-reviewed concept graph + terminology
-       ↓
-compact en/de-CH/fr-CH/it-CH/rm-CH metadata projections
-       ↓
-Evidence Objects
-       ↓
-index + tests
-       ↓
-publish Knowledge Release
+```mermaid
+flowchart TD
+    S[Configured official sources] --> F[Bounded scan, crawl and fetch]
+    F --> I[Immutable source snapshots]
+    I --> N[Normalize and validate source language]
+    N --> C[Apertus-assisted concept and terminology candidates]
+    C --> G[Aggregate across documents and languages]
+    G --> V[Review granularity, evidence and applicability]
+    V --> P[Compact five-language metadata projections]
+    P --> E[Evidence assignments and retrieval indexes]
+    E --> T[Publication gates and multilingual evaluation]
+    T --> R[Immutable Knowledge Release]
+    R --> K[Catalog identifiers, context schemas and rule versions]
+    R --> M[Published evidence and retrieval profile]
 ```
+
+The metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`, with a declared Romansh idiom profile. Labels, aliases and projections retain provenance.
+
+An extracted candidate is a proposal. Exact source offsets alone do not prove that it captures every condition; evidence and semantic-completeness gates are required before publication.
 
 No scheduler or incremental refresher is required in the MVP.
 
 ---
 
-## Slide 5 - Stable Knowledge Is Compiled
+## Slide 5 - Stable Knowledge Is Compiled and Discoverable
 
-Normal MCP requests do **not** scrape admin.ch or zh.ch.
+Web search supports source discovery, vector storage supports similarity retrieval, and RAG connects retrieved context to generation. TIP's product is the governed knowledge release and the contract through which applications consume it. TIP makes knowledge preparation, publication and scope-aware evidence reusable across callers.
 
-Benefits:
+Normal MCP requests use a published release rather than scraping official websites. Immutable snapshots and releases support reproducibility, exact citations, predictable evaluation and source etiquette.
 
-- low latency;
-- reproducibility;
-- exact citations/source versions;
-- resilience;
-- source etiquette;
-- predictable evaluation.
+The original source remains authoritative. A release freezes:
 
-The government source remains canonical; TIP stores a verified operational representation.
+- Knowledge Space, domain, topic and concept hierarchy with stable identifiers and reviewed multilingual labels.
+- Supported information operations, canonical jurisdictions and valid scope combinations.
+- Typed applicability schemas, conditional required fields, temporal coverage and declared rules.
+- Evidence assignments, five-language metadata, language profiles and evaluated retrieval configurations.
 
-The Knowledge Release also freezes the reviewed concept graph used for indexing: broad concepts navigate, while answerable concepts ground independent actions, obligations and facts.
+`swiss_information.get_coverage` supports bounded discovery by Knowledge Space or parent identifier. A caller can navigate `Immigration -> Residence -> Residence permit`, inspect supported operations and cache the result by immutable release identity. These labels illustrate catalog structure rather than declaring published coverage.
 
----
-
-## Slide 6 - Apertus for Swiss Multilingual Semantics
-
-Apertus is the preferred model for language detection, concept extraction, multilingual terminology expansion, missing metadata translations, applicability interpretation, evidence reranking and optional rendering in the effective supported response language.
-
-Why it fits: the [official Apertus launch](https://ethz.ch/en/news-and-events/eth-news/news/2025/09/press-release-apertus-a-fully-open-transparent-multilingual-language-model.html) reports 15 trillion training tokens across more than 1,000 languages, 40% non-English data, and explicitly includes Swiss German and Romansh. The [official FAQ](https://www.apertus-ai.org/docs/faq/) cautions that Apertus is fully conversational in only a few dozen languages and recommends evaluation or fine-tuning for specific needs.
-
-Therefore TIP **tests rather than assumes** query understanding for every declared query language and response rendering for every declared response language. German and declared Swiss German input variants are never selected as response languages; they produce Swiss Standard German prose, and Swiss German prose is never generated. Apertus's breadth does not expand TIP's predefined language catalog. The core remains provider-independent, and vector retrieval uses a separately evaluated multilingual embedding provider.
-
-**Speaker note:** The input-only query tags are `de`, `de-DE`, `gsw` and `gsw-CH`; each routes through the `de-CH` projection and fixes the effective response language to `de-CH`.
-
-Deterministic software handles HTTP state, hashes, dates, numeric constraints and rules.
-
-> **Use AI for semantic uncertainty; software for deterministic certainty.**
+A topic's existence does not imply coverage of every operation. The caller selects from finite published intents such as `requirements`; it does not invent identifiers or submit a sentence as an intent.
 
 ---
 
-## Slide 7 - Search Returns Evidence, Not Answers
+## Slide 6 - AI for Knowledge Preparation and Scoped Retrieval
 
-```text
-Request in a declared query language
- ↓
-language contract + most specific concept
- ↓
-server-side multilingual terminology expansion
- ↓
-matching or normalized metadata + lexical variants
- + concept lookup + multilingual vector retrieval
- ↓
-authority / jurisdiction / date checks
- ↓
-2-5 diverse Evidence Objects
- ↓
-Evidence / Rule Engine
- ↓
-structured facts + Trust Envelope
- ↓
-prose in permitted effective response language + original-language citations
+Apertus is a candidate provider for build-time concept extraction, classification, terminology and compact metadata preparation. Model proposals enter the same review and publication process as other derived knowledge.
+
+At runtime, semantic models may embed, score or rerank eligible evidence within supplied scope. Vector retrieval uses a separately evaluated multilingual embedding provider. Neither task authorizes interpreting the user question, inventing applicability facts or generating the final answer inside TIP.
+
+**P0 includes** five-language metadata projections, reviewed terminology and multilingual lexical/concept/vector retrieval with semantic ranking. Each release enables only evaluated retrieval-term/projection/source combinations.
+
+| Concern | Evaluation responsibility |
+|---|---|
+| Multilingual term recall and evidence relevance | TIP retrieval evaluation |
+| Scope, date, context and rule compliance | TIP contract and applicability evaluation |
+| Question interpretation and catalog selection | Caller integration evaluation |
+| Clarification and final answer fidelity | Caller integration evaluation |
+
+Reviewed German and Swiss German term profiles may route to `de-CH` projections where evaluated. This creates no rule about the caller's answer language. Metadata translations do not replace original source text.
+
+**Speaker note:** Keep provider choice separate from the product guarantee. Model language breadth does not prove retrieval coverage. Every advertised profile needs evidence of recall, precision, scope compliance and acceptable latency. TIP remains provider-independent.
+
+---
+
+## Slide 7 - Runtime: Explicit Scope, Multilingual Evidence
+
+```mermaid
+flowchart TD
+    C[Calling LLM or typed application] -->|Structured request| V[Validate schema, release and catalog selectors]
+    V --> X{Conditional context complete?}
+    X -->|No| N[NEEDS_CONTEXT with fields and reasons]
+    X -->|Yes| L[Route language-tagged terms to evaluated projections]
+    L --> H[Scoped lexical, concept and multilingual vector retrieval]
+    H --> R[Semantic ranking of eligible evidence]
+    R --> A[Authority, jurisdiction, date and declared rule checks]
+    A --> E[Structured facts, evidence, status and citations]
+    N --> O[Caller clarification or answer composition]
+    E --> O
 ```
 
-For declared query languages, the requesting application does not translate or supply synonyms, and the LLM never needs a large uncontrolled document dump.
+`exact` keeps the declared concept scope. Only explicitly requested `descendants` permits bounded traversal defined by the catalog; it does not relax jurisdiction, date or source-language constraints.
 
-Broad queries expand to a bounded and diverse set of answerable descendants. Narrow queries stay narrow. Concept lookup improves recall but never disables lexical or vector discovery.
+Terms guide retrieval within scope. They cannot establish or overwrite domain, topic, intent, jurisdiction or context. An unknown concept never triggers unrestricted semantic search.
 
-TIP translates compact metadata and labelled derivative presentation, not complete pages, and exposes no standalone translation operation. Each query routes through one of five standard-language projections; original-language evidence remains unchanged. German and declared Swiss German input variants use reviewed terminology or tested dialect aliases and route to Swiss Standard German retrieval and generated prose.
+Retrieval-term language is independent of source language. An English term can retrieve an eligible German original via evaluated projections, and the caller need not translate a German term into English. An explicit source-language filter remains enforced on retries and fallbacks.
 
-**Speaker note:** The projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The input-only tags `de`, `de-DE`, `gsw` and `gsw-CH` route through `de-CH` and require `de-CH` output. A client with an unsupported query language may translate and resubmit the request in English; TIP never pivots languages silently. An unsupported response language, source-language filter or forbidden combination is rejected with component-specific remediation. If optional rendering fails, facts and original evidence remain available with `presentation_status=DEGRADED`.
-
----
-
-## Slide 8 - OpenCode: Example MCP Client
-
-```text
-OpenCode
-   ↓
-swiss_information.resolve
-   ↓
-"residence permit in Zurich" (English)
-   ↓
-residence_permit → Aufenthaltsbewilligung
-   ↓
-TIP / published release
-   ├─ SEM evidence
-   └─ zh.ch evidence
-   ↓
-English answer + original German/French citations
-```
-
-One high-level tool call should normally be sufficient. OpenCode demonstrates standard MCP compatibility; the server does not depend on OpenCode-specific behaviour.
+**Speaker note:** A declared lexical/concept fallback may preserve scope and report degradation if a semantic provider fails; otherwise return a typed retrieval error. Do not claim identical ranking across languages or exact replay for unrecorded nondeterministic model scores. Record release, projection, index, ranking and rule versions for traceability.
 
 ---
 
-## Slide 9 - Know When We Don't Know
+## Slide 8 - OpenCode: Discover, Request, Inspect, Explain
 
-TIP explicitly supports:
+OpenCode is an example standards-compatible MCP caller. It discovers identifiers and required fields through `swiss_information.get_coverage`, interprets the message, obtains facts and submits `swiss_information.resolve`.
 
-```text
-SUPPORTED
-PARTIALLY_SUPPORTED
-NEEDS_CONTEXT
-OUT_OF_COVERAGE
-INSUFFICIENT_VERIFIED_EVIDENCE
-CONFLICTING_EVIDENCE
-STALE
-UNSUPPORTED_LANGUAGE
+The following request is illustrative after establishing Canton Zurich as the intended scope. Identifiers and required fields must come from the published catalog in a real demonstration.
+
+```json
+{
+  "schema_version": "structured-grounding/v1",
+  "release_id": "example-release-001",
+  "knowledge_space_id": "swiss-public",
+  "domain_id": "immigration",
+  "topic_id": "residence",
+  "concept_ids": ["residence-permit"],
+  "intent": "requirements",
+  "jurisdiction": {
+    "country_code": "CH",
+    "canton_code": "CH-ZH"
+  },
+  "context": {},
+  "as_of": "2026-09-06",
+  "scope_mode": "exact",
+  "retrieval_terms": [
+    {"text": "Aufenthaltsbewilligung", "language": "de-CH"}
+  ],
+  "max_evidence": 5
+}
 ```
 
-A nearest semantic match is not silently treated as applicable truth.
+The empty context records that no personal facts have yet been supplied. It does not invite TIP to infer them from the term or jurisdiction.
 
-Optional presentation is tracked separately: a rendering or excerpt-translation failure preserves the factual status and original evidence and returns `presentation_status=DEGRADED`.
+The caller may inspect original evidence with `swiss_information.get_evidence` and composes the final answer with citations and limitations. A warm caller with a cached catalog and complete facts can normally use one resolution call; count discovery, clarification and evidence inspection separately.
+
+---
+
+## Slide 9 - Missing Facts and Limits Are Explicit
+
+If the illustrative catalog operation requires nationality group and purpose, TIP returns:
+
+| Result component | Illustrative content |
+|---|---|
+| Status | `NEEDS_CONTEXT` |
+| Missing field | `context.nationality_group` |
+| Missing field | `context.purpose` |
+| Per-field detail | Schema-declared allowed values and machine-readable reason codes |
+| Caller action | Ask for the missing facts, then resubmit the same pinned scope |
+
+This is a contract example, not an assertion about legal requirements in Zurich.
+
+| Outcome | Meaning |
+|---|---|
+| `SUPPORTED` | The structured operation is supported within returned scope and limitations |
+| `PARTIALLY_SUPPORTED` | Supported and unresolved portions are identified separately |
+| `NEEDS_CONTEXT` | Valid scope lacks declared conditional facts |
+| `OUT_OF_COVERAGE` | Recognized scope/operation combination, date or language combination is outside declared coverage |
+| `INSUFFICIENT_VERIFIED_EVIDENCE` | Covered operation lacks enough verified evidence for this request |
+| `CONFLICTING_EVIDENCE` | Applicable sources conflict without a resolving published rule |
+| `STALE` | Available evidence fails the declared freshness policy |
+| `UNSUPPORTED_LANGUAGE` | A term language or explicit source-language filter is unsupported; identify the field and supported profiles |
+
+`INVALID_ARGUMENT` is a boundary error for malformed requests, unknown identifiers or inconsistent selectors. A well-formed unavailable release produces `RELEASE_UNAVAILABLE`; TIP never silently switches releases.
+
+`SUPPORTED` does not certify the caller's interpretation, the truth of client-supplied facts or the caller's final answer. Every returned fact or rule result needs sufficient evidence and applicable conditions. If only excerpts have been verified, return excerpts without inventing a conclusion.
 
 ---
 
 ## Slide 10 - Admin Control Plane
 
-The Admin UI makes the platform visible:
+The P1 Admin UI makes planned release governance visible. These are review fields, not claims that a release has already passed:
 
-```text
-Knowledge Space: Swiss Public
-Sources: SEM/admin.ch + zh.ch
-Build: COMPLETE
-Evidence: ...
-Concept graph: VALIDATED
-Candidate review: ...
-Metadata projections: COMPLETE
-Tests: PASS
-Multilingual matrix: PASS
-Production Release: ...
-```
+| Area | Operator view |
+|---|---|
+| Knowledge Space and sources | Selected space, configured official sources and acquisition state |
+| Catalog | Stable identifiers, hierarchy, supported operations and jurisdictions |
+| Context and applicability | Typed schemas, conditional fields and rule versions |
+| Candidate review | Concept/evidence proposals, decisions and provenance |
+| Metadata and retrieval | Five-language projection coverage, term routes and model/index versions |
+| Evaluation | Scope compliance, evidence completeness, multilingual recall/ranking and latency |
+| Release | Build outcome, freshness, active identity and previous successful release |
 
-MVP primary operation: **Build / Full Reload**.
-
-Scheduled refresh/change monitoring is post-MVP.
+Primary MVP operation: **Build / Full Reload**. Publication failures preserve the previous successful release. Scheduled refresh and change monitoring remain future work.
 
 ---
 
-## Slide 11 - Not Another Chatbot: Arrival Checklist
+## Slide 11 - Arrival Checklist: A Direct Structured Client
 
-Formal fields:
+**P1 client:** formal fields construct the same request as the calling LLM.
 
-```text
-Nationality       EU/EFTA
-Purpose           Employment
-Duration          >3 months
-Canton            Zurich
-Arrival date      ...
+| Form field | Example supplied value |
+|---|---|
+| Nationality group | EU/EFTA |
+| Purpose | Employment |
+| Duration | More than 3 months |
+| Canton | Zurich |
+| Relevant date | User-supplied date |
+
+These illustrative values are submitted only when the discovered schema declares the corresponding fields and allowed values. The form selects published identifiers and distinguishes an arrival date in context from the request's applicability date, `as_of`.
+
+```mermaid
+flowchart LR
+    K[Published catalog and context schema] --> F[Arrival Checklist form]
+    F -->|Typed scope and supplied facts| M[TIP MCP or optional REST]
+    M --> R[Available facts, evidence, status and missing fields]
+    R --> D[Client-rendered checklist or request for more facts]
 ```
 
-REST returns typed requirements, deadlines, evidence and Trust Envelope. No natural-language prompt is required.
+Optional REST has the same structured request and result semantics. Requirements and deadlines appear only when supported by the published operation and evidence.
 
 ---
 
-## Slide 12 - Stretch: Swiss Hike Flutter App
+## Slide 12 - Optional P2 / Appendix: Swiss Hike Client
 
-A completely different client uses typed inputs:
+Swiss Hike is an optional P2 architecture demonstration, outside P0/P1 acceptance criteria. It can be attempted after those priorities are complete or deferred to later work. A typed client could supply origin, date, duration, difficulty, travel limit and preferences such as lakes, panorama or restaurants.
 
-```text
-Origin │ Date │ Duration │ Difficulty │ Travel limit
-Lake/Panorama │ Weather │ Restaurant
-```
+A bounded prototype could use 10-20 clearly labelled **DEMO/MOCK** routes and mock transport, weather and places providers. It would demonstrate composition, not a production hiking database or verified live conditions.
 
-Hackathon backend uses 10-20 clearly labelled DEMO/MOCK routes and provider abstractions:
-
-```text
-MockTransportProvider
-MockWeatherProvider
-MockPlacesProvider
-```
-
-The app demonstrates architecture, not a production hiking database.
+Caller applications would interpret any conversational request and supply structured inputs. This stretch scenario does not add user-question interpretation to the MCP core.
 
 ---
 
-## Slide 13 - Target Product Model - Team Hypothesis
+## Slide 13 - Future / Appendix: Target Product Model
 
-The remaining product vision builds on concepts exercised by the hackathon vertical slice.
+These product hypotheses extend the evidence and release concepts of the planned vertical slice.
 
-### Knowledge Space
-Internal compiled knowledge.
+| Concept | Proposed role |
+|---|---|
+| Knowledge Space | Internal compiled knowledge with a published catalog and evidence |
+| Data Product | Distributable publisher artifact containing knowledge, datasets and/or capabilities plus licensing metadata |
+| Information Product | Application capability combining Data Products, Knowledge Spaces, live capabilities and declared rules |
 
-### Data Product
-A distributable publisher artifact containing knowledge, datasets and/or capabilities plus license/commercial metadata.
-
-### Information Product
-An application capability combining Data Products/Knowledge Spaces, live capabilities, rules and optional AI.
-
-```text
-Data Products + Capabilities
-          ↓
-   Information Product
-          ↓
-     Any Application
+```mermaid
+flowchart LR
+    D[Data Products and Knowledge Spaces] --> I[Information Product]
+    C[Typed capabilities and declared rules] --> I
+    I --> A[Application consuming structured results]
+    A --> U[User-facing experience]
 ```
 
+Optional AI for user interaction belongs in the caller; knowledge preparation and scoped semantic retrieval retain their separate roles.
+
 ---
 
-## Slide 14 - Target Product Value for Swisscom
+## Slide 14 - Future / Appendix: Value for Swisscom
 
-```text
-myAI / eGov / Mobile / Banking / Enterprise
-                    ↓
-                   TIP
-                    ↓
-              Apertus
-                    ↓
-          Swiss AI Platform
+```mermaid
+flowchart LR
+    P[Authoritative knowledge providers] --> T[TIP: governed releases and evidence services]
+    I[Swiss AI Platform and evaluated providers] --> T
+    T --> A[myAI, eGovernment, mobile, banking and enterprise applications]
 ```
 
-TIP creates a reusable trusted-information layer above Swisscom's AI infrastructure and below its applications.
+The hypothesis is a reusable information layer connecting governed knowledge, AI infrastructure and applications. The hackathon would assess the structured evidence foundation; it does not establish deployment readiness or commercial demand.
 
 ---
 
-## Slide 15 - Business Hypothesis: Swisscom Economics
+## Slide 15 - Future / Appendix: Swisscom Economics
 
-Potential revenue:
+Potential revenue sources:
 
-```text
-API / MCP consumption
-Knowledge SaaS
-managed knowledge
-enterprise/private tenants
-regulatory intelligence
-integration/private deployment
-Apertus / AI-platform consumption
+- API/MCP consumption and Knowledge SaaS.
+- Managed knowledge and enterprise/private tenants.
+- Regulatory intelligence and integration/private deployment.
+- Evaluated model and AI-platform consumption.
+
+These are business hypotheses requiring customer validation. No billing, metering or commercial settlement is part of the current MCP acceptance contract.
+
+---
+
+## Slide 16 - Future / Appendix: Publisher and Data Product Marketplace
+
+```mermaid
+flowchart TD
+    P[Government, data providers, companies and experts] --> D[Licensed or open Data Products]
+    D --> T[Swisscom TIP]
+    T --> O[Hosting, governance and distribution]
+    O --> C[Entitled applications and enterprises]
+    T --> B[Potential metering and billing services]
 ```
 
-But TIP can become more than a Swisscom-owned content service.
+Publishers could maintain trusted packs and distribute them for machine consumption. Swisscom could operate the hosting and distribution channel.
+
+Publisher onboarding, entitlement enforcement, metering and billing require separate product and implementation work. The hackathon addresses source, evidence, catalog and release concepts relevant to that future work.
 
 ---
 
-## Slide 16 - Target Product: Publisher & Data Product Marketplace
+## Slide 17 - Future / Appendix: Commercial Models
 
-```text
-Government │ SIX-like providers │ Companies │ Experts │ Individuals
-                         ↓
-                    DATA PRODUCTS
-                         ↓
-                   SWISSCOM TIP
-       hosting │ trust │ distribution │ metering │ billing
-                         ↓
-              myAI │ Apps │ Enterprises │ Agents
+Possible publisher relationships:
+
+1. **Revenue share / usage:** charge per request or unit and allocate a publisher share.
+2. **Monthly/annual license:** license a Data Product for bundled or resold access.
+3. **One-time license:** acquire defined rights to a specified version.
+4. **Publisher SaaS:** charge publishers for hosting and distribution.
+5. **Free/open:** distribute open government knowledge with separately priced hosting, service levels or application capabilities.
+
+These options need explicit rights, customer validation and commercial design before becoming requirements.
+
+---
+
+## Slide 18 - Future / Appendix: Swiss Hike Economics
+
+```mermaid
+flowchart LR
+    R[Routes Data Product - Publisher A] --> H[Swiss Hike Information Product]
+    W[Weather Data Product - Publisher B] --> H
+    T[Transport capability - Provider C] --> H
+    P[Places Data Product - Provider D] --> H
+    C[Client with structured request] --> H
+    H --> O[Structured route options and provenance]
 ```
 
-Publishers maintain their own trusted packs and can monetize machine consumption. Swisscom operates the platform and distribution channel.
+A future composition might consume several licensed or open components. Attribution, entitlements, pricing and settlement would need explicit contracts and usage records.
 
-**Decision boundary:** the marketplace is a target-product capability, not a hackathon implementation. The vertical slice validates the source, evidence, release, trust and distribution foundations it would require.
-
----
-
-## Slide 17 - Commercial Models
-
-TIP should support several publisher relationships:
-
-1. **Revenue share / usage:** end customer pays per request/unit; Swisscom retains margin and pays publisher share.
-2. **Monthly/annual license:** Swisscom licenses a Data Product and bundles/resells access.
-3. **One-time license:** Swisscom buys defined rights/version once.
-4. **Publisher SaaS:** publisher pays Swisscom for hosting/distribution.
-5. **Free/open:** government/open data is free while Swisscom monetizes hosting, SLA, inference and derived Information Products.
+Any early illustration uses **DEMO/MOCK** providers without asserting live coverage or implemented commercial behavior.
 
 ---
 
-## Slide 18 - Example: Future Swiss Hike Economics
+## Slide 19 - Future / Appendix: Licensing and Entitlements
 
-```text
-Hiking Routes Product      Publisher A
-Weather Product            Publisher B
-Transport Capability       Provider C
-Places Product             Provider D
-          ↓
-     Swiss Hike Finder
-          ↓
-      end-user request
+A marketplace would need to determine whether a consumer may use a product for its declared purpose.
+
+Potential entitlement dimensions include tenant/application, purpose, geography, redistribution, retention, volume and contract period.
+
+An entitlement is distinct from evidence applicability: permission to access an artifact does not establish that its content applies to the supplied facts. Both outcomes would need inspectable contracts.
+
+---
+
+## Slide 20 - Future / Appendix: Publisher Incentives
+
+| Publisher | Potential offering |
+|---|---|
+| Government | Official open Data Product |
+| Professional data company | Licensed dataset or capability |
+| Domain expert | Curated knowledge with declared provenance and limits |
+| Enterprise | Private internal Data Product |
+
+Swisscom could provide governed distribution without authoring every source. Publisher provenance, review obligations and maintenance expectations require explicit design; marketplace participation alone is not proof of factual correctness.
+
+---
+
+## Slide 21 - Future / Appendix: Autonomous Knowledge CI/CD
+
+```mermaid
+flowchart LR
+    W[Source watcher] --> C[Cheap change checks]
+    C --> S[Semantic change analysis]
+    S --> B[Incremental rebuild]
+    B --> T[Regression and publication gates]
+    T --> P[Policy-governed or approved promotion]
+    P --> R[New immutable release and catalog]
 ```
 
-One request may consume several paid/free products. TIP records which components were used and applies entitlement, pricing and settlement rules.
+The hackathon targets repeatable on-demand builds. Scheduled monitoring, incremental rebuilding and promotion automation are future capabilities.
 
-For the hackathon all hiking providers remain FREE + DEMO/MOCK.
-
----
-
-## Slide 19 - Licensing & Entitlements Matter
-
-TIP must eventually know not only whether information exists but whether the consumer may use it.
-
-Entitlements can constrain:
-
-```text
-tenant / application
-purpose
-geography
-redistribution
-retention
-volume
-contract period
-```
-
-This makes the marketplace applicable to professional providers and regulated enterprises.
+Release pinning remains explicit: existing callers keep their requested release, and discover a new catalog before adopting changed identifiers or context requirements. Failed builds preserve the previous successful release.
 
 ---
 
-## Slide 20 - Publisher Incentive
+## Slide 22 - Future / Appendix: Enterprise Reuse
 
-Government can publish an OFFICIAL free Data Product.
+Potential knowledge domains:
 
-A professional data company can sell licensed datasets.
+| Domain | Illustrative source layers |
+|---|---|
+| Swiss public information | Federal and cantonal official sources |
+| Banking | Regulatory instruments, regulator guidance and bank policy |
+| Insurance | Regulation, guidance, company policy and product/process evidence |
 
-A hiking/photography expert can monetize curated knowledge.
+An enterprise assistant or workflow supplies typed product, regulatory or transaction context. A future TIP deployment would return versioned evidence and supported rule results within that scope. Personal or business facts remain client assertions unless separately verified by a declared capability.
 
-An enterprise can publish private internal Data Products.
-
-Swisscom does not need to create all content itself; it creates the **trusted distribution and monetization infrastructure**.
-
----
-
-## Slide 21 - Target Product: Autonomous Knowledge CI/CD
-
-Production evolution:
-
-```text
-source watcher
- ↓
-cheap change checks
- ↓
-semantic change analysis
- ↓
-incremental rebuild
- ↓
-regression tests
- ↓
-automatic/approved promotion
-```
-
-The hackathon proves repeatable on-demand builds and lifecycle metadata; automation is the target-product evolution.
+Reusable concepts include source, authority, applicability, evidence, version, catalog, declared rules and trust metadata. Private overlays and licensed Data Products require additional design; this hackathon does not validate legal decision-making or enterprise production readiness.
 
 ---
 
-## Slide 22 - From Swiss Public to Enterprise
+## Slide 23 - Focused Deliverable, Separate Future Horizon
 
-```text
-Swiss Public: admin.ch → zh.ch
-Banking: EMIR → ESMA → FINMA → bank policy
-Insurance: regulation → guidance → company policy → product/process
-```
+| Priority / horizon | Intended outcome |
+|---|---|
+| P0 hackathon | admin.ch/zh.ch scope, on-demand releases, discoverable catalog, typed MCP requests, five-language metadata, scoped multilingual retrieval/ranking, evidence and explicit outcomes |
+| P1 optional clients | Admin Control Plane and Arrival Checklist using the same catalog and structured contract; optional REST parity |
+| P2 optional stretch | Swiss Hike with clearly labelled mock routes and providers, attempted only after P0/P1 or deferred |
+| Future product | More domains, real live capabilities, Knowledge CI/CD, enterprise overlays and publisher Data Products |
+| Future commercial layer | Entitlements, metering, pricing and settlement |
 
-Same primitives: Source, Authority, Applicability, Evidence, Version, Trust, Data Product, Entitlement and Information Product.
+Acceptance evidence must demonstrate catalog discoverability, structured validation, context completeness, scope compliance, original-source citations, freshness handling and evaluated multilingual retrieval without mandatory client translation.
 
----
-
-## Slide 23 - Two Product Horizons
-
-```text
-HACKATHON VERTICAL SLICE
-P0  admin.ch/zh.ch → concepts + localized metadata → multilingual retrieval → evidence → MCP
-P1  Admin Control Plane + Arrival Checklist
-P2  Swiss Hike composition demo with mock providers
-
-TARGET PRODUCT
-broader domains → Knowledge CI/CD → enterprise overlays
-→ publisher Data Products → entitlement / metering / settlement
-```
+Server evaluation starts at the structured request. Caller integration evaluation covers interpretation, catalog selection, clarification, language handling and faithful answer composition separately. Report measured results when available; the deck itself does not prove implementation.
 
 ---
 
 ## Slide 24 - Closing
 
-> **TIP delivers verified cross-language grounding across a predefined Swiss language catalog - not universal translation.**<br>
-> **Apertus brings Swiss multilingual potential; TIP verifies it and remains model-independent.**<br>
-> **TIP provides trusted information, context and orchestration.**  
-> **Swisscom provides infrastructure, trust, distribution and commercial reach.**
+> **Beyond search and retrieval: governed knowledge for AI.**
 
-**Hackathon:** prove a credible vertical slice using trusted Swiss information from admin.ch + zh.ch.<br>
-**Target product:** trusted-information infrastructure where publishers and enterprises can govern, distribute and compose Data Products for any application.
+> **Your assistant understands the question. TIP supplies the authoritative evidence for the scope it requests.**
+
+**Hackathon deliverable:** a discoverable, versioned MCP contract over selected admin.ch and zh.ch knowledge, with five-language metadata, scoped semantic retrieval, exact citations and explicit context/coverage outcomes.
+
+**Responsibility boundary:** the caller interprets and explains; TIP prepares knowledge, validates scope and supplies supported evidence. Original-language terms can cross evaluated source-language boundaries without client translation into a common language.
+
+**Future hypothesis:** Swisscom could provide the infrastructure and distribution for governed information services used by applications, enterprises and publishers.

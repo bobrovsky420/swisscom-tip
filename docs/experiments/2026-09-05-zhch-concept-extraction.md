@@ -22,6 +22,13 @@ levels of detail. No human-review worksheet rows had been completed at the time
 of verification; the findings below include targeted assistant spot-checks, not
 an independently labelled evaluation.
 
+This experiment evaluates build-time proposals for a future published knowledge
+catalog and evidence assignments. Generated example questions are review and
+coverage aids, not an MCP request contract. The experiment does not test client
+intent extraction, structured-request resolution, multilingual runtime retrieval
+or ranking, or end-user answer quality. Retained candidates require the documented
+review and publication gates before becoming available to MCP callers.
+
 ## Inputs, configuration and evidence
 
 The fixture consists of the following pages beneath
@@ -320,12 +327,18 @@ changed between versions, and some semantic omissions still remain.
    either model's output. Use this to measure missing topics, not just retained
    candidate counts. Distinguish a proposed-but-rejected topic from one never
    proposed and from a condition included in another candidate.
-3. Turn the known semantic failures into labelled regression examples. Evaluate
+3. Evaluate stable concept identity and placement in the published domain/topic
+   hierarchy, explicit jurisdiction and applicability metadata, typed context
+   requirements, and missing conditions or exceptions. Verify sufficient evidence
+   for every advertised information operation, such as requirements or procedures;
+   a retained topic alone does not establish operation coverage. These are future
+   catalog publication checks, not findings already established by these runs.
+4. Turn the known semantic failures into labelled regression examples. Evaluate
    explicit condition/exception checks and, if useful, an independent reviewer;
    do not treat a change of reviewer as proof that the problem is solved.
-4. Refine duplicate review to account for topic, applicability and contrasts such
+5. Refine duplicate review to account for topic, applicability and contrasts such
    as with/without employment. Keep automatic merging conservative.
-5. Only then compare independent fresh runs for quality, full elapsed time and
+6. Only then compare independent fresh runs for quality, full elapsed time and
    complete attempt/usage accounting. Use `-FreshInference` for an independent
    experiment and omit it when resuming. Do not compare a resumed invocation's
    duration directly with a fresh invocation.
