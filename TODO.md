@@ -4,8 +4,9 @@ Assessment date: 2026-09-06. Baseline: [Product Specification V20](docs/product/
 [Technical Specification V11](docs/architecture/technical-specification.md), current
 source code and tests, and the recorded zh.ch experiment.
 
-This is an implementation and validation backlog. The unchecked work below has
-not been completed by this review. Existing build proofs remain useful; there is
+This is an implementation and validation backlog. Parent items stay unchecked
+until their full acceptance boundary is met; completed steps are checked separately.
+Existing build proofs remain useful; there is
 no implemented MCP runtime or conversational server to migrate. The new work is
 the governed publication and structured serving layer around reviewed knowledge.
 
@@ -85,10 +86,12 @@ The BUILD-01 update adds the core suite. Install and test it in the same environ
 ./.venv/Scripts/python.exe -m unittest discover -s packages/core/tests -v
 ```
 
-Current verification: 71 core, 63 ingestion
+Current verification (rerun 2026-09-06): 71 core, 63 ingestion
 and 110 builder tests pass, including source catalogue planning/snapshot fixtures,
 POC-01 preparation and the loopback workflow.
 These counts do not establish semantic review or complete a POC.
+The schema export and source catalogue freshness checks also pass. POC-01 packet
+preservation verification passes for six sources and 87 historical artifacts.
 
 ## Immediate fixes supported by the review
 
@@ -124,15 +127,47 @@ or validate historical model-quality comparisons.
 
 These are delivery tasks with explicit outputs. The POCs below validate their
 assumptions; POCs do not replace the implementation backlog.
+Numbered substeps show completed work directly in the queue; parent rows remain
+open until their remaining acceptance requirements are met.
 
 | Done | Order | Work item | Acceptance boundary |
 |---|---|---|---|
 | [ ] | BUILD-01 | Define versioned catalog, context, evidence and `structured-grounding/v1` contracts; curate a small seed catalog | Stable public domain/topic/concept IDs, supported finite intents, canonical jurisdictions, conditional context schemas, strict unknown-field/ID handling and explicit outcomes |
+| [x] | BUILD-01.1 | Define shared versioned contracts and export JSON Schema | Catalog, context, release, evidence, discovery and structured request/result shapes implemented in `packages/core` |
+| [x] | BUILD-01.2 | Implement offline catalog/request validation and artifact sealing | Hierarchy, IDs, intents, jurisdictions, conditional context, bounded scope, release identity, typed validation outcomes and content/dependency hashes covered by offline tests |
+| [x] | BUILD-01.3 | Prepare the draft residence catalogue and source registry | 59 official references across all 26 cantons, exclusions, scan sets and budgets; candidate seed scaffold only, with reviewed concepts and supported coverage still pending |
 | [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
+| [x] | BUILD-02.1 | Implement explicit test-crawl planning and raw snapshot capture | Offline planning by default; explicit crawls retain exact HTML bytes and URL/time/hash manifests; fixtures verify language retention, German ordering, separate snapshots and failures |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
 | [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
+| [x] | BUILD-04.1 | Define and validate the closed v3 language policy | Language-only role sets, tagged term routes, independent source filters and policy closure implemented and tested offline; source-language validation and evaluated retrieval/projections remain pending |
 | [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters, verified equivalent evidence grouping, conditional German tie-breaker and evaluated provider fallback |
 | [ ] | BUILD-06 | Complete on-demand release publication, retention, observability and client qualification | Atomic promotion, historical reads, no silent release substitution, fresh/stale reporting, external-client setup and separate caller evaluation |
+
+Completed steps within the open implementation items:
+
+- [x] **BUILD-01: define shared versioned contracts and export JSON Schema.**
+  [Core contracts](packages/core/src/swisstip/core/contracts.py) cover catalog,
+  context, release, evidence, discovery and structured request/result shapes.
+- [x] **BUILD-01: implement offline catalog and request validation.**
+  [Validators](packages/core/src/swisstip/core/validation.py) enforce hierarchy,
+  explicit IDs, finite intents, jurisdictions, conditional context, bounded scope,
+  release identity and typed validation outcomes. Artifact sealing binds content
+  and dependency hashes; it does not publish or approve artifacts.
+- [x] **BUILD-01/02: prepare the draft residence source catalogue.**
+  The [catalogue](config/catalogs/README.md) records 59 official references across
+  all 26 cantons, explicit exclusions, scan sets and budgets. The seed remains
+  `CANDIDATE`, with no concepts, context schemas or supported coverage profiles.
+- [x] **BUILD-02: implement explicit test-crawl planning and raw snapshot capture.**
+  The [source CLI](apps/knowledge-builder/src/swisstip/builder/source_cli.py)
+  defaults to offline planning; explicit crawls save exact HTML bytes and
+  URL/time/hash manifests. Fixtures verify selected-language retention, German
+  ordering, separate snapshots and failure reporting. Live catalogue crawl
+  validation, normalized evidence binding and reviewed promotion remain pending.
+- [x] **BUILD-04/POC-06: define and validate the closed v3 language policy.**
+  Core contracts and offline regressions enforce language-only role sets, tagged
+  term routes, independent source filters and policy closure. Actual source-language
+  validation, evaluated retrieval routes and five-language projections remain pending.
 
 BUILD-01 is in progress: shared contracts and offline boundary validation are
 implemented in [packages/core](packages/core/README.md). The seed catalog remains
@@ -144,12 +179,13 @@ preserves scope limitations and assistance provenance. The user's same-person
 second pass, independent adjudication, controlled reviewer comparison and unseen
 holdout remain pending. Neither BUILD-01 nor POC-01 is complete.
 
-BUILD-02 can begin with the first reviewed fixture. FIX-01/02 are complete.
+BUILD-02 has acquisition scaffolding; reviewed evidence/promotion work still needs
+the first accepted fixture. FIX-01/02 are complete.
 BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
 The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
 of the multilingual P0 service.
 
-BUILD-02 includes parsers for supported language selectors, HTML/HTTP `hreflang`
+Remaining BUILD-02 work includes parsers for supported language selectors, HTML/HTTP `hreflang`
 and sitemap alternates, reviewed source-language hint mappings, explicitly scoped
 adapters where needed, shared-budget scheduling and reports for discovered,
 fetched, validated, excluded, failed and unresolved variants. POC-09 validates
@@ -217,7 +253,7 @@ Existing POC identifiers are retained so previous references remain meaningful.
 | [ ] | 03 | Applicability, factual support and typed status precedence | 01, 02 | 0.5-1 day + review |
 | [ ] | 04 | Acquisition and evidence trust boundaries | FIX-01; repeat runtime cases after 02 | 0.5-1 day |
 | [ ] | 05 | Meaning preservation through normalization/chunking | 01 | 0.5-1 day |
-| [ ] | 06 | V2 per-term routing and source-language validation | 01; fluent reviewers for claimed profiles | 0.5-1 day + review |
+| [ ] | 06 | V3 per-term routing and source-language validation | 01; fluent reviewers for claimed profiles | 0.5-1 day + review |
 | [ ] | 07 | Scoped retrieval channels, catalog value and evidence budget | 01-03, 06, 10; curated projection fixtures can unblock early work | 1-2 days |
 | [ ] | 08 | Immutable catalog/release promotion, pinning and freshness | 02, 03 | 0.5-1 day |
 | [ ] | 09 | Root-based source-language discovery and crawl coverage | FIX-01, 04; controlled website fixture | 0.5-1 day |
@@ -238,6 +274,12 @@ preserving the five-language projection and scoped-ranking requirements. A
 partial prototype remains incomplete P0; reviewer or time shortages do not
 silently make those capabilities optional. Any product-scope change needs a
 separate explicit decision. Admin UI, REST/Arrival and Hike remain P1/P2.
+
+- [x] **P1 Admin GUI design: document the stack, build execution and initial screens.**
+  [Technical specification section 16](docs/architecture/technical-specification.md#161-recommended-implementation-stack)
+  defines React/TypeScript/Vite/Mantine, the FastAPI Control API, generated SDK,
+  build polling and Sources/Builds/Concept review screens. The applications remain
+  unimplemented; this completes the design step only.
 
 ## Evaluation rules and evidence
 
@@ -270,6 +312,18 @@ separate explicit decision. Admin UI, REST/Arrival and Hike remain P1/P2.
   `.venv/Scripts/python.exe` on Windows or `.venv/bin/python` on Unix.
 
 ## POC-01 - Independent semantic quality and reviewer value
+
+Recorded progress in the
+[experiment report](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md):
+
+- [x] Preserve six source pages and 87 historical artifacts with a verified manifest.
+- [x] Prepare source-only review views and freeze 30 human-led, assistant-assisted
+  reference concepts, five per source, with 101 reported primary-review minutes.
+- [x] Prepare the fixed historical comparison: 116 proposals and 60 assistant draft
+  alignments, with a separate second-review worksheet.
+- [ ] Complete the user's same-person second pass and select an accepted seed subset.
+- [ ] Complete independent adjudication, controlled reviewer comparisons and unseen
+  holdout evaluation. Reviewer value and model selection remain `INCONCLUSIVE`.
 
 **Assumption:** exact evidence plus model review can identify publication-quality
 concepts and reduce human effort. The existing experiment already disproves the
@@ -474,7 +528,7 @@ cannot be normalized reliably, remove it from claimed coverage instead of silent
 dropping its conditions. See [concepts.py](packages/ingestion/src/swisstip/ingestion/concepts.py)
 and technical sections 10.1/10.3.
 
-## POC-06 - V2 term routes and source-language validation
+## POC-06 - V3 term routes and source-language validation
 
 **Assumption:** closed, explicitly tagged term routes support multilingual
 retrieval while independently validated source languages preserve provenance.
