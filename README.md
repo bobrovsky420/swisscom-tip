@@ -26,6 +26,7 @@ seed catalog is still a draft; release publication and the MCP tools are not imp
 
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)
+- [Hackathon operations, deployment and data transfer](docs/hackathon-operations.md)
 - [Implementation gaps and validation plan](TODO.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
 - [Hackathon residence source catalogue and later crawl/extraction commands](config/catalogs/README.md)
