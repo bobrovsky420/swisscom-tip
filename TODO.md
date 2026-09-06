@@ -141,6 +141,7 @@ open until their remaining acceptance requirements are met.
 | [x] | BUILD-02.1 | Implement explicit test-crawl planning and raw snapshot capture | Offline planning by default; explicit crawls retain exact HTML bytes and URL/time/hash manifests; fixtures verify language retention, German ordering, separate snapshots and failures |
 | [x] | BUILD-02.2 | Implement opt-in structured extraction and bounded assisted review | v4 logical blocks, scoped structured claims, separate semantic dimensions, source-block coverage audit, one bounded repair, visible gaps and preserved legacy checkpoints; offline fixtures only |
 | [x] | BUILD-02.3 | Export authoring review packets and import revision-bound annotations | Escaped source/evidence viewer and decision CSV; stale, duplicate and missing items rejected; human identity required; corrections, promotion and verified coverage remain separate |
+| [x] | BUILD-02.4 | Add a short path for hackathon and testing data without human review | Deterministic experimental bundles from retained v1-v4 candidates, archived reports, provenance and evidence; Python/CLI catalog, search and lookup; unreviewed metadata preserved and production approval gates unchanged |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
 | [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [x] | BUILD-04.1 | Define and validate the closed v3 language policy | Language-only role sets, tagged term routes, independent source filters and policy closure implemented and tested offline; source-language validation and evaluated retrieval/projections remain pending |
@@ -187,6 +188,10 @@ pending. Neither BUILD-01 nor POC-01 is complete.
 BUILD-02 has acquisition scaffolding, opt-in v4 structured extraction with offline
 authoring-review import, and an accepted authoring reference subset;
 the release-bound evidence/promotion fixture remains to be implemented. FIX-01/02 are complete.
+The [experimental short path](docs/experiments/2026-09-06-experimental-knowledge.md)
+lets hackathon and test applications consume extractor candidates without human
+review now. Its local catalog/search/evidence adapter is not completion of BUILD-03
+or production release publication.
 BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
 The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
 of the multilingual P0 service.

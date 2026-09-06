@@ -18,6 +18,11 @@ identifiers. Reviewed promotion into stable concept identifiers, catalog
 operations and context schemas, and immutable Knowledge Release publication
 are not yet implemented; see the [implementation plan](../../TODO.md).
 
+For hackathons and testing, the [experimental short path](../../docs/experiments/2026-09-06-experimental-knowledge.md)
+turns saved extractor output into a usable local bundle without human review.
+It includes Python and CLI catalog/search/concept/evidence access and preserves
+unreviewed status, claims, citations and model provenance.
+
 ## Install
 
 Python 3.11 or newer is required. From the repository root:

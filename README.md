@@ -20,6 +20,9 @@ operator-triggered knowledge-builder proofs:
 - An opt-in [structured extraction and human review workflow](docs/experiments/2026-09-06-structured-extraction.md)
   with logical source blocks, explicit claim conditions, omission audits, bounded
   repair and revision-bound review annotations. Live quality validation is pending.
+- An [experimental short path](docs/experiments/2026-09-06-experimental-knowledge.md)
+  that builds searchable test bundles directly from extractor candidates without
+  human review, with Python/CLI concept and evidence lookup.
 
 The shared core now defines versioned catalog, context, evidence and structured
 request contracts, with offline catalog/request validation. POC-01 has 30 frozen
