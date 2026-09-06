@@ -1,8 +1,10 @@
 # POC-01: semantic reference labels and reviewer value
 
-Experiment date: 2026-09-06. Status: 30 reference concepts frozen; assistant draft
-comparison prepared; the user's second pass and controlled reviewer evaluation
-remain pending. Current reviewer-value/model-selection decision: `INCONCLUSIVE`.
+Experiment date: 2026-09-06. Status: the user's same-person second pass is complete
+for 30 references and 60 comparison assessments, with 42 reported review minutes.
+Eight accepted references are selected for seed authoring. Independent adjudication
+and controlled reviewer evaluation remain pending. Current reviewer-value/model-selection
+decision: `INCONCLUSIVE`.
 
 ## Scope and review arrangement
 
@@ -91,9 +93,9 @@ timebox is 0.5-1 focused engineer-day plus actual reviewer availability; it is n
 a promise that all comparisons or the full P0 implementation fit that timebox.
 
 The eventual decision is `CONFIRMED_FOR_TESTED_SLICE`, `REJECTED` or
-`INCONCLUSIVE`. Until the measurements exist, POC-01 remains unchecked. The
-reviewed 5-10-concept seed subset also remains pending; draft identifiers and
-passing contract tests do not establish semantic approval.
+`INCONCLUSIVE`. Until the measurements exist, POC-01 remains unchecked. Eight
+references accepted in the same-person review are selected for seed authoring;
+catalog mapping, independent adjudication and publication gates remain pending.
 
 ## Frozen reference and draft comparison
 
@@ -119,8 +121,8 @@ plus a common proposal inventory that preserves every retained/rejected proposal
 
 There are 60 assistant draft alignments, one per gold concept and run. The
 inventory includes 305 example questions: 183 have assistant draft assessments
-against linked concepts and 122 remain unassessed. Every human second-review
-decision and timing cell is blank. These counts are preparation bookkeeping, not
+against linked concepts and 122 remain unassessed. At preparation, every human
+second-review decision and timing cell was blank. These counts are preparation bookkeeping, not
 accuracy, reviewer agreement or an independently measured recall result.
 
 The retained-output representation counts are:
@@ -168,23 +170,74 @@ acceptance fixtures. [BUILD-02 and POC-01/03/05](../../TODO.md) track implementa
 and validation. Updating the requirements does not implement the controls or
 qualify the existing extractor for automatic promotion.
 
-Next, complete the user's same-person second pass and preserve any corrections
-in new snapshots. Confirm failures before using them as regression truth; retain
-correct controls and independently label unseen natural cases for later quality
-claims. Controlled reviewer arms, valid-content-loss/cost criteria, provider
+The subsequent guided second pass is recorded below. Next, use its agreed
+findings and correct controls to prepare regressions, and independently label
+unseen natural cases for later quality claims. Controlled reviewer arms,
+valid-content-loss/cost criteria, provider
 configuration and whole-run budgets must be fixed before fresh reviewer runs.
 The 101 minutes measure primary reference work, not total engineering effort or
 minutes per usable published concept. No model-size winner is established.
 
+## Completed same-person second pass and authoring seed
+
+The user accepted all 30 references and agreed with all 60 comparison-level
+assessments in a guided review using assistant summaries and links to the fixed
+browser view. Actual second-review time was reported per concept and totals
+42 minutes, separately from the 101 primary-review minutes. The first 8B decision
+was clarified: the requested correction concerned incomplete model output, not
+the comparison judgment. Both responses are preserved; no extra time was inferred.
+
+No reference claims or evidence were changed. Acceptance retains the recorded
+scope limitations and unresolved source ambiguities, including the exact-age
+deadline boundaries, unspecified deadline trigger and unmarried-couple condition
+interaction. The review is neither independent nor blind. Comparison-level
+agreement does not create individual decisions for every example question;
+the original per-question drafts and 122 unassessed questions remain unchanged.
+The retained-content counts above are unchanged and are not accuracy scores or
+proof that the complete-content proposals have sufficient scope and citation support.
+
+The new full-gold snapshot is
+`.local/experiments/poc-01/review-freezes/20260906T165716-1a187305/`.
+It records all second-pass decisions and times, with 41 validated evidence spans.
+The earlier gold/proposal snapshots remain unchanged. Completion records, reviewed
+comparison CSVs, the authoring seed selection and their hash manifest are frozen at
+`.local/experiments/poc-01-comparisons/20260906-full-gold-01/second-pass-001/`.
+The completion manifest SHA-256 is
+`da0ab68845ac5e9dfa509aa30abf39fe949692594c51d14ac57f0ef6951d8e45`.
+Per-response worksheet revisions remain in the adjacent `review-revisions/` directory.
+The original browser view and preparation manifests retain their historical status.
+
+The assistant selected eight accepted references for the next BUILD-01 authoring
+step: three contact references, the employer-to-AWI submission step, three EU/EFTA
+work-condition references and the EU/EFTA card-format reference. Selection favors
+bounded source statements, explicit roles and strict conditions, with both complete
+model controls and curated references for content omitted by extraction. It excludes
+the unresolved age/deadline and relationship-logic cases from the initial seed.
+Existing limitations, including the unresolved exactly-one-year permit selection,
+remain even for selected references; no missing branch is inferred.
+
+`seed-selection.json` contains the exact selected reference IDs, accepted annotations,
+validated evidence and selection reasons. This is an internal authoring selection
+from accepted references, not approval of historical model proposals or a published
+catalog. Stable public IDs, typed context/operation mapping and reviewed evidence
+promotion remain BUILD-01/02 work. Independent adjudication, controlled reviewer
+arms, held-out evaluation and the five-language service requirements remain open.
+
 ## Artifact verification
 
-The comparison's `verification.json` records checked input/output hashes, local
+The comparison's original `verification.json` records checked input/output hashes, local
 links, 60 comparison rows, 30 empty second-review rows, 116 proposals and 305
 questions. The offline browser view was rendered and its initial one-concept
 selection verified. The original packet still passes preservation verification
 for all six sources and 87 historical files; gold and source snapshots are unchanged.
 No new configured extraction/reviewer inference calls or live source fetches were
 run for this comparison. Assistant draft analysis is recorded as such.
+
+Second-pass finalization rechecked all fixed comparison inputs, unchanged draft
+artifacts, the 30 human/60 comparison decisions and reported minutes. The new gold
+freeze revalidated all 41 exact evidence spans, and packet preservation still passes
+for six sources and 87 historical files. These checks validate record integrity;
+they do not complete the POC's independent semantic evaluation.
 
 Recheck packet preservation with the repository environment:
 

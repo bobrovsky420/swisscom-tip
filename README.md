@@ -20,9 +20,11 @@ operator-triggered knowledge-builder proofs:
 
 The shared core now defines versioned catalog, context, evidence and structured
 request contracts, with offline catalog/request validation. POC-01 has 30 frozen
-source-first reference concepts and a draft comparison against the saved 8B/70B
-proposals. The user's second review and quality evaluation remain pending. The
-seed catalog is still a draft; release publication and the MCP tools are not implemented.
+source-first reference concepts. The user's same-person second review accepted
+all 30 references and agreed with 60 comparisons against the saved 8B/70B proposals;
+eight references are selected for seed authoring. Independent quality evaluation
+remains pending. The seed catalog is still a draft; release publication and the
+MCP tools are not implemented.
 
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)

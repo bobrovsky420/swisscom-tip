@@ -44,7 +44,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Normalization and evidence spans | [Normalizer and extractor](packages/ingestion/src/swisstip/ingestion/concepts.py) read local files, record local paths and verify normalized offsets | Add authoritative URL/source identity, immutable snapshot binding, persisted normalized sections and release-associated evidence |
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
-| Review workflow | Model review, rejected proposals, 30 frozen reference labels and an assistant draft comparison exist | Implement separate support/scope/completeness/question assessments, validated human-review import and promotion gates; structural/model approval alone does not publish knowledge |
+| Review workflow | Model review, rejected proposals, 30 references accepted in a completed same-person second pass, 60 agreed comparison assessments and an eight-reference authoring seed selection exist | Implement separate support/scope/completeness/question assessments, validated production review import and promotion gates; the offline review does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v3`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
 | Runtime/product | Crawler/concept CLIs plus shared versioned contracts and offline catalog/request validation are implemented | Reviewed seed coverage, catalog publisher/reader, immutable releases, scoped retrieval/rules and the three MCP tools remain unimplemented |
@@ -57,8 +57,8 @@ The [zh.ch experiment](docs/experiments/2026-09-05-zhch-concept-extraction.md)
 retained 47/55 candidates from six German pages with 8B/70B. Retained citation
 offset checks passed, but both models and reviewers accepted a material omission.
 That historical report predates the source-first review. POC-01 now has 30 frozen
-reference concepts and an assistant draft comparison against both final runs;
-the user's second pass remains pending. These results establish neither semantic
+reference concepts and an assistant-authored comparison against both final runs;
+the user's same-person second pass is complete with 42 reported minutes. These results establish neither semantic
 completeness nor superiority of either model.
 
 Original offline baseline, rerun for this review before FIX-01/02:
@@ -136,6 +136,7 @@ open until their remaining acceptance requirements are met.
 | [x] | BUILD-01.1 | Define shared versioned contracts and export JSON Schema | Catalog, context, release, evidence, discovery and structured request/result shapes implemented in `packages/core` |
 | [x] | BUILD-01.2 | Implement offline catalog/request validation and artifact sealing | Hierarchy, IDs, intents, jurisdictions, conditional context, bounded scope, release identity, typed validation outcomes and content/dependency hashes covered by offline tests |
 | [x] | BUILD-01.3 | Prepare the draft residence catalogue and source registry | 59 official references across all 26 cantons, exclusions, scan sets and budgets; candidate seed scaffold only, with reviewed concepts and supported coverage still pending |
+| [x] | BUILD-01.4 | Complete the same-person reference review and select eight accepted references for seed authoring | 30 accepted references, 60 agreed comparison assessments and 42 reported second-review minutes frozen with exact evidence; catalog mapping, independent adjudication and publication remain pending |
 | [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
 | [x] | BUILD-02.1 | Implement explicit test-crawl planning and raw snapshot capture | Offline planning by default; explicit crawls retain exact HTML bytes and URL/time/hash manifests; fixtures verify language retention, German ordering, separate snapshots and failures |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
@@ -172,15 +173,17 @@ Completed steps within the open implementation items:
 BUILD-01 is in progress: shared contracts and offline boundary validation are
 implemented in [packages/core](packages/core/README.md). The seed catalog remains
 a draft pending reviewed promotion. POC-01 has 30 frozen reference concepts,
-five per source, with 101 reported primary-review minutes. The fixed comparison
-contains 116 historical proposals and 60 assistant draft alignments. The
+five per source, with 101 reported primary-review minutes and 42 second-review
+minutes. The user accepted all references and agreed with the 60 assistant-authored
+comparisons of 116 historical proposals. Eight accepted references are selected
+for seed authoring; they are not yet mapped into the draft catalog. The
 [experiment record](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
-preserves scope limitations and assistance provenance. The user's same-person
-second pass, independent adjudication, controlled reviewer comparison and unseen
-holdout remain pending. Neither BUILD-01 nor POC-01 is complete.
+preserves scope limitations, assistance provenance and the completion artifacts.
+Independent adjudication, controlled reviewer comparison and unseen holdout remain
+pending. Neither BUILD-01 nor POC-01 is complete.
 
-BUILD-02 has acquisition scaffolding; reviewed evidence/promotion work still needs
-the first accepted fixture. FIX-01/02 are complete.
+BUILD-02 has acquisition scaffolding and an accepted authoring reference subset;
+the release-bound evidence/promotion fixture remains to be implemented. FIX-01/02 are complete.
 BUILD-04 can progress in parallel with BUILD-03; BUILD-05 integrates both.
 The early identifier/lexical fixture in BUILD-03 proves contracts, not completion
 of the multilingual P0 service.
@@ -227,8 +230,8 @@ are requirements from V20/V11, not capabilities already delivered by the workshe
    a contact heading alone is not a reason to drop included substantive content.
    Report filtered, skipped, budget-limited, unproposed, rejected and differently
    represented content separately. Do not retroactively exclude gaps to raise scores.
-5. Import the user's second review with explicit decisions and actual time,
-   turn confirmed failures and correct controls into regression fixtures, and
+5. The offline second-review import and freeze are complete. Implement validated
+   production import of revision-bound decisions, turn agreed failures and correct controls into regression fixtures, and
    enforce affected-claim/operation promotion gates. Complete text representation
    in a rejected or partly unsupported proposal is not verified retained coverage.
 
@@ -321,7 +324,10 @@ Recorded progress in the
   reference concepts, five per source, with 101 reported primary-review minutes.
 - [x] Prepare the fixed historical comparison: 116 proposals and 60 assistant draft
   alignments, with a separate second-review worksheet.
-- [ ] Complete the user's same-person second pass and select an accepted seed subset.
+- [x] Complete the user's same-person second pass: 30 references accepted and
+  60 comparison assessments agreed, with 42 reported minutes and a new gold freeze.
+- [x] Select eight accepted references for the internal authoring seed, retaining
+  exact evidence and scope limitations. Catalog mapping and publication remain open.
 - [ ] Complete independent adjudication, controlled reviewer comparisons and unseen
   holdout evaluation. Reviewer value and model selection remain `INCONCLUSIVE`.
 

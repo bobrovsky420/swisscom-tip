@@ -63,12 +63,13 @@ POC-01 reviewer comparison; the current record below identifies what is ready.
 
 The [experiment record](../../../docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
 documents 30 frozen source concepts and 101 primary-review minutes, with an
-assistant draft comparison of the two final historical runs. The common set
+assistant-authored comparison of the two final historical runs. The common set
 contains all 116 retained/rejected proposals; no fresh configured extraction or
-reviewer calls were made. The user's second pass and independent evaluation are
-pending.
+reviewer calls were made. The user's same-person second pass is complete: 30
+references accepted, 60 comparison assessments agreed, and 42 reported review
+minutes. Independent evaluation remains pending.
 
-The full-gold freeze is
+The original pre-comparison full-gold freeze is
 `.local/experiments/poc-01/review-freezes/20260906T133038-b99b9023/`.
 The comparison browser view, CSVs, fixed inputs and hash manifests are under
 `.local/experiments/poc-01-comparisons/20260906-full-gold-01/`.
@@ -77,6 +78,18 @@ models at a time without a server. It does not save answers. Record feedback
 through the guided review or the CSV worksheets, with time recorded once per
 reference concept. The local `assemble.py` records how the view was generated
 and refuses to overwrite outputs; corrected drafts require a preserved revision.
+
+The completed second-pass gold freeze is
+`.local/experiments/poc-01/review-freezes/20260906T165716-1a187305/`.
+The comparison directory's `second-pass-001/` contains frozen review CSVs,
+`completion.json`, `seed-selection.json` and a hash manifest. Eight accepted
+references were selected for internal seed authoring; catalog mapping and
+publication remain pending. Per-response changes are preserved in `review-revisions/`.
+The working gold worksheet now contains second-pass decisions and actual minutes;
+old freezes, comparison inputs and the historical browser view remain unchanged.
+Use the completion records for current status rather than the viewer's draft banner.
+The per-question worksheet was not independently completed by these comparison-level
+agreements. No independent adjudication or POC pass is implied.
 
 These internal artifacts and their original source text must remain ignored.
 Only sanitized findings and specification/backlog changes belong in tracked docs.

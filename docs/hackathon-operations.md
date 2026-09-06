@@ -20,7 +20,7 @@ residence scenario before expanding coverage.
 | Source coverage preparation | Residence source catalog with 59 official references across 26 cantons; references do not imply evaluated knowledge coverage |
 | Semantic preparation | Concept proposal and model review CLIs, local/hosted profiles, checkpoints and experiment reports |
 | Shared contracts | Versioned catalog, context, evidence and request contracts with offline validation |
-| Human review | POC-01 reference concepts and draft comparisons exist; second review and quality evaluation remain pending |
+| Human review | Same-person second pass complete: 30 references accepted, 60 comparison assessments agreed and eight references selected for seed authoring; independent quality evaluation remains pending |
 | Published knowledge service | Catalog publication, immutable releases, scoped retrieval and MCP tools remain unimplemented |
 | Deployment | No implemented Docker Compose stack or release export/import workflow |
 | Admin UI | Planned React application and control API, with P1 priority |
