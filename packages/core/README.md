@@ -89,6 +89,13 @@ conditional requirements and consistency rules. They are not arbitrary executabl
 rules or unrestricted JSON Schema. The schema and validator reject unsupported
 constructs. BUILD-02/03 will bind reviewed rules/evidence and perform resolution.
 
+The `tip-language-catalog/v3` roles use `en`, `de`, `fr`, `it` and `rm` for
+sources and projections, plus `gsw` for evaluated Swiss German term routes to
+`de`. Jurisdiction, dialect and idiom coverage are declared separately. Raw
+website/detector tags remain in provenance; the BCP 47 syntax parser preserves
+their subtags. Public regional language profiles are unsupported. Existing v2
+policies require migration and resealing before use with these validators.
+
 All five metadata projection languages remain P0. This package defines language
 and coverage boundaries; it does not establish source-language validation,
 translation fidelity, multilingual retrieval or evaluated term routes.

@@ -69,7 +69,7 @@ Search systems and RAG applications can incorporate governance themselves. TIP m
 
 ## Closed language catalog and release profiles
 
-The versioned `tip-language-catalog/v2` catalog replaces the earlier question/response language roles with server-owned retrieval roles. It permits retrieval-term tags `en`, `de`, `de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH`. Source and metadata-projection roles permit the exact tags `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. The source-declaration alias set remains empty. Bare `fr`, `it` and `rm` are not accepted client term tags; the earlier whole-question detector-only aliases no longer apply.
+The versioned `tip-language-catalog/v3` catalog uses language-only identifiers for server-owned retrieval roles. It permits retrieval-term tags `en`, `de`, `fr`, `it`, `rm` and `gsw`. Source and metadata-projection roles permit the exact tags `en`, `de`, `fr`, `it` and `rm`. Term-language and source-declaration alias sets are empty. Jurisdiction is carried separately in structured scope, and regional terminology, dialect and idiom coverage in reviewed profiles. Raw website and detector tags retain their specificity in provenance; reviewed mappings may normalize them to enabled source languages.
 
 | Role | Product meaning |
 |---|---|
@@ -78,9 +78,9 @@ The versioned `tip-language-catalog/v2` catalog replaces the earlier question/re
 | Projection language | Standard language of compact derived retrieval metadata; metadata is a retrieval aid, not evidence |
 | Catalog labels | Reviewed multilingual names, descriptions and aliases for discovery, using declared metadata languages |
 
-An immutable release-specific `LanguagePolicy` enables an evaluated subset of the catalog and declares valid term/projection/source combinations for each covered space, topic, concept, intent, jurisdiction and temporal scope. Every term alias, projection route and combination must refer to enabled roles. Publication fails for dangling references or missing required evaluations. The P0 target requires complete compact projections in all five standard languages for included P0 sections; no release may advertise that target as achieved before validation passes.
+An immutable release-specific `LanguagePolicy` enables an evaluated subset of the catalog and declares valid term/projection/source combinations for each covered space, topic, concept, intent, jurisdiction and temporal scope. Term-language aliases remain empty; every projection route and combination must refer to enabled roles. Publication fails for dangling references or missing required evaluations. The P0 target requires complete compact projections in all five standard languages for included P0 sections; no release may advertise that target as achieved before validation passes.
 
-Generic German, German (Germany) and declared Swiss German term profiles route through reviewed terminology to the `de-CH` projection. This routing does not prescribe the language of the caller's answer. Exact Swiss German dialect and Romansh idiom coverage is declared and evaluated, rather than inferred from a broad tag.
+German (`de`) and Swiss German (`gsw`) term profiles route through reviewed terminology to the `de` projection. This routing does not prescribe the language of the caller's answer. Exact Swiss German dialect and Romansh idiom coverage is declared and evaluated, rather than inferred from a broad tag.
 
 End-user question language, conversation handling and answer language belong to the caller. TIP has no whole-question language detector, mixed-span planner, fixed generated-response mapping or whole-question English fallback. Source-language detection during knowledge preparation remains part of the builder.
 
@@ -230,7 +230,7 @@ flowchart TD
     Canton --> Local["Declared municipal coverage and exclusions"]
 ```
 
-The shorter question `How to get Aufenthaltsbewilligung in Zurich?` is also a caller example. The caller can retain `Aufenthaltsbewilligung` as a `de-CH` retrieval term, but must disambiguate city versus canton when material and must not infer nationality, purpose or duration. Missing facts produce typed missing-field results that the caller turns into clarification.
+The shorter question `How to get Aufenthaltsbewilligung in Zurich?` is also a caller example. The caller can retain `Aufenthaltsbewilligung` as a `de` retrieval term, but must disambiguate city versus canton when material and must not infer nationality, purpose or duration. Missing facts produce typed missing-field results that the caller turns into clarification.
 
 The server demonstration tests discovery, authoritative evidence, scope/applicability checks, multilingual retrieval and efficient tool use. Its declared retrieval-term profiles include English, German variants, French, Italian, evaluated Swiss German forms and the declared Romansh idiom. These are term-retrieval profiles, not a promise that TIP understands complete user questions in those languages.
 
@@ -262,7 +262,7 @@ Coverage begins with selected `admin.ch` / SEM and `zh.ch` material. Sources, to
 - a reviewed seed concept graph and multilingual terminology for the principal scenario;
 - hierarchical catalog discovery with stable IDs, supported intents, context schemas, valid combinations and release pinning;
 - post-normalization candidate concept extraction and corpus-level aggregation;
-- compact retrieval metadata projections for English (`en`), Swiss Standard German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and Romansh (`rm-CH`);
+- compact retrieval metadata projections for English (`en`), German (`de`), French (`fr`), Italian (`it`) and Romansh (`rm`);
 - tested generic German and German (Germany) terminology plus Swiss German dialect aliases, normalized to Swiss Standard German retrieval terms;
 - scoped language-aware lexical, canonical-concept and multilingual vector retrieval with semantic ranking/reranking;
 - automated grounding, citation, multilingual retrieval, efficiency, freshness and integration tests;
@@ -364,7 +364,7 @@ The granularity model is:
 
 `ANSWERABLE` is the default grounding level. Domains and topics organize coverage and discovery. Descendant expansion requires an explicit scope mode; a broad label alone cannot support a factual conclusion.
 
-A candidate becomes a separate answerable concept when one or more of the following differs: required user action, responsible authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful user question. Translations, synonyms, abbreviations, spelling variants and dialect variants of the same administrative or legal object are merged as terminology for one concept. For the Swiss residence-permit concept, for example, `Aufenthaltsbewilligung` is the preferred `de-CH` term and `Aufenthaltserlaubnis` can be a reviewed `de-DE` retrieval alias within that declared concept scope. A foreign permit supplied as typed context remains a distinct entity; terminology expansion cannot reinterpret that fact or establish Swiss intent.
+A candidate becomes a separate answerable concept when one or more of the following differs: required user action, responsible authority, applicability, deadline, legal effect, required documents, authoritative source or independently meaningful user question. Translations, synonyms, abbreviations, spelling variants and dialect variants of the same administrative or legal object are merged as terminology for one concept. For the Swiss residence-permit concept, for example, `Aufenthaltsbewilligung` is the preferred `de` term and `Aufenthaltserlaubnis` can be a reviewed `de` retrieval alias with German regional terminology provenance within that declared concept scope. A foreign permit supplied as typed context remains a distinct entity; terminology expansion cannot reinterpret that fact or establish Swiss intent.
 
 For example, `Residence` is a broad topic. `Residence permit`, `Municipal registration`, `Change of address` and `Deregistration` are separate answerable concepts. Municipal conduct rules may be related to living in a municipality but are not automatically children of `Residence permit`. Likewise, `Health` is a domain while `Health insurance`, `Healthcare access`, `Emergency care` and `Public health` are separate concepts.
 
@@ -404,11 +404,11 @@ canonical concept identifiers
 named entities and jurisdiction references
 ```
 
-The default projection languages are English (`en`), German (`de-CH`), French (`fr-CH`), Italian (`it-CH`) and Romansh (`rm-CH`). The Romansh coverage declaration identifies whether `rm-CH` means Rumantsch Grischun and which additional idioms, if any, are evaluated.
+The default projection languages are English (`en`), German (`de`), French (`fr`), Italian (`it`) and Romansh (`rm`). The Romansh coverage declaration identifies whether `rm` means Rumantsch Grischun and which additional idioms, if any, are evaluated.
 
 For each field whose target language equals its source language, TIP uses the unchanged normalized original and records `ORIGINAL_SAME_LANGUAGE`. For another target language, it prefers an eligible official parallel-language version published by the same authority, then curated terminology, then a machine-generated translation. Every projected field records its method, provider/model where applicable, review status and original content hash. Canonical concept identifiers, authorities, jurisdictions, dates and other structured values are not translated.
 
-Generic German (`de`), German (Germany) (`de-DE`) and declared Swiss German (`gsw` and `gsw-CH`) are retrieval-term profiles. They use reviewed terminology or dialect aliases and route to the `de-CH` projection without separate metadata variants. TIP preserves each supplied term tag. The caller controls answer language; routing does not generate or prescribe a response. Coverage lists accepted term tags and evaluated dialect forms.
+German (`de`) and Swiss German (`gsw`) are retrieval-term profiles. They use reviewed terminology or dialect aliases and route to the `de` projection without separate regional metadata variants. TIP preserves each supplied term tag. The caller controls answer language; routing does not generate or prescribe a response. Coverage lists accepted term tags and evaluated dialect forms.
 
 Localized projections are candidate-retrieval aids, not evidence. Results and citations always resolve to the original source section or an official parallel-language source section.
 
@@ -444,9 +444,9 @@ flowchart TD
 
 The request can contain terms in several languages, each explicitly tagged. No whole-question language detection, carrier language or mixed-span classification is required. The release publishes supported term profiles and term-to-projection routes.
 
-For each supplied term, TIP canonicalizes BCP 47 casing, validates the exact enabled tag, routes it to the declared metadata projection and preserves the original term. Reviewed terminology expansion and multilingual embeddings improve recall inside the explicit scope. `de`, `de-DE`, `gsw` and `gsw-CH` route to `de-CH` metadata using evaluated terminology or dialect aliases. This has no effect on the language chosen by the caller for its answer.
+For each supplied term, TIP canonicalizes BCP 47 casing, validates the exact enabled language-only tag, routes it to the declared metadata projection and preserves the original term. Reviewed terminology expansion and multilingual embeddings improve recall inside the explicit scope. `de` and `gsw` route to `de` metadata using evaluated terminology or dialect aliases. This has no effect on the language chosen by the caller for its answer.
 
-The compact projection languages remain `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`. An English term can match an English projection of a German original. A German term can retrieve a French original through an evaluated route. The caller does not translate supported terms into a common language or know the source languages.
+The compact projection languages remain `en`, `de`, `fr`, `it` and `rm`. An English term can match an English projection of a German original. A German term can retrieve a French original through an evaluated route. The caller does not translate supported terms into a common language or know the source languages.
 
 `source_languages` is independent of term language. Omission or `null` means no evidence-language restriction; an explicit non-empty list is canonicalized and deduplicated. An empty list or malformed tag is `INVALID_ARGUMENT`. Unsupported term/source tags produce `UNSUPPORTED_LANGUAGE` with the affected field and supported profiles. Individually enabled profiles whose requested combination is not covered produce `OUT_OF_COVERAGE`. No unsupported term or explicit filter is silently dropped.
 
@@ -556,7 +556,7 @@ Illustrative identifiers below are contract examples, not claims of current publ
   "as_of": "2026-09-06",
   "scope_mode": "exact",
   "retrieval_terms": [
-    {"text": "Aufenthaltsbewilligung", "language": "de-CH"}
+    {"text": "Aufenthaltsbewilligung", "language": "de"}
   ],
   "max_evidence": 5
 }

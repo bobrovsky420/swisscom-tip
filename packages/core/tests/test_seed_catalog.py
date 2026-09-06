@@ -33,6 +33,11 @@ class DraftSeedTests(unittest.TestCase):
         self.assertEqual(self.policy.approval_status, "DRAFT")
         self.assertEqual(self.policy.term_languages, [])
 
+    def test_planned_projection_targets_use_language_only_catalog_roles(self) -> None:
+        sources = json.loads((ROOT / "config/catalogs/hackathon.sources.json").read_text(encoding="utf-8"))
+        self.assertEqual(sources["language_discovery"]["projection_targets"], ["en", "de", "fr", "it", "rm"])
+        self.assertEqual(self.policy.platform_catalog, "tip-language-catalog/v3")
+
     def test_draft_candidate_is_not_a_selectable_public_concept(self) -> None:
         assessment = validate_request({
             "schema_version": "structured-grounding/v1", "release_id": self.catalog.release_id,

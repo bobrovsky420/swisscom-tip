@@ -296,8 +296,8 @@ class EvaluatedTermRoute(TermProjectionRoute):
 class LanguagePolicy(StrictModel):
     schema_version: Literal["language-policy/v1"] = "language-policy/v1"
     identity: ArtifactRef
-    platform_catalog: Literal["tip-language-catalog/v2"] = "tip-language-catalog/v2"
-    term_languages: Annotated[list[LanguageTag], Field(max_length=9)]
+    platform_catalog: Literal["tip-language-catalog/v3"] = "tip-language-catalog/v3"
+    term_languages: Annotated[list[LanguageTag], Field(max_length=6)]
     source_languages: Annotated[list[LanguageTag], Field(max_length=5)]
     projection_languages: Annotated[list[LanguageTag], Field(max_length=5)]
     term_aliases: Annotated[dict[LanguageTag, LanguageTag], Field(max_length=8)] = Field(default_factory=dict)
@@ -474,8 +474,8 @@ class EvidenceObject(StrictModel):
     @field_validator("effective_source_language")
     @classmethod
     def exact_source_role(cls, value: str) -> str:
-        if value not in {"en", "de-CH", "fr-CH", "it-CH", "rm-CH"}:
-            raise ValueError("effective_language_requires_exact_v2_source_tag")
+        if value not in {"en", "de", "fr", "it", "rm"}:
+            raise ValueError("effective_language_requires_exact_v3_source_tag")
         return value
 
     @model_validator(mode="after")

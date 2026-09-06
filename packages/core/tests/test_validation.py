@@ -28,11 +28,11 @@ def entry(identifier: str, kind: str, parent: str | None = None) -> dict:
 
 def fixture() -> tuple[dict, dict, dict]:
     policy = {
-        "identity": ref("test-policy"), "term_languages": ["en", "de-CH", "fr-CH"],
-        "source_languages": ["de-CH", "fr-CH"], "projection_languages": ["en", "de-CH", "fr-CH"],
-        "term_aliases": {"de": "de-CH", "de-DE": "de-CH"},
-        "routes": [{"term_language": tag, "projection_language": tag} for tag in ["en", "de-CH", "fr-CH"]],
-        "source_detector_mappings": {"de": "de-CH"},
+        "identity": ref("test-policy"), "term_languages": ["en", "de", "fr"],
+        "source_languages": ["de", "fr"], "projection_languages": ["en", "de", "fr"],
+        "term_aliases": {},
+        "routes": [{"term_language": tag, "projection_language": tag} for tag in ["en", "de", "fr"]],
+        "source_detector_mappings": {"de-CH": "de"},
         "evaluation_ref": ref("test-language-evaluation"), "approval_status": "APPROVED",
     }
     context_schema = {
@@ -60,10 +60,10 @@ def fixture() -> tuple[dict, dict, dict]:
         "jurisdiction": {"country_code": "CH", "canton_code": "CH-ZH"},
         "context_schema_ref": ref("test-context"), "scope_modes": ["exact", "descendants"],
         "max_descendant_depth": 1, "max_concepts": 5,
-        "source_ids": ["test-source"], "source_languages": ["de-CH"],
+        "source_ids": ["test-source"], "source_languages": ["de"],
         "temporal_coverage": {"valid_from": "2026-01-01", "valid_through": "2026-12-31"},
-        "term_routes": [{"term_language": tag, "projection_language": tag, "source_languages": ["de-CH"], "evaluation_ref": ref("test-route-evaluation")} for tag in ["en", "de-CH"]],
-        "projection_languages_complete": ["en", "de-CH"], "evaluation_ref": ref("test-coverage-evaluation"),
+        "term_routes": [{"term_language": tag, "projection_language": tag, "source_languages": ["de"], "evaluation_ref": ref("test-route-evaluation")} for tag in ["en", "de"]],
+        "projection_languages_complete": ["en", "de"], "evaluation_ref": ref("test-coverage-evaluation"),
         "freshness_policy": {"max_age_days": 30, "policy_ref": ref("test-freshness")}, "approval_status": "APPROVED",
     }
     catalog = {
@@ -233,13 +233,15 @@ class StructuredValidationTests(FixtureTestCase):
         self.request["as_of"] = "2026-02-30"
         self.assert_status("INVALID_ARGUMENT")
 
-    def test_language_aliases_are_only_term_routes_and_preserve_source_scope(self):
-        self.request["retrieval_terms"] = [{"text": "Begriff", "language": "DE-de"}, {"text": "term", "language": "EN"}]
+    def test_language_only_terms_preserve_source_scope(self):
+        self.request["retrieval_terms"] = [{"text": "Begriff", "language": "DE"}, {"text": "term", "language": "EN"}]
         result = self.assert_status("READY")
-        self.assertEqual(result.term_routes[0].requested_language, "de-DE")
-        self.assertEqual(result.term_routes[0].effective_term_language, "de-CH")
+        self.assertEqual(result.term_routes[0].requested_language, "de")
+        self.assertEqual(result.term_routes[0].effective_term_language, "de")
         self.assertIsNone(result.effective_source_languages)
         self.request["source_languages"] = ["de"]
+        self.assertEqual(self.assert_status("READY").effective_source_languages, ("de",))
+        self.request["source_languages"] = ["de-CH"]
         result = self.assert_status("UNSUPPORTED_LANGUAGE")
         self.assertEqual(result.issues[0].field, "source_languages.0")
 
@@ -247,22 +249,46 @@ class StructuredValidationTests(FixtureTestCase):
         self.request["retrieval_terms"] = [{"text": "term", "language": "en"}, {"text": "Begriff", "language": "de-AT"}]
         result = self.assert_status("UNSUPPORTED_LANGUAGE")
         self.assertEqual(result.issues[0].field, "retrieval_terms.1.language")
-        for unsupported in ["fr", "it", "rm", "x-test"]:
+        for unsupported in ["de-CH", "de-DE", "fr-CH", "it-CH", "rm-CH", "gsw-CH", "x-test"]:
             self.request["retrieval_terms"] = [{"text": "term", "language": unsupported}]
             self.assert_status("UNSUPPORTED_LANGUAGE")
         self.request["retrieval_terms"] = [{"text": "term", "language": "de_CH"}]
         self.assert_status("INVALID_ARGUMENT")
 
     def test_enabled_term_but_unevaluated_route_is_out_of_coverage(self):
-        self.request["retrieval_terms"] = [{"text": "terme", "language": "fr-CH"}]
+        self.request["retrieval_terms"] = [{"text": "terme", "language": "fr"}]
         self.assertEqual(self.assert_status("OUT_OF_COVERAGE").issues[0].reason, "unevaluated_language_combination")
 
+    def test_all_language_only_routes_work_when_evaluated(self):
+        languages = ["en", "de", "fr", "it", "rm"]
+        routes = [{"term_language": tag, "projection_language": tag} for tag in languages]
+        routes[-1]["idiom_profile"] = "test-reviewed-romansh"
+        routes.append({"term_language": "gsw", "projection_language": "de", "dialect_profile": "test-reviewed-dialect"})
+        self.policy_data.update(
+            term_languages=languages + ["gsw"], source_languages=languages,
+            projection_languages=languages, routes=routes,
+        )
+        profile = self.catalog_data["coverage_profiles"][0]
+        profile.update(
+            source_languages=languages, projection_languages_complete=languages,
+            term_routes=[{**route, "source_languages": languages, "evaluation_ref": ref("test-route-evaluation")} for route in routes],
+        )
+        for tag in languages + ["gsw"]:
+            with self.subTest(tag=tag):
+                self.request["retrieval_terms"] = [{"text": "synthetic term", "language": tag.upper()}]
+                self.request["source_languages"] = languages
+                result = self.assert_status("READY")
+                self.assertEqual(result.term_routes[0].requested_language, tag)
+                self.assertEqual(result.term_routes[0].effective_term_language, tag)
+                self.assertEqual(result.term_routes[0].projection_language, "de" if tag == "gsw" else tag)
+                self.assertEqual(result.effective_source_languages, tuple(languages))
+
     def test_source_filter_canonicalizes_deduplicates_and_never_falls_back(self):
-        self.request["source_languages"] = ["DE-ch", "de-CH"]
-        self.assertEqual(self.assert_status("READY").effective_source_languages, ("de-CH",))
-        self.request["source_languages"] = ["fr-CH"]
+        self.request["source_languages"] = ["DE", "de"]
+        self.assertEqual(self.assert_status("READY").effective_source_languages, ("de",))
+        self.request["source_languages"] = ["fr"]
         result = self.assert_status("OUT_OF_COVERAGE")
-        self.assertEqual(result.effective_source_languages, ("fr-CH",))
+        self.assertEqual(result.effective_source_languages, ("fr",))
         self.assertEqual(result.issues[0].reason, "no_coverage_in_requested_source_languages")
         self.request["source_languages"] = []
         self.assert_status("INVALID_ARGUMENT")
@@ -400,21 +426,21 @@ class CatalogIntegrityTests(FixtureTestCase):
         self.catalog_data["coverage_profiles"][0]["approval_status"] = "DRAFT"
         self.assertNotIn("unreviewed_coverage", self.reasons())
 
-    def test_v2_roles_cannot_expand_from_configuration(self):
-        self.policy_data["source_languages"].append("de")
+    def test_v3_roles_cannot_expand_from_configuration(self):
+        self.policy_data["source_languages"].append("de-CH")
         self.assertIn("language_policy", self.reasons())
         self.policy_data["source_languages"].pop()
-        self.policy_data["term_aliases"]["de-AT"] = "de-CH"
+        self.policy_data["term_aliases"]["de-AT"] = "de"
         self.assertIn("language_policy", self.reasons())
 
     def test_incomplete_or_ambiguous_evaluated_routes_are_rejected(self):
-        self.catalog_data["coverage_profiles"][0]["projection_languages_complete"] = ["de-CH"]
+        self.catalog_data["coverage_profiles"][0]["projection_languages_complete"] = ["de"]
         self.assertIn("incomplete_projection", self.reasons())
         self.catalog_data["coverage_profiles"][0]["term_routes"].append(copy.deepcopy(self.catalog_data["coverage_profiles"][0]["term_routes"][0]))
         self.assertIn("duplicate_route", self.reasons())
 
     def test_swiss_german_and_romansh_require_declared_tested_forms(self):
-        for tag, projection, field in [("gsw-CH", "de-CH", "dialect_profile"), ("rm-CH", "rm-CH", "idiom_profile")]:
+        for tag, projection, field in [("gsw", "de", "dialect_profile"), ("rm", "rm", "idiom_profile")]:
             with self.subTest(tag=tag):
                 self.catalog_data, self.policy_data, self.request = fixture()
                 self.policy_data["term_languages"].append(tag)

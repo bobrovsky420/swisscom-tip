@@ -1659,8 +1659,8 @@
           "$ref": "#/$defs/ArtifactRef"
         },
         "platform_catalog": {
-          "const": "tip-language-catalog/v2",
-          "default": "tip-language-catalog/v2",
+          "const": "tip-language-catalog/v3",
+          "default": "tip-language-catalog/v3",
           "title": "Platform Catalog",
           "type": "string"
         },
@@ -1756,7 +1756,7 @@
             "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
             "type": "string"
           },
-          "maxItems": 9,
+          "maxItems": 6,
           "title": "Term Languages",
           "type": "array"
         }

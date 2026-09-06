@@ -46,7 +46,7 @@ sequenceDiagram
 
 Illustrative selected scope: `swiss-public / immigration / residence / residence-permit`, `intent=requirements`, `jurisdiction=CH-ZH`. The caller obtains these identifiers from discovery and establishes Canton Zurich as the intended scope; the sentence alone supplies no nationality, purpose or duration.
 
-**Speaker note (~60s):** Make the boundary visible in the demo: first the caller selects catalog identifiers and clarifies facts; then show its structured MCP call. It preserves `Aufenthaltsbewilligung` as a `de-CH` retrieval term. TIP does not require the caller to translate it into English or a source language. The identifiers here illustrate the planned contract and do not assert published coverage or legal requirements.
+**Speaker note (~60s):** Make the boundary visible in the demo: first the caller selects catalog identifiers and clarifies facts; then show its structured MCP call. It preserves `Aufenthaltsbewilligung` as a `de` retrieval term. TIP does not require the caller to translate it into English or a source language. The identifiers here illustrate the planned contract and do not assert published coverage or legal requirements.
 
 ---
 
@@ -67,7 +67,7 @@ flowchart LR
     E --> M
 ```
 
-**P0 includes** compact metadata projections in `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`, multilingual lexical/concept/vector retrieval and semantic ranking. A release declares only the term/projection/source combinations that pass evaluation.
+**P0 includes** compact metadata projections in `en`, `de`, `fr`, `it` and `rm`, multilingual lexical/concept/vector retrieval and semantic ranking. A release declares only the term/projection/source combinations that pass evaluation.
 
 Broad topics organize discovery; independently supported concepts carry evidence and declare supported operations. Model proposals require review and publication gates before callers can use them.
 
@@ -118,7 +118,7 @@ Illustrative request after confirming Canton Zurich. Any required personal facts
   "context": {},
   "as_of": "2026-09-06",
   "scope_mode": "exact",
-  "retrieval_terms": [{"text": "Aufenthaltsbewilligung", "language": "de-CH"}],
+  "retrieval_terms": [{"text": "Aufenthaltsbewilligung", "language": "de"}],
   "max_evidence": 5
 }
 ```

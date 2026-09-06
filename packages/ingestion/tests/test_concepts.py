@@ -386,7 +386,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
             document_id="page-1",
             source="street.txt",
             title="Street",
-            language="de-CH",
+            language="de",
             content_hash="4" * 64,
             sections=(
                 NormalizedSection("section-0001", "", first_text),

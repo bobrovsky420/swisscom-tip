@@ -85,7 +85,7 @@ flowchart TD
     R --> M[Published evidence and retrieval profile]
 ```
 
-The metadata projection languages are `en`, `de-CH`, `fr-CH`, `it-CH` and `rm-CH`, with a declared Romansh idiom profile. Labels, aliases and projections retain provenance.
+The metadata projection languages are `en`, `de`, `fr`, `it` and `rm`, with a declared Romansh idiom profile. Labels, aliases and projections retain provenance.
 
 An extracted candidate is a proposal. Exact source offsets alone do not prove that it captures every condition; evidence and semantic-completeness gates are required before publication.
 
@@ -129,7 +129,7 @@ At runtime, semantic models may embed, score or rerank eligible evidence within 
 | Question interpretation and catalog selection | Caller integration evaluation |
 | Clarification and final answer fidelity | Caller integration evaluation |
 
-Reviewed German and Swiss German term profiles may route to `de-CH` projections where evaluated. This creates no rule about the caller's answer language. Metadata translations do not replace original source text.
+Reviewed German and Swiss German term profiles may route to `de` projections where evaluated. This creates no rule about the caller's answer language. Metadata translations do not replace original source text.
 
 **Speaker note:** Keep provider choice separate from the product guarantee. Model language breadth does not prove retrieval coverage. Every advertised profile needs evidence of recall, precision, scope compliance and acceptable latency. TIP remains provider-independent.
 
@@ -184,7 +184,7 @@ The following request is illustrative after establishing Canton Zurich as the in
   "as_of": "2026-09-06",
   "scope_mode": "exact",
   "retrieval_terms": [
-    {"text": "Aufenthaltsbewilligung", "language": "de-CH"}
+    {"text": "Aufenthaltsbewilligung", "language": "de"}
   ],
   "max_evidence": 5
 }

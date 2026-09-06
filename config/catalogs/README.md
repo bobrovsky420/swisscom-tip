@@ -50,8 +50,11 @@ German, French, Italian and English seed language hints support later language
 discovery. SEM has four explicit language seeds. URL patterns do not establish
 parallel equivalence or availability of Romansh. The builder must later record
 declared/detected languages and compare independently versioned parallel pages.
-The five metadata projection targets remain planned; the language policy
-enables no evaluated routes.
+The five metadata projection targets are `en`, `de`, `fr`, `it` and `rm`.
+Language identifiers carry no location; jurisdiction and reviewed dialect/idiom
+coverage are separate metadata. Raw website tags are retained as provenance and
+require reviewed mappings to enabled language-only source tags. These targets
+remain planned; the language policy enables no evaluated routes.
 
 ## Validate and inspect without downloading
 

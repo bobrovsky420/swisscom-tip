@@ -110,10 +110,10 @@
     "parallel_content": "Independent snapshots, hashes, timestamps and source revisions; no equivalence from URL patterns alone.",
     "projection_targets": [
       "en",
-      "de-CH",
-      "fr-CH",
-      "it-CH",
-      "rm-CH"
+      "de",
+      "fr",
+      "it",
+      "rm"
     ],
     "evaluated_routes": []
   },

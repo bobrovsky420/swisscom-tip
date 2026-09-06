@@ -72,17 +72,17 @@ class RequestContractTests(unittest.TestCase):
                 StructuredGroundingRequest.model_validate({**request_payload(), "context": {"field": value}})
 
     def test_source_filter_canonicalization_and_null_semantics(self):
-        for value in (None, ["DE-ch", "de-CH", "FR-ch"]):
+        for value in (None, ["DE", "de", "FR"]):
             request = StructuredGroundingRequest.model_validate({**request_payload(), "source_languages": value})
-            self.assertEqual(request.source_languages, None if value is None else ["de-CH", "fr-CH"])
+            self.assertEqual(request.source_languages, None if value is None else ["de", "fr"])
         self.assertIsNone(StructuredGroundingRequest.model_validate(request_payload()).source_languages)
         with self.assertRaises(ValidationError):
             StructuredGroundingRequest.model_validate({**request_payload(), "source_languages": []})
 
     def test_well_formed_unsupported_languages_reach_semantic_validation(self):
-        request = StructuredGroundingRequest.model_validate({**request_payload(), "retrieval_terms": [{"text": "example", "language": "de-AT"}], "source_languages": ["fr"]})
+        request = StructuredGroundingRequest.model_validate({**request_payload(), "retrieval_terms": [{"text": "example", "language": "de-AT"}], "source_languages": ["fr-CH"]})
         self.assertEqual(request.retrieval_terms[0].language, "de-AT")
-        self.assertEqual(request.source_languages, ["fr"])
+        self.assertEqual(request.source_languages, ["fr-CH"])
 
     def test_bounded_terms_ids_and_evidence(self):
         cases = [
@@ -185,7 +185,7 @@ class DiscoveryEvidenceAndSchemaTests(unittest.TestCase):
         evidence = EvidenceObject.model_validate(evidence_payload())
         self.assertEqual(evidence.original_excerpt, "Hello")
         GetEvidenceResult(release_id="synthetic-release", release_ref=ArtifactRef.model_validate(artifact()), evidence=[evidence])
-        for patch in ({"end_offset": 9}, {"original_excerpt": ""}, {"translated_excerpt": "Hallo"}, {"effective_source_language": "de"}, {"effective_source_language": "gsw-CH"}):
+        for patch in ({"end_offset": 9}, {"original_excerpt": ""}, {"translated_excerpt": "Hallo"}, {"effective_source_language": "de-CH"}, {"effective_source_language": "gsw"}):
             with self.subTest(patch=patch), self.assertRaises(ValidationError):
                 EvidenceObject.model_validate({**evidence_payload(), **patch})
         with self.assertRaises(ValidationError):
@@ -198,9 +198,21 @@ class DiscoveryEvidenceAndSchemaTests(unittest.TestCase):
         payload = {"identity": artifact(), "term_languages": [], "source_languages": [], "projection_languages": [], "routes": []}
         self.assertEqual(LanguagePolicy.model_validate(payload).approval_status, "DRAFT")
         with self.assertRaises(ValidationError):
-            LanguagePolicy.model_validate({**payload, "source_declaration_aliases": {"de": "de-CH"}})
+            LanguagePolicy.model_validate({**payload, "source_declaration_aliases": {"de-CH": "de"}})
         with self.assertRaises(ValidationError):
             LanguagePolicy.model_validate({**payload, "approval_status": "APPROVED"})
+
+    def test_evidence_uses_language_only_codes_and_preserves_raw_tags(self):
+        for language in ("en", "de", "fr", "it", "rm"):
+            with self.subTest(language=language):
+                raw_tag = language + "-CH"
+                evidence = EvidenceObject.model_validate({
+                    **evidence_payload(), "declared_language": [raw_tag],
+                    "detected_language": raw_tag, "effective_source_language": language,
+                })
+                self.assertEqual(evidence.effective_source_language, language)
+                self.assertEqual(evidence.declared_language, [raw_tag])
+                self.assertEqual(evidence.detected_language, raw_tag)
 
     def test_result_cannot_claim_complete_support_with_gaps(self):
         request = request_payload()

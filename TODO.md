@@ -18,7 +18,7 @@ the governed publication and structured serving layer around reviewed knowledge.
   release. A form can submit the same contract directly.
 - Original-language `retrieval_terms` are optional scoped relevance signals. They
   never establish or override intent, jurisdiction, date or applicability facts.
-- Five compact metadata projections (`en`, `de-CH`, `fr-CH`, `it-CH`, `rm-CH`)
+- Five compact metadata projections (`en`, `de`, `fr`, `it`, `rm`)
   and scoped multilingual lexical/concept/vector retrieval with semantic ranking
   remain P0. No common-language or source-language translation is required from
   callers for evaluated profiles.
@@ -38,7 +38,7 @@ the governed publication and structured serving layer around reviewed knowledge.
 | Candidate semantics | `CandidateConcept` contains prose scope, proposed relationships and `user_questions`; validation state remains `CANDIDATE` | Retain authoring/review aids. Add reviewed promotion into typed applicability, operations and context schemas; do not expose candidates as supported coverage |
 | Candidate identity | Candidate IDs hash page content/label/scope; [batch group IDs](apps/knowledge-builder/src/swisstip/builder/concept_batch.py) also depend on description/language | Keep those identities for traceability; introduce stable language-neutral public IDs and reviewed candidate-to-catalog mappings |
 | Review workflow | Model review, rejected proposals, 30 frozen reference labels and an assistant draft comparison exist | Implement separate support/scope/completeness/question assessments, validated human-review import and promotion gates; structural/model approval alone does not publish knowledge |
-| Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v2`, five projections and published term routes |
+| Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v3`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
 | Runtime/product | Crawler/concept CLIs plus shared versioned contracts and offline catalog/request validation are implemented | Reviewed seed coverage, catalog publisher/reader, immutable releases, scoped retrieval/rules and the three MCP tools remain unimplemented |
 
@@ -124,7 +124,7 @@ assumptions; POCs do not replace the implementation backlog.
 | [ ] | BUILD-01 | Define versioned catalog, context, evidence and `structured-grounding/v1` contracts; curate a small seed catalog | Stable public domain/topic/concept IDs, supported finite intents, canonical jurisdictions, conditional context schemas, strict unknown-field/ID handling and explicit outcomes |
 | [ ] | BUILD-02 | Add root-seeded source-language discovery, persist raw/normalized evidence and implement reviewed promotion | Logical source blocks, bounded cross-section evidence, declared content policy, separate semantic assessments, validated review import, URL/authority/snapshot/evidence chain and immutable publication identities |
 | [ ] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Bounded hierarchical discovery with inline context schemas, release-bound cursors, typed context validation, exact/descendant scope, published facts/rules and evidence round-trips |
-| [ ] | BUILD-04 | Add source-language validation, closed v2 policy, reviewed terminology and all five compact projections | Per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
+| [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed terminology and all five compact projections | Per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters and evaluated provider fallback |
 | [ ] | BUILD-06 | Complete on-demand release publication, retention, observability and client qualification | Atomic promotion, historical reads, no silent release substitution, fresh/stale reporting, external-client setup and separate caller evaluation |
 
@@ -456,12 +456,13 @@ and technical sections 10.1/10.3.
 **Assumption:** closed, explicitly tagged term routes support multilingual
 retrieval while independently validated source languages preserve provenance.
 
-**Experiment:** implement `tip-language-catalog/v2` roles and test canonical tag
-casing, exact aliases, reviewed German/Swiss German routes to `de-CH`, declared
+**Experiment:** implement `tip-language-catalog/v3` roles and test canonical tag
+casing, language-only identifiers, reviewed German/Swiss German routes to `de`, declared
 Romansh forms, and referential closure. The permitted term tags are `en`, `de`,
-`de-CH`, `de-DE`, `fr-CH`, `it-CH`, `gsw`, `gsw-CH` and `rm-CH`; enabled profiles
+`fr`, `it`, `rm` and `gsw`; enabled profiles
 remain release-specific. Source/projection roles use the five exact standard
-tags. Bare `fr`, `it` and `rm` are not client term aliases.
+tags. Jurisdiction and evaluated dialect/idiom forms remain separate metadata;
+raw website tags are preserved with explicit reviewed source mappings.
 
 Test malformed tags as `INVALID_ARGUMENT`, unsupported tags as
 `UNSUPPORTED_LANGUAGE`, and recognized but unevaluated combinations as
@@ -544,7 +545,7 @@ immutable release, while freshness accurately describes what was checked and whe
 **Experiment:** publish release A, then candidate B with updated rules, renamed
 labels, changed context schemas, a deleted page and different official-language
 revision dates. Pin raw snapshots, normalized content, evidence, catalog/graph,
-assignments, context schemas, rules, terminology, v2 language policy, projections,
+assignments, context schemas, rules, terminology, v3 language policy, projections,
 indexes and model/ranking configuration.
 
 Change the active release between discovery pages and before resolution. Exercise

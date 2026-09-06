@@ -22,13 +22,12 @@ from .identity import verify_artifact
 
 
 SELECTABLE_STATES = {"CURATED", "VERIFIED_AUTOMATIC"}
-SOURCE_LANGUAGES = {"en", "de-CH", "fr-CH", "it-CH", "rm-CH"}
+SOURCE_LANGUAGES = {"en", "de", "fr", "it", "rm"}
 TERM_PROJECTIONS = {
-    "en": "en", "de": "de-CH", "de-DE": "de-CH", "de-CH": "de-CH",
-    "fr-CH": "fr-CH", "it-CH": "it-CH", "rm-CH": "rm-CH",
-    "gsw": "de-CH", "gsw-CH": "de-CH",
+    "en": "en", "de": "de", "fr": "fr", "it": "it", "rm": "rm",
+    "gsw": "de",
 }
-TERM_ALIASES = {"de": "de-CH", "de-DE": "de-CH", "gsw": "gsw-CH"}
+TERM_ALIASES: dict[str, str] = {}
 
 
 @dataclass(frozen=True)
@@ -230,16 +229,16 @@ def validate_catalog(
         ("projection_languages", language_policy.projection_languages, SOURCE_LANGUAGES),
     ):
         if not set(enabled) <= allowed:
-            issue("language_policy." + role, "language_policy", "Enabled languages exceed the closed v2 role.")
+            issue("language_policy." + role, "language_policy", "Enabled languages exceed the closed v3 role.")
         if len(set(enabled)) != len(enabled):
             issue("language_policy." + role, "duplicate_value", "Enabled language declarations must be unique.")
     if language_policy.approval_status == "APPROVED" and language_policy.evaluation_ref is None:
         issue("language_policy.evaluation_ref", "missing_evaluation", "Approved policy requires an evaluation reference.")
     if language_policy.source_declaration_aliases:
-        issue("language_policy.source_declaration_aliases", "language_policy", "V2 has no source-declaration aliases.")
+        issue("language_policy.source_declaration_aliases", "language_policy", "V3 has no source-declaration aliases.")
     for alias, target in language_policy.term_aliases.items():
         if TERM_ALIASES.get(alias) != target or target not in language_policy.term_languages:
-            issue("language_policy.term_aliases", "language_policy", "Alias must be approved by v2 and target an enabled profile.")
+            issue("language_policy.term_aliases", "language_policy", "V3 has no term-language aliases.")
     for target in language_policy.source_detector_mappings.values():
         if target not in language_policy.source_languages:
             issue("language_policy.source_detector_mappings", "language_policy", "Detector mapping targets a disabled source language.")
@@ -249,10 +248,10 @@ def validate_catalog(
             issue("language_policy.routes", "duplicate_route", "Each term profile has exactly one projection route.")
         routed.add(route.term_language)
         if route.term_language not in language_policy.term_languages or route.projection_language not in language_policy.projection_languages or TERM_PROJECTIONS.get(route.term_language) != route.projection_language:
-            issue("language_policy.routes", "language_policy", "Route must connect enabled roles through the v2 projection.")
-        if route.term_language in {"gsw", "gsw-CH"} and not route.dialect_profile:
+            issue("language_policy.routes", "language_policy", "Route must connect enabled roles through the v3 projection.")
+        if route.term_language == "gsw" and not route.dialect_profile:
             issue("language_policy.routes", "missing_language_profile", "Swiss German routes require a declared dialect profile.")
-        if route.term_language == "rm-CH" and not route.idiom_profile:
+        if route.term_language == "rm" and not route.idiom_profile:
             issue("language_policy.routes", "missing_language_profile", "Romansh routes require a declared idiom profile.")
     if set(language_policy.term_languages) != routed:
         issue("language_policy.routes", "language_policy", "Every enabled term profile requires a route.")
