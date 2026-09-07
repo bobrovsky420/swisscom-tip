@@ -108,10 +108,13 @@ def main(argv=None):
     parser.add_argument("--cases", type=Path)
     parser.add_argument("--embedding-url")
     parser.add_argument("--ranking-url")
+    parser.add_argument("--provider-config", type=Path)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.provider_config and (args.embedding_url or args.ranking_url):
+        parser.error("--provider-config cannot be combined with provider URL flags")
     if args.synthetic:
-        if args.release or args.cases or args.embedding_url or args.ranking_url:
+        if args.release or args.cases or args.embedding_url or args.ranking_url or args.provider_config:
             parser.error("--synthetic cannot be combined with release, cases or provider endpoints")
         report = synthetic_evaluation()
     else:
@@ -120,11 +123,15 @@ def main(argv=None):
         from .release import ReleaseBundle, ReleaseStore
         from .service import KnowledgeService
         from .providers import OllamaRetrievalProvider
+        from .provider_config import load_provider_settings
         bundle = ReleaseBundle.model_validate_json(args.release.read_bytes())
         store = ReleaseStore([bundle], active_release_id=bundle.release.release_id)
-        service = KnowledgeService(store,
-                                   embedding_provider=OllamaRetrievalProvider(args.embedding_url) if args.embedding_url else None,
-                                   ranking_provider=OllamaRetrievalProvider(args.ranking_url) if args.ranking_url else None)
+        if args.provider_config:
+            embedding, ranking = load_provider_settings(args.provider_config).create_providers()
+        else:
+            embedding = OllamaRetrievalProvider(args.embedding_url) if args.embedding_url else None
+            ranking = OllamaRetrievalProvider(args.ranking_url) if args.ranking_url else None
+        service = KnowledgeService(store, embedding_provider=embedding, ranking_provider=ranking)
         cases = [RetrievalGoldCase.model_validate(c) for c in json.loads(args.cases.read_text(encoding="utf-8"))]
         report = evaluate(service, cases)
     args.output.parent.mkdir(parents=True, exist_ok=True)

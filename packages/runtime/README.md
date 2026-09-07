@@ -158,13 +158,84 @@ filtered languages are metadata and are not returned as selected evidence.
 
 `KnowledgeService` accepts `embedding_provider` and `ranking_provider` implementations
 of the protocols in [retrieval.py](src/swisstip/runtime/retrieval.py). Each adapter
-declares `provider_id`; the release pins that ID and requested model. An optional
+declares `provider_id`; the release pins that ID and requested model. The optional
 [Ollama adapter](src/swisstip/runtime/providers.py) implements the documented
 [embedding](https://docs.ollama.com/api/embed) and [chat](https://docs.ollama.com/api/chat)
 APIs. Its identity is `ollama-retrieval/v1`, including a fixed scoring instruction
 and generation options. It limits request/response bytes, uses bounded HTTP I/O,
 and performs one attempt per stage, with no redirects or retries. Applications
 must supply endpoints explicitly; no model is downloaded or called on startup.
+
+The `groq-ranking/v1` adapter scores evidence through Groq's chat API using
+[strict structured outputs](https://console.groq.com/docs/structured-outputs),
+the same fixed relevance instruction, temperature zero and low reasoning effort.
+It shares the bounded transport and validates complete responses before the
+retriever checks model identity and exact score membership.
+
+Named deployment profiles live in
+[config/retrieval-models.toml](../../config/retrieval-models.toml). As in the
+semantic-model configuration, each role selects a `[profiles.<name>]` table:
+
+```toml
+schema_version = "swisstip.retrieval-model-profiles/v1"
+
+[embedding]
+active_profile = "ollama_qwen_embedding_0_6b"
+
+[ranking]
+active_profile = "groq_gpt_oss_20b"
+```
+
+Change only the corresponding `active_profile` to select another defined model.
+The included choices cover local embeddings, hosted ranking and fully local
+ranking; they are independent, so any embedding profile can pair with any ranking
+profile. Model alternatives are configuration options, not live qualifications.
+
+| Profile | Role | Model |
+| --- | --- | --- |
+| `ollama_qwen_embedding_0_6b` (default) | Embedding | `qwen3-embedding:0.6b` |
+| `ollama_qwen_embedding_4b` | Embedding | `qwen3-embedding:4b` |
+| `ollama_qwen_embedding_8b` | Embedding | `qwen3-embedding:8b` |
+| `groq_gpt_oss_20b` (default) | Ranking | `openai/gpt-oss-20b` |
+| `groq_gpt_oss_120b` | Ranking | `openai/gpt-oss-120b` |
+| `ollama_qwen_ranking_9b` | Ranking | `qwen3.5:9b` |
+
+Each profile declares `role`, `adapter`, `model`, `base_url`, `timeout_seconds`
+and, for Groq, `token_env`. Add more profiles using the supported adapters;
+Ollama supports embedding and ranking roles, while Groq supports ranking with
+the two GPT-OSS models accepted by this adapter. Unknown names, role mismatches,
+unsupported adapters and invalid settings (including inactive profiles) fail
+configuration loading. Profile names are deployment labels, not release model IDs.
+There is no automatic switch to another profile on failure.
+
+The default selections resolve to:
+
+| Role | Service | Model | Release adapter ID |
+| --- | --- | --- | --- |
+| Embedding | Local Ollama | `qwen3-embedding:0.6b` | `ollama-retrieval/v1` |
+| Evidence ranking | Groq | `openai/gpt-oss-20b` | `groq-ranking/v1` |
+
+Set `GROQ_API_KEY` in the environment inherited by the MCP server or evaluation
+process. The config stores only the environment variable name; it does not load
+`.env` files. Selecting Ollama for both roles needs no Groq credentials.
+Install/start Ollama and pull each selected local model, for example
+`ollama pull qwen3-embedding:0.6b` for the default embedding profile.
+Ollama serves embeddings at `http://127.0.0.1:11434/api/embed`; Groq ranking uses
+`https://api.groq.com/openai/v1/chat/completions`.
+
+Both CLI applications accept `--provider-config config/retrieval-models.toml`.
+Do not combine it with legacy provider URL/timeout flags. Configured models are
+allowlists checked against the models requested by the sealed release; editing
+this TOML cannot replace its pinned models, adapter IDs or stored vectors. Build
+and evaluate a new matching release/index before using these models for hybrid
+retrieval. The BUILD-03 fixture remains lexical and makes no provider calls.
+
+OpenCode's independent caller uses `opencode/ling-3.0-flash-fin-free`, the
+[Ling 3.0 Flash Fin Free model](https://dev.opencode.ai/docs/zen/).
+The local `.local/opencode.json` pins it, supplies the retrieval config path to
+the MCP process and gives MCP calls a 120-second timeout. Restart OpenCode using
+that config after setting the environment. Builder extraction profiles remain
+in `config/semantic-models.toml`.
 
 Provider errors restart only a release-declared, evaluated lexical/concept fallback
 for the selected coverage profile. Trace metadata identifies omitted channels and
@@ -186,8 +257,9 @@ those adapters the demo uses its declared synthetic fallback, including over MCP
 Do not point this fixture at live models; an actual model needs a newly built index,
 pinned configuration and evaluation for its profile.
 
-The evaluation CLI also accepts `--release`, `--cases`, optional `--embedding-url`
-and `--ranking-url`, and `--output`. Cases use `RetrievalGoldCase` in
+The evaluation CLI also accepts `--release`, `--cases`, `--output`, and optional
+`--provider-config` (or legacy Ollama `--embedding-url` and `--ranking-url`).
+Cases use `RetrievalGoldCase` in
 [evaluation.py](src/swisstip/runtime/evaluation.py): exact release identity, typed
 request, required evidence groups/facts, eligible/relevant IDs and a declared
 minimum precision. Every case must pass top-20 recall, top-5 fact/evidence support,

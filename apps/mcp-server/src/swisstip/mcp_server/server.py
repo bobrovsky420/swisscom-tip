@@ -16,6 +16,7 @@ from swisstip.core.contracts import (
 )
 from swisstip.runtime import KnowledgeService, ReleaseStore
 from swisstip.runtime.providers import OllamaRetrievalProvider
+from swisstip.runtime.provider_config import load_provider_settings
 
 
 TOOL_CONTRACTS = {
@@ -108,12 +109,19 @@ def main(argv=None) -> int:
     parser.add_argument("--active-release-id", required=True)
     parser.add_argument("--embedding-url", help="Opt-in Ollama embedding base URL; model is pinned by each release.")
     parser.add_argument("--ranking-url", help="Opt-in Ollama ranking base URL; model is pinned by each release.")
-    parser.add_argument("--provider-timeout", type=float, default=30.0)
+    parser.add_argument("--provider-timeout", type=float, help="Timeout for legacy Ollama URL flags; default 30 seconds.")
+    parser.add_argument("--provider-config", type=Path, help="Retrieval provider TOML with endpoints and model allowlists.")
     args = parser.parse_args(argv)
+    if args.provider_config and (args.embedding_url or args.ranking_url or args.provider_timeout is not None):
+        parser.error("--provider-config cannot be combined with provider URL or timeout flags")
     try:
         store = ReleaseStore.from_files(args.release, active_release_id=args.active_release_id)
-        embedding = OllamaRetrievalProvider(args.embedding_url, timeout=args.provider_timeout) if args.embedding_url else None
-        ranking = OllamaRetrievalProvider(args.ranking_url, timeout=args.provider_timeout) if args.ranking_url else None
+        if args.provider_config:
+            embedding, ranking = load_provider_settings(args.provider_config).create_providers()
+        else:
+            timeout = args.provider_timeout if args.provider_timeout is not None else 30.0
+            embedding = OllamaRetrievalProvider(args.embedding_url, timeout=timeout) if args.embedding_url else None
+            ranking = OllamaRetrievalProvider(args.ranking_url, timeout=timeout) if args.ranking_url else None
     except (OSError, ValueError) as exc:
         parser.error(f"Cannot load serving releases: {exc}")
     asyncio.run(serve(KnowledgeService(store, embedding_provider=embedding, ranking_provider=ranking)))

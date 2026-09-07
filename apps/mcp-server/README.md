@@ -62,10 +62,24 @@ bundles fail startup. The application does not crawl or publish releases and doe
 not load the experimental candidate-bundle format.
 
 Hybrid BUILD-05 bundles use the same three tools. To connect an evaluated bundle
+to local Qwen embeddings and Groq evidence ranking, add
+`--provider-config config/retrieval-models.toml` (use an absolute path in an MCP
+client config). Set `GROQ_API_KEY` in the parent process environment and start
+Ollama with `qwen3-embedding:0.6b` installed. The selected ranking model is
+`openai/gpt-oss-20b`. Select alternatives by changing `[embedding].active_profile`
+and `[ranking].active_profile` to names defined under `[profiles.<name>]` in the
+TOML file. The default pair requires the release to pin adapter `groq-ranking/v1`, embedding
+adapter `ollama-retrieval/v1`, these exact model names and a matching vector index.
+The config performs no startup model calls and cannot rewrite sealed releases.
+Allow at least 120 seconds per MCP call for the configured 30-second embedding
+and 60-second ranking stages. OpenCode's caller model remains independent.
+
+Alternatively, for an evaluated bundle
 whose provider IDs are `ollama-retrieval/v1`, add `--embedding-url` and
 `--ranking-url` with the corresponding Ollama base URLs, plus optional
 `--provider-timeout` (30 seconds by default). The bundle pins both model names;
-CLI flags cannot change them. No provider calls occur until a valid `resolve`.
+CLI flags cannot change them. The legacy URL/timeout flags cannot be combined
+with `--provider-config`. No provider calls occur until a valid `resolve`.
 Missing or failed providers use only the bundle's evaluated fallback for that
 coverage profile, or return `OPERATIONAL_ERROR`. See the runtime README for
 asset validation, equivalent-evidence traces and the synthetic hybrid fixture.

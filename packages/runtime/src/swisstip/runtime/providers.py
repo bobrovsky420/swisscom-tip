@@ -1,4 +1,4 @@
-"""Opt-in Ollama adapters with bounded payloads, no retries or redirects.
+"""Opt-in retrieval adapters with bounded payloads, no retries or redirects.
 
 Protocol: https://docs.ollama.com/api/embed and /api/chat. Model identities
 come from the release, never CLI overrides. Endpoints are deployment settings.
@@ -8,6 +8,7 @@ from dataclasses import asdict
 import http.client
 import json
 import math
+import os
 import time
 from urllib.parse import urlsplit
 
@@ -35,12 +36,9 @@ def _json(text):
     return json.loads(text, object_pairs_hook=distinct)
 
 
-class OllamaRetrievalProvider:
-    # This version includes the fixed ranking instruction and generation options.
-    # Changing those requires a new adapter identity and release evaluation.
-    provider_id = "ollama-retrieval/v1"
-
-    def __init__(self, base_url: str, *, timeout: float = 30.0, max_bytes: int = 2_000_000):
+class _JsonProvider:
+    def __init__(self, base_url: str, *, timeout: float = 30.0, max_bytes: int = 2_000_000,
+                 expected_model: str | None = None):
         parsed = urlsplit(base_url)
         if (parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username
                 or parsed.password or parsed.query or parsed.fragment):
@@ -48,8 +46,13 @@ class OllamaRetrievalProvider:
         if not math.isfinite(timeout) or not 0 < timeout <= 300 or not 1024 <= max_bytes <= 10_000_000:
             raise ValueError("invalid_provider_limits")
         self._url, self._timeout, self._max_bytes = parsed, timeout, max_bytes
+        self._expected_model = expected_model
 
-    def _post(self, path, payload):
+    def _check_model(self, model):
+        if self._expected_model is not None and model != self._expected_model:
+            raise RetrievalFailure("configured_model_mismatch")
+
+    def _post(self, path, payload, *, headers=None):
         body = json.dumps(payload, ensure_ascii=False, allow_nan=False).encode("utf-8")
         if len(body) > self._max_bytes:
             raise RetrievalFailure("provider_request_byte_limit")
@@ -58,7 +61,7 @@ class OllamaRetrievalProvider:
         deadline = time.monotonic() + self._timeout
         try:
             connection.request("POST", self._url.path.rstrip("/") + path, body,
-                               headers={"Content-Type": "application/json", "Accept": "application/json"})
+                               headers={"Content-Type": "application/json", "Accept": "application/json", **(headers or {})})
             response = connection.getresponse()
             if response.status != 200:
                 raise RetrievalFailure("provider_http_error")
@@ -79,11 +82,19 @@ class OllamaRetrievalProvider:
         finally:
             connection.close()
 
+
+class OllamaRetrievalProvider(_JsonProvider):
+    # Includes the fixed ranking instruction and generation options. Changes
+    # require a new adapter identity and release evaluation.
+    provider_id = "ollama-retrieval/v1"
+
     def embed(self, texts, *, model):
+        self._check_model(model)
         data = self._post("/api/embed", {"model": model, "input": list(texts), "truncate": False})
         return EmbeddingResponse(data["model"], tuple(tuple(v) for v in data["embeddings"]))
 
     def rank(self, query, candidates, *, model):
+        self._check_model(model)
         schema = {"type": "object", "properties": {c.evidence_id: {"type": "number"} for c in candidates},
                   "required": [c.evidence_id for c in candidates], "additionalProperties": False}
         data = self._post("/api/chat", {
@@ -96,3 +107,41 @@ class OllamaRetrievalProvider:
         if data.get("done") is not True or data.get("done_reason") == "length":
             raise RetrievalFailure("incomplete_ranking_response")
         return RankingResponse(data["model"], _json(data["message"]["content"]))
+
+
+class GroqRankingProvider(_JsonProvider):
+    """Groq chat scoring with strict JSON schema and release-pinned identity.
+
+    https://console.groq.com/docs/structured-outputs
+    Credentials are read from the process environment only when ranking runs.
+    """
+
+    provider_id = "groq-ranking/v1"
+
+    def __init__(self, base_url="https://api.groq.com/openai/v1", *, token_env="GROQ_API_KEY", **kwargs):
+        super().__init__(base_url, **kwargs)
+        if self._url.scheme != "https" and self._url.hostname not in {"localhost", "127.0.0.1", "::1"}:
+            raise ValueError("ranking_credentials_require_https")
+        self._token_env = token_env
+
+    def rank(self, query, candidates, *, model):
+        self._check_model(model)
+        token = os.environ.get(self._token_env, "").strip()
+        if not token or any(char in token for char in "\r\n"):
+            raise RetrievalFailure("missing_or_invalid_ranking_credentials")
+        schema = {"type": "object", "properties": {c.evidence_id: {"type": "number"} for c in candidates},
+                  "required": [c.evidence_id for c in candidates], "additionalProperties": False}
+        data = self._post("/chat/completions", {
+            "model": model, "stream": False, "temperature": 0, "reasoning_effort": "low",
+            "max_completion_tokens": 8192,
+            "response_format": {"type": "json_schema", "json_schema": {
+                "name": "evidence_scores", "strict": True, "schema": schema}},
+            "messages": [{"role": "system", "content": RANKING_INSTRUCTION},
+                         {"role": "user", "content": json.dumps(
+                             {"query": asdict(query), "candidates": [asdict(c) for c in candidates]},
+                             ensure_ascii=False)}]}, headers={"Authorization": "Bearer " + token})
+        choices = data.get("choices", [])
+        if (len(choices) != 1 or choices[0].get("finish_reason") != "stop"
+                or choices[0].get("message", {}).get("refusal")):
+            raise RetrievalFailure("incomplete_ranking_response")
+        return RankingResponse(data["model"], _json(choices[0]["message"]["content"]))

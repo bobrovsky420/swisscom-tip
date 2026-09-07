@@ -1,20 +1,26 @@
-"""Loopback Ollama protocol, bounded failures and model provenance."""
+"""Loopback provider protocols, bounded failures and model provenance."""
 
 from contextlib import contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
+from pathlib import Path
 from threading import Thread
 import unittest
+from unittest.mock import patch
 
-from swisstip.runtime.providers import OllamaRetrievalProvider, _json
+from swisstip.runtime.providers import GroqRankingProvider, OllamaRetrievalProvider, _json
+from swisstip.runtime.provider_config import load_provider_settings, ProviderSettings
 from swisstip.runtime.retrieval import RankingCandidate, RetrievalQuery, RetrievalFailure
 
 
 @contextmanager
-def endpoint(response, status=200):
+def endpoint(response, status=200, headers_seen=None):
     requests = []
     class Handler(BaseHTTPRequestHandler):
         def do_POST(self):
+            if headers_seen is not None:
+                headers_seen.append(dict(self.headers))
             requests.append((self.path, json.loads(self.rfile.read(int(self.headers["Content-Length"])))))
             payload = response if isinstance(response, bytes) else json.dumps(response).encode()
             self.send_response(status)
@@ -85,6 +91,135 @@ class ProviderTests(unittest.TestCase):
         for timeout in [0, -1, float("nan"), 301]:
             with self.assertRaises(ValueError):
                 OllamaRetrievalProvider("http://localhost", timeout=timeout)
+
+    @patch.dict(os.environ, {"TEST_GROQ_KEY": "test-only-token"})
+    def test_groq_strict_scores_auth_and_observed_model(self):
+        response = dict(model="observed-model", choices=[dict(
+            finish_reason="stop", message=dict(content='{"evidence-parent": 0.8}'))])
+        headers = []
+        with endpoint(response, headers_seen=headers) as (url, requests):
+            result = GroqRankingProvider(url + "/openai/v1", token_env="TEST_GROQ_KEY").rank(
+                self.query, self.candidates, model="openai/gpt-oss-20b")
+        self.assertEqual(result.model, "observed-model")
+        self.assertEqual(result.scores, {"evidence-parent": 0.8})
+        self.assertEqual(headers[0]["Authorization"], "Bearer test-only-token")
+        path, body = requests[0]
+        self.assertEqual(path, "/openai/v1/chat/completions")
+        self.assertEqual(body["model"], "openai/gpt-oss-20b")
+        self.assertFalse(body["stream"])
+        self.assertEqual(body["reasoning_effort"], "low")
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        schema = body["response_format"]["json_schema"]
+        self.assertTrue(schema["strict"])
+        self.assertFalse(schema["schema"]["additionalProperties"])
+        self.assertEqual(schema["schema"]["required"], ["evidence-parent"])
+        self.assertIn("untrusted data", body["messages"][0]["content"])
+        self.assertEqual(json.loads(body["messages"][1]["content"])["candidates"][0]["original_excerpt"],
+                         self.candidates[0].original_excerpt)
+
+    @patch.dict(os.environ, {"TEST_GROQ_KEY": "test-only-token"})
+    def test_groq_rejects_refusal_truncation_duplicates_and_http_errors(self):
+        for choice in [dict(finish_reason="length", message=dict(content="{}")),
+                       dict(finish_reason="stop", message=dict(content="{}", refusal="refused")),
+                       dict(finish_reason="stop", message=dict(content='{"id": 1, "id": 2}'))]:
+            with endpoint(dict(model="ranker", choices=[choice])) as (url, _):
+                with self.assertRaises(RetrievalFailure):
+                    GroqRankingProvider(url, token_env="TEST_GROQ_KEY").rank(self.query, self.candidates, model="ranker")
+        for status in [302, 401, 429, 503]:
+            with endpoint({"error": "test-only-token"}, status) as (url, requests):
+                with self.assertRaisesRegex(RetrievalFailure, "^provider_http_error$"):
+                    GroqRankingProvider(url, token_env="TEST_GROQ_KEY").rank(self.query, self.candidates, model="ranker")
+                self.assertEqual(len(requests), 1)
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_missing_credentials_and_configured_model_mismatch_prevent_io(self):
+        with endpoint({}) as (url, requests):
+            ranker = GroqRankingProvider(url, expected_model="ranker")
+            with self.assertRaisesRegex(RetrievalFailure, "missing_or_invalid_ranking_credentials"):
+                ranker.rank(self.query, self.candidates, model="ranker")
+            with self.assertRaisesRegex(RetrievalFailure, "configured_model_mismatch"):
+                ranker.rank(self.query, self.candidates, model="another-model")
+            with self.assertRaisesRegex(RetrievalFailure, "configured_model_mismatch"):
+                OllamaRetrievalProvider(url, expected_model="embedder").embed(("term",), model="another-model")
+            self.assertFalse(requests)
+        with self.assertRaisesRegex(ValueError, "ranking_credentials_require_https"):
+            GroqRankingProvider("http://api.groq.com/openai/v1")
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_repository_config_loads_without_credentials_and_rejects_unknown_fields(self):
+        config = Path(__file__).resolve().parents[3] / "config/retrieval-models.toml"
+        settings = load_provider_settings(config)
+        embedding, ranking = settings.create_providers()
+        self.assertEqual(embedding.provider_id, "ollama-retrieval/v1")
+        self.assertEqual(ranking.provider_id, "groq-ranking/v1")
+        self.assertEqual(settings.embedding_profile.model, "qwen3-embedding:0.6b")
+        self.assertEqual(settings.ranking_profile.model, "openai/gpt-oss-20b")
+        invalid = settings.model_dump()
+        invalid["profiles"][settings.ranking.active_profile]["api_key"] = "do-not-store-secrets-in-config"
+        with self.assertRaises(ValueError):
+            ProviderSettings.model_validate(invalid)
+
+    @patch.dict(os.environ, {"GROQ_API_KEY": "test-only-token"})
+    def test_named_profiles_switch_embedding_and_ranking_independently(self):
+        settings = load_provider_settings(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")
+        embeddings = [name for name, profile in settings.profiles.items() if profile.role == "embedding"]
+        rankings = [name for name, profile in settings.profiles.items() if profile.role == "ranking"]
+        for embedding_name in embeddings:
+            for ranking_name in rankings:
+                with self.subTest(embedding=embedding_name, ranking=ranking_name):
+                    document = settings.model_dump()
+                    document["embedding"]["active_profile"] = embedding_name
+                    document["ranking"]["active_profile"] = ranking_name
+                    embed_profile = document["profiles"][embedding_name]
+                    rank_profile = document["profiles"][ranking_name]
+                    embed_response = dict(model=embed_profile["model"], embeddings=[[1.0, 0.0]])
+                    content = '{"evidence-parent": 0.8}'
+                    if rank_profile["adapter"] == "groq":
+                        rank_response = dict(model=rank_profile["model"], choices=[dict(
+                            finish_reason="stop", message=dict(content=content))])
+                        rank_path = "/chat/completions"
+                    else:
+                        rank_response = dict(model=rank_profile["model"], done=True, message=dict(content=content))
+                        rank_path = "/api/chat"
+                    with endpoint(embed_response) as (embed_url, embed_requests), endpoint(rank_response) as (rank_url, rank_requests):
+                        embed_profile["base_url"], rank_profile["base_url"] = embed_url, rank_url
+                        selected = ProviderSettings.model_validate(document)
+                        embedder, ranker = selected.create_providers()
+                        vectors = embedder.embed(("term",), model=selected.embedding_profile.model)
+                        scores = ranker.rank(self.query, self.candidates, model=selected.ranking_profile.model)
+                    self.assertEqual(vectors.model, embed_profile["model"])
+                    self.assertEqual(scores.model, rank_profile["model"])
+                    self.assertEqual(vectors.vectors, ((1.0, 0.0),))
+                    self.assertEqual(scores.scores, {"evidence-parent": 0.8})
+                    self.assertEqual(embed_requests[0][0], "/api/embed")
+                    self.assertEqual(rank_requests[0][0], rank_path)
+                    self.assertEqual(embed_requests[0][1]["model"], embed_profile["model"])
+                    self.assertEqual(rank_requests[0][1]["model"], rank_profile["model"])
+
+    def test_unknown_or_wrong_role_profile_selections_fail(self):
+        settings = load_provider_settings(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")
+        for role in ("embedding", "ranking"):
+            for name, reason in [("missing", "unknown profile"),
+                                 (getattr(settings, "ranking" if role == "embedding" else "embedding").active_profile,
+                                  f"requires a {role} profile")]:
+                with self.subTest(role=role, name=name):
+                    document = settings.model_dump()
+                    document[role]["active_profile"] = name
+                    with self.assertRaisesRegex(ValueError, reason):
+                        ProviderSettings.model_validate(document)
+
+    def test_invalid_inactive_profiles_are_validated_without_credentials(self):
+        settings = load_provider_settings(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")
+        inactive = "groq_gpt_oss_120b"
+        for field, value in [("adapter", "unsupported"), ("role", "embedding"),
+                             ("timeout_seconds", 0.0), ("base_url", "file:///invalid"),
+                             ("base_url", "http://api.groq.com"), ("token_env", "bad name"),
+                             ("api_key", "do-not-store-secrets-in-config")]:
+            with self.subTest(field=field, value=value), patch.dict(os.environ, {}, clear=True):
+                document = settings.model_dump()
+                document["profiles"][inactive][field] = value
+                with self.assertRaises(ValueError):
+                    ProviderSettings.model_validate(document)
 
 
 if __name__ == "__main__":

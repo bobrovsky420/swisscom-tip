@@ -6,18 +6,27 @@ from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
 from swisstip.core.contracts import StructuredGroundingRequest, StructuredGroundingResult, ToolError
-from swisstip.mcp_server.server import tool_input_schema
+from swisstip.mcp_server.server import main, tool_input_schema
 from swisstip.runtime import KnowledgeService, ReleaseStore
 from swisstip.runtime.fixture import fixture
 
 
 class MCPTests(unittest.TestCase):
+    def test_provider_config_conflicts_fail_before_loading(self):
+        for flags in [["--embedding-url", "http://localhost"],
+                      ["--ranking-url", "http://localhost"], ["--provider-timeout", "10"]]:
+            with patch("sys.stderr"), self.assertRaises(SystemExit) as raised:
+                main(["--release", "unused.json", "--active-release-id", "unused",
+                      "--provider-config", "unused.toml", *flags])
+            self.assertEqual(raised.exception.code, 2)
+
     def test_stdio_hybrid_fallback_preserves_equivalence_and_source_filter(self):
         from swisstip.runtime.hybrid_fixture import hybrid_fixture
 
@@ -82,7 +91,9 @@ class MCPTests(unittest.TestCase):
             path.write_text(bundle.model_dump_json(), encoding="utf-8")
             params = StdioServerParameters(command=sys.executable, args=[
                 "-m", "swisstip.mcp_server.server", "--release", str(path),
-                "--active-release-id", bundle.release.release_id])
+                "--active-release-id", bundle.release.release_id,
+                "--provider-config", str(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")],
+                env={"GROQ_API_KEY": ""})
             service = KnowledgeService(ReleaseStore([bundle], active_release_id=bundle.release.release_id))
             async with stdio_client(params) as streams:
                 async with ClientSession(*streams) as session:
