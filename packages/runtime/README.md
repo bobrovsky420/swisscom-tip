@@ -3,7 +3,8 @@
 BUILD-03 implements `KnowledgeService.get_coverage`, `resolve` and `get_evidence`
 over explicitly loaded serving releases. The runtime depends only on core;
 the [MCP application](../../apps/mcp-server/README.md) supplies the stdio adapter.
-It never calls ingestion, extraction or a model provider.
+It does not call ingestion or extraction. BUILD-05 adds optional runtime embedding
+and ranking providers, selected through the loaded release configuration.
 
 Install and test from the repository root, using the local environment:
 
@@ -119,8 +120,83 @@ once, before accepting requests.
   context, unresolved portions, freshness, trust and actual retrieval channels.
   `get_evidence` preserves request order and rejects unknown references atomically.
 
-This is the BUILD-03 identifier/lexical contract baseline. Five-language projection
-generation, verified translation equivalence, hybrid vector retrieval, semantic
-ranking and evaluated provider fallback remain BUILD-04/05. Production publication,
-durable retention and qualification with independent external clients remain
-BUILD-06. The synthetic fixture does not complete those gates.
+## Hybrid retrieval (BUILD-05)
+
+Hybrid bundles additionally load sealed `RetrievalProjection`, `ReviewedTerminology`,
+`EvidenceEquivalence`, `RetrievalIndex`, `RetrievalProviders` and
+`RetrievalConfiguration` artifacts. The manifest pins all assets: ranking configuration
+binds equivalence mappings and coverage evaluations; the index binds the embedding
+model and projection revisions. A missing projection, stale evidence reference,
+wrong vector dimension, undeclared fallback profile or incomplete asset set fails
+loading. Hybrid profiles require complete `en`, `de`, `fr`, `it` and `rm` projections.
+Generating and reviewing those assets remains a builder responsibility.
+
+Each term independently selects its published projection and reviewed terminology.
+Original/expanded lexical matches, concept associations (including applicable
+published fact support), and cosine similarity of multilingual vectors contribute
+through reciprocal rank fusion. Zero-score lexical/vector entries do not suppress
+other channels. Pools contain at most the configured 20-100 evidence groups;
+the default is 20. A semantic provider ranks the admitted originals and routed
+projections. Providers see only eligible evidence and cannot add IDs or facts.
+Provider/model identities, dimensions, finite scores and complete candidate
+membership must match. The final assembler selects complete published support
+within the existing five-object cap, then fills spare slots with ranked excerpts
+meeting the release's optional `minimum_semantic_score`. Fallback profiles can
+separately pin `minimum_lexical_score`. These thresholds govern optional excerpts;
+they cannot remove a published fact's required support or create support from a
+score. Thresholds default to unset and require profile-specific evaluation.
+
+Exact revision-bound equivalence mappings are required for grouping. Scope,
+temporal coverage, authority and per-fact support must be compatible. Conflicting
+facts and joint supporting spans cannot be collapsed. Fresh equivalents precede
+stale equivalents, then semantic suitability precedes a German language tie-breaker
+and stable evidence identity. Materially different versions stay separate.
+Original facts retain their hashes and evidence IDs; trace `selections` provides
+the per-fact representative/alternate mapping. Only the representative consumes
+a slot. Alternate IDs remain available through `get_evidence`; references to
+filtered languages are metadata and are not returned as selected evidence.
+
+`KnowledgeService` accepts `embedding_provider` and `ranking_provider` implementations
+of the protocols in [retrieval.py](src/swisstip/runtime/retrieval.py). Each adapter
+declares `provider_id`; the release pins that ID and requested model. An optional
+[Ollama adapter](src/swisstip/runtime/providers.py) implements the documented
+[embedding](https://docs.ollama.com/api/embed) and [chat](https://docs.ollama.com/api/chat)
+APIs. Its identity is `ollama-retrieval/v1`, including a fixed scoring instruction
+and generation options. It limits request/response bytes, uses bounded HTTP I/O,
+and performs one attempt per stage, with no redirects or retries. Applications
+must supply endpoints explicitly; no model is downloaded or called on startup.
+
+Provider errors restart only a release-declared, evaluated lexical/concept fallback
+for the selected coverage profile. Trace metadata identifies omitted channels and
+the fallback evaluation. Without that path, `resolve` returns `OPERATIONAL_ERROR`.
+A failed provider never becomes a knowledge-coverage claim. Legacy BUILD-03 bundles
+with no retrieval assets retain their explicitly labelled identifier/lexical baseline.
+
+Generate the synthetic multilingual bundle or reproduce its integration gates:
+
+```shell
+./.venv/Scripts/python.exe -m swisstip.runtime.hybrid_fixture --output .local/build05/fixture.json
+./.venv/Scripts/python.exe -m swisstip.runtime.evaluation --synthetic --output .local/build05/evaluation.json
+```
+
+For an in-process hybrid demo, call `hybrid_fixture()` and inject
+`SyntheticSemanticProvider()` for both providers. Its `synthetic/v1` adapter and
+two-dimensional vectors are fabricated and cannot qualify a real provider. Without
+those adapters the demo uses its declared synthetic fallback, including over MCP.
+Do not point this fixture at live models; an actual model needs a newly built index,
+pinned configuration and evaluation for its profile.
+
+The evaluation CLI also accepts `--release`, `--cases`, optional `--embedding-url`
+and `--ranking-url`, and `--output`. Cases use `RetrievalGoldCase` in
+[evaluation.py](src/swisstip/runtime/evaluation.py): exact release identity, typed
+request, required evidence groups/facts, eligible/relevant IDs and a declared
+minimum precision. Every case must pass top-20 recall, top-5 fact/evidence support,
+original citation round-trips, zero leakage and the specified relevance threshold.
+An empty suite fails. Reports retain label hashes, release refs, channels, recall,
+precision, latency and response size; a failing suite exits nonzero.
+
+The [evaluation record](../../docs/experiments/2026-09-07-build05-retrieval.md)
+states the synthetic gates and limits. Production multilingual fidelity and live
+model qualification remain POC-06/07/10/11; reviewed publication and retention
+remain BUILD-02/04/06. Loading fabricated review/evaluation references does not
+attest their authenticity or promote the draft residence catalogue.

@@ -18,6 +18,39 @@ from swisstip.runtime.fixture import fixture
 
 
 class MCPTests(unittest.TestCase):
+    def test_stdio_hybrid_fallback_preserves_equivalence_and_source_filter(self):
+        from swisstip.runtime.hybrid_fixture import hybrid_fixture
+
+        async def scenario(directory):
+            bundle, request = hybrid_fixture()
+            path = Path(directory) / "hybrid.json"
+            path.write_text(bundle.model_dump_json(), encoding="utf-8")
+            params = StdioServerParameters(command=sys.executable, args=[
+                "-m", "swisstip.mcp_server.server", "--release", str(path),
+                "--active-release-id", bundle.release.release_id])
+            async with stdio_client(params) as streams:
+                async with ClientSession(*streams) as session:
+                    await session.initialize()
+                    listed = {t.name: t for t in (await session.list_tools()).tools}
+                    for source in ["de", "en"]:
+                        response = await session.call_tool("resolve", {
+                            **request, "max_evidence": 1, "source_languages": [source],
+                            "retrieval_terms": [dict(text="permis de sejour", language="fr")]})
+                        self.assertFalse(response.isError)
+                        Draft202012Validator(listed["resolve"].outputSchema).validate(response.structuredContent)
+                        result = StructuredGroundingResult.model_validate(response.structuredContent)
+                        self.assertEqual(result.status, "SUPPORTED")
+                        self.assertEqual(result.evidence[0].effective_source_language, source)
+                        self.assertEqual(result.trace.channels, ["lexical", "concept"])
+                        self.assertTrue(result.trace.degradations)
+                        self.assertTrue(result.trace.selections)
+                        alternate = result.trace.selections[0].alternate_ids[0]
+                        fetched = await session.call_tool("get_evidence", dict(
+                            release_id=result.release_id, evidence_ids=[alternate]))
+                        self.assertEqual(fetched.structuredContent["evidence"][0]["evidence_id"], alternate)
+        with TemporaryDirectory() as directory:
+            asyncio.run(scenario(directory))
+
     def test_inline_input_schema_preserves_object_and_array_validation(self):
         _, request = fixture()
         canonical = Draft202012Validator(StructuredGroundingRequest.model_json_schema())

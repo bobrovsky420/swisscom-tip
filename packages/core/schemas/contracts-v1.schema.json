@@ -834,6 +834,61 @@
       "title": "EvaluatedTermRoute",
       "type": "object"
     },
+    "EvidenceEquivalence": {
+      "additionalProperties": false,
+      "description": "Review attests interchangeable claim support for these exact revisions.\n\nConcept alignment alone cannot create this artifact. All members support\neach listed fact with the same conditions; omitted/partial translations\nbelong outside the group.",
+      "properties": {
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 21,
+          "minItems": 2,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "fact_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Fact Ids",
+          "type": "array"
+        },
+        "fact_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 50,
+          "title": "Fact Refs",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "review_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "evidence-equivalence/v1",
+          "default": "evidence-equivalence/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "evidence_refs",
+        "fact_ids",
+        "fact_refs",
+        "review_ref"
+      ],
+      "title": "EvidenceEquivalence",
+      "type": "object"
+    },
     "EvidenceObject": {
       "additionalProperties": false,
       "properties": {
@@ -998,6 +1053,87 @@
         "provenance_refs"
       ],
       "title": "EvidenceObject",
+      "type": "object"
+    },
+    "EvidenceSelection": {
+      "additionalProperties": false,
+      "properties": {
+        "alternate_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Alternate Ids",
+          "type": "array"
+        },
+        "fact_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Fact Ids",
+          "type": "array"
+        },
+        "mapping_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "reason_code": {
+          "enum": [
+            "german_equivalent_tie",
+            "higher_ranked_equivalent",
+            "only_eligible_equivalent",
+            "stable_equivalent_tie",
+            "fresher_equivalent"
+          ],
+          "title": "Reason Code",
+          "type": "string"
+        },
+        "representative_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Representative Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mapping_ref",
+        "representative_id",
+        "alternate_ids",
+        "fact_ids",
+        "reason_code"
+      ],
+      "title": "EvidenceSelection",
+      "type": "object"
+    },
+    "EvidenceVector": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "values": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 4096,
+          "minItems": 1,
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "evidence_ref",
+        "values"
+      ],
+      "title": "EvidenceVector",
       "type": "object"
     },
     "FactConflict": {
@@ -2272,6 +2408,291 @@
       "title": "ResolutionPortion",
       "type": "object"
     },
+    "RetrievalConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 20,
+          "title": "Candidate Limit",
+          "type": "integer"
+        },
+        "channel_limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 20,
+          "title": "Channel Limit",
+          "type": "integer"
+        },
+        "equivalence_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Equivalence Refs",
+          "type": "array"
+        },
+        "evaluation_refs": {
+          "maxProperties": 10000,
+          "minProperties": 1,
+          "patternProperties": {
+            "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$": {
+              "$ref": "#/$defs/ArtifactRef"
+            }
+          },
+          "propertyNames": {
+            "maxLength": 80,
+            "minLength": 1
+          },
+          "title": "Evaluation Refs",
+          "type": "object"
+        },
+        "fallbacks": {
+          "items": {
+            "$ref": "#/$defs/RetrievalFallback"
+          },
+          "maxItems": 10000,
+          "title": "Fallbacks",
+          "type": "array"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "index_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "minimum_semantic_score": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum Semantic Score"
+        },
+        "provider_configuration_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "rrf_constant": {
+          "default": 60,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Rrf Constant",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "retrieval-configuration/v1",
+          "default": "retrieval-configuration/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "selection_policy": {
+          "const": "verified-equivalence-german-tie/v1",
+          "default": "verified-equivalence-german-tie/v1",
+          "title": "Selection Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "provider_configuration_ref",
+        "index_ref",
+        "equivalence_refs",
+        "evaluation_refs"
+      ],
+      "title": "RetrievalConfiguration",
+      "type": "object"
+    },
+    "RetrievalFallback": {
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "const": "lexical_concept",
+          "default": "lexical_concept",
+          "title": "Channels",
+          "type": "string"
+        },
+        "coverage_profile_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Coverage Profile Id",
+          "type": "string"
+        },
+        "evaluation_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "minimum_lexical_score": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum Lexical Score"
+        }
+      },
+      "required": [
+        "coverage_profile_id",
+        "evaluation_ref"
+      ],
+      "title": "RetrievalFallback",
+      "type": "object"
+    },
+    "RetrievalIndex": {
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "maximum": 4096,
+          "minimum": 1,
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "embedding_model": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Embedding Model",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "projection_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100000,
+          "title": "Projection Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "retrieval-index/v1",
+          "default": "retrieval-index/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "vectors": {
+          "items": {
+            "$ref": "#/$defs/EvidenceVector"
+          },
+          "maxItems": 100000,
+          "title": "Vectors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "embedding_model",
+        "dimensions",
+        "projection_refs",
+        "vectors"
+      ],
+      "title": "RetrievalIndex",
+      "type": "object"
+    },
+    "RetrievalProjection": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Language",
+          "type": "string"
+        },
+        "provenance_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Provenance Refs",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "retrieval-projection/v1",
+          "default": "retrieval-projection/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "evidence_ref",
+        "language",
+        "text",
+        "provenance_refs"
+      ],
+      "title": "RetrievalProjection",
+      "type": "object"
+    },
+    "RetrievalProviders": {
+      "additionalProperties": false,
+      "properties": {
+        "embedding_model": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Embedding Model",
+          "type": "string"
+        },
+        "embedding_provider": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Embedding Provider",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "ranking_model": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Ranking Model",
+          "type": "string"
+        },
+        "ranking_provider": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Ranking Provider",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "retrieval-providers/v1",
+          "default": "retrieval-providers/v1",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "identity",
+        "embedding_model",
+        "ranking_model",
+        "embedding_provider",
+        "ranking_provider"
+      ],
+      "title": "RetrievalProviders",
+      "type": "object"
+    },
     "RetrievalTerm": {
       "additionalProperties": false,
       "properties": {
@@ -2303,6 +2724,17 @@
           "minimum": 0,
           "title": "Candidate Count",
           "type": "integer"
+        },
+        "candidate_ids": {
+          "items": {
+            "maxLength": 80,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Candidate Ids",
+          "type": "array"
         },
         "channels": {
           "items": {
@@ -2359,11 +2791,51 @@
           "title": "Index Refs",
           "type": "array"
         },
+        "language_policy_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "projection_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 100,
+          "title": "Projection Refs",
+          "type": "array"
+        },
         "provider_configuration_ref": {
           "$ref": "#/$defs/ArtifactRef"
         },
         "ranking_configuration_ref": {
           "$ref": "#/$defs/ArtifactRef"
+        },
+        "selection_policy": {
+          "anyOf": [
+            {
+              "const": "verified-equivalence-german-tie/v1",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selection Policy"
+        },
+        "selections": {
+          "items": {
+            "$ref": "#/$defs/EvidenceSelection"
+          },
+          "maxItems": 5,
+          "title": "Selections",
+          "type": "array"
         },
         "term_routes": {
           "items": {
@@ -2385,6 +2857,57 @@
         "evidence_count"
       ],
       "title": "RetrievalTrace",
+      "type": "object"
+    },
+    "ReviewedTerminology": {
+      "additionalProperties": false,
+      "properties": {
+        "concept_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+          "title": "Concept Id",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "review_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "reviewed-terminology/v1",
+          "default": "reviewed-terminology/v1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "term_language": {
+          "maxLength": 128,
+          "minLength": 2,
+          "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
+          "title": "Term Language",
+          "type": "string"
+        },
+        "terms": {
+          "items": {
+            "maxLength": 500,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Terms",
+          "type": "array"
+        }
+      },
+      "required": [
+        "identity",
+        "concept_id",
+        "term_language",
+        "terms",
+        "review_ref"
+      ],
+      "title": "ReviewedTerminology",
       "type": "object"
     },
     "ScopeSelection": {
@@ -3140,6 +3663,24 @@
     },
     {
       "$ref": "#/$defs/NormalizedEvidenceDocument"
+    },
+    {
+      "$ref": "#/$defs/RetrievalProjection"
+    },
+    {
+      "$ref": "#/$defs/ReviewedTerminology"
+    },
+    {
+      "$ref": "#/$defs/EvidenceEquivalence"
+    },
+    {
+      "$ref": "#/$defs/RetrievalIndex"
+    },
+    {
+      "$ref": "#/$defs/RetrievalProviders"
+    },
+    {
+      "$ref": "#/$defs/RetrievalConfiguration"
     }
   ],
   "description": "Structural schemas. Canonicalization, cross-field invariants and catalog-aware validation additionally apply.",
@@ -3156,6 +3697,9 @@
     },
     "CoverageProfile": {
       "$ref": "#/$defs/CoverageProfile"
+    },
+    "EvidenceEquivalence": {
+      "$ref": "#/$defs/EvidenceEquivalence"
     },
     "EvidenceObject": {
       "$ref": "#/$defs/EvidenceObject"
@@ -3195,6 +3739,21 @@
     },
     "ResolutionGraph": {
       "$ref": "#/$defs/ResolutionGraph"
+    },
+    "RetrievalConfiguration": {
+      "$ref": "#/$defs/RetrievalConfiguration"
+    },
+    "RetrievalIndex": {
+      "$ref": "#/$defs/RetrievalIndex"
+    },
+    "RetrievalProjection": {
+      "$ref": "#/$defs/RetrievalProjection"
+    },
+    "RetrievalProviders": {
+      "$ref": "#/$defs/RetrievalProviders"
+    },
+    "ReviewedTerminology": {
+      "$ref": "#/$defs/ReviewedTerminology"
     },
     "StructuredGroundingRequest": {
       "$ref": "#/$defs/StructuredGroundingRequest"

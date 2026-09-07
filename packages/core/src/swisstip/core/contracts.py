@@ -680,6 +680,92 @@ class ProviderDegradation(StrictModel):
     evaluated_fallback_ref: ArtifactRef
 
 
+class EvidenceSelection(StrictModel):
+    mapping_ref: ArtifactRef
+    representative_id: StableId
+    alternate_ids: Annotated[list[StableId], Field(min_length=1, max_length=20)]
+    fact_ids: Annotated[list[StableId], Field(max_length=50)]
+    reason_code: Literal["german_equivalent_tie", "higher_ranked_equivalent", "only_eligible_equivalent", "stable_equivalent_tie", "fresher_equivalent"]
+
+
+class RetrievalProjection(StrictModel):
+    schema_version: Literal["retrieval-projection/v1"] = "retrieval-projection/v1"
+    identity: ArtifactRef
+    evidence_ref: ArtifactRef
+    language: LanguageTag
+    text: Annotated[str, StringConstraints(min_length=1, max_length=4000)]
+    provenance_refs: Annotated[list[ArtifactRef], Field(min_length=1, max_length=20)]
+
+
+class ReviewedTerminology(StrictModel):
+    schema_version: Literal["reviewed-terminology/v1"] = "reviewed-terminology/v1"
+    identity: ArtifactRef
+    concept_id: StableId
+    term_language: LanguageTag
+    terms: Annotated[list[ShortText], Field(min_length=1, max_length=100)]
+    review_ref: ArtifactRef
+
+
+class EvidenceEquivalence(StrictModel):
+    """Review attests interchangeable claim support for these exact revisions.
+
+    Concept alignment alone cannot create this artifact. All members support
+    each listed fact with the same conditions; omitted/partial translations
+    belong outside the group.
+    """
+    schema_version: Literal["evidence-equivalence/v1"] = "evidence-equivalence/v1"
+    identity: ArtifactRef
+    evidence_refs: Annotated[list[ArtifactRef], Field(min_length=2, max_length=21)]
+    fact_ids: Annotated[list[StableId], Field(max_length=50)]
+    fact_refs: Annotated[list[ArtifactRef], Field(max_length=50)]
+    review_ref: ArtifactRef
+
+
+class EvidenceVector(StrictModel):
+    evidence_ref: ArtifactRef
+    values: Annotated[list[float], Field(min_length=1, max_length=4096)]
+
+
+class RetrievalIndex(StrictModel):
+    schema_version: Literal["retrieval-index/v1"] = "retrieval-index/v1"
+    identity: ArtifactRef
+    embedding_model: ShortText
+    dimensions: Annotated[int, Field(ge=1, le=4096)]
+    projection_refs: Annotated[list[ArtifactRef], Field(max_length=100000)]
+    vectors: Annotated[list[EvidenceVector], Field(max_length=100000)]
+
+
+class RetrievalProviders(StrictModel):
+    schema_version: Literal["retrieval-providers/v1"] = "retrieval-providers/v1"
+    identity: ArtifactRef
+    embedding_model: ShortText
+    ranking_model: ShortText
+    embedding_provider: ShortText
+    ranking_provider: ShortText
+
+
+class RetrievalFallback(StrictModel):
+    coverage_profile_id: StableId
+    evaluation_ref: ArtifactRef
+    channels: Literal["lexical_concept"] = "lexical_concept"
+    minimum_lexical_score: Annotated[float, Field(ge=0.0)] | None = None
+
+
+class RetrievalConfiguration(StrictModel):
+    schema_version: Literal["retrieval-configuration/v1"] = "retrieval-configuration/v1"
+    identity: ArtifactRef
+    provider_configuration_ref: ArtifactRef
+    index_ref: ArtifactRef
+    equivalence_refs: Annotated[list[ArtifactRef], Field(max_length=100000)]
+    evaluation_refs: Annotated[dict[StableId, ArtifactRef], Field(min_length=1, max_length=10000)]
+    fallbacks: Annotated[list[RetrievalFallback], Field(max_length=10000)] = Field(default_factory=list)
+    candidate_limit: Annotated[int, Field(ge=20, le=100)] = 20
+    channel_limit: Annotated[int, Field(ge=20, le=100)] = 20
+    rrf_constant: Annotated[int, Field(ge=1, le=1000)] = 60
+    minimum_semantic_score: float | None = None
+    selection_policy: Literal["verified-equivalence-german-tie/v1"] = "verified-equivalence-german-tie/v1"
+
+
 class RetrievalTrace(StrictModel):
     term_routes: Annotated[list[TermRoute], Field(max_length=20)]
     effective_source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=5)] | None
@@ -690,6 +776,11 @@ class RetrievalTrace(StrictModel):
     candidate_count: Annotated[int, Field(ge=0)]
     evidence_count: Annotated[int, Field(ge=0, le=5)]
     degradations: Annotated[list[ProviderDegradation], Field(max_length=10)] = Field(default_factory=list)
+    language_policy_ref: ArtifactRef | None = None
+    projection_refs: Annotated[list[ArtifactRef], Field(max_length=100)] = Field(default_factory=list)
+    candidate_ids: Annotated[list[StableId], Field(max_length=100)] = Field(default_factory=list)
+    selections: Annotated[list[EvidenceSelection], Field(max_length=5)] = Field(default_factory=list)
+    selection_policy: Literal["verified-equivalence-german-tie/v1"] | None = None
 
 
 class StructuredGroundingResult(StrictModel):
@@ -716,8 +807,14 @@ class StructuredGroundingResult(StrictModel):
         evidence_ids = {item.evidence_id for item in self.evidence}
         if len(evidence_ids) != len(self.evidence):
             raise ValueError("duplicate_evidence_id")
-        if any(not set(fact.evidence_ids).issubset(evidence_ids) for fact in self.supported_portions):
-            raise ValueError("fact_references_missing_evidence")
+        selections = self.trace.selections if self.trace else []
+        if any(s.representative_id not in evidence_ids or s.representative_id in s.alternate_ids
+               or len(set(s.alternate_ids)) != len(s.alternate_ids) for s in selections):
+            raise ValueError("invalid_evidence_selection")
+        for fact in self.supported_portions:
+            represented = evidence_ids | {e for s in selections if fact.fact_id in s.fact_ids for e in s.alternate_ids}
+            if not set(fact.evidence_ids).issubset(represented):
+                raise ValueError("fact_references_missing_evidence")
         if self.status == "NEEDS_CONTEXT" and not self.missing_context:
             raise ValueError("needs_context_requires_missing_fields")
         if self.status == "SUPPORTED" and (self.missing_context or self.unresolved_portions or not self.supported_portions):
@@ -741,4 +838,6 @@ CONTRACT_MODELS = (
     StructuredGroundingRequest, StructuredGroundingResult, ToolError,
     GetCoverageRequest, GetCoverageResult, GetEvidenceRequest, GetEvidenceResult,
     PublishedFact, PublishedRule, ResolutionGraph, NormalizedEvidenceDocument,
+    RetrievalProjection, ReviewedTerminology, EvidenceEquivalence, RetrievalIndex,
+    RetrievalProviders, RetrievalConfiguration,
 )

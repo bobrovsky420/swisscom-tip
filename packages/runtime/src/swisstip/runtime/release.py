@@ -14,7 +14,8 @@ from pydantic import Field
 from swisstip.core.contracts import (
     ArtifactRef, EvidenceObject, KnowledgeCatalog, KnowledgeRelease, LanguagePolicy,
     NormalizedEvidenceDocument, PublishedFact, PublishedRule, ResolutionGraph,
-    StrictModel,
+    StrictModel, RetrievalProjection, ReviewedTerminology, EvidenceEquivalence,
+    RetrievalIndex, RetrievalProviders, RetrievalConfiguration,
 )
 from swisstip.core.identity import verify_artifact
 from swisstip.core.validation import validate_catalog, validate_context
@@ -31,6 +32,12 @@ class ReleaseBundle(StrictModel):
     facts: Annotated[list[PublishedFact], Field(max_length=100000)]
     rules: Annotated[list[PublishedRule], Field(max_length=100000)]
     external_refs: Annotated[list[ArtifactRef], Field(max_length=100000)] = Field(default_factory=list)
+    projections: Annotated[list[RetrievalProjection], Field(max_length=100000)] = Field(default_factory=list)
+    terminology: Annotated[list[ReviewedTerminology], Field(max_length=10000)] = Field(default_factory=list)
+    equivalences: Annotated[list[EvidenceEquivalence], Field(max_length=100000)] = Field(default_factory=list)
+    retrieval_index: RetrievalIndex | None = None
+    retrieval_providers: RetrievalProviders | None = None
+    retrieval_configuration: RetrievalConfiguration | None = None
 
 
 def validate_release(bundle: ReleaseBundle) -> None:
@@ -47,7 +54,10 @@ def validate_release(bundle: ReleaseBundle) -> None:
         return result
 
     artifacts = [release, catalog, policy, graph, *catalog.context_schemas,
-                 *bundle.documents, *bundle.evidence, *bundle.facts, *bundle.rules]
+                 *bundle.documents, *bundle.evidence, *bundle.facts, *bundle.rules,
+                 *bundle.projections, *bundle.terminology, *bundle.equivalences,
+                 *[a for a in [bundle.retrieval_index, bundle.retrieval_providers,
+                               bundle.retrieval_configuration] if a is not None]]
     registry = unique([item.identity for item in artifacts] + bundle.external_refs, "artifact_id")
     for artifact in artifacts:
         require(verify_artifact(artifact), f"content_hash_mismatch: {artifact.identity.artifact_id}")
@@ -154,6 +164,100 @@ def validate_release(bundle: ReleaseBundle) -> None:
     for conflict in graph.conflicts:
         require(len(set(conflict.fact_ids)) == len(conflict.fact_ids) and set(conflict.fact_ids) <= facts.keys(),
                 "unknown_or_duplicate_conflicting_fact")
+    validate_retrieval(bundle, require)
+
+
+def validate_retrieval(bundle, require):
+    """Check the loaded retrieval graph, not just externally declared hashes."""
+    config = bundle.retrieval_configuration
+    if config is None:
+        require(not (bundle.projections or bundle.terminology or bundle.equivalences
+                     or bundle.retrieval_index or bundle.retrieval_providers
+                     or bundle.release.index_refs or bundle.release.projection_refs
+                     or bundle.release.terminology_refs), "incomplete_retrieval_assets")
+        return  # Explicit BUILD-03 legacy baseline, never reported as hybrid.
+    release = bundle.release
+    index, providers = bundle.retrieval_index, bundle.retrieval_providers
+    require(index is not None and providers is not None, "incomplete_retrieval_assets")
+    require(config.identity == release.ranking_configuration_ref
+            and providers.identity == release.provider_configuration_ref == config.provider_configuration_ref
+            and release.index_refs == [index.identity] and config.index_ref == index.identity,
+            "retrieval_manifest_mismatch")
+    require(index.embedding_model == providers.embedding_model, "embedding_model_mismatch")
+    require(set(bundle.language_policy.projection_languages) == {"en", "de", "fr", "it", "rm"},
+            "hybrid_requires_five_projection_languages")
+    for refs, items in [(release.projection_refs, bundle.projections),
+                        (release.terminology_refs, bundle.terminology),
+                        (config.equivalence_refs, bundle.equivalences)]:
+        require(len(refs) == len(set(refs)) and set(refs) == {a.identity for a in items},
+                "retrieval_manifest_mismatch")
+    require(set(index.projection_refs) == set(release.projection_refs)
+            and len(index.projection_refs) == len(set(index.projection_refs)), "index_projection_mismatch")
+    evidence = {e.identity: e for e in bundle.evidence}
+    facts = {f.fact_id: f for f in bundle.facts}
+    concepts = {c.entry_id for c in bundle.catalog.entries if c.kind == "concept"}
+    projection_keys = set()
+    for projection in bundle.projections:
+        require(projection.evidence_ref in evidence, "projection_evidence_not_loaded")
+        require(projection.language in bundle.language_policy.projection_languages, "projection_language_outside_policy")
+        key = (projection.evidence_ref, projection.language)
+        require(key not in projection_keys, "duplicate_evidence_projection")
+        projection_keys.add(key)
+    vector_refs = set()
+    for vector in index.vectors:
+        require(vector.evidence_ref in evidence and vector.evidence_ref not in vector_refs,
+                "unknown_or_duplicate_vector_evidence")
+        require(len(vector.values) == index.dimensions and any(vector.values), "invalid_index_vector")
+        vector_refs.add(vector.evidence_ref)
+    require(vector_refs == evidence.keys(), "incomplete_evidence_vectors")
+    for term in bundle.terminology:
+        require(term.concept_id in concepts and term.term_language in bundle.language_policy.term_languages,
+                "terminology_outside_policy_or_catalog")
+    terminology = {t.identity: t for t in bundle.terminology}
+    profiles = {p.coverage_profile_id: p for p in bundle.catalog.coverage_profiles}
+    require(config.evaluation_refs.keys() == profiles.keys(), "unevaluated_retrieval_profile")
+    for profile in profiles.values():
+        require(set(profile.projection_languages_complete) == {"en", "de", "fr", "it", "rm"},
+                "hybrid_requires_five_complete_projections")
+        require(config.evaluation_refs[profile.coverage_profile_id] == profile.evaluation_ref,
+                "retrieval_evaluation_mismatch")
+        for route in profile.term_routes:
+            require(all(ref in terminology and terminology[ref].term_language == route.term_language
+                        and terminology[ref].concept_id in profile.concept_ids for ref in route.terminology_refs),
+                    "route_terminology_not_loaded_or_outside_scope")
+        for item in bundle.evidence:
+            if item.citation.source_id in profile.source_ids and set(item.canonical_concept_ids) & set(profile.concept_ids):
+                require(all((item.identity, language) in projection_keys
+                            for language in profile.projection_languages_complete), "missing_required_projection")
+    fallback_ids = [f.coverage_profile_id for f in config.fallbacks]
+    require(len(fallback_ids) == len(set(fallback_ids)) and set(fallback_ids) <= profiles.keys(),
+            "invalid_fallback_profiles")
+    grouped = set()
+    for group in bundle.equivalences:
+        members = group.evidence_refs
+        require(len(set(members)) == len(members) and set(members) <= evidence.keys(), "invalid_equivalence_members")
+        require(not grouped.intersection(members), "overlapping_equivalence_groups")
+        grouped.update(members)
+        first = evidence[members[0]]
+        require(all(evidence[r].jurisdiction == first.jurisdiction
+                    and evidence[r].temporal_coverage == first.temporal_coverage
+                    and set(evidence[r].canonical_concept_ids) == set(first.canonical_concept_ids)
+                    and evidence[r].citation.authority == first.citation.authority for r in members),
+                "incompatible_equivalence_scope")
+        member_ids = {evidence[r].evidence_id for r in members}
+        require(len(group.fact_ids) == len(set(group.fact_ids)) and set(group.fact_ids) <= facts.keys(),
+                "unknown_equivalence_fact")
+        require(len(group.fact_refs) == len(set(group.fact_refs))
+                and set(group.fact_refs) == {facts[f].identity for f in group.fact_ids},
+                "equivalence_fact_revision_mismatch")
+        referenced = {f.fact_id for f in bundle.facts if set(f.evidence_ids) & member_ids}
+        require(referenced == set(group.fact_ids), "equivalence_fact_support_mismatch")
+        # Interchangeability is reviewed per exact fact, including conditions and
+        # all-of evidence. Never collapse two distinct supporting spans of a fact.
+        require(all(len(set(facts[f].evidence_ids) & member_ids) == 1 for f in group.fact_ids),
+                "equivalence_collapses_joint_support")
+        require(not any(len(set(c.fact_ids) & referenced) > 1 for c in bundle.graph.conflicts),
+                "equivalence_hides_conflict")
 
 
 class ReleaseStore:

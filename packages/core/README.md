@@ -105,9 +105,17 @@ translation fidelity, multilingual retrieval or evaluated term routes.
 
 Reviewed concept alignment may give official translations shared canonical
 concept IDs and multilingual terms. Their document, snapshot and evidence
-identities remain separate. The planned runtime applies scope, applicability,
+identities remain separate. The runtime applies scope, applicability,
 authority, freshness and claim support before using German as a tie-breaker
 between verified equivalent versions. Explicit source-language filters take
-precedence; the caller chooses the answer language. Alignment, grouping equivalent
-evidence and selecting that evidence are later build/runtime work, not behavior
-implemented by these contract validators.
+precedence; the caller chooses the answer language. BUILD-05 adds hash-bearing
+retrieval projection, terminology, vector index, provider/ranking configuration
+and revision-bound evidence-equivalence contracts. The runtime validates their
+loaded dependency graph and performs grouping; authoring reviewed alignments and
+evaluating actual projection fidelity remain BUILD-04 work.
+
+When a selected equivalent represents a fact's original evidence, the returned
+fact retains its immutable identity and original evidence IDs. The retrieval trace
+names the mapping reference, representative, alternate IDs and supported fact IDs.
+The result validator requires either direct evidence or that explicit per-fact
+representation. Alternate IDs can be inspected with `get_evidence` in the same release.

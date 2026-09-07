@@ -1,4 +1,4 @@
-"""Bounded discovery and deterministic identifier/lexical fixture resolution."""
+"""Bounded discovery and release-pinned structured hybrid resolution."""
 
 from __future__ import annotations
 
@@ -6,7 +6,6 @@ import base64
 from datetime import datetime, timezone, timedelta
 import hmac
 import json
-import re
 import secrets
 from collections.abc import Callable
 
@@ -21,6 +20,7 @@ from swisstip.core.contracts import (
 from swisstip.core.validation import matches_condition, validate_request
 
 from .release import ReleaseStore
+from .retrieval import HybridRetriever, RetrievalFailure
 
 
 def _now() -> datetime:
@@ -29,12 +29,14 @@ def _now() -> datetime:
 
 class KnowledgeService:
     def __init__(self, store: ReleaseStore, *, cursor_key: bytes | None = None,
-                 clock: Callable[[], datetime] = _now):
+                 clock: Callable[[], datetime] = _now,
+                 embedding_provider=None, ranking_provider=None):
         self.store = store
         self._cursor_key = cursor_key if cursor_key is not None else secrets.token_bytes(32)
         if len(self._cursor_key) < 32:
             raise ValueError("cursor_key_requires_32_bytes")
         self._clock = clock
+        self._retriever = HybridRetriever(embedding_provider, ranking_provider)
 
     def _error(self, code, path, reason, message, release_id=None):
         return ToolError(code=code, release_id=release_id,
@@ -253,31 +255,56 @@ class KnowledgeService:
                          or request.as_of <= item.temporal_coverage.valid_through))
 
         evidence = {e.evidence_id: e for e in bundle.evidence}
+        evidence_by_ref = {e.identity: e.evidence_id for e in bundle.evidence}
+        alternatives = {}
+        for group in bundle.equivalences:
+            members = {evidence_by_ref[r] for r in group.evidence_refs}
+            for member in members:
+                alternatives[member] = members
+
+        def eligible_support(identifier):
+            fact = facts[identifier]
+            return [{e for e in alternatives.get(original, {original})
+                     if eligible(evidence[e], federal_rule=bool(fact.rule_refs))}
+                    for original in fact.evidence_ids]
+
         eligible_facts = {identifier for identifier in wanted
                           if set(facts[identifier].rule_refs) <= active_rules
-                          and all(eligible(evidence[e], federal_rule=bool(facts[identifier].rule_refs))
-                                  for e in facts[identifier].evidence_ids)}
+                          and all(eligible_support(identifier))}
         excerpt_ids = {e for portion in portions for e in portion.evidence_ids}
+        excerpt_ids = set().union(*(alternatives.get(e, {e}) for e in excerpt_ids)) if excerpt_ids else set()
+        conditional_evidence = {e for fact in bundle.facts if fact.rule_refs
+                                and not set(fact.rule_refs) <= active_rules
+                                for original in fact.evidence_ids for e in alternatives.get(original, {original})}
+        excerpt_ids -= conditional_evidence
         candidates = {e: evidence[e] for e in excerpt_ids if eligible(evidence[e])}
         for identifier in eligible_facts:
-            for e in facts[identifier].evidence_ids:
-                candidates[e] = evidence[e]
-        terms = {token for term in request.retrieval_terms for token in re.findall(r"\w+", term.text.casefold())}
-
-        def score(item):
-            return len(terms & set(re.findall(r"\w+", item.original_excerpt.casefold())))
+            for support in eligible_support(identifier):
+                candidates.update((e, evidence[e]) for e in support)
+        try:
+            required_evidence = {e for f in eligible_facts for support in eligible_support(f) for e in support}
+            retrieval = self._retriever.retrieve(bundle, profile, assessment.term_routes, selected, candidates,
+                                                  required_evidence, checked_at=now)
+        except RetrievalFailure:
+            return self._error("OPERATIONAL_ERROR", "retrieval", "retrieval_provider_failed",
+                               "The pinned retrieval profile could not complete and has no permitted fallback.",
+                               request.release_id)
 
         cap = min(request.max_evidence, catalog.max_evidence)
         chosen, supported = {}, []
-        ordered = sorted(eligible_facts, key=lambda f: (-sum(score(evidence[e]) for e in facts[f].evidence_ids), f))
+        pool = set(retrieval.ordered_ids)
+        supports = {f: {retrieval.representative.get(e, e) for e in facts[f].evidence_ids}
+                    for f in eligible_facts}
+        ranked_facts = {f for f in eligible_facts if supports[f] <= pool}
+        ordered = sorted(ranked_facts, key=lambda f: (-sum(retrieval.scores[e] for e in supports[f]), f))
         for identifier in ordered:
             fact = facts[identifier]
-            if len(set(chosen) | set(fact.evidence_ids)) <= cap and len(supported) < 50:
-                chosen.update((e, evidence[e]) for e in fact.evidence_ids)
+            if len(set(chosen) | supports[identifier]) <= cap and len(supported) < 50:
+                chosen.update((e, candidates[e]) for e in sorted(supports[identifier]))
                 supported.append(fact)
-        for item in sorted(candidates.values(), key=lambda e: (-score(e), e.evidence_id)):
-            if len(chosen) < cap:
-                chosen[item.evidence_id] = item
+        for identifier in retrieval.ordered_ids:
+            if len(chosen) < cap and identifier in retrieval.excerpt_ids:
+                chosen[identifier] = candidates[identifier]
         supported_ids = {f.fact_id for f in supported}
         unresolved = []
         covered_concepts = set().union(*(set(p.concept_ids) for p in portions)) if portions else set()
@@ -316,11 +343,17 @@ class KnowledgeService:
             trust=TrustEnvelope(source_authorities=sorted({e.citation.authority for e in chosen.values()}),
                                 evaluation_ref=profile.evaluation_ref,
                                 fact_support="PUBLISHED_FACTS_OR_RULES" if supported else "EXCERPTS_ONLY" if chosen else "NONE",
-                                limitations=["Identifier/lexical baseline; multilingual hybrid retrieval is not implemented.",
-                                             *profile.exclusions][:30]),
+                                limitations=(["Legacy identifier/lexical release; no hybrid retrieval assets."]
+                                             if bundle.retrieval_configuration is None else []) + profile.exclusions[:29]),
             trace=RetrievalTrace(term_routes=trace_routes, effective_source_languages=sorted(sources),
-                                 channels=["concept", "lexical"] if terms else ["concept"],
+                                 channels=retrieval.channels,
                                  index_refs=release.index_refs[:20], provider_configuration_ref=release.provider_configuration_ref,
                                  ranking_configuration_ref=release.ranking_configuration_ref,
-                                 candidate_count=len(candidates), evidence_count=len(chosen)))
+                                 candidate_count=len(retrieval.ordered_ids), evidence_count=len(chosen),
+                                 candidate_ids=retrieval.ordered_ids[:100],
+                                 language_policy_ref=bundle.language_policy.identity,
+                                 projection_refs=retrieval.projection_refs,
+                                 selections=[s for s in retrieval.selections if s.representative_id in chosen],
+                                 selection_policy=bundle.retrieval_configuration.selection_policy if bundle.retrieval_configuration else None,
+                                 degradations=retrieval.degradations))
         return StructuredGroundingResult(**result)

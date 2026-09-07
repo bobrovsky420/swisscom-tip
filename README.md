@@ -33,8 +33,10 @@ source-first reference concepts. The user's same-person second review accepted
 all 30 references and agreed with 60 comparisons against the saved 8B/70B proposals;
 eight references are selected for seed authoring. Independent quality evaluation
 remains pending. The seed catalog is still a draft; production release publication
-is not implemented. The MCP tools currently have a deterministic identifier/lexical
-baseline; multilingual hybrid retrieval and real reviewed coverage remain pending.
+is not implemented. The runtime now integrates scoped multilingual lexical,
+concept and vector retrieval, semantic ranking, verified-equivalence selection
+and declared provider fallback. Its [BUILD-05 checks](docs/experiments/2026-09-07-build05-retrieval.md)
+use synthetic releases; real reviewed coverage and live model qualification remain pending.
 
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)

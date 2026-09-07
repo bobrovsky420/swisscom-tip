@@ -61,6 +61,15 @@ explicitly. Missing pinned releases are never replaced by active data. Invalid
 bundles fail startup. The application does not crawl or publish releases and does
 not load the experimental candidate-bundle format.
 
+Hybrid BUILD-05 bundles use the same three tools. To connect an evaluated bundle
+whose provider IDs are `ollama-retrieval/v1`, add `--embedding-url` and
+`--ranking-url` with the corresponding Ollama base URLs, plus optional
+`--provider-timeout` (30 seconds by default). The bundle pins both model names;
+CLI flags cannot change them. No provider calls occur until a valid `resolve`.
+Missing or failed providers use only the bundle's evaluated fallback for that
+coverage profile, or return `OPERATIONAL_ERROR`. See the runtime README for
+asset validation, equivalent-evidence traces and the synthetic hybrid fixture.
+
 ```shell
 ./.venv/Scripts/python.exe -m unittest discover -s packages/runtime/tests -v
 ./.venv/Scripts/python.exe -m unittest discover -s apps/mcp-server/tests -v
@@ -70,6 +79,7 @@ not load the experimental candidate-bundle format.
 The MCP test launches the actual stdio application with the SDK client and checks
 tool schemas, paginated discovery, Python/MCP result parity, original evidence
 round-trips, missing context and typed failures. No remote sources or models are
-used. This is one SDK client qualification fixture; independent clients,
+used. A hybrid stdio case also checks declared degradation, source filters,
+representatives and alternate-evidence lookup. This is one SDK client qualification fixture; independent clients,
 Swisscom harness compatibility, HTTP deployment and production release promotion
 remain separate gates.

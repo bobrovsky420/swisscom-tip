@@ -6,8 +6,8 @@ source code and tests, and the recorded zh.ch experiment.
 
 This is an implementation and validation backlog. Parent items stay unchecked
 until their full acceptance boundary is met; completed steps are checked separately.
-Existing build proofs remain useful. BUILD-03 now implements a structured runtime
-and stdio MCP adapter over synthetic serving releases. Governed publication and
+Existing build proofs remain useful. BUILD-03 implements a structured runtime
+and stdio MCP adapter; BUILD-05 adds scoped hybrid retrieval over synthetic serving releases. Governed publication and
 reviewed production knowledge remain pending; no conversational server is needed.
 
 ## Product boundary to preserve
@@ -47,7 +47,7 @@ reviewed production knowledge remain pending; no conversational server is needed
 | Review workflow | Model review, rejected proposals, 30 references accepted in a completed same-person second pass, 60 agreed comparison assessments and an eight-reference authoring seed selection exist | Implement separate support/scope/completeness/question assessments, validated production review import and promotion gates; the offline review does not publish knowledge |
 | Source languages | HTML `lang` is a hint; plain-text inputs have no inferred language | Add governed source-language validation/segmentation, `tip-language-catalog/v3`, five projections and published term routes |
 | Provider/recovery | Explicit profiles, request budgets, retries, validated requested/observed model identity and v2 generation/review checkpoints exist; legacy caches are not reused | Include retained identity in published provenance; historical HF observed identity remains unverifiable |
-| Runtime/product | Shared contracts, validated local release reader, structured resolution and three stdio MCP tools are implemented with synthetic fixtures | Reviewed seed coverage, production publication, multilingual hybrid retrieval and independent client qualification remain pending |
+| Runtime/product | Shared contracts, validated release reader, structured resolution, scoped hybrid retrieval and three stdio MCP tools are implemented with synthetic fixtures | Reviewed seed coverage, production publication, live multilingual model qualification and independent client qualification remain pending |
 
 The proposed workspace tree in the technical specification is not the implemented
 tree. Reuse the existing modules as build components; do not manufacture runtime
@@ -93,6 +93,13 @@ discovery/resolution/evidence round-trips.
 These counts do not establish semantic review or complete a POC.
 The schema export and source catalogue freshness checks also pass. POC-01 packet
 preservation verification passes for six sources and 87 historical artifacts.
+
+BUILD-05 verification on 2026-09-07: 71 core, 83 ingestion, 135 builder,
+54 runtime and three MCP tests pass (346 total), alongside schema freshness
+and 90 synthetic retrieval evaluation cases. The latter cover six term profiles,
+five source filters and three provider execution paths with full required recall,
+fact support, precision 1.0 and zero scoped leakage. These are integration results,
+not qualification of a real multilingual corpus or live model.
 
 ## Immediate fixes supported by the review
 
@@ -146,11 +153,23 @@ open until their remaining acceptance requirements are met.
 | [x] | BUILD-03 | Implement `get_coverage`, `resolve` and `get_evidence` over that release | Implemented over validated synthetic serving releases: bounded discovery and inline schemas, signed release-bound cursors, typed context, exact/descendant scope, published facts/rules, evidence round-trips and stdio MCP; production data/promotion remain BUILD-02/06 |
 | [ ] | BUILD-04 | Add source-language validation, closed v3 policy, reviewed cross-language concept/section alignment, terminology and all five compact projections | Stable concept IDs with separate source/evidence identities; revision-bound alignment, per-field provenance/completeness and evaluated term/projection/source routes; required failures block promotion |
 | [x] | BUILD-04.1 | Define and validate the closed v3 language policy | Language-only role sets, tagged term routes, independent source filters and policy closure implemented and tested offline; source-language validation and evaluated retrieval/projections remain pending |
-| [ ] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Hard eligibility constraints survive every channel; multilingual recall/relevance gates, explicit source filters, verified equivalent evidence grouping, conditional German tie-breaker and evaluated provider fallback |
+| [x] | BUILD-05 | Integrate scoped lexical/concept/vector retrieval and semantic ranking | Implemented over synthetic serving releases: hard constraints, multilingual recall/relevance gates, source filters, revision-bound equivalence grouping, conditional German tie-breaker and declared evaluated fallback; real corpus/model qualification remains POC-06/07/10/11 |
 | [ ] | BUILD-06 | Complete on-demand release publication, retention, observability and client qualification | Atomic promotion, historical reads, no silent release substitution, fresh/stale reporting, external-client setup and separate caller evaluation |
 
 Completed steps within the open implementation items:
 
+- [x] **BUILD-05: integrate release-pinned hybrid retrieval and quality gates.**
+  The [runtime](packages/runtime/README.md) loads sealed five-language projections,
+  terminology, cosine vector indexes, provider/ranking configuration and exact
+  equivalence mappings. Independent channels preserve eligibility, semantic
+  providers cannot add evidence or facts, and optional-excerpt thresholds preserve
+  relevance. German wins only among equally suitable, compatible equivalents;
+  original fact identities and alternate evidence remain available. Provider
+  outages use a declared evaluated fallback or `OPERATIONAL_ERROR`. The
+  [evaluation record](docs/experiments/2026-09-07-build05-retrieval.md) documents
+  90 passing synthetic term/source/path cases, top-20/top-5 and precision gates,
+  negative regressions and actual stdio fallback/grouping round-trips. No live
+  semantic model or production multilingual corpus was qualified.
 - [x] **BUILD-03: implement the structured serving baseline and stdio MCP tools.**
   The [runtime](packages/runtime/README.md) validates serving artifact hashes,
   manifest references and normalized evidence spans before reading a release.
@@ -159,7 +178,8 @@ Completed steps within the open implementation items:
   stale and conflicting outcomes without widening eligibility. The
   [MCP adapter](apps/mcp-server/README.md) passes actual SDK stdio round-trips.
   These are fabricated evaluation/knowledge fixtures, not promotion of the draft
-  residence catalog or experimental candidates. BUILD-02/04/05/06 gates remain.
+  residence catalog or experimental candidates. BUILD-02/04/06 gates remain;
+  BUILD-05 now adds the separately evaluated synthetic hybrid integration.
 - [x] **BUILD-01: define shared versioned contracts and export JSON Schema.**
   [Core contracts](packages/core/src/swisstip/core/contracts.py) cover catalog,
   context, release, evidence, discovery and structured request/result shapes.
@@ -202,9 +222,9 @@ The [experimental short path](docs/experiments/2026-09-06-experimental-knowledge
 lets hackathon and test applications consume extractor candidates without human
 review now. Its local catalog/search/evidence adapter remains separate from the
 BUILD-03 serving-release format and does not publish production knowledge.
-BUILD-04 can progress using the BUILD-03 boundary; BUILD-05 integrates both.
-The implemented identifier/lexical fixture in BUILD-03 proves contracts, not completion
-of the multilingual P0 service.
+BUILD-04 can produce reviewed assets through the BUILD-05 retrieval contracts.
+BUILD-03's legacy baseline and BUILD-05's synthetic hybrid fixture prove runtime
+integration, not production completion of the multilingual P0 service.
 
 Remaining BUILD-02 work includes parsers for supported language selectors, HTML/HTTP `hreflang`
 and sitemap alternates, reviewed source-language hint mappings, explicitly scoped
@@ -226,7 +246,8 @@ alternate evidence references and expose conflicts. Add runtime regressions for
 explicit English-only filters, multilingual terms matching the same concept,
 equally suitable German evidence, better or newer non-German evidence, missing
 German content, partial translations and a caller answer language different from
-its citations. These gates remain pending; the current extractor groups proposals
+its citations. BUILD-05 now regression-tests these runtime gates with synthetic
+records; real alignment/evaluation remains pending. The current extractor groups proposals
 using language-dependent candidate metadata and does not create shared public IDs.
 
 The source review sets the following BUILD-02 implementation priorities. These
@@ -857,13 +878,13 @@ requirements; they do not silently amend those requirements.
 
 | Expectation | Assessment | Next evidence or action |
 |---|---|---|
-| The existing code implements the governed MCP service | Partial: BUILD-03 provides a validated local reader, structured runtime and stdio tools with synthetic fixtures; reviewed production publication is absent | Remaining BUILD-01/02/04/05/06 gates; retain accurate README/status wording |
+| The existing code implements the governed MCP service | Partial: BUILD-03/05 provide a validated reader, structured hybrid runtime and stdio tools with synthetic fixtures; reviewed production publication is absent | Remaining BUILD-01/02/04/06 and real model/corpus evaluation gates; retain accurate README/status wording |
 | Candidate IDs or proposal groups are stable selectable catalog concepts | False; IDs depend on content and editorial fields | Reviewed mappings into stable public IDs and release-associated evidence |
 | Quotes and model review establish semantic completeness | Rejected by the recorded experiment | POC-01/05; independent reviewed promotion |
 | More retained concepts or larger models prove higher accuracy or speed | Unproven by counts and resumed timings | POC-01/11 with independent labels and full accounting |
 | Existing robots/model checks cover their advertised behavior | FIX-01/02 repair the two demonstrated defect classes with offline regressions | Validate affected live scenarios and new provider comparisons using the repaired code |
 | Typed requests eliminate multilingual retrieval needs | Incorrect for retained original-language terms | Five P0 projections and scoped hybrid ranking, POC-06/07/10 |
-| The five-language P0 service is already demonstrated | Not implemented or evaluated | Build required capabilities and narrow corpus/operations as needed; mark incomplete gates honestly |
+| The five-language P0 service is already demonstrated | Hybrid runtime integrated and synthetically tested; production projections and provider/corpus qualification remain pending | Complete BUILD-04 and POC-06/07/10/11; mark incomplete gates honestly |
 | Whole-question detectors or server answer rendering are next runtime tasks | Outside the accepted server boundary | Per-term routing/source validation in 06; caller interpretation/fidelity in 12 |
 | Source authority or semantic relevance proves individual applicability | Unsupported inference | Published facts/rules, typed context and adjudicated outcomes in 03 |
 | Explicit IDs always reflect the user's actual intent | Not guaranteed by server validation | Discoverable labels/schemas and separate caller selection tests in 12 |
