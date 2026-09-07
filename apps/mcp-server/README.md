@@ -9,6 +9,14 @@ unknown-field handling. Results include structured JSON plus equivalent text JSO
 Typed tool errors set MCP `isError`; factual statuses such as `NEEDS_CONTEXT` and
 `OUT_OF_COVERAGE` are normal structured results.
 
+Advertised tool input schemas inline local definitions, including the nested
+`jurisdiction` object and retrieval-term items. This accommodates clients such as
+Ollama's [Qwen tool parser](https://github.com/ollama/ollama/blob/main/model/parsers/qwen3coder.go),
+which reads a parameter's inline type and otherwise defaults to a string. The
+canonical core schema exports retain their shared definitions. Runtime validation
+stays strict: stringified JSON objects are rejected. Restart connected MCP clients
+after updating the server so they reload the advertised schemas.
+
 From the repository root:
 
 ```shell

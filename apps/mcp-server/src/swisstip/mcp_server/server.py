@@ -27,13 +27,46 @@ TOOL_CONTRACTS = {
 }
 
 
+def tool_input_schema(model):
+    """Inline local definitions for clients that inspect parameter types directly.
+
+    In particular, Ollama's Qwen XML tool parser selects argument types from
+    property.type/anyOf rather than resolving JSON Schema references. A bare
+    $ref can therefore turn a correctly generated object into a string.
+    Keep the canonical core schemas and strict runtime validation unchanged.
+    """
+    schema = model.model_json_schema()
+    definitions = schema.pop("$defs", {})
+
+    def expand(value, active=()):
+        if isinstance(value, list):
+            return [expand(item, active) for item in value]
+        if not isinstance(value, dict):
+            return value
+        reference = value.get("$ref")
+        if reference is None:
+            return {key: expand(item, active) for key, item in value.items()}
+        if not reference.startswith("#/$defs/") or reference in active:
+            raise ValueError("Tool input schemas require acyclic local definitions")
+        name = reference.removeprefix("#/$defs/").replace("~1", "/").replace("~0", "~")
+        resolved = expand(definitions[name], (*active, reference))
+        siblings = expand({key: item for key, item in value.items() if key != "$ref"}, active)
+        # A reference's sibling constraints are conjunctive. Preserve both sets
+        # if their keywords overlap, rather than overwrite a referenced bound.
+        if resolved.keys() & siblings.keys():
+            return {**resolved, "allOf": [*resolved.get("allOf", []), siblings]}
+        return {**resolved, **siblings}
+
+    return expand(schema)
+
+
 def create_server(service: KnowledgeService) -> Server:
     server = Server("swisstip", version="0.1.0")
 
     @server.list_tools()
     async def list_tools():
         return [types.Tool(name=name, description=description,
-                           inputSchema=request.model_json_schema(),
+                           inputSchema=tool_input_schema(request),
                            outputSchema={"type": "object", **TypeAdapter(response | ToolError).json_schema()},
                            annotations=types.ToolAnnotations(readOnlyHint=True, destructiveHint=False,
                                                             openWorldHint=False))
