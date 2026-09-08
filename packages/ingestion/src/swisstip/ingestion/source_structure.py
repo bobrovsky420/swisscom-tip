@@ -17,11 +17,22 @@ from .concepts import (HTML_PAGE_SUFFIXES, TEXT_PAGE_SUFFIXES, NormalizedPage,
                        NormalizedSection, PageNormalizationError,
                        _normalize_language_tag, _normalize_plain_text)
 
-VERSION = "swisstip.logical-blocks/v1"
+VERSION = "swisstip.logical-blocks/v2"
 _VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 _HIDDEN = {"script", "style", "noscript", "svg", "template", "head"}
 _ATOMIC = {"p": "paragraph", "address": "address", "ul": "list", "ol": "list",
            "dl": "definition_list", "table": "table", "pre": "preformatted", "blockquote": "quotation"}
+# Exact component tokens observed in SEM and Zurich snapshots. Do not match
+# substrings: e.g. mdl-anchornav__wrapper contains the substantive page body,
+# and mdl-page-header contains the article title and introductory prose.
+_NAVIGATION_CLASSES = {
+    "mod-mainnavigation", "nav-main", "navbar-nav", "nav-tabs", "mod-leftnavigation",
+    "mod-breadcrumb", "breadcrumb", "mdl-skiplinks", "mdl-anchornav",
+    "mdl-page-header__breadcrumb", "mdl-page-header__logo-container",
+    "mdl-footer__menu", "mdl-footer__submenu", "mdl-footer__social-media",
+    "site-map", "mod-socialshare", "mdl-scroll2top", "mdl-backtochat",
+}
+_CONTENT_CONTAINERS = {"main", "article", "section", "aside", "details"}
 
 
 @dataclass
@@ -99,6 +110,35 @@ def _owned(node):
         marker in classes for marker in ("infobox", "info-box", "accordion", "tab-panel"))
 
 
+def _only_navigation_controls(node):
+    """Recognize standalone SEM sidebar/top links, including inline wrappers.
+
+    A paragraph with any substantive prose remains intact, as do ordinary
+    application links and contact links. Labels/languages are not classifiers.
+    """
+    if isinstance(node, str):
+        return not node.strip()
+    if node.tag == "a":
+        classes = set((node.attrs.get("class") or "").lower().split())
+        target = node.attrs.get("href")
+        return ((target == "#context-sidebar" and "icon--root" in classes)
+                or (target == "#" and "icon--power" in classes))
+    return node.tag in {"p", "small", "span", "strong", "em"} and all(
+        _only_navigation_controls(child) for child in node.children)
+
+
+def _navigation(node, in_content):
+    role = (node.attrs.get("role") or "").lower()
+    classes = set((node.attrs.get("class") or "").lower().split())
+    if (node.tag == "nav" or role == "navigation" or classes & _NAVIGATION_CLASSES
+            or _only_navigation_controls(node)):
+        return True
+    # Page-level banners own their menus/search/skip links. Article and section
+    # headers can contain claims, so preserve them even when they have this ID.
+    return (not in_content and node.tag == "header"
+            and (role == "banner" or node.attrs.get("id") == "header"))
+
+
 def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
     sections = []
     title, language = path.stem, None
@@ -123,8 +163,9 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
         if any(n.tag not in {"html", "body", "p", "li", "td", "th", "tr", "tbody"} for n in parser.stack[1:]):
             parser.issues.add("unclosed_html_structure")
 
-        def walk(node, headings, owner, contextual=False):
+        def walk(node, headings, owner, contextual=False, in_content=False):
             nonlocal title, language
+            in_content = in_content or node.tag in _CONTENT_CONTAINERS or node.attrs.get("role") == "main"
             pending = []
 
             def flush():
@@ -144,7 +185,12 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
                     continue
                 if child.tag in _HIDDEN:
                     continue
-                if re.fullmatch(r"h[1-6]", child.tag):
+                if _navigation(child, in_content):
+                    flush()
+                    # Retain the complete excluded subtree for the audit, but
+                    # do not let its headings change ownership of later facts.
+                    emit(_text(child), "navigation", headings, scope(), parser.issues)
+                elif re.fullmatch(r"h[1-6]", child.tag):
                     flush()
                     level = int(child.tag[1])
                     headings = {k: v for k, v in headings.items() if k < level}
@@ -154,9 +200,6 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
                     if level == 1 and title == path.stem:
                         title = headings[level]
                     emit(headings[level], "heading", headings, owner, parser.issues)
-                elif child.tag == "nav" or child.attrs.get("role") == "navigation":
-                    flush()
-                    emit(_text(child), "navigation", headings, scope(), parser.issues)
                 elif child.tag in _ATOMIC:
                     flush()
                     issues = set(parser.issues)
@@ -174,10 +217,10 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
                                                             for marker in ("infobox", "info-box"))
                     # A nested infobox supports its enclosing block group; its
                     # heading is local and must not relabel the continued list.
-                    walk(child, dict(headings), owner if is_context else scope(), is_context)
+                    walk(child, dict(headings), owner if is_context else scope(), is_context, in_content)
                 else:
                     flush()
-                    headings, owner = walk(child, headings, owner, contextual)
+                    headings, owner = walk(child, headings, owner, contextual, in_content)
             flush()
             return headings, owner
 

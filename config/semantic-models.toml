@@ -58,3 +58,14 @@ timeout_seconds = 180.0
 provider = "publicai"
 token_env = "HF_TOKEN"
 # For organization billing, configure: bill_to = "your-organization"
+
+# Experimental compatibility option; local validation and review remain required.
+# Select this profile explicitly; there is no automatic response-mode fallback.
+[profiles.apertus_70b_prompt_only]
+adapter = "huggingface"
+model = "swiss-ai/Apertus-70B-Instruct-2509"
+base_url = "https://router.huggingface.co/v1"
+timeout_seconds = 180.0
+provider = "publicai"
+token_env = "HF_TOKEN"
+response_mode = "prompt_only"

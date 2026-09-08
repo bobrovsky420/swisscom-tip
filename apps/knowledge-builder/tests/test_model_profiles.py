@@ -138,6 +138,17 @@ class ModelProfileTests(unittest.TestCase):
             "unknown profile",
         )
 
+    def test_response_mode_is_explicit_and_huggingface_only(self) -> None:
+        bundled = (REPOSITORY_ROOT / "config" / "semantic-models.toml").read_text(encoding="utf-8")
+        bundled = bundled.replace('active_profile = "ollama_local"', 'active_profile = "apertus_70b_prompt_only"')
+        self.assertEqual(self._load(bundled).active_profile.response_mode, "prompt_only")
+        document = VALID_CONFIG.replace('active_profile = "ollama_local"', 'active_profile = "apertus_70b"')
+        self.assertEqual(self._load(document).active_profile.response_mode, "json_schema")
+        explicit = document.replace('[profiles.apertus_70b]', '[profiles.apertus_70b]\nresponse_mode = "prompt_only"')
+        self.assertEqual(self._load(explicit).active_profile.response_mode, "prompt_only")
+        self._assert_invalid(explicit.replace('response_mode = "prompt_only"', 'response_mode = "auto"'), "response_mode")
+        self._assert_invalid(document.replace('[profiles.ollama_local]', '[profiles.ollama_local]\nresponse_mode = "prompt_only"'), "response_mode")
+
     def test_unknown_schema_version_is_rejected(self) -> None:
         self._assert_invalid(
             VALID_CONFIG.replace(

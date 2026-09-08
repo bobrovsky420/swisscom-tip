@@ -101,16 +101,20 @@ class StructuredExtraction:
                     break
                 engine._progress(f"Structured group {job_index}/{len(jobs)}, revision {revision}: extraction and coverage review")
                 revision_completion = None
+                proposed, invalid, saturated = [], [], False
+                stage = "extraction_input"
                 try:
                     extraction_text = json.dumps({"untrusted_source": source, "repair": feedback}, ensure_ascii=False)
                     if len(extraction_text) > engine._chunk_content_characters * 4:
                         raise ValueError("extraction input exceeds bounded source/feedback allowance")
                     attempt_counts["repair" if revision else "generation"] += 1
+                    stage = "extraction"
                     completion = engine._provider.generate_structured(system_prompt=engine.prompts.extraction.text,
                         user_prompt=extraction_text,
                         response_schema=schema)
                     completions.append(completion)
                     revision_completion = completion
+                    stage = "extraction_validation"
                     raw = contracts.decode(completion.content, schema)
                     proposed = raw["concepts"]
                     saturated = raw["saturated"] or len(proposed) == engine._max_concepts_per_chunk
@@ -124,6 +128,8 @@ class StructuredExtraction:
                             valid.append(concept)
                         except ValueError as exc:
                             invalid.append({"proposal_index": index, "reason": str(exc), "proposal": concept})
+                            engine._progress(f"Structured proposal {index} rejected: {exc}")
+                    stage = "review_input"
                     review_input = {"untrusted_source": source,
                                     "concepts": [dict(c, rendered_description=contracts.describe(c)) for c in valid]}
                     # Bound review input including verbose model output, not just source text.
@@ -131,10 +137,12 @@ class StructuredExtraction:
                     if len(review_text) > engine._chunk_content_characters * 4:
                         raise ValueError("review input exceeds bounded source/proposal allowance")
                     attempt_counts["review"] += 1
+                    stage = "review"
                     review_completion = engine._provider.generate_structured(system_prompt=engine.prompts.review.text,
                         user_prompt=review_text, response_schema=contracts.review_schema(valid, block_ids))
                     completions.append(review_completion)
                     revision_completion = review_completion
+                    stage = "review_validation"
                     audit = contracts.parse_review(review_completion.content, valid, block_ids)
                     for coverage in audit["block_coverage"]:
                         if coverage["decision"] in {"covered", "partial"}:
@@ -152,15 +160,37 @@ class StructuredExtraction:
                     feedback = history[-1]
                 except ValueError as exc:
                     discard = getattr(engine._provider, "discard_last_checkpoint", None)
-                    if discard is not None and revision_completion is not None:
+                    if (discard is not None and revision_completion is not None
+                            and stage in {"extraction_validation", "review_validation"}):
                         discard()
                     # A malformed or truncated response remains a visible failed revision.
                     history.append({"revision": revision, "error": str(exc),
+                                    "failure_stage": stage, "proposals": proposed,
+                                    "structural_rejections": invalid, "saturated": saturated,
                                     "raw_completion": revision_completion.content if revision_completion else None})
                     final_concepts, final_review = [], None
-                    feedback = {"validation_error": str(exc)}
+                    # A review failure must not mask errors in the proposals it
+                    # could not review. Include each proposal once; raw review
+                    # text stays in history, outside the bounded repair payload.
+                    feedback = {"validation_error": str(exc), "failure_stage": stage,
+                                "proposals": proposed,
+                                "structural_rejections": [{"proposal_index": item["proposal_index"],
+                                                           "reason": item["reason"]} for item in invalid]}
+                    if stage == "extraction_validation" and revision_completion is not None and not proposed:
+                        # A schema-invalid response never became a proposal, but
+                        # the repair still needs to see what it must correct.
+                        feedback["invalid_completion"] = revision_completion.content[:6000]
+                        feedback["invalid_completion_truncated"] = len(revision_completion.content) > 6000
+                    message = f"Structured group {job_index}, revision {revision}: {stage} failed: {exc}"
+                    warnings.append(message)
+                    engine._progress(message)
                 except SemanticModelError as exc:
-                    history.append({"revision": revision, "provider_error": str(exc)})
+                    history.append({"revision": revision, "provider_error": str(exc),
+                                    "failure_stage": stage, "proposals": proposed,
+                                    "structural_rejections": invalid, "saturated": saturated})
+                    message = f"Structured group {job_index}, revision {revision}: {stage} provider failed: {exc}"
+                    warnings.append(message)
+                    engine._progress(message)
                     final_concepts, final_review = [], None
                     provider_failed = True
                     break

@@ -64,6 +64,40 @@ class Provider:
 
 
 class StructuredTests(unittest.TestCase):
+    def test_schema_invalid_completion_is_in_repair_feedback_and_not_reviewed(self):
+        def generate(result, payload):
+            if payload["repair"] is None:
+                item = result["concepts"][0]
+                del item["questions"]
+                item["scope_evidence_ids"] = item["claims"][0].pop("scope_evidence_ids")
+            else:
+                feedback = payload["repair"]
+                self.assertEqual(feedback["failure_stage"], "extraction_validation")
+                self.assertIn("missing=['questions']", feedback["validation_error"])
+                self.assertIn("unknown=['scope_evidence_ids']", feedback["validation_error"])
+                self.assertFalse(feedback["invalid_completion_truncated"])
+                bad = json.loads(feedback["invalid_completion"])
+                self.assertIn("scope_evidence_ids", bad["concepts"][0])
+                self.assertNotIn("questions", bad["concepts"][0])
+        provider = Provider(generate=generate)
+        report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
+        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(len(report.candidates), 1)
+        self.assertEqual(provider.discarded, 1)
+        self.assertEqual(len(json.loads(provider.calls[2]["user_prompt"])["concepts"]), 1)
+
+    def test_schema_repair_feedback_is_bounded_and_marks_truncation(self):
+        def generate(result, payload):
+            if payload["repair"] is None:
+                result["unknown"] = "x" * 9000
+            else:
+                feedback = payload["repair"]
+                self.assertEqual(len(feedback["invalid_completion"]), 6000)
+                self.assertTrue(feedback["invalid_completion_truncated"])
+        provider = Provider(generate=generate)
+        report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
+        self.assertEqual(len(report.candidates), 1)
+
     def test_custom_prompts_are_used_for_extraction_review_and_repair(self):
         from swisstip.ingestion.prompt_templates import load_prompts
         with tempfile.TemporaryDirectory() as directory:
@@ -98,6 +132,90 @@ class StructuredTests(unittest.TestCase):
         self.assertIn("Housing", blocks[-1].text)
         self.assertIn("Language", blocks[-1].text)
         self.assertEqual(blocks[-1].block_kind, "list")
+
+    def test_sem_navigation_components_stay_in_inventory_but_not_model_evidence(self):
+        page = self.page('''<html><head><title>Residence</title></head><body>
+            <header role="banner"><p>Federal site menu</p><nav>Languages</nav></header>
+            <div class="mod mod-mainnavigation"><h2>Main Navigation</h2>
+              <ul class="nav navbar-nav"><li>Entry and work</li></ul></div>
+            <div class="mod mod-breadcrumb"><h2>Breadcrumb</h2><ol><li>Home</li></ol></div>
+            <div class="mod mod-leftnavigation"><h2>Subnavigation</h2><p>Back</p></div>
+            <h1>Residence</h1><p>Apply online.</p>
+            <div class="mod mod-breadcrumb"><h2>Menu between conditions</h2><p>Back</p></div>
+            <ul><li>Attach proof.</li></ul>
+            </body></html>''')
+        provider = Provider()
+        report = self.engine(provider).extract(page)
+        excluded = [r for r in report.source_inventory if r["status"] == "excluded_policy"]
+        excluded_text = "\n".join(r["text"] for r in excluded)
+        for text in ("Federal site menu", "Main Navigation", "Breadcrumb", "Subnavigation", "Menu between conditions"):
+            self.assertIn(text, excluded_text)
+            self.assertNotIn(text, "\n".join(call["user_prompt"] for call in provider.calls))
+        evidence = json.loads(provider.calls[0]["user_prompt"])["untrusted_source"]["evidence"]
+        self.assertEqual({v["text"] for v in evidence.values()},
+                         {"Residence\nApply online.", "Residence\nAttach proof."})
+        substantive = [b for b in page.sections if b.block_kind in {"paragraph", "list"}]
+        self.assertEqual(substantive[0].scope_id, substantive[1].scope_id)
+        self.assertEqual(page.normalization_version, "swisstip.logical-blocks/v2")
+
+    def test_zurich_navigation_preserves_article_header_wrapper_conditions_and_contacts(self):
+        page = self.page('''<body>
+            <header id="header"><h1>Navigation</h1><div class="mdl-skiplinks">Skip links</div>
+              <div><p>Search error placeholder</p></div></header>
+            <main><header class="mdl-page-header"><h1>Residence</h1><p>Introductory requirement.</p>
+              <div class="mdl-page-header__logo-container">Site logo</div></header>
+            <div class="mdl-page-header__breadcrumb"><nav>Home breadcrumb</nav></div>
+            <div class="mdl-anchornav__wrapper">
+              <div class="mdl-anchornav"><h2>On this page</h2><ul><li>Contents link</li></ul></div>
+              <section><header id="header"><h2>Permit A</h2><p>Permit scope.</p></header>
+                <ul><li>Income</li><li>Housing</li></ul></section>
+              <section><h2>Permit B</h2><p>Different requirement.</p></section>
+            </div>
+            <div class="breadcrumb-guidance"><p>Keep this similarly named component.</p></div>
+            </main><footer><ul class="mdl-footer__menu"><li>Jobs menu</li></ul>
+              <address>Office: <a href="mailto:office@example.test">Email</a></address></footer>
+            </body>''')
+        jobs, inventory = StructuredExtraction(self.engine(None)).plan(page)
+        planned = "\n".join(b.evidence_text for job in jobs for b in job)
+        for text in ("Navigation", "Skip links", "Search error placeholder", "Site logo", "Home breadcrumb", "On this page", "Jobs menu"):
+            self.assertNotIn(text, planned)
+            self.assertTrue(any(text in r["text"] and r["status"] == "excluded_policy" for r in inventory))
+        for text in ("Introductory requirement.", "Permit scope.", "Income", "Housing", "Different requirement.",
+                     "Keep this similarly named component.", "mailto:office@example.test"):
+            self.assertIn(text, planned)
+        conditions = next(b for b in page.sections if "Income" in b.text)
+        self.assertEqual(conditions.block_kind, "list")
+        self.assertEqual(conditions.heading_path, "Residence > Permit A")
+        other = next(b for b in page.sections if b.text == "Different requirement.")
+        self.assertNotEqual(conditions.scope_id, other.scope_id)
+
+    def test_navigation_marker_on_atomic_element_precedes_list_flattening(self):
+        for attribute in ('class="navbar-nav"', 'class="breadcrumb"', 'role="navigation"'):
+            with self.subTest(attribute=attribute):
+                page = self.page(f'<h1>Residence</h1><ul {attribute}><li>Menu link</li></ul><p>Apply online.</p>')
+                jobs, inventory = StructuredExtraction(self.engine(None)).plan(page)
+                self.assertEqual([b.text for job in jobs for b in job], ["Apply online."])
+                self.assertEqual(next(r for r in inventory if "Menu link" in r["text"])["status"], "excluded_policy")
+
+    def test_navigation_controls_and_sitemap_preserve_substantive_links_and_footer_contacts(self):
+        page = self.page('''<h1>Residence</h1>
+            <p><a href="#context-sidebar" class="icon icon--root">Navigation</a></p>
+            <p><small><a href="#" class="icon--power">Top of page</a></small></p>
+            <ul class="nav nav-tabs"><li>Favorites tab</li></ul>
+            <div class="tab-content"><p>Application guidance.</p></div>
+            <div class="mod mod-socialshare">Social share controls</div>
+            <p>Required procedure: <a href="#apply">Apply online</a>.</p>
+            <p>Keep this prose beside <a href="#context-sidebar" class="icon--root">Navigation</a>.</p>
+            <footer><div class="site-map"><h2>Footer menu</h2><ul><li>Asylum</li></ul></div>
+              <address><a href="mailto:office@example.test">Office contact</a></address></footer>''')
+        jobs, inventory = StructuredExtraction(self.engine(None)).plan(page)
+        planned = "\n".join(b.evidence_text for job in jobs for b in job)
+        for text in ("Top of page", "Favorites tab", "Social share controls", "Footer menu", "Asylum"):
+            self.assertNotIn(text, planned)
+            self.assertTrue(any(text in r["text"] and r["status"] == "excluded_policy" for r in inventory))
+        for text in ("Application guidance.", "Required procedure: Apply online.",
+                     "Keep this prose beside Navigation.", "mailto:office@example.test"):
+            self.assertIn(text, planned)
 
     def test_sibling_panels_are_separate_scopes_and_contacts_remain(self):
         page = self.page("<h1>Residence</h1><section><h2>Permit A</h2><p>Rule A.</p></section>"
@@ -173,6 +291,97 @@ class StructuredTests(unittest.TestCase):
         self.assertFalse(report.candidates)
         self.assertEqual(provider.discarded, 1)
         self.assertEqual(report.source_inventory[0]["status"], "invalid_response")
+
+    def test_review_failure_preserves_condition_errors_in_repair_and_report(self):
+        for repair_succeeds in (False, True):
+            with self.subTest(repair_succeeds=repair_succeeds):
+                def generate(result, payload):
+                    claim = result["concepts"][0]["claims"][0]
+                    refs = claim["evidence_ids"]
+                    claim["conditions"] = [dict(
+                        condition_id=identity, text=text, evidence_ids=refs,
+                        subject="unspecified", operator="eq", value="unspecified",
+                        unit="unspecified", time_window="unspecified")
+                        for identity, text in (("online", "Apply online"), ("post", "apply by post"))]
+                    claim["condition_groups"] = [dict(group_id="either", operator="OR",
+                                                       members=["online", "post"], evidence_ids=refs)]
+                    claim["condition_root"] = "either" if repair_succeeds and payload["repair"] else "online"
+
+                def review(result, payload):
+                    if not payload["concepts"]:
+                        # Reproduce the live Apertus failure: coverage despite
+                        # having no structurally valid proposal to reference.
+                        result["block_coverage"][0].update(decision="covered", reason="Invalid review text")
+
+                provider = Provider(generate, review)
+                progress = []
+                report = self.engine(provider, progress=progress.append).extract(
+                    self.page("<p>Apply online or apply by post.</p>"))
+                self.assertEqual(len(provider.calls), 4)
+                first = report.semantic_reviews[0]["history"][0]
+                self.assertEqual(first["error"], "represented coverage requires a concept reference")
+                self.assertEqual(first["failure_stage"], "review_validation")
+                self.assertEqual(first["structural_rejections"][0]["reason"], "unconnected conditions or groups")
+                self.assertEqual(first["proposals"][0]["claims"][0]["condition_root"], "online")
+                self.assertIn("Invalid review text", first["raw_completion"])
+                repair = json.loads(provider.calls[2]["user_prompt"])["repair"]
+                self.assertEqual(repair["validation_error"], first["error"])
+                self.assertEqual(repair["failure_stage"], "review_validation")
+                self.assertEqual(repair["proposals"], first["proposals"])
+                self.assertEqual(repair["structural_rejections"], [dict(
+                    proposal_index=0, reason="unconnected conditions or groups")])
+                self.assertNotIn("Invalid review text", json.dumps(repair))
+                self.assertTrue(any("unconnected conditions or groups" in line for line in progress))
+                self.assertTrue(any("review_validation failed" in warning for warning in report.warnings))
+                if repair_succeeds:
+                    self.assertEqual(len(report.candidates), 1)
+                    self.assertEqual(report.candidates[0].structured_claims[0]["condition_root"], "either")
+                    self.assertEqual(provider.discarded, 1)
+                    self.assertFalse(report.rejected_candidates)
+                else:
+                    self.assertFalse(report.candidates)
+                    self.assertEqual(provider.discarded, 2)
+                    self.assertEqual(report.rejected_candidates[0]["reason"], "unconnected conditions or groups")
+                    self.assertEqual(report.quality_metrics["rejected_proposals"], 1)
+                    self.assertEqual(report.source_inventory[0]["status"], "invalid_response")
+
+    def test_review_provider_failure_preserves_structural_rejections(self):
+        def generate(result, payload):
+            result["concepts"][0]["claims"][0]["condition_root"] = "missing"
+
+        def review(result, payload):
+            raise SemanticModelError("fixture review outage")
+
+        provider = Provider(generate, review)
+        report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
+        self.assertEqual(len(provider.calls), 2)
+        self.assertEqual(provider.discarded, 0)
+        self.assertFalse(report.candidates)
+        record = report.semantic_reviews[0]["history"][0]
+        self.assertEqual(record["failure_stage"], "review")
+        self.assertEqual(record["provider_error"], "fixture review outage")
+        self.assertEqual(record["structural_rejections"][0]["reason"], "conditions require a valid explicit root")
+        self.assertEqual(report.rejected_candidates[0]["proposal"], record["proposals"][0])
+
+    def test_failed_repair_does_not_reuse_previous_revision_proposals(self):
+        def generate(result, payload):
+            if payload["repair"]:
+                result["unexpected"] = True
+            else:
+                result["concepts"][0]["claims"][0]["condition_root"] = "missing"
+
+        def review(result, payload):
+            result["block_coverage"][0]["decision"] = "covered"
+
+        provider = Provider(generate, review)
+        report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
+        self.assertEqual(len(provider.calls), 3)
+        history = report.semantic_reviews[0]["history"]
+        self.assertTrue(history[0]["structural_rejections"])
+        self.assertEqual(history[1]["failure_stage"], "extraction_validation")
+        self.assertEqual(history[1]["proposals"], [])
+        self.assertEqual(history[1]["structural_rejections"], [])
+        self.assertFalse(report.candidates)
 
     def test_failed_question_does_not_hide_supported_claim(self):
         def question(result, payload):

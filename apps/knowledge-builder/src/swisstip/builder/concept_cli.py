@@ -352,6 +352,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
         )
         progress(f"Prompt profile={extraction.prompt_profile}")
+        if profile.adapter == "huggingface":
+            progress(f"Response mode={profile.response_mode}; local validation remains required")
         from swisstip.ingestion.prompt_templates import load_prompts
         prompts = load_prompts(
             extraction.prompt_profile,

@@ -71,6 +71,7 @@ def create_semantic_model_provider(
             timeout_seconds=profile.timeout_seconds,
             max_tokens=config.generation.max_output_tokens,
             temperature=config.generation.temperature,
+            response_mode=profile.response_mode,
             **opener_arguments,
         )
 

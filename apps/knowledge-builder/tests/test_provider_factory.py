@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 import urllib.request
+from dataclasses import replace
 from pathlib import Path
 
 APP_ROOT = Path(__file__).parents[1]
@@ -65,6 +66,16 @@ class RecordingOpener:
 
 
 class ProviderFactoryTests(unittest.TestCase):
+    def test_passes_explicit_prompt_only_mode_to_huggingface(self) -> None:
+        config = self._load_profile("apertus_70b")
+        config = replace(config, active_profile=replace(config.active_profile, response_mode="prompt_only"))
+        opener = RecordingOpener()
+        provider = create_semantic_model_provider(config, environ={"HF_TOKEN": "hf_test_token"}, opener=opener)
+        provider.generate_structured(system_prompt="Extract.", user_prompt="Source.", response_schema={"type": "object"})
+        payload = json.loads(opener.requests[0].data)
+        self.assertNotIn("response_format", payload)
+        self.assertIn('"type":"object"', payload["messages"][0]["content"])
+
     def test_builds_configured_local_ollama_profile(self) -> None:
         config = self._load_profile("ollama_local")
 

@@ -19,5 +19,11 @@ Account for EVERY supplied non-heading block in block_coverage, identifying miss
 conditions or entirely unproposed topics. 'covered' requires complete representation
 and cited support, not just a mention or a matching heading. 'not_substantive' needs
 a concrete explanation and remains a model assessment requiring human review.
+For 'covered' or 'partial', concept_indices must contain at least one index into
+the supplied concepts list, and each referenced concept must cite that block.
+If concepts is empty, concept_reviews must be empty and no block can be 'covered'
+or 'partial'. Mark substantive unrepresented content 'missing'; do not call a block
+covered merely because its source text contains a useful fact. A link alone does
+not establish the contents of the linked page.
 Actionable contact details are in scope. Do not exclude them as page furniture.
 This audit is model assistance, never authoritative verification or publication.

@@ -45,7 +45,12 @@ def validate(value, schema, path="response"):
         raise ValueError(f"{path}: unknown value")
     if kind == "object":
         if set(value) != set(schema["properties"]):
-            raise ValueError(f"{path}: missing or unknown fields")
+            missing = sorted(set(schema["properties"]) - set(value))
+            unknown = sorted(set(value) - set(schema["properties"]))
+            # Field names can originate in model output. Bound diagnostic size.
+            def names(items):
+                return repr([name[:120] for name in items[:12]]) + (" (more omitted)" if len(items) > 12 else "")
+            raise ValueError(f"{path}: missing or unknown fields; missing={names(missing)}; unknown={names(unknown)}")
         for key, item in value.items():
             validate(item, schema["properties"][key], f"{path}.{key}")
     elif kind == "array":

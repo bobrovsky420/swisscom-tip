@@ -23,12 +23,17 @@ USER_AGENT = "SwissTIP/0.1"
 _MAX_ERROR_BODY_BYTES = 4_096
 _MAX_RESPONSE_BYTES = 1_000_000
 
-# Explicit compatibility policy for the existing PublicAI 8B response fixture.
+# Explicit compatibility policy for PublicAI response identities.
+# 70B providerId verified against the HF model API's inferenceProviderMapping
+# on 2026-09-07: /api/models/swiss-ai/Apertus-70B-Instruct-2509.
 # Aliases are scoped to the selected provider and exact configured revision;
 # never infer equivalence by lowercasing or dropping a revision/model size.
 _APPROVED_MODEL_ALIASES = {
     ("publicai", "swiss-ai/Apertus-8B-Instruct-2509"): frozenset({
         "swiss-ai/apertus-8b-instruct",
+    }),
+    ("publicai", "swiss-ai/Apertus-70B-Instruct-2509"): frozenset({
+        "swiss-ai/apertus-70b-instruct",
     }),
 }
 
@@ -148,6 +153,7 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
         timeout_seconds: float = 60.0,
         max_tokens: int = 1_500,
         temperature: float = 0.0,
+        response_mode: str = "json_schema",
         opener: _Opener | None = None,
     ) -> None:
         self._token = _required_value("token", token)
@@ -158,6 +164,9 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
         self._timeout_seconds = _positive_number("timeout_seconds", timeout_seconds)
         self._max_tokens = _positive_integer("max_tokens", max_tokens)
         self._temperature = _non_negative_number("temperature", temperature)
+        if response_mode not in ("json_schema", "prompt_only"):
+            raise HuggingFaceConfigurationError("response_mode must be 'json_schema' or 'prompt_only'")
+        self._response_mode = response_mode
         self._opener = opener or urllib.request.build_opener(_NoRedirectHandler())
 
     def generate_structured(
@@ -167,7 +176,7 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
         user_prompt: str,
         response_schema: Mapping[str, object],
     ) -> ModelCompletion:
-        """Generate one non-streaming response constrained by a JSON Schema."""
+        """Request structured text; callers must validate it against their schema."""
 
         if not isinstance(system_prompt, str) or not system_prompt.strip():
             raise HuggingFaceConfigurationError("system_prompt cannot be empty")
@@ -195,6 +204,14 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             "temperature": self._temperature,
         }
         try:
+            if self._response_mode == "prompt_only":
+                del payload["response_format"]
+                payload["messages"][0]["content"] += (
+                    "\nReturn only a complete JSON object, without Markdown fences or commentary. "
+                    "Use compact JSON without indentation or blank lines. "
+                    "The following trusted JSON Schema defines the output contract:\n"
+                    + json.dumps(dict(response_schema), ensure_ascii=False, separators=(",", ":"))
+                )
             encoded_payload = json.dumps(
                 payload,
                 ensure_ascii=False,

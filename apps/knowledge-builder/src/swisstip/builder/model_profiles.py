@@ -29,6 +29,7 @@ _HUGGINGFACE_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {
     "provider",
     "token_env",
     "bill_to",
+    "response_mode",
 }
 
 
@@ -75,6 +76,7 @@ class ActiveModelProfile:
     bill_to: str | None = None
     num_ctx: int | None = None
     keep_alive: str | None = None
+    response_mode: Literal["json_schema", "prompt_only"] = "json_schema"
 
 
 @dataclass(frozen=True, slots=True)
@@ -341,6 +343,11 @@ def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
         raise ModelProfileConfigurationError(
             f"{path}.provider must be a single provider identifier"
         )
+    response_mode = table.get("response_mode", "json_schema")
+    if response_mode not in ("json_schema", "prompt_only"):
+        raise ModelProfileConfigurationError(
+            f"{path}.response_mode must be 'json_schema' or 'prompt_only'"
+        )
     return ActiveModelProfile(
         name=name,
         adapter=adapter,
@@ -350,6 +357,7 @@ def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
         provider=provider,
         token_env=token_env,
         bill_to=_optional_non_empty_string(table, "bill_to", path),
+        response_mode=cast(Literal["json_schema", "prompt_only"], response_mode),
     )
 
 

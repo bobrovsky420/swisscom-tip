@@ -8,15 +8,16 @@ from swisstip.ingestion.prompt_templates import load_prompts
 
 
 class PromptTemplateTests(unittest.TestCase):
-    def test_bundled_prompts_preserve_original_system_prompt_bytes(self):
-        # Frozen before moving the Python literals into package resources.
+    def test_bundled_prompts_match_reviewed_system_prompt_bytes(self):
+        # v1-v3 preserve the original Python literals. v4 was revised to clarify
+        # connected condition roots, required nesting and empty-proposal coverage.
         expected = {
             "concept_extraction_v1": ("c518de718fc062fde17189160eb86fa1208be5f057c5a3af8d7207b6cece9404", None),
             "concept_extraction_v2": ("8db37071451acce8b4475a8cea6e4c2f44c4fc927aff2a4f8bcecc01df6fd1d4", None),
             "concept_extraction_v3": ("ccd968b7b59b7ef144255483d42cda016872c0c82b49d00deb384578b234ee83",
                                       "893394d896520067767f1c69eaeefd8efad780658710b99fde64112d8390c78e"),
-            "concept_extraction_v4": ("1928d57f99a9f388a27ff4ca43637eb4bc8b1d796d88d66a341cae4331a5c775",
-                                      "00ec3a5c6e6a80c75db647f2a0bfad090d89376e14ba073e99f8f3eeea0c5b65"),
+            "concept_extraction_v4": ("63bc1325d82bac92cac88f406811daa49195385d2ba2f4a3040cac727e654fe2",
+                                      "d7bd5eb88a4a0b2850c0daf6e4925e37189c09ba3d4733d9299db72ccbfbf611"),
         }
         for profile, (extraction, review) in expected.items():
             with self.subTest(profile=profile):

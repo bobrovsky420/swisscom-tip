@@ -89,6 +89,40 @@ def make_provider(opener: FakeOpener, **overrides: object) -> HuggingFaceRouterP
 
 
 class HuggingFaceRouterProviderTests(unittest.TestCase):
+    def test_prompt_only_sends_schema_in_prompt_without_api_format_constraint(self) -> None:
+        response = FakeResponse({"model": "swiss-ai/apertus-70b-instruct", "choices": [
+            {"finish_reason": "stop", "message": {"content": '{"status":"ready"}'}},
+        ]})
+        opener = FakeOpener(response)
+        schema = {"type": "object", "properties": {"status": {"type": "string"}}}
+        completion = make_provider(opener, response_mode="prompt_only").generate_structured(
+            system_prompt="Extract.", user_prompt="Source text.", response_schema=schema,
+        )
+        payload = json.loads(opener.requests[0].data)
+        self.assertNotIn("response_format", payload)
+        self.assertIn(json.dumps(schema, separators=(",", ":")), payload["messages"][0]["content"])
+        self.assertEqual(payload["messages"][1], {"role": "user", "content": "Source text."})
+        self.assertEqual(payload["max_tokens"], 321)
+        self.assertEqual(completion.observed_model, "swiss-ai/apertus-70b-instruct")
+
+    def test_prompt_only_still_rejects_incomplete_output_and_wrong_identity(self) -> None:
+        for model, reason, error in (
+            ("swiss-ai/apertus-70b-instruct", "length", HuggingFaceIncompleteCompletionError),
+            ("another/model", "stop", HuggingFaceModelIdentityError),
+        ):
+            with self.subTest(model=model, reason=reason):
+                response = FakeResponse({"model": model, "choices": [
+                    {"finish_reason": reason, "message": {"content": "{}"}},
+                ]})
+                with self.assertRaises(error):
+                    make_provider(FakeOpener(response), response_mode="prompt_only").generate_structured(
+                        system_prompt="System", user_prompt="User", response_schema={"type": "object"},
+                    )
+
+    def test_unknown_response_mode_is_rejected(self) -> None:
+        with self.assertRaisesRegex(HuggingFaceConfigurationError, "response_mode"):
+            make_provider(FakeOpener(FakeResponse({})), response_mode="automatic")
+
     def test_builds_strict_non_streaming_chat_request_and_decodes_completion(self) -> None:
         response = FakeResponse(
             {
@@ -204,6 +238,35 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
         self.assertEqual(completion.request_id, "completion-id")
         self.assertEqual(completion.requested_model, "swiss-ai/Apertus-8B-Instruct-2509:publicai")
         self.assertEqual(completion.observed_model, "swiss-ai/apertus-8b-instruct")
+
+    def test_publicai_70b_alias_preserves_requested_and_observed_identity(self) -> None:
+        observed = "swiss-ai/apertus-70b-instruct"
+        response = FakeResponse({"model": observed, "choices": [
+            {"finish_reason": "stop", "message": {"content": "{}"}},
+        ]})
+        completion = make_provider(FakeOpener(response)).generate_structured(
+            system_prompt="System", user_prompt="User", response_schema={"type": "object"},
+        )
+        self.assertEqual(completion.model, "swiss-ai/Apertus-70B-Instruct-2509")
+        self.assertEqual(completion.requested_model, "swiss-ai/Apertus-70B-Instruct-2509:publicai")
+        self.assertEqual(completion.observed_model, observed)
+
+    def test_publicai_70b_alias_is_scoped_to_provider_size_and_revision(self) -> None:
+        for provider, model, observed in (
+            ("another-provider", "swiss-ai/Apertus-70B-Instruct-2509", "swiss-ai/apertus-70b-instruct"),
+            ("publicai", "swiss-ai/Apertus-8B-Instruct-2509", "swiss-ai/apertus-70b-instruct"),
+            ("publicai", "swiss-ai/Apertus-70B-Instruct-2609", "swiss-ai/apertus-70b-instruct"),
+            ("publicai", "swiss-ai/Apertus-70B-Instruct-2509", "swiss-ai/apertus-8b-instruct"),
+            ("publicai", "swiss-ai/Apertus-70B-Instruct-2509", "swiss-ai/apertus-70b-instruct-2509"),
+        ):
+            with self.subTest(provider=provider, model=model, observed=observed):
+                response = FakeResponse({"model": observed, "choices": [
+                    {"finish_reason": "stop", "message": {"content": "{}"}},
+                ]})
+                with self.assertRaises(HuggingFaceModelIdentityError):
+                    make_provider(FakeOpener(response), model=model, provider=provider).generate_structured(
+                        system_prompt="System", user_prompt="User", response_schema={"type": "object"},
+                    )
 
     def test_exact_model_identity_with_or_without_router_suffix(self) -> None:
         for model in ("swiss-ai/Apertus-8B-Instruct-2509", "swiss-ai/Apertus-70B-Instruct-2509",

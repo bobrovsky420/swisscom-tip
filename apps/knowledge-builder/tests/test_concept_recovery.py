@@ -215,6 +215,7 @@ class RecoveryTests(unittest.TestCase):
         configurations = [
             replace(self.config, active_profile=replace(self.config.active_profile, model="other-model")),
             replace(self.config, active_profile=replace(self.config.active_profile, base_url="https://example.org/v1")),
+            replace(self.config, active_profile=replace(self.config.active_profile, response_mode="prompt_only")),
             replace(self.config, generation=replace(self.config.generation, temperature=0.5)),
             replace(self.config, extraction=replace(self.config.extraction, chunk_content_characters=6000)),
         ]
@@ -318,6 +319,21 @@ class RecoveryTests(unittest.TestCase):
         self.wrapper(Provider(completion)).generate_structured(**REQUEST)
         provider = Provider(HuggingFaceResponseError("must not call provider"))
         resumed = self.wrapper(provider)
+        self.assertEqual(resumed.generate_structured(**REQUEST), completion)
+        self.assertEqual(provider.calls, 0)
+        self.assertEqual(resumed.hits, 1)
+
+    def test_publicai_70b_alias_is_validated_and_reused_from_checkpoint(self):
+        model = "swiss-ai/Apertus-70B-Instruct-2509"
+        config = replace(self.config, active_profile=replace(self.config.active_profile, model=model))
+        completion = replace(COMPLETION, model=model, requested_model=f"{model}:publicai",
+                             observed_model="swiss-ai/apertus-70b-instruct")
+        self.assertEqual(
+            self.wrapper(Provider(completion), config=config).generate_structured(**REQUEST),
+            completion,
+        )
+        provider = Provider(HuggingFaceResponseError("must not call provider"))
+        resumed = self.wrapper(provider, config=config)
         self.assertEqual(resumed.generate_structured(**REQUEST), completion)
         self.assertEqual(provider.calls, 0)
         self.assertEqual(resumed.hits, 1)

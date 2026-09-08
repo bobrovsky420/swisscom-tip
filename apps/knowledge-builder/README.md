@@ -37,6 +37,16 @@ Windows executable path; activation is not required.
 
 ## Propose concepts from downloaded pages
 
+Hugging Face profiles default to `response_mode = "json_schema"`. The explicit
+`prompt_only` option instead supplies the schema in the system prompt and omits
+the API's `response_format` constraint. `apertus_70b_prompt_only` is an experimental
+profile for investigating PublicAI's observed whitespace loop on the nested v4
+schema. It is not selected automatically. Both modes retain model identity and
+completion checks; extraction still requires local schema, evidence and logic
+validation followed by semantic review. The response mode is recorded in the
+effective profile and separates model checkpoints. A complete JSON response alone
+does not establish valid claims or sufficient coverage.
+
 The opt-in `--structured` path adds logical source blocks, structured claims,
 separate semantic assessments, source coverage auditing and one bounded repair.
 Use `--structured --dry-run` to inspect the complete source inventory without a
