@@ -255,6 +255,57 @@ graph checks; user confirmation is pending. Originals remain unchanged. This
 allows a separately labelled assisted-authoring test to proceed after confirmation;
 it does not qualify unattended extraction or constitute a serving release.
 
+The user subsequently confirmed the German draft for testing. The confirmation
+is bound to the draft hash in a separate sidecar, as for English. Both original
+model responses and the pre-confirmation drafts remain unchanged.
+
+The next provider pilot uses these six confirmed claims (three per language)
+with six preselected questions about the requirement, issuer and categories.
+For each question, the target is the corresponding claim in the other language;
+it must strictly outrank the other two claims in that language by cosine score.
+One Ollama batch embeds all twelve texts using the active embedding profile.
+An offline preparation validated draft confirmation hashes, source excerpt
+references and claim structure without sending inference requests. The packet
+records the assistant-authored origin and saves source/draft hashes for later
+ranking checks. This small cross-language provider test does not exercise runtime
+scope filtering, abstention, release loading or MCP, and is not a serving release.
+
+The live embedding batch in `sem-retrieval-20260908-071453-532732` passed all six
+cross-language checks using `qwen_embedding_0_6b` (`qwen3-embedding:0.6b`), with
+1024-dimensional vectors. Total batch time for six claims plus six queries was
+16.719 seconds; this diagnostic does not separate model loading from inference.
+Margins over the strongest opposite-language alternative ranged from 0.169603
+to 0.405053. This is a successful small provider pilot, not general retrieval
+qualification or a per-query latency measurement.
+
+The follow-up Groq ranking pilot uses the same saved packet, whose SHA-256 is
+`9524b0640339086a2bce42aace2c2cdc5be0e37a608fec255a89525f657b86b8`.
+It calls the configured runtime ranking adapter once per question (six maximum),
+without retries, and stops on provider or response-validation failure. Inputs
+contain opposite-language original excerpts with opaque IDs and no projections;
+topic labels, expected answers and corrected claim wording are withheld from
+the ranker. The expected excerpt must strictly outrank both alternatives.
+No embeddings are recomputed. Offline preparation passed, including packet-to-
+confirmed-draft comparison; live ranking results remain pending.
+
+The live ranking run `sem-ranking-20260908-173136-472479` passed all six
+cross-language order checks with `groq_gpt_oss_20b` (`openai/gpt-oss-20b`). It
+made six requests in 2.703 seconds total, with per-request times of 0.258 to
+0.706 seconds and no embedding calls. Responses used different score scales
+(0-1 and 0-10), which the current provider contract permits. The result verifies
+relative order within each candidate set only. It does not calibrate the runtime's
+absolute `minimum_semantic_score` cutoff or establish abstention behavior.
+
+Before a real hybrid serving test, the runtime requires projections in five
+languages (`en`, `de`, `fr`, `it`, `rm`). An offline review packet now proposes 30
+search projections over the six confirmed claims, preserving the original
+evidence and its language. Non-source-language rows are assistant translations,
+not new source evidence. The English source's annual-permit wording and German
+source's time-limited wording are kept distinct; no equivalence mappings are
+proposed. Romansh drafts target Rumantsch Grischun but remain language-unvalidated.
+Projection review, release assembly and release-specific evaluation remain pending;
+neither provider pilot alone qualifies the data for hybrid MCP serving.
+
 ### Earlier live diagnostics
 
 The subsequent prompt-only Apertus run completed two responses but repeated the
