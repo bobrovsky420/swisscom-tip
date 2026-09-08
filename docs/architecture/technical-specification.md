@@ -1148,7 +1148,7 @@ The UI is not required for MCP runtime availability.
 
 ## 16.1 Recommended implementation stack
 
-The Admin GUI is a browser application in `apps/admin-console`, backed by the Python Control API in `apps/control-api`. These are P1 implementation recommendations; the applications are not yet implemented.
+The Admin GUI is a browser application in `apps/admin-console`, backed by the Python Control API in `apps/control-api`. A [local operator increment](../../apps/admin-console/README.md) implements source selection, parsing previews, persisted crawl/extraction jobs, draft review annotations and evidence browsing. The broader P1 publication and shared-user control plane remains pending.
 
 | Layer | Recommended implementation | Purpose |
 |---|---|---|

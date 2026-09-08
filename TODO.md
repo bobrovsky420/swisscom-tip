@@ -332,7 +332,15 @@ separate explicit decision. Admin UI, REST/Arrival and Hike remain P1/P2.
   [Technical specification section 16](docs/architecture/technical-specification.md#161-recommended-implementation-stack)
   defines React/TypeScript/Vite/Mantine, the FastAPI Control API, generated SDK,
   build polling and Sources/Builds/Concept review screens. The applications remain
-  unimplemented; this completes the design step only.
+  scoped to P1; the local implementation is recorded below.
+- [x] **P1 Admin GUI: implement the local ingestion and parsing workspace.**
+  [Knowledge studio](apps/admin-console/README.md) provides source selection,
+  saved-page loading/upload, filtered previews, offline plans, explicit crawl and
+  extraction jobs, progress/cancellation, revision-bound draft decisions and a
+  PostgreSQL evidence browser. React/Mantine uses a generated Control API client;
+  a separate Python worker consumes a persistent PostgreSQL queue. Local browser
+  smoke uses saved pages and zero model calls. Publication, shared-user access,
+  full build-to-release orchestration and fresh live model qualification remain open.
 
 ## Evaluation rules and evidence
 
