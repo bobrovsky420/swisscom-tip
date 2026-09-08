@@ -200,6 +200,61 @@ transfer to the edited draft. This observed failure must be retained when assess
 whether model review is sufficient for unattended authoring; no such sufficiency
 has been demonstrated by this pilot.
 
+### German reviewer repeat and targeted prompt revision
+
+The German SEM snapshot repeated the failure on 2026-09-08. Groq GPT-OSS 20B
+returned one structurally valid requirement claim in 1.154 seconds, preserving
+the work OR stay-over-three-months logic. It omitted claims about the issuing
+authority and permit categories, added an applicant role, and placed the issuing
+authority in the requirement's recipient field. GPT-OSS 120B approved the concept
+and marked the entire source block covered in 2.457 seconds, without identifying
+these issues. A structurally valid review is therefore another semantic false
+positive, not evidence of complete extraction.
+
+Artifacts are `groq-extraction-diagnostic-6linbcsb` and `groq-review-2ttpt9nv`.
+The source SHA-256 is
+`955efe8bafc4ff4ad22166b12470993899b5b9b01d7f19911e7ba495672b0a20`;
+the candidate response SHA-256 is
+`dc248b50726c121fc68983988db0b0ea1c61aad4005d6727fcb101c810e7e98e`.
+The failed review used the same review prompt hash recorded above for English.
+
+The revised v4 review prompt requires statement-to-claim mappings in coverage
+reasons and inspection of each populated scope field for its specific relationship.
+It distinguishes complete conditions in one claim from complete block coverage,
+and an issuing authority from an application recipient. The response schema is
+unchanged. The next diagnostic reuses the unchanged German candidate with the
+revised prompt. This is a targeted comparison on a known failure, not an unseen
+quality evaluation.
+
+The comparison in `groq-review-sxyaao_3` completed in 2.590 seconds with review
+prompt SHA-256 `60c90403561caa628b409a4d4f2b639d3b2ae5e9eec692b707a8d98486945a87`.
+It withheld approval because it considered the population uncertain, but again
+marked the source block covered and missed the issuing-authority and category
+omissions and incorrect roles. Withholding approval is a limited improvement;
+coverage and role checking remain unsuccessful on this known case. No new prompt
+revision follows this result. The next diagnostic compares a fresh GPT-OSS 120B
+extraction with the existing 20B extraction using the same German input, extraction
+prompt, schema and generation settings. It does not change the configured default.
+
+The fresh 120B extraction in `groq-extraction-diagnostic-kig7noel` completed in
+1.870 seconds with 725 completion tokens. Its schema was valid, but local
+validation rejected a reordered condition excerpt. It again omitted separate
+issuance and category claims, mixed issuance roles into the requirement, and
+narrowed the source's generic `Bewilligung` to `Aufenthaltsbewilligung`, which the
+source lists as one category. This single comparison gives no basis for adopting
+120B as a successful extractor. The failed output is retained without semantic
+review because it did not pass the structural gate.
+
+An assistant-authored German draft now restores the exact source requirement,
+verbatim condition excerpts, the OR and strict duration comparison, and separate
+issuance and category claims. The authority is the actor only in the issuance
+claim; unsupported applicant and recipient roles are unspecified. The draft's
+three statements are mapped to exact source excerpts, with an explicit note about
+resolving the issuer sentence's pronoun. It passed schema, excerpt and condition
+graph checks; user confirmation is pending. Originals remain unchanged. This
+allows a separately labelled assisted-authoring test to proceed after confirmation;
+it does not qualify unattended extraction or constitute a serving release.
+
 ### Earlier live diagnostics
 
 The subsequent prompt-only Apertus run completed two responses but repeated the
