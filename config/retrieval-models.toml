@@ -51,3 +51,15 @@ model = "openai/gpt-oss-120b"
 base_url = "https://api.groq.com/openai/v1"
 token_env = "GROQ_API_KEY"
 timeout_seconds = 60.0
+
+# Experimental ordinal rubric: 0 unrelated, 1 topic-only, 2 partial, 3 direct.
+# Requires groq-ranking/v2 in the release; cutoff 3 selects direct support only.
+# Separate evaluation required. Existing active selection remains v1.
+[profiles.groq_answer_relevance_20b]
+adapter = "groq"
+role = "ranking"
+scoring_contract = "answer_relevance_v2"
+model = "openai/gpt-oss-20b"
+base_url = "https://api.groq.com/openai/v1"
+token_env = "GROQ_API_KEY"
+timeout_seconds = 60.0

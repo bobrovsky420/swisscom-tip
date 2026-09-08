@@ -7,7 +7,7 @@ from typing import Annotated, Literal
 from pydantic import Field, model_validator
 
 from swisstip.core.contracts import ShortText, StrictModel
-from .providers import GroqRankingProvider, OllamaRetrievalProvider
+from .providers import GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider
 
 
 class OllamaProfile(StrictModel):
@@ -28,10 +28,12 @@ class GroqProfile(StrictModel):
     base_url: ShortText
     token_env: Annotated[str, Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")] = "GROQ_API_KEY"
     timeout_seconds: Annotated[float, Field(gt=0, le=300)] = 60.0
+    scoring_contract: Literal["relevance_v1", "answer_relevance_v2"] = "relevance_v1"
 
     def create_provider(self):
-        return GroqRankingProvider(self.base_url, timeout=self.timeout_seconds,
-                                   expected_model=self.model, token_env=self.token_env)
+        provider = GroqAnswerRelevanceProvider if self.scoring_contract == "answer_relevance_v2" else GroqRankingProvider
+        return provider(self.base_url, timeout=self.timeout_seconds,
+                        expected_model=self.model, token_env=self.token_env)
 
 
 RetrievalProfile = Annotated[OllamaProfile | GroqProfile, Field(discriminator="adapter")]

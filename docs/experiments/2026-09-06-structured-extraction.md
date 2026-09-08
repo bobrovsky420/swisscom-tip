@@ -393,6 +393,683 @@ automatic extraction/review failures, multilingual projection validation, releva
 cutoff/abstention calibration or governed release publication. Further qualification
 requires broader and negative cases, rather than repeating this successful lookup.
 
+### MCP boundary rejection checks
+
+The four planned boundary cases passed in
+`mcp-boundaries-20260908-180210-976526` under the SEM runtime harness. The test
+launched the actual MCP stdio server and configured its production provider
+adapters against observed loopback HTTP endpoints, with a synthetic test key.
+No real inference services or caller models were contacted.
+
+| Request change | Result | Provider requests | Returned evidence |
+| --- | --- | --- | --- |
+| Unknown release ID | `RELEASE_UNAVAILABLE` / `release_unavailable` | 0 | None |
+| French retrieval term | `UNSUPPORTED_LANGUAGE` / `unsupported_term_language` | 0 | None |
+| Date 2026-09-08, outside the capture-date scope | `OUT_OF_COVERAGE` / `unsupported_combination` | 0 | None |
+| Undeclared context field | `INVALID_ARGUMENT` / `unknown_field` | 0 | None |
+
+The date rejection is a structured grounding result (`isError=false`) with no
+executed scope, no retrieval trace and `fact_support=NONE`. The other three are
+typed MCP tool errors. Advertised input/output schemas and structured/text parity
+were checked for every call.
+
+A valid-scope control on the same connection reached both loopback endpoints:
+one fabricated embedding response enabled ranking, whose deliberate HTTP 503
+produced `OPERATIONAL_ERROR` without retry or fallback. This confirms the zero-call
+measurements were not caused by disconnected providers. Total local control
+traffic was two HTTP requests; real model calls were zero. The test completed in
+2.280 seconds. All normal provider and OpenCode configurations remain unchanged.
+This verifies scope rejection, not relevance-based abstention for a valid scope.
+
+Reproduce without inference credentials or running Ollama:
+
+```shell
+./.venv/Scripts/python.exe .local/test_sem_mcp_boundaries.py --harness .local/live-retrieval-20260907-161418/sem-runtime-harness-20260908-174216-188972
+```
+
+The helper and its frozen inputs are local experiment artifacts, not portable
+repository fixtures. Its `summary.json`, individual MCP responses and
+`provider-observations.json` retain the observed results.
+
+### Valid-scope irrelevant-evidence diagnostic
+
+Four assistant-labelled cases retain the valid harness scope and supported query
+languages while asking about chocolate-cake baking (English), Wi-Fi password
+changes (German), permit application fees (English), and processing time (German).
+The six supplied excerpts contain none of those answers. The last two cases check
+missing details within the topic, including the distinction between processing
+time and permit validity. The diagnostic target is no evidence with `fact_support`
+`NONE`; this answer-relevance target is stricter than broad concept association.
+
+All four requests passed offline scope validation. In
+`abstention-20260908-180602-232366`, deterministic providers then returned a
+fabricated valid vector and zero scores for every candidate. All four cases still
+returned one excerpt and `EXCERPTS_ONLY`, because the harness deliberately has
+`minimum_semantic_score=null`. The control therefore completed with
+`abstention_passed=false` and exit code 1. It made eight stub calls and zero real
+model calls. The original release and configurations were not changed.
+
+The prepared live diagnostic records each full runtime result and actual ranking
+scores, making at most four embedding and four ranking calls without retries.
+It continues across relevance failures to collect the four cases, but stops on
+operational or response-integrity failure. Such an error cannot count as successful
+abstention.
+
+The live run `abstention-20260908-180722-622748` completed all four cases in
+10.564 seconds, using four embedding and four ranking requests. All four failed
+the abstention target: the first three assigned every candidate score 0, and the
+processing-time question assigned every candidate score 0.1, yet each returned
+one excerpt with `EXCERPTS_ONLY`. No provider failure explains these results.
+
+A separate local trial, `sem-cutoff-trial-20260908-181157-420008`, sets
+`minimum_semantic_score=0.5`. This is a provisional midpoint between the observed
+negative maximum (0.1) and the smallest positive target score (0.9), not a
+calibrated provider threshold. Groq's observed scores vary between 0-1 and 0-10
+scales. The positive scores also came from the earlier excerpt-only ranking
+diagnostic; runtime ranking includes projections. The original release and normal
+configurations remain unchanged.
+
+Offline selection checks with saved scores retained all six positive targets and
+rejected all four negative cases. Negative query vectors were not saved, so those
+checks use fabricated unit vectors with the observed ranking scores; they verify
+selection behavior rather than replaying actual embedding retrieval. The trial's
+`cutoff-trial.json` and `saved-score-checks.json` record these limits and provenance.
+
+Before further inference, `new-cases.json` freezes six newly phrased positive
+questions about requirements, issuers and categories, plus four negative questions
+about email passwords, apple cake, application documents and booking appointments.
+Offline preparation validated all ten request scopes with zero model calls. The
+case-file SHA-256 is
+`5ad4a8f9b0095a760bfdf49f0342e397bb6a4b6f9168ee041d49657acd0fba0e`.
+The pending live check permits at most ten embedding and ten ranking calls without
+retries, and reports positive retrieval and negative abstention separately. These
+are assistant-labelled new phrasings against the same pages, not an independent
+corpus evaluation or qualification of a governed release.
+
+The live ten-case run `abstention-20260908-181829-032597` finished in 24.813
+seconds with ten embedding and ten ranking calls. All six positives passed, as
+did three negatives. The German appointment-booking question returned the English
+issuing-authority excerpt (`sem-e002`) with score 3, although the excerpt contains
+no booking instructions. Thus `positive_retrieval_passed=true`,
+`abstention_passed=false` and `quality_gate_passed=false`. Positive target scores
+included 0.9, 1 and 5; increasing the old cutoff above 3 would discard several
+valid targets. The trial does not establish a usable absolute v1 cutoff.
+
+### Opt-in answer relevance rubric regression
+
+The new inactive profile `groq_answer_relevance_20b` selects
+`scoring_contract="answer_relevance_v2"` and adapter identity `groq-ranking/v2`.
+Existing profiles default to `relevance_v1`, preserving their prompt and request
+schema. Model choice remains `openai/gpt-oss-20b`; the profile changes the scoring
+contract rather than the model. The rubric uses fixed ordinal categories:
+
+| Grade | Meaning |
+| --- | --- |
+| 0 | Unrelated |
+| 1 | Shared topic or entity, without requested information |
+| 2 | Partial requested information, with a material gap or uncertainty |
+| 3 | Requested information explicitly supplied by the original excerpt |
+
+The prompt distinguishes question types and prevents projections from supplying
+facts absent from the original excerpt. It allows all candidates to receive low
+grades and prohibits relative rescaling. The request uses an integer enum in the
+strict JSON schema, following the [Groq structured-output protocol](https://console.groq.com/docs/structured-outputs).
+Local validation independently rejects missing/foreign IDs, booleans, fractions,
+nonfinite values and grades outside 0-3. It does not clamp or normalize responses.
+Schema compliance alone cannot verify the model's semantic judgement.
+
+The separate test harness `sem-answer-relevance-20260908-182238-130324` pins v2
+and sets its minimum score to 3, selecting only the direct-support category.
+This number is not comparable with the earlier v1 score of 3. The harness retains
+explicitly synthetic qualification metadata and contains no published facts or
+rules. Root active profiles, original harnesses and OpenCode configuration remain
+unchanged. Its local `providers.toml` selects the experimental profile.
+
+`regression-cases.json` preserves the same ten question texts and expected
+evidence IDs, rebinding only their release IDs. These are known regression cases
+after a rubric change, not unseen evaluation. Offline preparation validates every
+scope and release/provider binding without model calls. All 63 runtime tests pass,
+including malformed-grade rejection and an optional-excerpt selection control
+that rejects grades 0-2 and retains grade 3 without creating published facts.
+The live run `abstention-20260908-182544-139279` passed all ten cases in 16.920
+seconds with ten embedding and ten ranking requests. All six positive targets
+received grade 3 and were returned as `EXCERPTS_ONLY`. All four negative cases,
+including appointment booking, returned no evidence and `fact_support=NONE`;
+their candidates all received grade 0. Both positive retrieval and abstention
+gates passed. This demonstrates the desired selection on these known cases,
+not independently measured generalization or exact discrimination of grades 0
+versus 1 for related-but-unanswerable questions.
+
+The result pins release-file SHA-256
+`c5b8ece8a347ad75cf06f27f37045a0c7a71dbee5ab745c3226750f23e242046`,
+case-file SHA-256
+`8e6814436af3bcba65e56b971fa5246354d56cfe51144fd7b7f64d4990e6fa17`,
+and provider-config SHA-256
+`59864b84d0d3a51712ecb35cf53faa304eecdb9e0c427ba9ae12454ae04cfc2e`.
+
+The next prepared caller check uses Ling with the same v2 harness and the German
+appointment question. `.local/run_sem_opencode.py` now accepts explicit harness,
+provider configuration, case file and case selection, validating release and
+provider identities before preparing its isolated child configuration. Offline
+preparation `opencode-check-20260908-182735-826648` passed without inference and
+left the original OpenCode configuration unchanged.
+
+The caller receives the exact scoped request and conditional reporting
+instructions, but not the case's expected evidence IDs or the prior result.
+It is asked to call coverage, then resolve once, and fetch evidence only when
+resolve returns IDs. With an empty result it should report the source limitation
+without inventing appointment instructions or claiming the information does not
+exist elsewhere. This is a guided abstention-reporting test; its prompt requests
+one resolve without retries, but actual caller compliance must be inspected in
+the saved transcript. Live caller behaviour on this case remains pending.
+
+The live caller run `opencode-check-20260908-182905-607970` now passes the guided
+abstention-reporting check. Its saved transcript has SHA-256
+`d101b5314907a7846bfb26eb91caec376813afd287408acbcc6f30af238de888`.
+An offline hash-bound audit verified both tool inputs exactly against the frozen
+request, typed outputs, release/catalog/provider references, and the original
+OpenCode configuration hash. There were exactly two completed calls: coverage
+and one resolve. No `get_evidence`, retries or other tool calls appeared.
+
+Resolve returned `INSUFFICIENT_VERIFIED_EVIDENCE`, `fact_support=NONE`, no evidence
+and no supported portions. All four retrieval channels executed, with three
+candidates and no provider degradation. Ling preserved these fields, skipped
+evidence lookup and did not invent booking instructions or citations. It bounded
+the conclusion to this local result and explicitly described catalog, approval
+and temporal metadata as synthetic. Process exit code was 0. Provider network
+attempts are not independently metered by this caller transcript.
+
+Ling announced parallel coverage and resolve calls. Recorded coverage completion
+precedes resolve start, but both calls belong to the same model turn and all scope
+values were supplied in advance; this does not demonstrate autonomous discovery.
+The final report also repeats the frozen harness's earlier top-one-only limitation.
+The actual release now has the experimental grade-3 cutoff; general abstention
+quality remains unqualified. This inherited wording was not rewritten in the
+recorded release or transcript.
+
+`.local/audit_sem_abstention_caller.py` saved
+`caller-audit-20260908-183123-637535.json` alongside the transcript with outcome
+`guided_abstention_reporting_passed`. Semantic observations are explicitly the
+assistant's review of that exact transcript, rather than conclusions from keyword
+checks. No further inference was used for the audit. The current local pilot now
+has positive retrieval, negative retrieval and guided caller-abstention evidence;
+broader evaluation should next use the saved Zurich EU/EFTA page with labels fixed
+before inference. These results do not qualify unattended extraction or publication.
+
+### Frozen Zurich passage-ranking evaluation
+
+The next packet, `zh-ranking-packet-20260908-183716-424632`, uses the previously
+saved Zurich EU/EFTA page, captured on 2026-09-07. The HTML content SHA-256 is
+`b2da0b36fe559eda757496393c8e9db616cf7444fd796e14a8a8e030b458f1f4`.
+Twelve assistant-selected, contiguous normalized passages retain their source
+headings and nearby scope. Exact text offsets, the full normalized text hash,
+source URL and capture timestamp are retained. This is a new page for the ranking
+experiment, not a claim about model pretraining exposure or independent gold data.
+
+Six positive questions cover moving-registration deadlines, notification-only
+work, L permits, B permits, cross-border commuters and the evidence required for
+self-employment. Four negative questions ask about an exact L-permit fee,
+B-permit processing time, appointment-booking steps, and a combined L-contract
+duration plus fee question. The last case has partial support, which must not
+qualify as direct support under the unchanged grade-3 acceptance rule. Labels
+refer only to the twelve supplied passages, not the entire site or current law.
+
+`.local/test_zh_answer_relevance.py` freezes labels before inference and validates
+source and prompt hashes on reuse. It uses `groq_answer_relevance_20b`, with the
+existing v2 rubric and no prompt change. Each query ranks all twelve passages;
+candidate order rotates and opaque IDs replace source identifiers. Expected IDs,
+label reasons and provenance are not included in the model request. No generated
+claims or translation projections are supplied.
+
+Offline preparation passed with zero model calls. The pending live run permits
+at most ten Groq requests, no retries, and stops on provider or integrity failure.
+It continues across quality failures to collect all cases. No Ollama, runtime,
+MCP or caller model is used in this step, so it measures passage-ranking selection
+and rejection rather than embedding recall or end-to-end operation. The packet's
+`review.md` contains every question, expected result and exact source passage.
+
+The initial live run `ranking-20260908-183819-204531` made three requests in
+1.468 seconds. Moving-registration and notification-only work both passed with
+only their expected passage graded 3. The L-permit case stopped on
+`provider_http_error` before returning scores. The remaining seven cases were
+not attempted, and all aggregate gates remain null. The old exception discarded
+the HTTP status, so neither rate limiting nor a schema failure can be inferred
+from this run.
+
+The shared adapter now raises a `ProviderHttpFailure` retaining the numeric
+HTTP status and a numeric `Retry-After` delay when present. Its public exception
+text remains `provider_http_error`; arbitrary headers, response bodies and
+credentials are not exposed. HTTP-date delays are not parsed and remain null.
+Requests, model options and retry behaviour are unchanged. Fourteen provider
+tests pass, including a loopback check for status/delay retention without body
+exposure.
+
+The local diagnostic now supports `--resume-from` and `--max-new-requests`.
+It validates the prior packet/model/rubric identity, contiguous completed-case
+prefix, exact saved requests, complete grade maps and recomputed acceptance
+before reusing completed checks (including any quality failures). A new output
+folder links the prior summary hash and records new versus cumulative attempts;
+existing reports are not overwritten. Aggregate gates remain null until all ten
+cases have results. Offline validation confirmed that a one-request resume starts
+at `en-short-stay`, retaining the first two checks and sending no model calls.
+
+The manual one-request resume `ranking-20260908-184242-044851` passed the
+L-permit case in 0.501 seconds. Only `zh-e004` received grade 3; the other eleven
+passages received grade 0. Two earlier checks were reused, bringing the completed
+prefix to three cases and cumulative network attempts to four (including the
+earlier failed request). The original HTTP failure's cause remains unknown.
+All aggregate gates remain null because seven cases are pending. Offline resume
+validation checked the three saved requests and grade maps against the unchanged
+packet, and confirmed that the next run starts with `de-residence` and can finish
+the remaining seven cases without repeating completed inference.
+
+The next resume, `ranking-20260908-184345-059186`, passed the B-permit and
+cross-border commuter cases, then stopped on the self-employment request with
+HTTP 429 and a numeric `Retry-After` of 1 second. Five cases are complete and
+passing, with seven cumulative attempts; all four negative cases remain untested.
+This failure is a rate-limit response, but its specific request/token quota is
+not recorded. It does not establish the cause of the earlier status-less error.
+
+The local helper now accepts `--request-interval-seconds` (0-60), recording the
+interval and waiting between request starts without automatically retrying any
+failed request. Offline validation verified the five-check resume prefix and the
+unchanged packet. The next prepared run requests at most five new calls with
+five-second spacing. This conservative pacing is an experiment, not a guarantee
+against the provider's account-specific limits; any further failure still stops
+the run and preserves completed checks.
+
+The paced resume `ranking-20260908-184536-022195` failed on its first request
+(`de-self-employed`) with HTTP 400 and no numeric Retry-After, after 0.699 seconds.
+No inter-request pacing was exercised because this was the first request. Five
+completed checks remain preserved, with eight cumulative attempts. The 400 reason
+cannot be identified from status alone and must not be conflated with the prior
+429 response.
+
+Error-detail capture is now opt-in at the adapter level and enabled only by this
+local diagnostic. It reads at most 16 KiB (also respecting the provider byte limit
+and request deadline), retains only code/type/message/failed-generation fields,
+redacts supplied authentication values and leaves the ordinary exception text
+unchanged. Oversized or malformed error bodies produce a capture diagnostic
+without replacing the HTTP failure. Runtime profiles do not enable capture.
+The local helper saves `provider-error.json`, printing the bounded error message
+and code but leaving failed generation in the file. Failed generation is never
+accepted as scores or used to revise labels automatically. All 65 runtime tests
+pass. Offline resume verification selects only `de-self-employed` for the next
+single-request diagnostic, with unchanged packet, model and prompt.
+
+The diagnostic `ranking-20260908-184835-632727` returned HTTP 400 with
+`json_validate_failed`: `/d012` was a string where an integer was required. The
+saved failed generation has eleven integer grades and `"d012":"0"`. This is a
+response-format failure; the failed generation is not accepted or coerced into
+scores. Five baseline cases remain completed, all passing, with nine cumulative
+requests including failed attempts. The four negative cases are still pending.
+
+`.local/repair_zh_ranking_format.py` prepares a separate one-request formatting
+repair for the self-employment case. It verifies the source packet, original
+request and captured error, then appends an explicit instruction requiring
+unquoted JSON integer values. The question, twelve passages, schema, rubric,
+model and expected labels are unchanged. Neither expected labels nor the failed
+grade map is sent to the model. The prompt variant is recorded as
+`assistant_format_repair/v1`, not an unchanged-v2 result, and is not automatically
+merged into the baseline evaluation. Local strict validation remains in place.
+
+Offline preparation `format-repair-20260908-185023-118858` passed with zero
+model calls. The base instruction hash is
+`b41919669a75d1e061f4c4315269594687da993869e90a2020debb6d90d81723`;
+the repair instruction hash is
+`3a2d52140ae0ce9533feb344acfd8ce530de0fa7ae98f21aab10974fcd94ea10`.
+Live repair success remains unverified. This experiment neither changes the
+active runtime profile nor silently weakens the integer score contract.
+
+The live formatting repair `format-repair-20260908-185106-094688` succeeded in
+1.065 seconds with one request. All twelve grades passed strict validation; only
+the expected self-employment passage (`zh-e007`) received grade 3, with the others
+graded 0. `schema_valid` and `case_passed` are true. This remains an assisted
+format-repair result, separate from the unchanged-v2 baseline's five completed
+cases; no failed generation was accepted and no automatic merge occurred.
+
+The local ranking helper now supports `--case-group negative`, selecting the four
+original frozen negative questions without changing their original candidate
+rotation or labels. It runs them under the original v2 prompt. Subset reports
+record selected case IDs, a four-case count and the ten-case packet count; a
+passing subset does not claim that all ten baseline cases passed. Positive
+retrieval remains null when no positive cases are selected. Resumption validates
+the same selected-case sequence and prevents mixing subset and full-run results.
+Offline preparation verified the four-case selection and backwards-compatible
+five-case baseline resume with zero inference. The next live step requests at
+most four calls, spaced five seconds apart, with no automatic retries.
+
+The negative-only run `ranking-20260908-185305-510020` passed fee, processing-time
+and appointment questions: every candidate received grade 0, and none qualified
+as direct support. The fourth request (`de-partial`) stopped on HTTP 429 after
+15.152 seconds. The provider identified a tokens-per-minute limit of 8,000, with
+6,078 used and 2,775 requested, and returned a numeric Retry-After of 7 seconds.
+Thus five-second request spacing was insufficient for this workload and account
+at that time. No failed generation was returned. Three negative checks are saved;
+the subset aggregate gates remain null until the partial-support case completes.
+Offline resume validation confirmed that only `de-partial` will be submitted next,
+with the original v2 prompt and all twelve passages. The planned manual retry
+waits at least the indicated delay and makes one new request without automatic
+retries or repetition of successful cases.
+
+The final negative-case resume `ranking-20260908-185439-703627` passed
+`de-partial` in 1.495 seconds with one new request. The L-permit passage
+(`zh-e004`) received grade 2 because it supplies contract duration but no fee;
+all other passages received grade 0. No passage reached the direct-support
+cutoff of 3. The four-case subset is now complete with `abstention_passed=true`
+and `quality_gate_passed=true`; `positive_retrieval_passed=null` correctly reflects
+that this subset has no positive cases. Offline validation verified all four
+saved requests and grade maps and found no pending subset cases.
+
+Across the Zurich experiment, the unchanged v2 prompt produced five passing
+positive cases and four passing negative cases. The sixth positive case passed
+only in the separately recorded assisted formatting repair after schema-invalid
+responses. This is not a clean ten-case pass for unchanged v2. The original
+five-case prefix and four-case negative subset remain separate records, with the
+repair explicitly labelled. Together these branches used fifteen requests:
+fourteen unchanged-v2 attempts (nine valid results and five HTTP failures) and
+one successful repair request. The causes of two early status-only failures
+remain undetermined; subsequent captures identified rate limiting and a string
+grade where an integer was required.
+
+This stage demonstrates useful passage selection and rejection of partial
+answers on the assistant-labelled Zurich packet, while exposing response-format
+reliability and throughput limits. It does not yet evaluate Qwen candidate recall
+or the Zurich passages through the runtime/MCP pipeline. Those are the next
+integration checks; no active model configuration or governed release was changed
+by the result audit.
+
+### Zurich embedding candidate recall preparation
+
+`.local/test_zh_embeddings.py` prepares the same twelve exact source passages
+and ten frozen questions for `qwen_embedding_0_6b` (`qwen3-embedding:0.6b`).
+The six positive targets must rank within the top three of twelve candidates by
+cosine similarity. Top-one recall is reported separately; ties are counted
+pessimistically so evidence-ID ordering cannot manufacture a pass. Negative
+queries retain similarity diagnostics but do not receive an embedding abstention
+pass/fail judgement. The ranker's direct-support gate remains a separate check.
+
+The input transform is unchanged raw question text and exact normalized source
+passages, with no generated claims, translations or query-prefix additions.
+Twenty-two texts are split into six sequential batches of at most four. This
+local test sets a 120-second timeout without changing the normal deployment
+profile, sends no Groq requests and performs no automatic retries. Each completed
+batch is saved with plan/input hashes; resume validates model identity, count,
+1024-dimensional finite nonzero vectors and batch order before reusing it.
+All completed vectors are retained for subsequent runtime harness construction,
+even if a candidate-recall quality check fails.
+
+Offline preparation `embeddings-20260908-185815-304466` passed with plan hash
+`bc93ac0f73f3ed4e1d7739cc78b8217c030a6c0334f0779d3ab159452600501e`.
+Synthetic offline controls checked correct target recall, tied-score rejection,
+negative-case exclusion from the recall gate, and invalid-vector rejection.
+No model calls were made; live embedding recall and latency remain pending.
+
+The live embedding run `embeddings-20260908-185929-413480` completed all six
+batches in 11.064 seconds, with 22 vectors of 1024 dimensions and no ranking
+requests. All six positive targets ranked within the top three (recall 1.0).
+Top-one recall was 0.5: all three German questions ranked their target first,
+while the three English questions ranked theirs second. This small matrix
+supports retaining multiple candidates for ranking, not replacing ranking with
+the nearest vector. Negative-query similarity remains diagnostic only.
+The vector-file SHA-256 is
+`03dc9aefda06cf9b550185fdcda32bcdcda4457ba8f3f73b1e50a7c6610a1c54`.
+
+### Zurich runtime harness preparation
+
+`.local/build_zh_runtime_harness.py` created
+`zh-runtime-harness-20260908-190309-949650`, reusing the twelve saved document
+vectors. It validates packet/source/vector hashes, recomputes the recall result,
+and binds exact contiguous normalized windows to the saved Zurich citation.
+The release contains no published facts, rules or equivalences. Catalog, approval
+and evaluation declarations, capture-date scope and freshness policy remain
+explicitly synthetic test metadata.
+
+The runtime requires projections in EN/DE/FR/IT/RM and a candidate limit of at
+least 20. This harness therefore supplies 60 draft topic projections (the German
+source headings plus short assistant translations) and considers all twelve
+passages. These are topic labels, not full claim translations; translation
+accuracy is unvalidated. Query routes are enabled only for English and German,
+with German source evidence and test jurisdiction CH-ZH. It pins the unchanged
+`groq-ranking/v2` rubric and grade-3 cutoff. Existing deployments are unchanged.
+
+Release validation and an offline first-case replay passed, including exact
+source-evidence and citation round-trip checks. Replayed ranking scores came from
+the earlier passage-only request, so this checks runtime plumbing with the new
+projections, not live semantic quality. The first prepared live case is the
+English moving-registration question (`en-move`), expected to return `zh-e002`
+as `EXCERPTS_ONLY` with no supported facts. It permits one live query embedding
+and one ranking call, without retries. Release-file SHA-256:
+`e822e48737c661cf87ddd2a910c4ad79b5a52addd3e9f2b1c4b3bcc0af40ac6c`.
+Offline preparation `abstention-20260908-190401-098318` validated the exact request
+scope and provider identities with zero model calls.
+
+The first live runtime run `abstention-20260908-190516-356899` passed `en-move`
+in 9.769 seconds, with one query embedding and one ranking request. It returned
+exactly `zh-e002` as `EXCERPTS_ONLY`; that passage scored 3 and the other eleven
+scored 0. This establishes the single positive runtime case, not the full Zurich
+matrix or runtime abstention.
+
+The next prepared step uses `.local/test_sem_mcp.py` with explicit case,
+provider-config and expected-candidate-count arguments. The German `de-partial`
+question requests both permit duration and a fee, so acceptance requires empty
+evidence and `NONE` through MCP. The helper validates release, case-file and
+provider bindings, checks advertised schemas and structured/text response parity,
+and skips evidence reads when none are expected. Its live ceiling is one embedding
+and one ranking request, without retries or a caller model.
+
+Offline check `mcp-check-20260908-191014-790753` passed MCP initialization,
+discovery and explicit provider-error transport with no model calls. Because the
+server had no providers, this is not a live abstention result. Default MCP and
+OpenCode configurations remain unchanged.
+
+Live MCP check `mcp-check-20260908-191113-166695` passed `de-partial` in 10.531
+seconds. One resolve returned `INSUFFICIENT_VERIFIED_EVIDENCE`, `NONE`, empty
+evidence and all four retrieval channels, with no degradations. Initialization,
+schemas and pinned discovery passed; no evidence read was needed. This verifies
+the partly answerable case through MCP, without a caller model.
+
+Offline caller preparation `opencode-check-20260908-191152-476796` selected the
+same case and pinned harness/providers for Ling 3.0 Flash Fin Free. The guided
+prompt requests coverage discovery followed by one resolve and, when evidence is
+empty, no evidence lookup or invented answer. Expected labels are kept outside
+the prompt. No model was invoked; the original OpenCode configuration hash
+remained unchanged. Live caller compliance and answer quality await transcript
+review; the requested tool sequence is not an enforced request ceiling.
+
+The live Ling run `opencode-check-20260908-191241-251004` preserved abstention.
+Offline transcript audit verified exactly two completed calls, coverage before
+resolve, the exact frozen request, twelve candidates, empty evidence and supported
+portions, `NONE`, all four retrieval channels and no degradations. Release,
+provider, case-file, prompt-text and original configuration hashes matched.
+Transcript SHA-256:
+`a06d1e9873c4100d04ac89ad1cbde6f85b0065c08a2344d7e49975d8a4628802`.
+The separate `assistant-audit.json` preserves this assessment without rewriting
+the original run summary.
+
+Manual answer review is a qualified pass: Ling invented no fee, duration or
+citation, but overstated empty evidence as meaning the source cannot support any
+factual claim about the question. A combined-question rejection does not establish
+that every individual part lacks source support. It also listed `APPROVED`
+without immediate synthetic qualification, although its final limits correctly
+identified the test metadata. The guided caller prompt now explicitly distinguishes
+an empty lookup from source-wide absence and identifies approval fields as
+synthetic. This changes the test prompt only; revised live behavior is unverified.
+
+The revised caller run `opencode-check-20260908-191533-249998` corrected the
+source-scope explanation and explicitly labelled approval metadata as synthetic.
+However, report accuracy failed: Ling labelled the request question as an original
+source excerpt and claimed an evidence comparison succeeded despite skipping the
+lookup. It also attributed request `max_evidence` to the coverage profile. These
+are caller reporting errors; the MCP response still had empty evidence, `NONE`,
+twelve candidates and no degradations. Exactly two completed calls preserved the
+frozen inputs. Both were requested in one model turn; timestamps show coverage
+finished before resolve started, so overlapping execution was not observed.
+
+Offline audit preserved the original summary and wrote `assistant-audit.json`,
+bound to transcript SHA-256
+`7db3b8cc18d4b07faecf5a89a58d9680227135cabca65da3919f410c3991c4d8`.
+The guided prompt now requires a separate model turn after discovery, restricts
+source excerpts to evidence-array objects, and specifies None/Not applicable for
+empty evidence and skipped comparisons. This is a test-prompt revision, not a
+production enforcement mechanism or evidence that the model will comply.
+
+Caller regression `opencode-check-20260908-191822-333507` passed the targeted
+checks with prompt SHA-256
+`095b05c8adc78f12651a91357bcbc0a8f906010c2c5da16fd6725bcfe67ffd70`.
+Exactly two completed calls used separate model turns, with coverage completed
+before the unchanged resolve request. The empty evidence result remained `NONE`
+with twelve candidates and no degradations. Manual review confirmed that the
+answer reported no excerpt or citation, marked the skipped comparison as not
+applicable, and preserved the narrow lookup limitation and synthetic approval
+qualification. Original configuration and all input bindings matched.
+The separate audit binds transcript SHA-256
+`f4c2458f6a115a23c42cab169ad7fac7a77261b2f1d47fa7e768aea8c6fa26ec`.
+This closes the targeted negative caller regression; earlier failed reports remain
+part of the record and this guided pass does not establish general reliability.
+
+Offline preparation `opencode-check-20260908-192009-834198` selected `en-move`
+for the positive caller check. Expected evidence is `zh-e002`; the intended calls
+are coverage, one resolve, then a pinned evidence read. Acceptance requires the
+original German excerpt and citation to match the tool results, with
+`EXCERPTS_ONLY` and no published support. No new model calls were made during
+preparation; the positive caller result remains pending.
+
+Positive caller run `opencode-check-20260908-192057-083269` passed tool-contract
+and exact evidence round-trip checks. Three completed calls used separate model
+turns in coverage/resolve/evidence order, with one unchanged resolve request.
+Both tools returned the full `zh-e002` object exactly as stored in the release,
+including original German text and citation. The result retained
+`INSUFFICIENT_VERIFIED_EVIDENCE`, `EXCERPTS_ONLY`, no supported portions, twelve
+candidates, all four channels and no degradations. Input and original configuration
+hashes matched. Transcript SHA-256:
+`6e439f902849e755e7d64c119b6d6c11291ab701417c1b0ffbfa7251c1b969c2`.
+
+Ling shortened the displayed quote using an ellipsis. Offline comparison verified
+each retained German fragment against the original excerpt and confirmed the
+exact citation URL. This is a correct abridged display, not a full verbatim display;
+the complete evidence remains available in both tool responses. The separate
+`assistant-audit.json` records that distinction. No additional live rerun of this
+case is needed.
+
+The targeted Zurich caller smoke checks now cover one positive evidence lookup
+and one partly answerable abstention, using the revised guided prompt. This closes
+that integration checkpoint only. The complete ten-case Zurich runtime matrix
+has not passed as a whole; ranking-only self-employment required separate format
+repair, and source/projection quality and release governance remain outside these
+caller checks. Earlier failures are retained rather than counted as clean passes.
+
+### Remaining Zurich runtime cases
+
+The next prepared runtime subset excludes the completed `en-move` and
+`de-partial` cases. It contains five positive cases (notification, short stay,
+residence, frontier commuter and self-employment) and three negative cases
+(fee, processing time and appointment). The local runtime tester now supports a
+finite 0-60 second interval between live case starts, reports the current/pending
+cases, and saves completed checks and provider counts after each result. It
+retains stop-on-provider-failure behavior and performs no automatic retries.
+
+Offline validation found that the original German notification query has 137
+characters, exceeding the runtime's 120-character term limit. The shortened
+`de-notification-short` variant preserves both requested details: annual workday
+allowance and reporting authority. The old packet and subset are preserved;
+`remaining-runtime-cases-v2-provenance.json` records the change. This variant must
+not be presented as an unchanged replay of the original ranking query.
+
+Frozen `remaining-runtime-cases-v2.json` SHA-256:
+`c1774725ce670723b4d57d1c1ebdf5d2b3bf3309c2fa09841f1fa8970dd216dc`.
+Preparation `abstention-20260908-192513-514369` passed scope, model and provider
+validation for all eight cases with zero model calls. The prepared live run uses
+a 35-second start interval and at most eight query embeddings plus eight ranking
+requests, with no caller model. Pacing reduces request pressure but does not
+guarantee rate-limit avoidance. Live quality results remain pending.
+
+Runtime run `abstention-20260908-192559-938021` completed the notification-short,
+short-stay and residence cases successfully, then stopped at `en-frontier` with
+`OPERATIONAL_ERROR`. It attempted four embeddings and four rankings in 106.391
+seconds, using 35-second pacing. The frontier embedding completed; no successful
+ranking response was recorded. The original observations did not retain the
+failure cause, so neither rate limiting nor schema failure can be concluded.
+Five cases remain pending; aggregate quality gates remain unset.
+
+Offline audit verified the three completed results against the frozen subset,
+saved release evidence and provider score observations. It preserved the previous
+summary, bound by SHA-256
+`6a36e0036498fee31ef284d2b2eb20fd046cba0047b46f3876fd5122c95df0c5`.
+The separate `frontier-runtime-diagnostic-case.json` contains only the unchanged
+frontier request, SHA-256
+`a3a40f7f03e0e00628c76c104007c0db900698c52f12b413c3a27d44ed96c4f5`.
+The five pending cases are also saved separately; previous passes are not rerun.
+
+The local tester now records provider failures before the service converts them
+to its public error contract. Optional `--capture-provider-errors` enables the
+existing bounded HTTP diagnostic capture; details stay in the case provider file,
+while the summary includes status, numeric Retry-After and error codes. Rejected
+generations remain diagnostic data and are never accepted or automatically
+repaired. Offline controls exercised HTTP 429/400, invalid ranking grades and a
+timeout, confirming preserved observations, `OPERATIONAL_ERROR` and no retries.
+Single-case preparation `abstention-20260908-193023-329870` passed with zero network
+calls. Its live ceiling is one embedding and one ranking request.
+
+Frontier rerun `abstention-20260908-193114-257142` passed in 1.590 seconds with
+one embedding and one ranking request. `zh-e006` scored 3 and all other eleven
+passages scored 0; its exact saved evidence was returned as `EXCERPTS_ONLY`.
+Offline audit verified the input bindings, provider observations and full evidence
+object. The summary SHA-256 is
+`a7e51d09e91f57839ce7b12132f8d2994e23e756102db68d1b9a4ec0a16c21ce`.
+The successful rerun does not identify the earlier provider failure's cause or
+erase that failed attempt.
+
+The four remaining runtime cases are self-employment, fee, processing time and
+appointment. Their requests and labels are unchanged from the frozen revised
+subset. `remaining-runtime-final-four.json` has SHA-256
+`8a1d4a47978d2e4e3eadf1d52d5168d643085519b0235301c79e128cfcec42e8`.
+Offline preparation `abstention-20260908-193222-940025` passed with no model calls.
+The prepared live run keeps 35-second pacing and diagnostic capture, with a
+ceiling of four embeddings and four rankings, no retries, and no caller model.
+Expected outcomes are `zh-e007` for self-employment and empty evidence for the
+other three cases. These live results remain pending.
+
+### Zurich runtime checkpoint completed
+
+Final subset `abstention-20260908-193315-943134` passed all four cases in 107.251
+seconds, with four embeddings and four rankings. Self-employment returned the
+exact `zh-e007` excerpt at grade 3 without format repair; the remaining eleven
+passages scored 0. Fee, processing-time and appointment questions returned no
+evidence and `NONE`, with all grades 0. This successful runtime attempt does not
+replace the earlier ranking-only self-employment format failure in the record.
+
+`runtime-checkpoint-audit.json` in the Zurich harness now consolidates ten unique
+passing observations across the preserved runs: six positive evidence lookups
+and four abstentions. Nine cases were checked through the direct runtime and the
+partly answerable case through MCP. Offline verification checked release and
+provider hashes, frozen case files, trace queries, exact evidence objects, support
+status, twelve candidates and no degradations. Direct-runtime observations also
+matched the configured models and categorical ranking scores. The consolidated
+audit references each result and summary by hash; it made no model calls.
+
+| Case | Expected and observed evidence | Check transport |
+| --- | --- | --- |
+| en-move | zh-e002 | Direct runtime |
+| de-notification-short | zh-e003 | Direct runtime |
+| en-short-stay | zh-e004 | Direct runtime |
+| de-residence | zh-e005 | Direct runtime |
+| en-frontier | zh-e006 | Direct runtime, successful rerun |
+| de-self-employed | zh-e007 | Direct runtime |
+| en-fee | None | Direct runtime |
+| de-processing | None | Direct runtime |
+| en-appointment | None | Direct runtime |
+| de-partial | None | MCP stdio |
+
+This closes the selected local runtime checkpoint across runs, not a single clean
+ten-case execution or a general reliability claim. The earlier frontier provider
+failure remains explicitly recorded with unknown cause. The notification query
+variant and earlier caller-report failures also remain documented. Revised guided
+caller checks cover one positive and one negative case separately. The harness
+still contains no published facts or genuine release approvals; independent source,
+projection and applicability review has not been established by these checks.
+No further live calls are needed to complete this checkpoint.
+
 ### Earlier live diagnostics
 
 The subsequent prompt-only Apertus run completed two responses but repeated the

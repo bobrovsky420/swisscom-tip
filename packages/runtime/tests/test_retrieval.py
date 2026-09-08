@@ -234,6 +234,24 @@ class RetrievalTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             evaluate(service, [])
 
+    def test_direct_support_cutoff_rejects_lower_grades_without_creating_facts(self):
+        target = "evidence-noise-00"  # An optional excerpt, not required by a published fact.
+        self.bundle.graph.plans[0].portions[0].fact_ids = []
+        self.bundle.retrieval_configuration.minimum_semantic_score = 3
+        self.bundle.retrieval_configuration.fallbacks = []
+        self.bundle = seal_fixture(self.bundle)
+        for grade in (0, 1, 2, 3):
+            class GradedProvider(SpyProvider):
+                def rank(self, query, candidates, *, model):
+                    return RankingResponse(model, {c.evidence_id: grade if c.evidence_id == target else 0
+                                                   for c in candidates})
+            result = self.service(provider=GradedProvider()).resolve(
+                {**self.request, "source_languages": ["en"], "max_evidence": 1})
+            self.assertEqual(result.status, "INSUFFICIENT_VERIFIED_EVIDENCE")
+            self.assertFalse(result.supported_portions)
+            self.assertEqual([e.evidence_id for e in result.evidence], [target] if grade == 3 else [])
+            self.assertEqual(result.trust.fact_support, "EXCERPTS_ONLY" if grade == 3 else "NONE")
+
     def test_same_concept_partial_translation_is_not_equivalence(self):
         group = self.bundle.equivalences[0]
         french = next(e for e in self.bundle.evidence if e.evidence_id == "evidence-fr")
