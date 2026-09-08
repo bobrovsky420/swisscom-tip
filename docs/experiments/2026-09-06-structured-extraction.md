@@ -306,6 +306,93 @@ proposed. Romansh drafts target Rumantsch Grischun but remain language-unvalidat
 Projection review, release assembly and release-specific evaluation remain pending;
 neither provider pilot alone qualifies the data for hybrid MCP serving.
 
+The user confirmed the projection drafts for a local test. A hash-bound sidecar
+records that limited confirmation without changing the drafts' language validation
+status. To test runtime integration before governed release tooling exists, an
+isolated harness was built at
+`sem-runtime-harness-20260908-174216-188972`. It combines two real captured source
+documents, six exact source excerpts, 30 draft search projections and six cached
+1024-dimensional document vectors with explicitly synthetic catalog, scope,
+approval/evaluation and temporal test metadata. The approval fields are fixture
+values, not an assertion that translations or legal coverage passed validation.
+`test-scaffolding.json` records that distinction and hashes the input artifacts.
+
+The harness enables English and German query routes only, has no published facts,
+rules, equivalence groups or fallback, and fixes the evidence cap to one. The date
+scope is the capture date, 2026-09-07, as a test restriction rather than a legal
+validity assertion. No semantic cutoff is declared. Every result carries explicit
+test limitations. The default MCP configuration is unchanged.
+
+Release schema, artifact hash, source snapshot hash, exact span and retrieval-asset
+validation passed offline. All six cases then passed an explicitly labelled replay
+through `KnowledgeService`, exercising language filtering, lexical/concept/vector
+fusion, reranking, top-one selection and exact citation round-trips. The replay
+uses saved provider vectors and scores, not fresh semantic decisions under the
+runtime's richer ranking inputs. Each case returned `INSUFFICIENT_VERIFIED_EVIDENCE`
+with `EXCERPTS_ONLY` and no supported facts, as intended. A missing-provider control
+returned `OPERATIONAL_ERROR` with no silent fallback. Live runtime execution and
+MCP transport verification remain pending; this harness is not a governed release.
+
+Live runtime execution in `check-20260908-174505-199199` passed all six cases
+through `KnowledgeService`, making six Ollama embedding calls and six Groq ranking
+calls with no replay. Total time was 13.811 seconds: the first case took 10.424
+seconds and the remaining cases 0.613-0.718 seconds. The log does not isolate model
+loading, so the first-case delay cannot be attributed conclusively. All results
+retained the four hybrid channels, exact expected opposite-language excerpts,
+`EXCERPTS_ONLY` trust and no published facts. The missing-provider control passed.
+
+The next test uses an actual MCP SDK client and a separately launched stdio server
+on this same harness. Offline execution in `mcp-check-20260908-174710-022923` passed
+initialization, advertised input/output schemas, release-pinned discovery,
+structured/text response parity, typed missing-provider error transport and exact
+evidence lookup. No providers were configured during that check. The prepared live
+case asks in English for the issuing authority and expects German `sem-e005`, then
+checks `get_evidence` parity. Its ceiling is one embedding call and one ranking
+call, without retries. The subprocess receives the ranking credential through its
+environment; it is not written to configuration. OpenCode and its existing MCP
+configuration remain unchanged. Live MCP and caller-model behavior remain pending.
+
+Live MCP execution in `mcp-check-20260908-174808-062188` passed in 3.574 seconds:
+initialization, schemas, pinned discovery, one hybrid resolution and exact
+`get_evidence` parity. The returned German issuer excerpt was `sem-e005`, with
+`INSUFFICIENT_VERIFIED_EVIDENCE`, `EXCERPTS_ONLY` and all four retrieval channels.
+The MCP test did not invoke a caller model.
+
+The prepared next step is a guided OpenCode caller test using the existing
+`opencode/ling-3.0-flash-fin-free` model. A separate child-process configuration
+points at the harness; the normal `.local/opencode.json` is preserved. The prompt
+supplies exact scope JSON and asks for coverage discovery, one resolution, then
+an evidence round-trip, stopping on tool error. The expected answer and evidence
+ID are not supplied to Ling. Output is saved for checking actual tool calls and
+faithful reporting; a successful process exit alone does not establish caller
+quality or a fixed model-call count. OpenCode 1.18.29 command help was inspected,
+and a connection-only run in `opencode-check-20260908-175146-195015` confirmed the
+`swisstip` server connected to the harness without running inference.
+
+The live caller run `opencode-check-20260908-175324-468329` passed the guided
+integration test, with one minor reporting issue. An offline audit of the original
+transcript verified exactly three completed MCP tool calls, exactly one resolve,
+exact prescribed arguments, release hashes, typed outputs and full evidence-object
+parity. Ling preserved `sem-e005`, its original German excerpt and URL, all four
+channels, the empty supported portions, `INSUFFICIENT_VERIFIED_EVIDENCE` and
+`EXCERPTS_ONLY`. The report explicitly described real saved excerpts with synthetic
+catalog/coverage metadata and no published facts. No unsupported legal answer was
+observed; the original OpenCode configuration was preserved.
+
+The report placed `max_evidence: 1` under the coverage profile, although that value
+comes from the supplied request and catalog cap. Coverage and resolve were requested
+in the same model turn; the exact scope was already supplied, so this does not
+demonstrate autonomous discovery or intent/context grounding. The original transcript
+SHA-256 is `8bc863194aca824639422750035ffd78fbc495d1ca299163e264e9272ba510d3`.
+The separate caller audit records both the authored prompt text hash and the actual
+file hash because Windows converted the prompt's line endings when writing it.
+
+This completes the guided end-to-end smoke test from Ling through MCP, runtime,
+Qwen embeddings and Groq ranking to original SEM evidence. It does not resolve
+automatic extraction/review failures, multilingual projection validation, relevance
+cutoff/abstention calibration or governed release publication. Further qualification
+requires broader and negative cases, rather than repeating this successful lookup.
+
 ### Earlier live diagnostics
 
 The subsequent prompt-only Apertus run completed two responses but repeated the
