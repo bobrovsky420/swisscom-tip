@@ -104,8 +104,10 @@ async def serve(service: KnowledgeService):
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--release", type=Path, action="append", required=True,
+    storage = parser.add_mutually_exclusive_group(required=True)
+    storage.add_argument("--release", type=Path, action="append",
                         help="Serving release JSON; repeat to retain historical releases.")
+    storage.add_argument('--database-dsn-env', help='Environment variable holding a PostgreSQL URL; uses pgvector scoring.')
     parser.add_argument("--active-release-id", required=True)
     parser.add_argument("--embedding-url", help="Opt-in Ollama embedding base URL; model is pinned by each release.")
     parser.add_argument("--ranking-url", help="Opt-in Ollama ranking base URL; model is pinned by each release.")
@@ -115,16 +117,31 @@ def main(argv=None) -> int:
     if args.provider_config and (args.embedding_url or args.ranking_url or args.provider_timeout is not None):
         parser.error("--provider-config cannot be combined with provider URL or timeout flags")
     try:
-        store = ReleaseStore.from_files(args.release, active_release_id=args.active_release_id)
+        vector_store = None
+        if args.database_dsn_env:
+            import os
+            from swisstip.runtime.postgres import PostgresReleaseStore
+            dsn = os.environ.get(args.database_dsn_env, '').strip()
+            if not dsn:
+                raise ValueError('Database URL environment variable is missing')
+            store = PostgresReleaseStore(dsn, active_release_id=args.active_release_id)
+            vector_store = store
+        else:
+            store = ReleaseStore.from_files(args.release, active_release_id=args.active_release_id)
         if args.provider_config:
             embedding, ranking = load_provider_settings(args.provider_config).create_providers()
         else:
             timeout = args.provider_timeout if args.provider_timeout is not None else 30.0
             embedding = OllamaRetrievalProvider(args.embedding_url, timeout=timeout) if args.embedding_url else None
             ranking = OllamaRetrievalProvider(args.ranking_url, timeout=timeout) if args.ranking_url else None
-    except (OSError, ValueError) as exc:
+    except Exception as exc:
+        if args.database_dsn_env:
+            parser.error(f'Cannot load database-backed service ({type(exc).__name__})')
+        if not isinstance(exc, (OSError, ValueError)):
+            raise
         parser.error(f"Cannot load serving releases: {exc}")
-    asyncio.run(serve(KnowledgeService(store, embedding_provider=embedding, ranking_provider=ranking)))
+    asyncio.run(serve(KnowledgeService(store, embedding_provider=embedding, ranking_provider=ranking,
+                                      vector_store=vector_store)))
     return 0
 
 

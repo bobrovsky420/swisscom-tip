@@ -42,6 +42,8 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Technical specification](docs/architecture/technical-specification.md)
 - [Hackathon operations, deployment and data transfer](docs/hackathon/hackathon-operations.md)
 - [Implementation gaps and validation plan](TODO.md)
+- [Pilot knowledge and lessons](docs/pilots/2026-09-08-retrieval-pilot.md)
+- [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
 - [Hackathon residence source catalogue and later crawl/extraction commands](config/catalogs/README.md)
 - [zh.ch Apertus 8B/70B experiment results](docs/experiments/2026-09-05-zhch-concept-extraction.md)

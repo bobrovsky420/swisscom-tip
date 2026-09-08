@@ -90,9 +90,10 @@ def _unit(values, dimensions):
 
 class HybridRetriever:
     def __init__(self, embedding_provider: EmbeddingProvider | None = None,
-                 ranking_provider: SemanticRankingProvider | None = None):
+                 ranking_provider: SemanticRankingProvider | None = None, vector_store=None):
         self.embedding_provider = embedding_provider
         self.ranking_provider = ranking_provider
+        self.vector_store = vector_store
 
     def retrieve(self, bundle, profile, routes, selected, candidates, required_evidence=(), *, checked_at=None) -> RetrievalResult:
         config = bundle.retrieval_configuration
@@ -186,11 +187,16 @@ class HybridRetriever:
                 raise RetrievalFailure("embedding_identity_or_count_mismatch")
             vectors = [_unit(v, index.dimensions) for v in response.vectors]
             vector_scores = {}
-            for vector in index.vectors:
-                if vector.evidence_ref in eligible_refs:
-                    unit = _unit(vector.values, index.dimensions)
-                    vector_scores[eligible_refs[vector.evidence_ref]] = max(
-                        (sum(a * b for a, b in zip(unit, q)) for q in vectors), default=0.0)
+            if self.vector_store is not None:
+                vector_scores = self.vector_store.score_vectors(bundle, tuple(candidates), vectors)
+                if set(vector_scores) != set(candidates) or not all(_finite(v) for v in vector_scores.values()):
+                    raise RetrievalFailure('invalid_vector_store_response')
+            else:
+                for vector in index.vectors:
+                    if vector.evidence_ref in eligible_refs:
+                        unit = _unit(vector.values, index.dimensions)
+                        vector_scores[eligible_refs[vector.evidence_ref]] = max(
+                            (sum(a * b for a, b in zip(unit, q)) for q in vectors), default=0.0)
             admitted, scores = pool([{i: s for i, s in lexical.items() if s > 0}, concept,
                                      {i: s for i, s in vector_scores.items() if s > 0}])
             stage = "semantic_ranking"

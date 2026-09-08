@@ -158,6 +158,14 @@ open until their remaining acceptance requirements are met.
 
 Completed steps within the open implementation items:
 
+- [x] **BUILD-06: add local PostgreSQL/pgvector persistence for experimental releases.**
+  [Storage operations](docs/storage.md) covers Docker, transactional/idempotent
+  import, immutable corpus rows, historical reads, scoped SQL vector scoring,
+  database-backed MCP and verified backup/restore. Both pilot releases and raw
+  crawl archives were migrated; ten database replay cases passed after restart
+  and restore. [Pilot knowledge](docs/pilots/2026-09-08-retrieval-pilot.md) records
+  decisions and failures. Genuine promotion, deployment roles, retention and
+  client qualification remain open; no published facts were created.
 - [x] **BUILD-05: integrate release-pinned hybrid retrieval and quality gates.**
   The [runtime](packages/runtime/README.md) loads sealed five-language projections,
   terminology, cosine vector indexes, provider/ranking configuration and exact

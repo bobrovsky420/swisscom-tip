@@ -37,6 +37,39 @@ class SpyProvider(SyntheticSemanticProvider):
 
 
 class RetrievalTests(unittest.TestCase):
+    def test_external_vector_store_only_receives_scoped_evidence(self):
+        bundle, request = hybrid_fixture(fallback=False)
+        provider = SpyProvider()
+        eligible = []
+
+        class VectorStore:
+            def score_vectors(self, loaded, identifiers, vectors):
+                eligible.extend(identifiers)
+                return {identifier: 1.0 for identifier in identifiers}
+
+        service = KnowledgeService(ReleaseStore([bundle], active_release_id=bundle.release.release_id),
+                                   embedding_provider=provider, ranking_provider=provider,
+                                   vector_store=VectorStore(), clock=lambda: NOW)
+        result = service.resolve({**request, 'source_languages': ['de']})
+        self.assertEqual(result.status, 'SUPPORTED')
+        self.assertTrue(eligible)
+        by_id = {e.evidence_id: e for e in bundle.evidence}
+        self.assertTrue(all(by_id[eid].effective_source_language == 'de' for eid in eligible))
+
+    def test_external_vector_store_cannot_add_ids_or_trigger_silent_memory_fallback(self):
+        bundle, request = hybrid_fixture(fallback=False)
+        provider = SpyProvider()
+
+        class VectorStore:
+            def score_vectors(self, loaded, identifiers, vectors):
+                return {**{identifier: 1.0 for identifier in identifiers}, 'invented': 1.0}
+
+        service = KnowledgeService(ReleaseStore([bundle], active_release_id=bundle.release.release_id),
+                                   embedding_provider=provider, ranking_provider=provider,
+                                   vector_store=VectorStore(), clock=lambda: NOW)
+        self.assertEqual(service.resolve(request).code, 'OPERATIONAL_ERROR')
+        self.assertEqual(provider.inputs, [])
+
     def setUp(self):
         self.bundle, self.request = hybrid_fixture()
         self.provider = SpyProvider()

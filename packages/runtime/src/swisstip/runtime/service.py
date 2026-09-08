@@ -30,13 +30,13 @@ def _now() -> datetime:
 class KnowledgeService:
     def __init__(self, store: ReleaseStore, *, cursor_key: bytes | None = None,
                  clock: Callable[[], datetime] = _now,
-                 embedding_provider=None, ranking_provider=None):
+                 embedding_provider=None, ranking_provider=None, vector_store=None):
         self.store = store
         self._cursor_key = cursor_key if cursor_key is not None else secrets.token_bytes(32)
         if len(self._cursor_key) < 32:
             raise ValueError("cursor_key_requires_32_bytes")
         self._clock = clock
-        self._retriever = HybridRetriever(embedding_provider, ranking_provider)
+        self._retriever = HybridRetriever(embedding_provider, ranking_provider, vector_store)
 
     def _error(self, code, path, reason, message, release_id=None):
         return ToolError(code=code, release_id=release_id,

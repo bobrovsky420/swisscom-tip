@@ -9,6 +9,12 @@ description = "Release-pinned structured knowledge resolution for SwissTIP"
 requires-python = ">=3.11"
 dependencies = ["swisstip-core==0.1.0"]
 
+[project.optional-dependencies]
+postgres = ["psycopg[binary]>=3.3,<4"]
+
+[tool.setuptools.package-data]
+"swisstip.runtime" = ["migrations/*.sql"]
+
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = true
