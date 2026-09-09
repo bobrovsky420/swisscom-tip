@@ -153,10 +153,13 @@ class TraceOpener:
             try:
                 body = exc.read(65536)
                 record.update(status=exc.code, response_text=body.decode("utf-8", errors="replace"))
-                # The adapter receives and closes the original HTTP error.
+                # Tracing must not consume diagnostics before the adapter reads
+                # them. Give it the same bounded body through a fresh stream.
+                replay = urllib.error.HTTPError(exc.url, exc.code, exc.msg, exc.headers, io.BytesIO(body))
             finally:
+                exc.close()
                 save()
-            raise
+            raise replay from None
         except Exception as exc:
             record["transport_error"] = str(exc)
             save()

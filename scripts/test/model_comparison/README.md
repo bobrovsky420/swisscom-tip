@@ -41,6 +41,12 @@ checkpoints cannot force a provider to generate a new completion: compare raw
 response IDs and content hashes when assessing independence or unusually short
 latencies.
 
+For PublicAI, the adapter now requests upstream model fallback and completion
+cache reuse to be disabled. Earlier comparisons predate these controls. A provider
+limit is reported directly instead of measuring a substituted model's response;
+the identity guard still rejects any unexpected model. HTTP error tracing retains
+a bounded body for both the diagnostic artifact and the provider's error parser.
+
 ## Source review rubric, fixed before the comparison
 
 For the saved SEM page, assess the six source assertions individually:

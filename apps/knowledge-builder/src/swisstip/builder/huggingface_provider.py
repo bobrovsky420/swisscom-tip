@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+import re
 import socket
 import urllib.error
 import urllib.parse
@@ -68,8 +69,18 @@ class HuggingFaceHTTPError(HuggingFaceProviderError):
         *,
         request_id: str | None = None,
         retry_after: str | None = None,
+        upstream_error_code: str | None = None,
     ) -> None:
-        super().__init__(f"Hugging Face router returned HTTP {status_code}")
+        # Only these machine codes become diagnostics; never echo provider bodies.
+        descriptions = {
+            "maximum_token_reached": "upstream model token limit reached",
+            "rate_limit_exceeded": "upstream model rate limit exceeded",
+        }
+        self.upstream_error_code = upstream_error_code if upstream_error_code in descriptions else None
+        message = f"Hugging Face router returned HTTP {status_code}"
+        if self.upstream_error_code:
+            message += f": {descriptions[self.upstream_error_code]} ({self.upstream_error_code})"
+        super().__init__(message)
         self.status_code = status_code
         self.request_id = request_id
         self.retry_after = retry_after
@@ -81,6 +92,10 @@ class HuggingFaceAuthenticationError(HuggingFaceHTTPError):
 
 class HuggingFaceRateLimitError(HuggingFaceHTTPError):
     """Raised when the selected account or provider is rate limited."""
+
+
+class HuggingFaceTokenLimitError(HuggingFaceRateLimitError):
+    """The upstream model reached a token limit; its reset is provider-owned."""
 
 
 class HuggingFaceResponseError(HuggingFaceProviderError):
@@ -203,6 +218,13 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             "max_tokens": self._max_tokens,
             "temperature": self._temperature,
         }
+        if self._provider == "publicai":
+            # PublicAI's LiteLLM configuration falls back from Apertus to other
+            # model families and caches those responses. Require the selected
+            # model and bypass the upstream completion cache, including entries
+            # created before fallback was disabled. Local checkpoints still work.
+            payload["disable_fallbacks"] = True
+            payload["cache"] = {"no-cache": True, "no-store": True}
         try:
             if self._response_mode == "prompt_only":
                 del payload["response_format"]
@@ -240,13 +262,14 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
         try:
             response = self._opener.open(request, timeout=self._timeout_seconds)
         except urllib.error.HTTPError as exc:
+            error_body = b""
             try:
-                exc.read(_MAX_ERROR_BODY_BYTES)
+                error_body = exc.read(_MAX_ERROR_BODY_BYTES + 1)
             except OSError:
                 pass
             finally:
                 exc.close()
-            _raise_http_error(exc.code, exc.headers)
+            _raise_http_error(exc.code, exc.headers, error_body)
         except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as exc:
             raise HuggingFaceTransportError(
                 "Hugging Face router request failed before a response was received"
@@ -255,7 +278,8 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
         try:
             status_code = int(response.getcode())
             response_headers = response.headers
-            response_body = response.read(_MAX_RESPONSE_BYTES + 1)
+            limit = _MAX_RESPONSE_BYTES if 200 <= status_code < 300 else _MAX_ERROR_BODY_BYTES
+            response_body = response.read(limit + 1)
         except (AttributeError, OSError, TypeError, ValueError) as exc:
             raise HuggingFaceTransportError(
                 "Hugging Face router response could not be read"
@@ -264,7 +288,7 @@ class HuggingFaceRouterProvider(SemanticModelProvider):
             response.close()
 
         if status_code < 200 or status_code >= 300:
-            _raise_http_error(status_code, response_headers)
+            _raise_http_error(status_code, response_headers, response_body)
         if not isinstance(response_body, bytes):
             raise HuggingFaceResponseError(
                 "Hugging Face router returned a non-byte response body"
@@ -435,18 +459,38 @@ def _header(headers: Mapping[str, str] | Any, name: str) -> str | None:
     return value if isinstance(value, str) and value else None
 
 
-def _raise_http_error(status_code: int, headers: Mapping[str, str] | Any) -> None:
+def _upstream_error_code(body: bytes) -> str | None:
+    if not isinstance(body, bytes) or len(body) > _MAX_ERROR_BODY_BYTES:
+        return None
+    try:
+        error = json.loads(body.decode("utf-8")).get("error")
+    except (ValueError, AttributeError, RecursionError):
+        return None
+    if not isinstance(error, dict):
+        return None
+    for code in ("maximum_token_reached", "rate_limit_exceeded"):
+        if error.get("code") == code or (
+            isinstance(error.get("message"), str) and
+            re.search(r"(?<!\w)" + code + r"(?!\w)", error["message"])
+        ):
+            return code
+    return None
+
+
+def _raise_http_error(status_code: int, headers: Mapping[str, str] | Any, body: bytes = b"") -> None:
     error_type: type[HuggingFaceHTTPError]
+    code = _upstream_error_code(body) if status_code == 429 else None
     if status_code in {401, 403}:
         error_type = HuggingFaceAuthenticationError
     elif status_code == 429:
-        error_type = HuggingFaceRateLimitError
+        error_type = HuggingFaceTokenLimitError if code == "maximum_token_reached" else HuggingFaceRateLimitError
     else:
         error_type = HuggingFaceHTTPError
     raise error_type(
         status_code,
         request_id=_header(headers, "X-Request-Id"),
         retry_after=_header(headers, "Retry-After"),
+        upstream_error_code=code,
     )
 
 

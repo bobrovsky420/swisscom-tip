@@ -75,6 +75,20 @@ model is configured separately. Retrieval releases still pin model and adapter
 identities and require a matching embedding index; configuration changes do not
 replace those release artifacts.
 
+## Hosted Apertus through PublicAI
+
+The existing `apertus_70b` profile uses the Hugging Face router and `HF_TOKEN`.
+The adapter disables PublicAI's upstream model fallback and response-cache reuse;
+an Apertus outage or limit must not silently substitute another model. Response
+identities still require the configured model or its explicitly approved alias.
+No endpoint, credential or model default change is needed for these controls.
+
+An HTTP 429 diagnostic with `maximum_token_reached` or `rate_limit_exceeded`
+reports an upstream model limit. The specific quota and reset time may be unknown;
+changing the local JSON schema or accepting Qwen as an alias does not resolve it.
+The [2026-09-09 diagnostic](../docs/experiments/2026-09-09-apertus-publicai-fallback.md)
+records the live evidence and the remaining provider-side availability constraint.
+
 ## DeepSeek V4 Pro
 
 The `deepseek_v4_pro` profile is the default for extraction and review, and is

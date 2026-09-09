@@ -354,6 +354,8 @@ def main(argv: Sequence[str] | None = None, *, provider_factory=None) -> int:
         progress(f"Prompt profile={extraction.prompt_profile}")
         if profile.adapter in {"huggingface", "deepseek", "groq"}:
             progress(f"Response mode={profile.response_mode}; local validation remains required")
+        if profile.adapter == "huggingface" and profile.provider == "publicai":
+            progress("PublicAI model fallback and upstream completion-cache reuse disabled")
         if profile.adapter == "deepseek":
             progress("DeepSeek thinking=disabled; schema supplied in the system prompt")
         if profile.adapter == "groq":

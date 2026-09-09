@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 import urllib.error
 
 from swisstip.builder.groq_provider import GroqHTTPError, GroqSemanticModelProvider
+from swisstip.builder.huggingface_provider import HuggingFaceRouterProvider, HuggingFaceTokenLimitError
 from swisstip.builder.concept_recovery import RecoverableProvider
 from swisstip.builder.model_profiles import load_model_profiles
 from swisstip.builder.provider_factory import create_semantic_model_provider, ProviderFactoryConfigurationError
@@ -167,6 +168,44 @@ class ModelComparisonTests(unittest.TestCase):
         comparison.write_summary(self.path, {"source_sha256": "a" * 64, "runs": [summary]},
                                  {"GROQ_API_KEY": "secret-sentinel"})
         self.assertNotIn("secret-sentinel", (self.path / "summary.md").read_text())
+
+    def test_wire_trace_preserves_http_error_body_for_provider_classification(self):
+        trace = comparison.TraceOpener(self.path / "calls", {"HF_TOKEN": "secret-sentinel"})
+        trace.opener = self.opener
+        body = io.BytesIO(json.dumps({"error": {
+            "message": "litellm.RateLimitError: RateLimitError: OpenAIException - maximum_token_reached",
+            "code": "429", "detail": "secret-sentinel",
+        }}).encode())
+        self.opener.open.side_effect = urllib.error.HTTPError(
+            "https://router.example/v1/chat/completions", 429, "Too Many Requests",
+            {"X-Request-Id": "quota-request-id", "Retry-After": "60"}, body,
+        )
+        provider = HuggingFaceRouterProvider(
+            token="secret-sentinel", model="swiss-ai/Apertus-70B-Instruct-2509",
+            provider="publicai", base_url="https://router.example/v1", opener=trace,
+        )
+
+        with self.assertRaises(HuggingFaceTokenLimitError) as caught:
+            self.generate(provider)
+
+        error = caught.exception
+        self.assertEqual(error.status_code, 429)
+        self.assertEqual(error.upstream_error_code, "maximum_token_reached")
+        self.assertEqual(error.request_id, "quota-request-id")
+        self.assertEqual(error.retry_after, "60")
+        self.assertNotIn("secret-sentinel", str(error))
+        self.assertTrue(body.closed)
+        self.assertEqual(self.opener.open.call_count, 1)
+        self.assertEqual(len(trace.calls), 1)
+        saved = (self.path / "calls/call-01.json").read_text()
+        self.assertNotIn("secret-sentinel", saved)
+        self.assertNotIn("Authorization", saved)
+        record = json.loads(saved)
+        self.assertEqual(record["status"], 429)
+        self.assertGreaterEqual(record["elapsed_seconds"], 0)
+        saved_error = json.loads(record["response_text"])["error"]
+        self.assertIn("maximum_token_reached", saved_error["message"])
+        self.assertEqual(saved_error["detail"], "[REDACTED]")
 
 
 if __name__ == "__main__":

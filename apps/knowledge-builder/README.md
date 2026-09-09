@@ -280,6 +280,16 @@ Selection is explicit and fail-closed. The command does not fall back to another
 profile or model after an authentication, quota, availability, transport, or
 response-validation failure.
 
+PublicAI requests also disable the provider's own model fallback and completion
+cache using `disable_fallbacks=true` and `cache={"no-cache":true,"no-store":true}`.
+This prevents an unavailable Apertus request from silently becoming a cached Qwen
+completion. The configured Hugging Face endpoint and strict response-identity
+checks remain in use; local checkpoints can still be reused when requested.
+Known upstream HTTP 429 codes `maximum_token_reached` and `rate_limit_exceeded`
+appear in progress/errors without echoing provider response bodies. These identify
+an upstream limit, not necessarily the caller's Hugging Face balance. See the
+[Apertus fallback investigation and verification](../../docs/experiments/2026-09-09-apertus-publicai-fallback.md).
+
 Hugging Face response identity must equal the configured model or that model
 with its selected `:provider` suffix. The explicit compatibility alias list in
 [`huggingface_provider.py`](src/swisstip/builder/huggingface_provider.py) also

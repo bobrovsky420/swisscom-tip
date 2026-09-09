@@ -17,11 +17,13 @@ sys.path.insert(0, str(REPOSITORY_ROOT / "packages" / "ingestion" / "src"))
 from swisstip.builder.huggingface_provider import (  # noqa: E402
     HuggingFaceAuthenticationError,
     HuggingFaceConfigurationError,
+    HuggingFaceHTTPError,
     HuggingFaceRateLimitError,
     HuggingFaceResponseError,
     HuggingFaceIncompleteCompletionError,
     HuggingFaceModelIdentityError,
     HuggingFaceRouterProvider,
+    HuggingFaceTokenLimitError,
     HuggingFaceTransportError,
 )
 
@@ -89,6 +91,52 @@ def make_provider(opener: FakeOpener, **overrides: object) -> HuggingFaceRouterP
 
 
 class HuggingFaceRouterProviderTests(unittest.TestCase):
+    def test_publicai_disables_fallbacks_and_cache_in_both_response_modes(self) -> None:
+        model = "swiss-ai/Apertus-70B-Instruct-2509"
+        for provider in ("publicai", "another-provider"):
+            for response_mode in ("json_schema", "prompt_only"):
+                with self.subTest(provider=provider, response_mode=response_mode):
+                    response = FakeResponse({"model": model, "choices": [
+                        {"finish_reason": "stop", "message": {"content": "{}"}},
+                    ]})
+                    opener = FakeOpener(response)
+                    make_provider(
+                        opener, provider=provider, response_mode=response_mode,
+                    ).generate_structured(
+                        system_prompt="System", user_prompt="User",
+                        response_schema={"type": "object"},
+                    )
+
+                    payload = json.loads(opener.requests[0].data)
+                    self.assertEqual(payload["model"], f"{model}:{provider}")
+                    if provider == "publicai":
+                        self.assertIs(payload["disable_fallbacks"], True)
+                        self.assertEqual(payload["cache"], {"no-cache": True, "no-store": True})
+                    else:
+                        self.assertNotIn("disable_fallbacks", payload)
+                        self.assertNotIn("cache", payload)
+
+    def test_publicai_still_rejects_qwen_with_fallbacks_disabled(self) -> None:
+        observed = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+        for response_mode in ("json_schema", "prompt_only"):
+            with self.subTest(response_mode=response_mode):
+                response = FakeResponse({"model": observed, "choices": [
+                    {"finish_reason": "stop", "message": {"content": "private Qwen output"}},
+                ]})
+                opener = FakeOpener(response)
+                with self.assertRaises(HuggingFaceModelIdentityError) as raised:
+                    make_provider(opener, response_mode=response_mode).generate_structured(
+                        system_prompt="System", user_prompt="User",
+                        response_schema={"type": "object"},
+                    )
+                self.assertEqual(
+                    raised.exception.requested_model,
+                    "swiss-ai/Apertus-70B-Instruct-2509:publicai",
+                )
+                self.assertEqual(raised.exception.observed_model, observed)
+                self.assertNotIn("private Qwen output", str(raised.exception))
+                self.assertTrue(response.closed)
+
     def test_prompt_only_sends_schema_in_prompt_without_api_format_constraint(self) -> None:
         response = FakeResponse({"model": "swiss-ai/apertus-70b-instruct", "choices": [
             {"finish_reason": "stop", "message": {"content": '{"status":"ready"}'}},
@@ -350,6 +398,151 @@ class HuggingFaceRouterProviderTests(unittest.TestCase):
         self.assertEqual(raised.exception.status_code, 429)
         self.assertEqual(raised.exception.request_id, "rate-request-id")
         self.assertEqual(raised.exception.retry_after, "7")
+
+    def test_token_quota_errors_preserve_metadata_without_exposing_body(self) -> None:
+        messages: set[str] = set()
+        for path in ("http_error", "response"):
+            for field in ("message", "code"):
+                with self.subTest(path=path, field=field):
+                    secret = f"private-provider-detail-{path}-{field}"
+                    code = (
+                        "litellm.RateLimitError: RateLimitError: OpenAIException - maximum_token_reached"
+                        if field == "message" else "maximum_token_reached"
+                    )
+                    body = json.dumps({"error": {
+                        field: code,
+                        "detail": secret,
+                        "api_key": "hf_test_secret",
+                    }}).encode("utf-8")
+                    body += b" " * (4096 - len(body))
+                    headers = response_headers(X_Request_Id="quota-request-id", Retry_After="60")
+                    if path == "http_error":
+                        result = urllib.error.HTTPError(
+                            "https://router.example/v1/chat/completions", 429,
+                            "Too Many Requests", headers, io.BytesIO(body),
+                        )
+                    else:
+                        result = FakeResponse(body, status=429, headers=headers)
+                    with self.assertRaises(HuggingFaceTokenLimitError) as raised:
+                        make_provider(FakeOpener(result)).generate_structured(
+                            system_prompt="System", user_prompt="User",
+                            response_schema={"type": "object"},
+                        )
+
+                    error = raised.exception
+                    self.assertIsInstance(error, HuggingFaceRateLimitError)
+                    self.assertEqual(error.status_code, 429)
+                    self.assertEqual(error.request_id, "quota-request-id")
+                    self.assertEqual(error.retry_after, "60")
+                    self.assertEqual(error.upstream_error_code, "maximum_token_reached")
+                    self.assertIn("token", str(error).lower())
+                    for diagnostic in (str(error), repr(error), str(vars(error))):
+                        self.assertNotIn(secret, diagnostic)
+                        self.assertNotIn("hf_test_secret", diagnostic)
+                    messages.add(str(error))
+        self.assertEqual(len(messages), 1, "quota diagnostics should use a fixed safe message")
+
+    def test_upstream_rate_limit_is_distinct_from_token_limit_and_redacts_body(self) -> None:
+        for path in ("http_error", "response"):
+            for field in ("message", "code"):
+                with self.subTest(path=path, field=field):
+                    value = (
+                        "litellm.RateLimitError: RateLimitError: OpenAIException - "
+                        "rate_limit_exceeded see: https://provider.example/private-detail"
+                        if field == "message" else "rate_limit_exceeded"
+                    )
+                    body = json.dumps({"error": {
+                        field: value, "detail": "private-detail", "api_key": "hf_test_secret",
+                    }}).encode("utf-8")
+                    headers = response_headers(X_Request_Id="rate-request-id", Retry_After="7")
+                    if path == "http_error":
+                        result = urllib.error.HTTPError(
+                            "https://router.example/v1/chat/completions", 429,
+                            "Too Many Requests", headers, io.BytesIO(body),
+                        )
+                    else:
+                        result = FakeResponse(body, status=429, headers=headers)
+                    with self.assertRaises(HuggingFaceRateLimitError) as raised:
+                        make_provider(FakeOpener(result)).generate_structured(
+                            system_prompt="System", user_prompt="User",
+                            response_schema={"type": "object"},
+                        )
+                    error = raised.exception
+                    self.assertIs(type(error), HuggingFaceRateLimitError)
+                    self.assertEqual(error.upstream_error_code, "rate_limit_exceeded")
+                    self.assertEqual(error.status_code, 429)
+                    self.assertEqual(error.request_id, "rate-request-id")
+                    self.assertEqual(error.retry_after, "7")
+                    self.assertIn("rate_limit_exceeded", str(error))
+                    for diagnostic in (str(error), repr(error), str(vars(error))):
+                        self.assertNotIn("private-detail", diagnostic)
+                        self.assertNotIn("hf_test_secret", diagnostic)
+
+    def test_unrecognized_or_oversized_429_bodies_remain_generic(self) -> None:
+        quota_body = b'{"error":{"message":"maximum_token_reached"}}'
+        bodies = {
+            "malformed_json": b'{"error":{"message":"maximum_token_reached"}',
+            "oversized_valid_json": quota_body + b" " * (4097 - len(quota_body)),
+            "unknown_code": b'{"error":{"code":"another_limit","detail":"private-detail"}}',
+            "unrelated_field": b'{"error":{"detail":"maximum_token_reached"}}',
+            "top_level_message": b'{"message":"maximum_token_reached"}',
+            "string_error": b'{"error":"maximum_token_reached"}',
+            "invalid_field_type": b'{"error":{"code":["maximum_token_reached"]}}',
+            "different_code_suffix": b'{"error":{"message":"maximum_token_reached_later"}}',
+            "different_code_prefix": b'{"error":{"message":"not_maximum_token_reached"}}',
+            "non_object_body": b'["maximum_token_reached"]',
+            "deeply_nested_json": b'{"error":' + b"[" * 1100 + b"0" + b"]" * 1100 + b"}",
+            "invalid_utf8": b'\xff{"error":{"code":"maximum_token_reached"}}',
+        }
+        for path in ("http_error", "response"):
+            for case, body in bodies.items():
+                with self.subTest(path=path, case=case):
+                    headers = response_headers(X_Request_Id="rate-request-id", Retry_After="7")
+                    if path == "http_error":
+                        result = urllib.error.HTTPError(
+                            "https://router.example/v1/chat/completions", 429,
+                            "Too Many Requests", headers, io.BytesIO(body),
+                        )
+                    else:
+                        result = FakeResponse(body, status=429, headers=headers)
+                    with self.assertRaises(HuggingFaceRateLimitError) as raised:
+                        make_provider(FakeOpener(result)).generate_structured(
+                            system_prompt="System", user_prompt="User",
+                            response_schema={"type": "object"},
+                        )
+                    self.assertIs(type(raised.exception), HuggingFaceRateLimitError)
+                    self.assertEqual(raised.exception.status_code, 429)
+                    self.assertEqual(raised.exception.request_id, "rate-request-id")
+                    self.assertEqual(raised.exception.retry_after, "7")
+                    self.assertIsNone(raised.exception.upstream_error_code)
+                    self.assertNotIn("private-detail", str(raised.exception))
+
+    def test_known_token_quota_code_does_not_reclassify_other_http_statuses(self) -> None:
+        body = b'{"error":{"code":"maximum_token_reached"}}'
+        for path in ("http_error", "response"):
+            for status, error_type in (
+                (401, HuggingFaceAuthenticationError),
+                (403, HuggingFaceAuthenticationError),
+                (500, HuggingFaceHTTPError),
+            ):
+                with self.subTest(path=path, status=status):
+                    headers = response_headers(X_Request_Id="failure-request-id")
+                    if path == "http_error":
+                        result = urllib.error.HTTPError(
+                            "https://router.example/v1/chat/completions", status,
+                            "Request failed", headers, io.BytesIO(body),
+                        )
+                    else:
+                        result = FakeResponse(body, status=status, headers=headers)
+                    with self.assertRaises(error_type) as raised:
+                        make_provider(FakeOpener(result)).generate_structured(
+                            system_prompt="System", user_prompt="User",
+                            response_schema={"type": "object"},
+                        )
+                    self.assertIs(type(raised.exception), error_type)
+                    self.assertEqual(raised.exception.status_code, status)
+                    self.assertEqual(raised.exception.request_id, "failure-request-id")
+                    self.assertIsNone(raised.exception.upstream_error_code)
 
     def test_maps_network_and_invalid_response_failures(self) -> None:
         transport_provider = make_provider(
