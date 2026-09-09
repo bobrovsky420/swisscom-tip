@@ -6,7 +6,7 @@ their use:
 
 | File | Settings | Current selection |
 | --- | --- | --- |
-| [semantic-models.toml](semantic-models.toml) | Extraction/review profile, prompts, generation, limits and recovery | `apertus_70b`, `concept_extraction_v4` |
+| [semantic-models.toml](semantic-models.toml) | Extraction/review profile, prompts, generation, limits and recovery | `deepseek_v4_pro`, `concept_extraction_v4` |
 | [retrieval-models.toml](retrieval-models.toml) | Embedding and ranking profiles, timeouts and scoring contracts | `qwen_embedding_0_6b`, `apertus_ranking_8b` |
 
 For example, the shared local Apertus definition is:
@@ -77,10 +77,10 @@ replace those release artifacts.
 
 ## DeepSeek V4 Pro
 
-The optional `deepseek_v4_pro` profile is available in both role files and in the
-GUI's extraction profile selector. Both refer to the same direct API connection
+The `deepseek_v4_pro` profile is the default for extraction and review, and is
+also available as an optional ranking profile. Both refer to the same direct API connection
 in the catalog, with model `deepseek-v4-pro` and base URL
-`https://api.deepseek.com`. The existing active selections are unchanged.
+`https://api.deepseek.com`. Embedding uses local Qwen and ranking uses local Apertus 8B.
 
 Set `DEEPSEEK_API_KEY` in the environment of the CLI, MCP server or GUI launcher;
 no key is stored in TOML or sent to the browser. In a Unix-style shell:

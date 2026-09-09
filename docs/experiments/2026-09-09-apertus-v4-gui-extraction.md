@@ -7,7 +7,24 @@ further pipeline change collects independent structural errors together and
 repairs proposals before review; this change has been tested offline only. This
 is a known-case diagnostic, not an independent comparison or a qualified extractor.
 
-## Resume checkpoint - paused at the user's request
+## Resume checkpoint - DeepSeek selected after the model comparison
+
+The latest DeepSeek GUI job also failed review formatting. Continue from the
+[DeepSeek failure and updated resume checkpoint](2026-09-09-deepseek-v4-gui-extraction.md).
+
+The user selected DeepSeek V4 Pro to resume the GUI demo after the
+[three-model comparison](2026-09-09-v4-model-comparison.md). The extraction default
+is now `deepseek_v4_pro` with `concept_extraction_v4`, JSON-object output, thinking
+disabled and one repair. GUI provider retries remain disabled.
+
+Continue one GUI step at a time, waiting for confirmation after each step.
+First refresh the GUI at `http://127.0.0.1:8000`, open **Saved pages** and verify
+DeepSeek V4 Pro is selected with its key ready. Then select only the saved SEM
+English Residence page and preview a new extraction plan. Verify one page,
+four planned requests and zero requests sent before guiding the live run.
+Old job configurations remain frozen to their original models.
+
+## Earlier pause checkpoint - historical Apertus workflow
 
 The user paused after the pipeline repair passed offline verification. Resume
 the GUI demo from this point; do not start over or run inference automatically.

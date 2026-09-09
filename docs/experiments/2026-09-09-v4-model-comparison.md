@@ -191,6 +191,12 @@ defaults were changed by this experiment.
 
 ## Artifacts and implementation validation
 
+A later [DeepSeek GUI run](2026-09-09-deepseek-v4-gui-extraction.md) failed both
+reviews with misnested `scope_fields` and retained no candidate. Combined with
+the three runs above, retention was 3/4 on this known page. The original measured
+cohorts and their results remain as recorded; the follow-up documents the failure
+and subsequent offline correction to review feedback and prompt layout.
+
 Raw artifacts are ignored local files under `.local/experiments/model-comparison/`:
 
 - `20260909T184619Z-e02d4c9f`: primary Apertus/DeepSeek results and initial Groq 403 diagnostics.

@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 import json
+import re
 from pathlib import Path
 import tempfile
 import tomllib
@@ -36,13 +37,15 @@ class ModelConfigTests(unittest.TestCase):
 
     def test_catalog_exposes_resolved_models_and_credential_presence_only(self):
         with patch.object(api, "catalog_data", return_value={"sources": []}), patch.dict(
-            "os.environ", {"HF_TOKEN": "secret-sentinel"}, clear=True
+            "os.environ", {"HF_TOKEN": "secret-sentinel", "DEEPSEEK_API_KEY": "deepseek-secret-sentinel"}, clear=True
         ):
             data = api.catalog()
         profiles = {p["name"]: p for p in data["profiles"]}
         self.assertEqual(profiles["ollama_local"]["adapter"], "ollama")
         self.assertEqual(profiles["apertus_70b"]["model"], "swiss-ai/Apertus-70B-Instruct-2509")
-        self.assertTrue(profiles["apertus_70b"]["selected"])
+        self.assertFalse(profiles["apertus_70b"]["selected"])
+        self.assertTrue(profiles["deepseek_v4_pro"]["selected"])
+        self.assertTrue(profiles["deepseek_v4_pro"]["credential_ready"])
         self.assertTrue(profiles["apertus_70b"]["credential_ready"])
         self.assertNotIn("secret-sentinel", json.dumps(data))
         with self.assertRaises(HTTPException) as raised:
@@ -76,7 +79,7 @@ class ModelConfigTests(unittest.TestCase):
         expected = load_model_profiles(self.semantic)
         expected = replace(expected, recovery=replace(expected.recovery, max_retries=0))
         with patch.dict("os.environ", {"HF_TOKEN": "secret-sentinel"}):
-            snapshot = api.config_text("apertus_70b")
+            snapshot = api.config_text(expected.active_profile.name)
         self.assertNotIn("secret-sentinel", snapshot)
         data = tomllib.loads(snapshot)
         self.assertNotIn("model_profiles_file", data)
@@ -90,8 +93,8 @@ class ModelConfigTests(unittest.TestCase):
 
     def test_shared_edit_updates_both_consumers_but_not_existing_job_snapshots(self):
         snapshot = api.config_text("ollama_local")
-        self.semantic.write_text(self.semantic.read_text(encoding="utf-8").replace(
-            'active_profile = "apertus_70b"', 'active_profile = "ollama_local"'), encoding="utf-8")
+        self.semantic.write_text(re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "ollama_local"',
+                                        self.semantic.read_text(encoding="utf-8"), count=1), encoding="utf-8")
         old_model = "MichelRosselli/apertus:8b-instruct-2509-q4_k_m"
         self.catalog.write_text(self.catalog.read_text(encoding="utf-8").replace(old_model, "fixture:8b"), encoding="utf-8")
         semantic = load_model_profiles(self.semantic)

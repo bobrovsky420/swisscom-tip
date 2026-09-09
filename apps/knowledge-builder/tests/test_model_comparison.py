@@ -4,6 +4,7 @@ from contextlib import redirect_stdout
 import importlib.util
 import io
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -74,7 +75,8 @@ class ModelComparisonTests(unittest.TestCase):
         for name in ("semantic-models.toml", "model-profiles.toml"):
             (self.path / name).write_bytes((ROOT / "config" / name).read_bytes())
         path = self.path / "semantic-models.toml"
-        path.write_text(path.read_text().replace('active_profile = "apertus_70b"', 'active_profile = "groq_gpt_oss_120b"'))
+        path.write_text(re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "groq_gpt_oss_120b"',
+                               path.read_text(), count=1))
         return load_model_profiles(path)
 
     def test_groq_named_extraction_profile_requires_its_own_key(self):

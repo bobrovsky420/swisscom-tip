@@ -3,7 +3,7 @@ schema_version = "swisstip.semantic-model-profiles/v1"
 model_profiles_file = "model-profiles.toml"
 
 [semantic_model]
-active_profile = "apertus_70b"
+active_profile = "deepseek_v4_pro"
 
 [generation]
 temperature = 0.0

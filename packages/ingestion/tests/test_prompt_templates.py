@@ -11,6 +11,17 @@ from swisstip.ingestion import claim_contracts as contracts
 
 
 class PromptTemplateTests(unittest.TestCase):
+    def test_review_shape_example_has_sibling_assessments_and_no_implicit_approval(self):
+        prompt = load_bundled_prompt("structured_claim_review_v4.md")
+        example = prompt.split("```json\n")[1].split("```")[0]
+        schema = contracts.review_schema([], ["section-example"])
+        claim_schema = schema["properties"]["concept_reviews"]["items"]["properties"]["claim_support"]["items"]
+        entry = contracts.decode(example, claim_schema)
+        self.assertEqual(set(entry["condition_logic"]), {"source_applicability", "decision", "reason"})
+        self.assertEqual(set(entry["scope_fields"]), set(contracts.SCOPE_FIELDS))
+        self.assertEqual(entry["decision"], "uncertain")
+        self.assertTrue(all(field["decision"] == "uncertain" for field in entry["scope_fields"].values()))
+
     def test_worked_example_has_cited_connected_logic_and_separate_issuing_role(self):
         text = load_bundled_prompt("structured_claim_example_v4.md")
         ref = text.split("Source evidence ID: ")[1].splitlines()[0]
@@ -40,7 +51,7 @@ class PromptTemplateTests(unittest.TestCase):
             "concept_extraction_v3": ("ccd968b7b59b7ef144255483d42cda016872c0c82b49d00deb384578b234ee83",
                                       "893394d896520067767f1c69eaeefd8efad780658710b99fde64112d8390c78e"),
             "concept_extraction_v4": ("4b870022420a0be39e16b8d993a8b1a44ee122375088807835d3d1c4efc5290e",
-                                      "19412842e494e320b666a084c9c97da89d0204dd60e64465ac67ff14762ce284"),
+                                      "854222e23c4209f5786f2e09cd1ad97f7d9f9f314fe3340eb8a881a4c616ed9b"),
         }
         for profile, (extraction, review) in expected.items():
             with self.subTest(profile=profile):

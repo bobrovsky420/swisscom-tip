@@ -47,8 +47,8 @@ validation followed by semantic review. The response mode is recorded in the
 effective profile and separates model checkpoints. A complete JSON response alone
 does not establish valid claims or sufficient coverage.
 
-The repository defaults to `concept_extraction_v4` with Apertus 70B through the
-Hugging Face router and PublicAI, using `HF_TOKEN` from the environment. V4 adds
+The repository defaults to `concept_extraction_v4` with DeepSeek V4 Pro through
+the direct DeepSeek API, using `DEEPSEEK_API_KEY` from the environment. V4 adds
 logical source blocks, structured claims, separate semantic assessments, source
 coverage auditing and one bounded repair. Use `--dry-run` to inspect the complete
 source inventory without a model call. `--structured` explicitly selects v4 when
@@ -231,7 +231,7 @@ this value to select a preconfigured profile:
 
 ```toml
 [semantic_model]
-active_profile = "apertus_70b"
+active_profile = "deepseek_v4_pro"
 ```
 
 The available values are:
@@ -240,8 +240,8 @@ The available values are:
 | --- | --- | --- | --- |
 | `ollama_local` | Local Ollama API | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` | Offline/local testing with an unofficial community package |
 | `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
-| `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Repository default |
-| `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Optional JSON-object extraction/review; requires `DEEPSEEK_API_KEY` |
+| `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Optional hosted Apertus extraction/review |
+| `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Repository default; JSON-object extraction/review; requires `DEEPSEEK_API_KEY` |
 | `groq_gpt_oss_120b` | Groq API | `openai/gpt-oss-120b` | Optional strict-schema extraction/review; requires `GROQ_API_KEY` |
 
 For example, switching to local 8B requires only:

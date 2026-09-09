@@ -174,6 +174,16 @@ class StructuredExtraction:
                     stage = "review_input"
                     review_input = {"untrusted_source": source,
                                     "concepts": [dict(c, rendered_description=contracts.describe(c)) for c in valid]}
+                    if feedback and feedback.get("failure_stage") == "review_validation":
+                        # The extractor also receives repair feedback, but cannot
+                        # fix the reviewer's JSON. Give the next reviewer its own
+                        # bounded diagnostic; do not reuse an identical review request.
+                        error = feedback["validation_error"]
+                        review_input["review_validation_feedback"] = {
+                            "previous_revision": feedback["revision"],
+                            "validation_error": error[:2000],
+                            "validation_error_truncated": len(error) > 2000,
+                        }
                     # Bound review input including verbose model output, not just source text.
                     review_text = json.dumps(review_input, ensure_ascii=False)
                     if len(review_text) > engine._chunk_content_characters * 4:

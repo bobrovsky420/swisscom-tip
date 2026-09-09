@@ -20,6 +20,12 @@ connected conditions and separate authority actions with synthetic visitor-badge
 facts; it is never source evidence. V4 reviews now use the versioned
 `swisstip.structured-review/v2` contract, including condition logic and every
 scope field on each claim. Custom v4 review prompts must request that full shape.
+The review prompt includes a claim-assessment shape example showing
+`condition_logic` and `scope_fields` as siblings. When an earlier review fails
+local validation, the next bounded revision supplies `review_validation_feedback`
+to the reviewer as well as the existing repair feedback to the extractor. The
+diagnostic is capped at 2000 characters within the existing review input limit;
+it is not evidence or approval, and no additional revision or call is introduced.
 
 For local customization, copy the complete effective prompt from a dry-run
 report's `effective_prompts.extraction.text` or `effective_prompts.review.text`

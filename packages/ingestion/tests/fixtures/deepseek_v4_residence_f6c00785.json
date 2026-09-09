@@ -1,0 +1,300 @@
+{
+  "provenance": {
+    "job_id": "f6c0078579204723af48065b59557fa0",
+    "report_sha256": "e340c50debb595e16ecc0b5a1c4fe6bb3f9c418841846bee5e69a60e6d63c106",
+    "source_sha256": "4e24815fa1ac301c1d0e3c4cd7c4f63eec1802e3af00529526774c7515d578bb",
+    "prompt_hashes": {
+      "extraction": "4b870022420a0be39e16b8d993a8b1a44ee122375088807835d3d1c4efc5290e",
+      "review": "19412842e494e320b666a084c9c97da89d0204dd60e64465ac67ff14762ce284"
+    },
+    "note": "Exact live proposals and raw failed reviews. Corrected responses in tests are offline controls, never observed model repairs."
+  },
+  "evidence": {
+    "section-0008:0:362": {
+      "section_id": "section-0008",
+      "scope_id": "scope-0008",
+      "text": "Residence\nAnyone who works during his/her stay in Switzerland or who remains in Switzerland for longer than three months requires a permit. Residence permits are issued by the Cantonal Migration Offices. A distinction is made between short-term residence permits (less than 1 year), annual residence permits (limited) and permanent residence permits (unlimited)."
+    },
+    "section-0011:0:83": {
+      "section_id": "section-0011",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nBrochure Social insurances\n\nInformation for foreign nationals"
+    },
+    "section-0012:0:41": {
+      "section_id": "section-0012",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nFurther information"
+    },
+    "section-0013:0:50": {
+      "section_id": "section-0013",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nLast modification 14.11.2011"
+    },
+    "section-0016:0:89": {
+      "section_id": "section-0016",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nhttps://www.sem.admin.ch/content/sem/en/home/themen/aufenthalt.html"
+    },
+    "section-0023:0:66": {
+      "section_id": "section-0023",
+      "scope_id": "scope-0017",
+      "text": "Residence > Footer > Stay informed\nState Secretariat for Migration"
+    }
+  },
+  "initial_proposals": [
+    {
+      "claims": [
+        {
+          "claim_id": "permit-required",
+          "condition_groups": [
+            {
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "group_id": "either-condition",
+              "members": [
+                "works",
+                "stays-long"
+              ],
+              "operator": "OR"
+            }
+          ],
+          "condition_root": "either-condition",
+          "conditions": [
+            {
+              "condition_id": "works",
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "operator": "stated",
+              "subject": "anyone",
+              "text": "works during his/her stay in Switzerland",
+              "time_window": "unspecified",
+              "unit": "unspecified",
+              "value": "works during stay"
+            },
+            {
+              "condition_id": "stays-long",
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "operator": "gt",
+              "subject": "anyone",
+              "text": "remains in Switzerland for longer than three months",
+              "time_window": "unspecified",
+              "unit": "months",
+              "value": "3"
+            }
+          ],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "requirement",
+          "limitations": [],
+          "scope": {
+            "actor": "anyone",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "anyone",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Anyone who works during his/her stay in Switzerland or who remains in Switzerland for longer than three months requires a permit."
+        },
+        {
+          "claim_id": "permits-issued",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "unspecified",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Residence permits are issued by the Cantonal Migration Offices."
+        },
+        {
+          "claim_id": "permit-types",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [],
+          "scope": {
+            "actor": "unspecified",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "unspecified",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "A distinction is made between short-term residence permits (less than 1 year), annual residence permits (limited) and permanent residence permits (unlimited)."
+        }
+      ],
+      "concept_type": "RULE",
+      "label": "Residence permits",
+      "limitations": [],
+      "primary_section_id": "section-0008",
+      "questions": [
+        "When does a person require a residence permit in Switzerland?",
+        "Who issues residence permits?",
+        "What types of residence permits are distinguished?"
+      ]
+    }
+  ],
+  "repaired_proposals": [
+    {
+      "claims": [
+        {
+          "claim_id": "permit-required",
+          "condition_groups": [
+            {
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "group_id": "either-condition",
+              "members": [
+                "works",
+                "stays-long"
+              ],
+              "operator": "OR"
+            }
+          ],
+          "condition_root": "either-condition",
+          "conditions": [
+            {
+              "condition_id": "works",
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "operator": "stated",
+              "subject": "anyone",
+              "text": "works during his/her stay in Switzerland",
+              "time_window": "unspecified",
+              "unit": "unspecified",
+              "value": "works during stay"
+            },
+            {
+              "condition_id": "stays-long",
+              "evidence_ids": [
+                "section-0008:0:362"
+              ],
+              "operator": "gt",
+              "subject": "anyone",
+              "text": "remains in Switzerland for longer than three months",
+              "time_window": "unspecified",
+              "unit": "months",
+              "value": "3"
+            }
+          ],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "requirement",
+          "limitations": [],
+          "scope": {
+            "actor": "anyone",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "anyone",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Anyone who works during his/her stay in Switzerland or who remains in Switzerland for longer than three months requires a permit."
+        },
+        {
+          "claim_id": "permits-issued",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "unspecified",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Residence permits are issued by the Cantonal Migration Offices."
+        },
+        {
+          "claim_id": "permit-types",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [],
+          "scope": {
+            "actor": "unspecified",
+            "jurisdiction": "Switzerland",
+            "permit_status": "unspecified",
+            "population": "unspecified",
+            "procedure_branch": "unspecified",
+            "recipient": "unspecified"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "A distinction is made between short-term residence permits (less than 1 year), annual residence permits (limited) and permanent residence permits (unlimited)."
+        }
+      ],
+      "concept_type": "RULE",
+      "label": "Residence permits",
+      "limitations": [],
+      "primary_section_id": "section-0008",
+      "questions": [
+        "When does a person require a residence permit in Switzerland?",
+        "Who issues residence permits?",
+        "What types of residence permits are distinguished?"
+      ]
+    }
+  ],
+  "raw_reviews": [
+    "{\n  \"schema_version\": \"swisstip.structured-review/v2\",\n  \"concept_reviews\": [\n    {\n      \"concept_index\": 0,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"permit-required\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence: anyone who works or stays longer than three months requires a permit.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source rule is conditional on working or staying longer than three months. The extracted OR group with two conditions correctly represents the prerequisites.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'anyone' matches the source's 'Anyone'.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Switzerland' is supported by 'in Switzerland'.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified; the source does not state a specific permit status for the requirement.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'anyone' matches the source's 'Anyone' as the entity bearing the requirement.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified; the source does not state who receives the permit application.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch is unspecified; the source does not mention a specific procedure branch.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"permits-issued\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence: residence permits are issued by the Cantonal Migration Offices.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source assertion is unconditional; empty conditions are appropriate.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population is unspecified; the source does not specify a population for this fact.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Switzerland' is supported by the context of residence permits in Switzerland.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified; the source does not state a specific permit status.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'Cantonal Migration Offices' is supported by the source's 'issued by the Cantonal Migration Offices'.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified; the source does not state who receives the permits.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch is unspecified; the source does not mention a specific procedure branch.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"permit-types\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence distinguishing three types of residence permits.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source assertion is unconditional; empty conditions are appropriate.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population is unspecified; the source does not specify a population for this fact.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Switzerland' is supported by the context of residence permits in Switzerland.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified; the source does not state a specific permit status.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor is unspecified; the source does not state who makes the distinction.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified; the source does not state a recipient.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch is unspecified; the source does not mention a specific procedure branch.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"All populated scope fields across claims are supported by the source evidence.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept captures all substantive statements in the source block: the requirement, the issuing authority, and the permit types.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question is directly answered by the first claim: a person requires a permit if they work or stay longer than three months.\"\n        },\n        {\n          \"question_index\": 1,\n          \"decision\": \"supported\",\n          \"reason\": \"The question is directly answered by the second claim: residence permits are issued by the Cantonal Migration Offices.\"\n        },\n        {\n          \"question_index\": 2,\n          \"decision\": \"supported\",\n          \"reason\": \"The question is directly answered by the third claim: short-term, annual, and permanent residence permits are distinguished.\"\n        }\n      ]\n    }\n  ],\n  \"block_coverage\": [\n    {\n      \"section_id\": \"section-0008\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [0],\n      \"reason\": \"All substantive statements in this block are represented by claims permit-required, permits-issued, and permit-types.\"\n    },\n    {\n      \"section_id\": \"section-0011\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a brochure title and audience label; no substantive factual content to extract.\"\n    },\n    {\n      \"section_id\": \"section-0012\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading 'Further information'; no substantive factual content.\"\n    },\n    {\n      \"section_id\": \"section-0013\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a modification date; no substantive factual content.\"\n    },\n    {\n      \"section_id\": \"section-0016\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a URL; no substantive factual content.\"\n    },\n    {\n      \"section_id\": \"section-0023\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only the name 'State Secretariat for Migration'; no substantive factual content.\"\n    }\n  ]\n}",
+    "{\n  \"schema_version\": \"swisstip.structured-review/v2\",\n  \"concept_reviews\": [\n    {\n      \"concept_index\": 0,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"permit-required\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence: 'Anyone who works during his/her stay in Switzerland or who remains in Switzerland for longer than three months requires a permit.' The kind 'requirement' is appropriate because the sentence imposes an obligation.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source rule is conditional: the permit requirement applies only if the person works during their stay OR remains longer than three months. The extracted conditions 'works' and 'stays-long' capture both prerequisites, and the OR group correctly represents the disjunction.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's population is 'anyone', which matches the source's 'Anyone'. The evidence explicitly states this population.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's jurisdiction is 'Switzerland', which matches the source's 'in Switzerland'. The evidence explicitly states this jurisdiction.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's permit_status is 'unspecified'. The source does not specify a particular permit status for this requirement; it only says 'a permit' is required. Leaving it unspecified is faithful.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's actor is 'anyone', which matches the source's 'Anyone'. The evidence explicitly states that anyone who meets the conditions requires a permit, so the actor is the person subject to the requirement.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's recipient is 'unspecified'. The source does not state to whom the permit requirement is directed (e.g., an application recipient). Leaving it unspecified is faithful.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's procedure_branch is 'unspecified'. The source does not specify a particular procedure branch for this requirement. Leaving it unspecified is faithful.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"permits-issued\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence: 'Residence permits are issued by the Cantonal Migration Offices.' The kind 'fact' is appropriate because it states a factual relationship.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source assertion is unconditional: it states that residence permits are issued by the Cantonal Migration Offices without any conditions. The extracted conditions are empty, which correctly represents an unconditional fact.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's population is 'unspecified'. The source does not specify a population for this fact; it only states who issues permits. Leaving it unspecified is faithful.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's jurisdiction is 'Switzerland'. The source context is about Switzerland, and the Cantonal Migration Offices are Swiss authorities. The evidence supports this jurisdiction.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's permit_status is 'unspecified'. The source does not specify a particular permit status for this fact; it refers to residence permits generally. Leaving it unspecified is faithful.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's actor is 'Cantonal Migration Offices'. The source explicitly states that these offices issue residence permits, so the actor is supported.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's recipient is 'unspecified'. The source does not state to whom the permits are issued. Leaving it unspecified is faithful.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's procedure_branch is 'unspecified'. The source does not specify a particular procedure branch for this fact. Leaving it unspecified is faithful.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"permit-types\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly paraphrases the source sentence: 'A distinction is made between short-term residence permits (less than 1 year), annual residence permits (limited) and permanent residence permits (unlimited).' The kind 'fact' is appropriate because it states a factual distinction.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source assertion is unconditional: it states a distinction between permit types without any conditions. The extracted conditions are empty, which correctly represents an unconditional fact.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's population is 'unspecified'. The source does not specify a population for this fact; it only describes permit types. Leaving it unspecified is faithful.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's jurisdiction is 'Switzerland'. The source context is about Switzerland, and the permit types are Swiss residence permits. The evidence supports this jurisdiction.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's permit_status is 'unspecified'. The source does not specify a particular permit status for this fact; it describes categories of permits. Leaving it unspecified is faithful.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's actor is 'unspecified'. The source does not specify an actor for this distinction; it is a general statement. Leaving it unspecified is faithful.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's recipient is 'unspecified'. The source does not specify a recipient for this fact. Leaving it unspecified is faithful.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"The claim's procedure_branch is 'unspecified'. The source does not specify a procedure branch for this fact. Leaving it unspecified is faithful.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept's scope is supported. The population, jurisdiction, and actor for the requirement claim are explicitly stated in the source. The issuing authority for the fact claim is also explicitly stated. Other scope fields are unspecified where the source does not provide information, which is faithful.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept is complete for the bounded claim. It includes the requirement with its conditions, the issuing authority, and the permit types. The source block does not contain additional conditions, exceptions, or details that are omitted. The three questions cover the main points.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question 'When does a person require a residence permit in Switzerland?' is answered by the claim 'permit-required', which states the conditions (works during stay OR remains longer than three months). The answer follows completely from the candidate and cited evidence.\"\n        },\n        {\n          \"question_index\": 1,\n          \"decision\": \"supported\",\n          \"reason\": \"The question 'Who issues residence permits?' is answered by the claim 'permits-issued', which states that Cantonal Migration Offices issue them. The answer follows completely from the candidate and cited evidence.\"\n        },\n        {\n          \"question_index\": 2,\n          \"decision\": \"supported\",\n          \"reason\": \"The question 'What types of residence permits are distinguished?' is answered by the claim 'permit-types', which lists short-term, annual, and permanent permits. The answer follows completely from the candidate and cited evidence.\"\n        }\n      ]\n    }\n  ],\n  \"block_coverage\": [\n    {\n      \"section_id\": \"section-0008\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [0],\n      \"reason\": \"All substantive statements in this block are represented by claims in concept 0: the permit requirement (claim 'permit-required'), the issuing authority (claim 'permits-issued'), and the permit types (claim 'permit-types'). Each claim is supported by the block's evidence.\"\n    },\n    {\n      \"section_id\": \"section-0011\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading and a link to a brochure, with no substantive prose, conditions, procedures, tables, or authority contacts. It is excluded by the content policy as navigation/heading only.\"\n    },\n    {\n      \"section_id\": \"section-0012\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading and a link to further information, with no substantive content. It is excluded by the content policy as navigation/heading only.\"\n    },\n    {\n      \"section_id\": \"section-0013\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading and a last modification date, with no substantive content. It is excluded by the content policy as navigation/heading only.\"\n    },\n    {\n      \"section_id\": \"section-0016\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading and a URL, with no substantive content. It is excluded by the content policy as navigation/heading only.\"\n    },\n    {\n      \"section_id\": \"section-0023\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"This block contains only a heading and the name 'State Secretariat for Migration', with no substantive prose, conditions, procedures, tables, or authority contacts. It is excluded by the content policy as navigation/heading only.\"\n    }\n  ]\n}"
+  ],
+  "errors": [
+    "response.concept_reviews[0].claim_support[0]: missing or unknown fields; missing=['scope_fields']; unknown=[]",
+    "response.concept_reviews[0].claim_support[0]: missing or unknown fields; missing=['scope_fields']; unknown=[]"
+  ]
+}

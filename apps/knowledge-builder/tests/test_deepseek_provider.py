@@ -2,6 +2,7 @@
 
 import io
 import json
+import re
 from pathlib import Path
 import tempfile
 import unittest
@@ -30,7 +31,8 @@ class DeepSeekBuilderTests(unittest.TestCase):
         for name in ("semantic-models.toml", "model-profiles.toml"):
             (self.path / name).write_bytes((ROOT / "config" / name).read_bytes())
         self.config_path = self.path / "semantic-models.toml"
-        text = self.config_path.read_text(encoding="utf-8").replace('active_profile = "apertus_70b"', 'active_profile = "deepseek_v4_pro"')
+        text = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "deepseek_v4_pro"',
+                      self.config_path.read_text(encoding="utf-8"), count=1)
         self.config_path.write_text(text, encoding="utf-8")
         self.config = load_model_profiles(self.config_path)
         self.opener = Mock()

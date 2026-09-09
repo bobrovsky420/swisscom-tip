@@ -68,25 +68,18 @@ class ModelProfileTests(unittest.TestCase):
     def test_repository_config_resolves_selected_profile(self) -> None:
         config = load_model_profiles(REPOSITORY_ROOT / "config" / "semantic-models.toml")
 
-        self.assertIn(config.active_profile.name, ("ollama_local", "apertus_8b", "apertus_70b"))
+        self.assertEqual(config.active_profile.name, "deepseek_v4_pro")
         self.assertEqual(
             config.schema_version,
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertEqual(
-            config.active_profile.model,
-            {"apertus_8b": "swiss-ai/Apertus-8B-Instruct-2509",
-             "apertus_70b": "swiss-ai/Apertus-70B-Instruct-2509",
-             "ollama_local": "MichelRosselli/apertus:8b-instruct-2509-q4_k_m"}[config.active_profile.name],
-        )
-        if config.active_profile.name != "ollama_local":
-            self.assertEqual(config.active_profile.adapter, "huggingface")
-            self.assertIsNone(config.active_profile.num_ctx)
-            self.assertIsNone(config.active_profile.keep_alive)
-            self.assertEqual(config.active_profile.provider, "publicai")
-            self.assertEqual(config.active_profile.token_env, "HF_TOKEN")
-        else:
-            self.assertEqual(config.active_profile.adapter, "ollama")
+        self.assertEqual(config.active_profile.model, "deepseek-v4-pro")
+        self.assertEqual(config.active_profile.adapter, "deepseek")
+        self.assertIsNone(config.active_profile.num_ctx)
+        self.assertIsNone(config.active_profile.keep_alive)
+        self.assertIsNone(config.active_profile.provider)
+        self.assertEqual(config.active_profile.token_env, "DEEPSEEK_API_KEY")
+        self.assertEqual(config.active_profile.response_mode, "json_object")
         self.assertIsNone(config.active_profile.bill_to)
         self.assertEqual(config.generation.temperature, 0.0)
         self.assertGreater(config.generation.max_output_tokens, 0)
