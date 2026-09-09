@@ -93,7 +93,9 @@ class ZhChWorkflowTests(unittest.TestCase):
                 # The loopback model returns the historical v3 proposal/review contract.
                 config = re.sub(r'(?m)^prompt_profile\s*=.*$', 'prompt_profile = "concept_extraction_v3"', config)
                 self.assertIn('active_profile = "ollama_local"', config)
-                config = config.replace("http://127.0.0.1:11434", f"http://127.0.0.1:{server.server_port}")
+                catalog = (ROOT / "config/model-profiles.toml").read_text(encoding="utf-8")
+                catalog = catalog.replace("http://127.0.0.1:11434", f"http://127.0.0.1:{server.server_port}")
+                (Path(directory) / "model-profiles.toml").write_text(catalog, encoding="utf-8")
                 config_path = Path(directory) / "test.toml"
                 config_path.write_text(config, encoding="utf-8")
 

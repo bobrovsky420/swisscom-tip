@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import math
-import tomllib
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, TypeAlias, cast
 from urllib.parse import urlsplit
 
+from swisstip.core.model_profiles import load_model_config
 
 AdapterName: TypeAlias = Literal["ollama", "huggingface"]
 CONFIG_SCHEMA_VERSION = "swisstip.semantic-model-profiles/v1"
@@ -106,16 +106,9 @@ def load_model_profiles(path: str | Path) -> SemanticModelConfig:
 
     config_path = Path(path)
     try:
-        with config_path.open("rb") as config_file:
-            document = tomllib.load(config_file)
-    except tomllib.TOMLDecodeError as exc:
-        raise ModelProfileConfigurationError(
-            f"invalid TOML in {config_path}: {exc}"
-        ) from exc
-    except OSError as exc:
-        raise ModelProfileConfigurationError(
-            f"cannot read model profile file {config_path}: {exc}"
-        ) from exc
+        document = load_model_config(config_path)
+    except ValueError as exc:
+        raise ModelProfileConfigurationError(str(exc)) from exc
 
     _reject_secret_fields(document)
     _reject_unknown_fields(document, _TOP_LEVEL_FIELDS, "configuration")

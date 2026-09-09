@@ -1,12 +1,12 @@
 """Named deployment profiles selected independently for embedding and ranking."""
 
 from pathlib import Path
-import tomllib
 from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
 
 from swisstip.core.contracts import ShortText, StrictModel
+from swisstip.core.model_profiles import load_model_config
 from .providers import GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider
 
 
@@ -80,4 +80,4 @@ class ProviderSettings(StrictModel):
 
 
 def load_provider_settings(path: Path) -> ProviderSettings:
-    return ProviderSettings.model_validate(tomllib.loads(path.read_text(encoding="utf-8")))
+    return ProviderSettings.model_validate(load_model_config(path))

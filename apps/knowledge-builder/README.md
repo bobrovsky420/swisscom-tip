@@ -29,7 +29,7 @@ Python 3.11 or newer is required. From the repository root:
 
 ```shell
 python -m venv .venv
-.venv\Scripts\python.exe -m pip install -e packages/ingestion -e apps/knowledge-builder
+./.venv/Scripts/python.exe -m pip install -e packages/core -e packages/ingestion -e apps/knowledge-builder
 ```
 
 On macOS or Linux, use `.venv/bin/python` instead. The examples below use the
@@ -223,9 +223,11 @@ support. This provides file-based customization; there is no app prompt editor y
 
 ### Select one of the three model profiles
 
-All non-secret model settings are in
+Model identities and connections are in the shared
+[`config/model-profiles.toml`](../../config/model-profiles.toml) catalog. Extraction
+settings and profile selection remain in
 [`config/semantic-models.toml`](../../config/semantic-models.toml). Change only
-this value to select a complete preconfigured provider and model:
+this value to select a preconfigured profile:
 
 ```toml
 [semantic_model]
@@ -247,12 +249,14 @@ For example, switching to local 8B requires only:
 active_profile = "ollama_local"
 ```
 
-The profile owns its adapter, URL, model, provider, timeout, and optional billing
-configuration. The Ollama profile also owns its context and keep-alive settings.
-Generation and extraction limits are shared settings. To add another model
-using the implemented Ollama or Hugging Face adapter, define it once under
-`[profiles.<name>]`; future switches then change only `active_profile`. A new
-provider API requires a corresponding adapter implementation.
+Each extraction profile refers to a catalog entry using `model_profile` and keeps
+its timeout, response mode and any Ollama context/keep-alive settings. The catalog
+owns adapter, URL, model, provider and optional billing configuration. Generation
+and extraction limits apply across extraction profiles. To add another model using
+Ollama or Hugging Face, define it once in the catalog and add a referring extraction
+profile; future switches change only `active_profile`. A new provider API requires
+a corresponding adapter implementation. See the [configuration examples and
+standalone-config compatibility](../../config/README.md).
 
 Selection is explicit and fail-closed. The command does not fall back to another
 profile or model after an authentication, quota, availability, transport, or

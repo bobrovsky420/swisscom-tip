@@ -300,6 +300,7 @@ class ModelProfileTests(unittest.TestCase):
     def _load(self, document: str):
         with tempfile.TemporaryDirectory() as temporary_directory:
             path = Path(temporary_directory) / "models.toml"
+            (path.parent / "model-profiles.toml").write_bytes((REPOSITORY_ROOT / "config/model-profiles.toml").read_bytes())
             path.write_text(document, encoding="utf-8")
             return load_model_profiles(path)
 

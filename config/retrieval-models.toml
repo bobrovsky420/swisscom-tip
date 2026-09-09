@@ -1,6 +1,8 @@
 # Runtime retrieval only. OpenCode's caller model is configured separately.
 # A real release must pin these models/adapter IDs and contain a matching index.
 schema_version = "swisstip.retrieval-model-profiles/v1"
+# Resolved relative to this file; role options remain below.
+model_profiles_file = "model-profiles.toml"
 
 [embedding]
 active_profile = "qwen_embedding_0_6b"
@@ -9,64 +11,45 @@ active_profile = "qwen_embedding_0_6b"
 active_profile = "apertus_ranking_8b"
 
 [profiles.qwen_embedding_0_6b]
-adapter = "ollama"
+model_profile = "qwen_embedding_0_6b"
 role = "embedding"
-model = "qwen3-embedding:0.6b"
-base_url = "http://127.0.0.1:11434"
 timeout_seconds = 30.0
 
 [profiles.qwen_embedding_4b]
-adapter = "ollama"
+model_profile = "qwen_embedding_4b"
 role = "embedding"
-model = "qwen3-embedding:4b"
-base_url = "http://127.0.0.1:11434"
 timeout_seconds = 30.0
 
 [profiles.qwen_embedding_8b]
-adapter = "ollama"
+model_profile = "qwen_embedding_8b"
 role = "embedding"
-model = "qwen3-embedding:8b"
-base_url = "http://127.0.0.1:11434"
 timeout_seconds = 30.0
 
 [profiles.apertus_ranking_8b]
-adapter = "ollama"
+model_profile = "apertus_8b_ollama"
 role = "ranking"
-model = "MichelRosselli/apertus:8b-instruct-2509-q4_k_m"
-base_url = "http://127.0.0.1:11434"
 timeout_seconds = 60.0
 
 [profiles.qwen_ranking_9b]
-adapter = "ollama"
+model_profile = "qwen_ranking_9b"
 role = "ranking"
-model = "qwen3.5:9b"
-base_url = "http://127.0.0.1:11434"
 timeout_seconds = 60.0
 
 [profiles.groq_gpt_oss_20b]
-adapter = "groq"
+model_profile = "groq_gpt_oss_20b"
 role = "ranking"
-model = "openai/gpt-oss-20b"
-base_url = "https://api.groq.com/openai/v1"
-token_env = "GROQ_API_KEY"
 timeout_seconds = 60.0
 
 [profiles.groq_gpt_oss_120b]
-adapter = "groq"
+model_profile = "groq_gpt_oss_120b"
 role = "ranking"
-model = "openai/gpt-oss-120b"
-base_url = "https://api.groq.com/openai/v1"
-token_env = "GROQ_API_KEY"
 timeout_seconds = 60.0
 
 # Experimental ordinal rubric: 0 unrelated, 1 topic-only, 2 partial, 3 direct.
 # Requires groq-ranking/v2 in the release; cutoff 3 selects direct support only.
 # Separate evaluation required. Existing active selection remains v1.
 [profiles.groq_answer_relevance_20b]
-adapter = "groq"
+model_profile = "groq_gpt_oss_20b"
 role = "ranking"
 scoring_contract = "answer_relevance_v2"
-model = "openai/gpt-oss-20b"
-base_url = "https://api.groq.com/openai/v1"
-token_env = "GROQ_API_KEY"
 timeout_seconds = 60.0

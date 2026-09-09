@@ -7,6 +7,35 @@ further pipeline change collects independent structural errors together and
 repairs proposals before review; this change has been tested offline only. This
 is a known-case diagnostic, not an independent comparison or a qualified extractor.
 
+## Resume checkpoint - paused at the user's request
+
+The user paused after the pipeline repair passed offline verification. Resume
+the GUI demo from this point; do not start over or run inference automatically.
+The user requires one step at a time and confirmation after every step.
+
+- Next step: in the GUI at `http://127.0.0.1:8000`, open Saved pages, keep only
+  `SEM residence overview (en)` / `ch-sem-residence-en` selected, and click
+  **Preview extraction plan**. If the GUI is stopped, first guide reopening it
+  using `scripts/admin/run.py` with the repository-local Python environment.
+- Inspect the new saved plan: Apertus 70B, `concept_extraction_v4`, the original
+  source hash recorded below, one page, four planned requests, zero sent. Then
+  stop for user confirmation before Run extraction / Confirm extraction.
+- Latest actual extraction: `8d0e464828e74e2bbc024ec4f8d0702d`, zero candidates and
+  Needs attention. The subsequent pipeline repair has NOT had a live run.
+  Prompt hashes did not change in that pipeline repair, so they alone do not
+  establish that a live run used the new control flow.
+- Current extraction route: Apertus 70B through Hugging Face/PublicAI, structured
+  JSON, one repair. GUI jobs disable provider retries. The preview's four-call
+  ceiling remains an upper bound; repeating the saved structural failure now
+  needs two extraction calls and no review. Do not weaken validation to continue.
+- Latest offline artifacts: `.local/admin/structural-repair-8d0e4648-20260909/`
+  contains `plan.json`, `audit.json`, `replay.json` and `repair-request.json`.
+  Original live job reports and checkpoints are preserved. The tests and limits
+  are documented in the final section below.
+- The implementation, tests and prior diagnostic are committed under
+  `Strengthen v4 condition and authority role checks`. This resume note is
+  the remaining uncommitted change at the pause checkpoint.
+
 ## Preserved live result
 
 GUI job `bf0585b3892a49bc9aa64fc814b79b41` processed one saved SEM English

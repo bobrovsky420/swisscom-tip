@@ -118,6 +118,7 @@ def freeze_metadata(destination: Path, repo: Path) -> dict:
     selected = {SUPPORT / name for name in (
         "prepare_packet.py", "review-schema.json", "evaluation-suite.json", "REVIEW.md", "README.md")}
     selected.add(repo / "config/semantic-models.toml")
+    selected.add(repo / "config/model-profiles.toml")
     for base in (repo / "packages/ingestion/src", repo / "apps/knowledge-builder/src", repo / "packages/core/src"):
         selected.update(base.rglob("*.py"))
     selected.update((repo / "packages/core/schemas").rglob("*.json"))

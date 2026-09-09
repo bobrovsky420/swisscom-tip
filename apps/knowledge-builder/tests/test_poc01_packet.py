@@ -22,6 +22,7 @@ class Poc01PacketTests(unittest.TestCase):
         self.repo.mkdir()
         (self.repo / "config").mkdir()
         (self.repo / "config/semantic-models.toml").write_text('active_profile = "fixture"\n', encoding="utf-8")
+        (self.repo / "config/model-profiles.toml").write_text('schema_version = "swisstip.model-profiles/v1"\n', encoding="utf-8")
         (self.repo / ".env").write_text("DO_NOT_COPY_SECRET", encoding="utf-8")
         (self.repo / "config/private.toml").write_text("DO_NOT_COPY_SECRET", encoding="utf-8")
         self.source = Path(self.directory.name) / "historical"
@@ -156,6 +157,7 @@ class Poc01PacketTests(unittest.TestCase):
         self.prepare()
         files = list((self.destination / "metadata/frozen").rglob("*"))
         self.assertTrue(any(p.name == "semantic-models.toml" for p in files))
+        self.assertTrue(any(p.name == "model-profiles.toml" for p in files))
         self.assertFalse(any(p.name in (".env", "private.toml") for p in files))
         for path in files:
             if path.is_file():

@@ -85,6 +85,7 @@ class ReviewFallbackTests(unittest.TestCase):
         # the operator's selected profile in the repository configuration.
         with tempfile.TemporaryDirectory() as config_directory:
             config_path = Path(config_directory) / "semantic-models.toml"
+            (config_path.parent / "model-profiles.toml").write_bytes((ROOT / "config/model-profiles.toml").read_bytes())
             document = (ROOT / "config/semantic-models.toml").read_text(encoding="utf-8")
             document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)
             config_path.write_text(document, encoding="utf-8")

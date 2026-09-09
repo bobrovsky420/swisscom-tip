@@ -1,15 +1,16 @@
 """Loopback-only operator API. Start with scripts/admin/run.py."""
 from pathlib import Path
 import os
-import re
 import tempfile
 import tomllib
+import tomli_w
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse, JSONResponse
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from psycopg.types.json import Jsonb
 from swisstip.builder.source_catalog import load_source_catalog, build_plan
+from swisstip.core.model_profiles import load_model_config
 from swisstip.ingestion.concepts import normalize_downloaded_page, CandidateConceptExtractor, STRUCTURED_PROMPT_PROFILE
 from swisstip.ingestion.structured_extraction import StructuredExtraction
 from swisstip.runtime.postgres import connect, sha256
@@ -50,22 +51,19 @@ def catalog_data():
 
 def config_text(profile):
     path = ROOT / 'config/semantic-models.toml'
-    text = path.read_text(encoding='utf-8')
-    data = tomllib.loads(text)
+    data = load_model_config(path)
     if profile not in data['profiles']:
         raise HTTPException(422, 'Unknown semantic-model profile')
-    # Snapshot the selected configuration. Prompt file paths remain relative to
-    # the original config, not the worker's new run directory.
-    text = re.sub(r'(?m)^active_profile\s*=.*$', f'active_profile = "{profile}"', text, count=1)
+    # Freeze resolved model definitions so queued jobs do not depend on later
+    # catalog edits. Prompt paths still refer to the original config directory.
+    data['semantic_model']['active_profile'] = profile
     for key in ('extraction_prompt_file', 'review_prompt_file'):
         if value := data['extraction'].get(key):
-            import json
-            absolute = str((path.parent / value).resolve())
-            text = re.sub(rf'(?m)^{key}\s*=.*$', lambda _: f'{key} = {json.dumps(absolute)}', text)
+            data['extraction'][key] = str((path.parent / value).resolve())
     # GUI jobs never silently retry requests. Repairs remain a separate configured
     # extraction operation and are included in the displayed request ceiling.
-    text = re.sub(r'(?m)^max_retries\s*=.*$', 'max_retries = 0', text)
-    return text
+    data.setdefault('recovery', {})['max_retries'] = 0
+    return tomli_w.dumps(data)
 
 
 def find_job(identifier):
@@ -78,7 +76,7 @@ def find_job(identifier):
 @app.get('/api/catalog', response_model=Catalog, operation_id='getCatalog')
 def catalog():
     data = catalog_data()
-    config = tomllib.loads((ROOT / 'config/semantic-models.toml').read_text(encoding='utf-8'))
+    config = load_model_config(ROOT / 'config/semantic-models.toml')
     return dict(sources=[dict(source_id=s['definition']['source_id'], title=s.get('title', s['definition']['source_id']),
                              language=s['definition']['language'], url=s['definition']['start_url'],
                              scan_status=s['scan_status'], selected=s['definition']['source_id'] in DEFAULT_SOURCES)

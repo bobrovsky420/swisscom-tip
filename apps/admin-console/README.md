@@ -61,10 +61,12 @@ credential presence, never values. Ollama still runs in WSL.
   existing semantic config may impose stricter input and request limits.
 - **Run extraction -> Confirm extraction** runs the existing structured v4
   extractor and model-assisted review using a selected named semantic profile.
-  These are the adapters in `config/semantic-models.toml` (Ollama/Hugging Face).
+  Profiles in `config/semantic-models.toml` refer to Ollama/Hugging Face definitions
+  in the shared `config/model-profiles.toml` catalog.
   Groq evidence ranking is separate; the pilot's diagnostic Groq extraction
   scripts have not become a general builder adapter through this GUI.
-- Each job freezes its source catalog or selected model configuration. Automatic
+- Each job freezes its source catalog or fully resolved model configuration;
+  queued extraction jobs do not depend on later shared model catalog edits. Automatic
   provider retries are disabled; configured extraction repairs remain bounded by
   the displayed attempt ceiling. A run over its plan budget fails before inference.
 - Completed candidates appear beside source quotes. Record **accept draft**,

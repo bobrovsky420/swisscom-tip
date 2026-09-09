@@ -172,12 +172,14 @@ the same fixed relevance instruction, temperature zero and low reasoning effort.
 It shares the bounded transport and validates complete responses before the
 retriever checks model identity and exact score membership.
 
-Named deployment profiles live in
+Model identities and provider connections are shared with extraction in
+[config/model-profiles.toml](../../config/model-profiles.toml). Named retrieval profiles live in
 [config/retrieval-models.toml](../../config/retrieval-models.toml). As in the
 semantic-model configuration, each role selects a `[profiles.<name>]` table:
 
 ```toml
 schema_version = "swisstip.retrieval-model-profiles/v1"
+model_profiles_file = "model-profiles.toml"
 
 [embedding]
 active_profile = "qwen_embedding_0_6b"
@@ -201,8 +203,11 @@ profile. Model alternatives are configuration options, not live qualifications.
 | `groq_gpt_oss_120b` | Ranking | `openai/gpt-oss-120b` |
 | `qwen_ranking_9b` | Ranking | `qwen3.5:9b` |
 
-Each profile declares `role`, `adapter`, `model`, `base_url`, `timeout_seconds`
-and, for Groq, `token_env`. Add more profiles using the supported adapters;
+Each profile declares `model_profile`, `role`, `timeout_seconds` and any scoring
+contract. `model_profile` refers to the shared catalog, which owns `adapter`,
+`model`, `base_url` and, for Groq, `token_env`. Legacy inline definitions still
+load. See the [shared configuration guide](../../config/README.md) for examples
+and relative path rules. Add more profiles using the supported adapters;
 Ollama supports embedding and ranking roles, while Groq supports ranking with
 the two GPT-OSS models accepted by this adapter. Unknown names, role mismatches,
 unsupported adapters and invalid settings (including inactive profiles) fail

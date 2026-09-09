@@ -10,7 +10,7 @@
 - Run pip as `.venv\Scripts\python.exe -m pip` (or the macOS/Linux equivalent).
 - If `.venv` is absent, create it at the repository root with Python 3.11 or
   newer, then install the editable workspace packages:
-  `.venv\Scripts\python.exe -m pip install -e packages/ingestion -e apps/knowledge-builder`.
+  `.venv\Scripts\python.exe -m pip install -e packages/core -e packages/ingestion -e apps/knowledge-builder`.
 - Never commit `.venv`; it is intentionally excluded by the root `.gitignore`.
 
 ## Writing conventions

@@ -153,6 +153,9 @@ class ConceptCliTests(unittest.TestCase):
         self.addCleanup(self.config_directory.cleanup)
         self.config_path = Path(self.config_directory.name) / "semantic-models.toml"
         document = (REPOSITORY_ROOT / "config" / "semantic-models.toml").read_text(encoding="utf-8")
+        # Several tests copy this config again into independent run directories.
+        document = document.replace('model_profiles_file = "model-profiles.toml"',
+                                    f'model_profiles_file = {json.dumps(str(REPOSITORY_ROOT / "config/model-profiles.toml"))}')
         # Fake completions use the v3 contract and identify HF Apertus 8B,
         # regardless of the operator's current defaults. Preserve the real file.
         document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)

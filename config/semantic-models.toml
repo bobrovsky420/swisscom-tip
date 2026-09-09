@@ -1,4 +1,6 @@
 schema_version = "swisstip.semantic-model-profiles/v1"
+# Resolved relative to this file. Model identities are defined once in the catalog.
+model_profiles_file = "model-profiles.toml"
 
 [semantic_model]
 active_profile = "apertus_70b"
@@ -35,37 +37,22 @@ max_retry_after_seconds = 300.0
 review_fallback_batch_size = 2
 
 [profiles.ollama_local]
-adapter = "ollama"
-model = "MichelRosselli/apertus:8b-instruct-2509-q4_k_m"
-base_url = "http://127.0.0.1:11434"
+model_profile = "apertus_8b_ollama"
 timeout_seconds = 180.0
 num_ctx = 8192
 keep_alive = "5m"
 
 [profiles.apertus_8b]
-adapter = "huggingface"
-model = "swiss-ai/Apertus-8B-Instruct-2509"
-base_url = "https://router.huggingface.co/v1"
+model_profile = "apertus_8b"
 timeout_seconds = 120.0
-provider = "publicai"
-token_env = "HF_TOKEN"
 
 [profiles.apertus_70b]
-adapter = "huggingface"
-model = "swiss-ai/Apertus-70B-Instruct-2509"
-base_url = "https://router.huggingface.co/v1"
+model_profile = "apertus_70b"
 timeout_seconds = 180.0
-provider = "publicai"
-token_env = "HF_TOKEN"
-# For organization billing, configure: bill_to = "your-organization"
 
 # Experimental compatibility option; local validation and review remain required.
 # Select this profile explicitly; there is no automatic response-mode fallback.
 [profiles.apertus_70b_prompt_only]
-adapter = "huggingface"
-model = "swiss-ai/Apertus-70B-Instruct-2509"
-base_url = "https://router.huggingface.co/v1"
+model_profile = "apertus_70b"
 timeout_seconds = 180.0
-provider = "publicai"
-token_env = "HF_TOKEN"
 response_mode = "prompt_only"

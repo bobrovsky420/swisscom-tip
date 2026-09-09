@@ -149,6 +149,7 @@ class ProviderFactoryTests(unittest.TestCase):
         )
         with tempfile.TemporaryDirectory() as directory:
             config_path = Path(directory) / "semantic-models.toml"
+            (config_path.parent / "model-profiles.toml").write_bytes((REPOSITORY_ROOT / "config/model-profiles.toml").read_bytes())
             config_path.write_text(document, encoding="utf-8")
             return load_model_profiles(config_path)
 
