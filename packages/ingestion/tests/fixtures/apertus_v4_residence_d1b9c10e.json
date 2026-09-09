@@ -1,0 +1,280 @@
+{
+  "provenance": {
+    "job_id": "d1b9c10eb3674b289a96693b84d68379",
+    "report_sha256": "f75e12feec79b114b23b78d794dbe571f3121539d1673a843bd09645b1e0c886",
+    "source_sha256": "4e24815fa1ac301c1d0e3c4cd7c4f63eec1802e3af00529526774c7515d578bb",
+    "prompt_hashes": {
+      "extraction": "95ee33096b7d70f40ecab5b75fd00b7b3f905fc7f0d98048607958196ecef545",
+      "review": "e3bdcfecd5b7e1329d9b1c66d8fc764524079d692b94d95c257a185e613a6694"
+    },
+    "note": "Exact saved proposals and first review. Final review failed model identity validation; no final review content was accepted."
+  },
+  "evidence": {
+    "section-0008:0:362": {
+      "section_id": "section-0008",
+      "scope_id": "scope-0008",
+      "text": "Residence\nAnyone who works during his/her stay in Switzerland or who remains in Switzerland for longer than three months requires a permit. Residence permits are issued by the Cantonal Migration Offices. A distinction is made between short-term residence permits (less than 1 year), annual residence permits (limited) and permanent residence permits (unlimited)."
+    },
+    "section-0011:0:83": {
+      "section_id": "section-0011",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nBrochure Social insurances\n\nInformation for foreign nationals"
+    },
+    "section-0012:0:41": {
+      "section_id": "section-0012",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nFurther information"
+    },
+    "section-0013:0:50": {
+      "section_id": "section-0013",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nLast modification 14.11.2011"
+    },
+    "section-0016:0:89": {
+      "section_id": "section-0016",
+      "scope_id": "scope-0010",
+      "text": "Residence > Favorites\nhttps://www.sem.admin.ch/content/sem/en/home/themen/aufenthalt.html"
+    },
+    "section-0023:0:66": {
+      "section_id": "section-0023",
+      "scope_id": "scope-0017",
+      "text": "Residence > Footer > Stay informed\nState Secretariat for Migration"
+    }
+  },
+  "initial_proposals": [
+    {
+      "claims": [
+        {
+          "claim_id": "claim-0001",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "requirement",
+          "limitations": [
+            "Source does not specify exceptions for diplomatic or EU/EFTA nationals; does not define 'works'"
+          ],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "required",
+            "population": "foreign nationals",
+            "procedure_branch": "residence permit issuance",
+            "recipient": "individuals working or staying >3 months"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "A person who works in Switzerland or remains in Switzerland for longer than three months requires a residence permit."
+        }
+      ],
+      "concept_type": "OTHER",
+      "label": "Swiss residence permit requirements",
+      "limitations": [
+        "Source does not specify exceptions for diplomatic or EU/EFTA nationals; does not define 'works'"
+      ],
+      "primary_section_id": "section-0008",
+      "questions": []
+    },
+    {
+      "claims": [
+        {
+          "claim_id": "claim-0002",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [
+            "Source does not provide validity calculation rules, renewal procedures, or specific eligibility criteria for each category"
+          ],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "types of residence permits",
+            "population": "foreign nationals",
+            "procedure_branch": "residence permit classification",
+            "recipient": "foreign nationals"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Swiss residence permits are distinguished into three categories: short-term (less than 1 year), annual (limited), and permanent (unlimited)."
+        }
+      ],
+      "concept_type": "OTHER",
+      "label": "Types of Swiss residence permits",
+      "limitations": [
+        "Source does not provide validity calculation rules, renewal procedures, or specific eligibility criteria for each category"
+      ],
+      "primary_section_id": "section-0008",
+      "questions": []
+    }
+  ],
+  "initial_review": {
+    "block_coverage": [
+      {
+        "concept_indices": [
+          0,
+          1
+        ],
+        "decision": "covered",
+        "reason": "Both concepts map to substantive statements in this block: claim-0001 covers the permit requirement for stays >3 months, and claim-0002 covers the permit categories. No substantive statements from this block are omitted in the concepts.",
+        "section_id": "section-0008"
+      },
+      {
+        "concept_indices": [],
+        "decision": "not_substantive",
+        "reason": "This block contains only navigation links and a brochure title with no substantive factual content about residence permits.",
+        "section_id": "section-0011"
+      },
+      {
+        "concept_indices": [],
+        "decision": "not_substantive",
+        "reason": "This block contains only a 'Further information' link and a last modification date with no substantive factual content.",
+        "section_id": "section-0012"
+      },
+      {
+        "concept_indices": [],
+        "decision": "not_substantive",
+        "reason": "This block contains only a last modification date and no substantive factual content about residence permits.",
+        "section_id": "section-0013"
+      },
+      {
+        "concept_indices": [],
+        "decision": "not_substantive",
+        "reason": "This block contains only a URL link with no substantive factual content about residence permits.",
+        "section_id": "section-0016"
+      },
+      {
+        "concept_indices": [],
+        "decision": "not_substantive",
+        "reason": "This block contains only a footer link to the State Secretariat for Migration with no substantive factual content about residence permit requirements or types.",
+        "section_id": "section-0023"
+      }
+    ],
+    "concept_reviews": [
+      {
+        "claim_support": [
+          {
+            "claim_id": "claim-0001",
+            "decision": "supported",
+            "reason": "The source explicitly states that anyone working in Switzerland or staying longer than three months requires a permit, issued by Cantonal Migration Offices."
+          }
+        ],
+        "completeness": {
+          "decision": "uncertain",
+          "reason": "The source does not specify exceptions for diplomatic/EU/EFTA nationals nor define 'works', leaving key scope boundaries ambiguous."
+        },
+        "concept_index": 0,
+        "questions": [],
+        "scope": {
+          "decision": "supported",
+          "reason": "Population (foreign nationals), jurisdiction (Switzerland), actor (Cantonal Migration Offices), recipient (individuals working or staying >3 months), and permit_status (required) are all directly supported by the source text."
+        }
+      },
+      {
+        "claim_support": [
+          {
+            "claim_id": "claim-0002",
+            "decision": "supported",
+            "reason": "The source explicitly lists three categories of permits: short-term (less than 1 year), annual (limited), and permanent (unlimited)."
+          }
+        ],
+        "completeness": {
+          "decision": "uncertain",
+          "reason": "The source omits validity calculation rules, renewal procedures, and specific eligibility criteria for each category, making the description incomplete regarding practical application."
+        },
+        "concept_index": 1,
+        "questions": [],
+        "scope": {
+          "decision": "supported",
+          "reason": "Population (foreign nationals), jurisdiction (Switzerland), actor (Cantonal Migration Offices), recipient (foreign nationals), and permit_status (types of residence permits) are all directly supported by the source text."
+        }
+      }
+    ]
+  },
+  "repaired_proposals": [
+    {
+      "claims": [
+        {
+          "claim_id": "claim-0001",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "requirement",
+          "limitations": [
+            "Source does not specify exceptions for diplomatic or EU/EFTA nationals; does not define 'works'"
+          ],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "required",
+            "population": "foreign nationals",
+            "procedure_branch": "residence permit issuance",
+            "recipient": "individuals working in Switzerland or staying >3 months"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "A person who works in Switzerland or remains in Switzerland for longer than three months requires a residence permit."
+        }
+      ],
+      "concept_type": "OTHER",
+      "label": "Swiss residence permit requirements",
+      "limitations": [
+        "Source does not specify exceptions for diplomatic or EU/EFTA nationals; does not define 'works'"
+      ],
+      "primary_section_id": "section-0008",
+      "questions": []
+    },
+    {
+      "claims": [
+        {
+          "claim_id": "claim-0002",
+          "condition_groups": [],
+          "condition_root": "",
+          "conditions": [],
+          "evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "exceptions": [],
+          "kind": "fact",
+          "limitations": [
+            "Source does not provide validity calculation rules, renewal procedures, or specific eligibility criteria for each category"
+          ],
+          "scope": {
+            "actor": "Cantonal Migration Offices",
+            "jurisdiction": "Switzerland",
+            "permit_status": "types of residence permits",
+            "population": "foreign nationals",
+            "procedure_branch": "residence permit classification",
+            "recipient": "foreign nationals"
+          },
+          "scope_evidence_ids": [
+            "section-0008:0:362"
+          ],
+          "statement": "Swiss residence permits are distinguished into three categories: short-term (less than 1 year), annual (limited), and permanent (unlimited)."
+        }
+      ],
+      "concept_type": "OTHER",
+      "label": "Types of Swiss residence permits",
+      "limitations": [
+        "Source does not provide validity calculation rules, renewal procedures, or specific eligibility criteria for each category"
+      ],
+      "primary_section_id": "section-0008",
+      "questions": []
+    }
+  ],
+  "final_provider_error": "Hugging Face router returned an unexpected model identity (requested='swiss-ai/Apertus-70B-Instruct-2509:publicai', observed='aisingapore/Qwen-SEA-LION-v4-32B-IT')"
+}

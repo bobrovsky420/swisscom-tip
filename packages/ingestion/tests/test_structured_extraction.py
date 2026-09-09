@@ -8,7 +8,7 @@ from pathlib import Path
 
 from swisstip.ingestion import claim_contracts as contracts
 from swisstip.ingestion.concepts import (
-    CandidateConceptExtractor, ModelCompletion, SemanticModelError,
+    CandidateConceptExtractor, ModelCompletion, NormalizedPage, NormalizedSection, SemanticModelError,
     STRUCTURED_PROMPT_PROFILE, normalize_downloaded_page,
 )
 from swisstip.ingestion.structured_extraction import StructuredExtraction
@@ -27,8 +27,10 @@ def concept(ref, block):
 
 def audit(concepts, evidence):
     supported = {"decision": "supported", "reason": "Fixture assessment."}
-    return {"concept_reviews": [{"concept_index": i,
-             "claim_support": [dict(supported, claim_id=c["claim_id"]) for c in item["claims"]],
+    return {"schema_version": contracts.REVIEW_VERSION, "concept_reviews": [{"concept_index": i,
+             "claim_support": [dict(supported, claim_id=c["claim_id"],
+                 condition_logic=dict(supported, source_applicability="conditional" if c["conditions"] else "unconditional"),
+                 scope_fields={field: dict(supported) for field in contracts.SCOPE_FIELDS}) for c in item["claims"]],
              "scope": dict(supported), "completeness": dict(supported),
              "questions": [dict(supported, question_index=q) for q in range(len(item["questions"]))]}
              for i, item in enumerate(concepts)],
@@ -292,7 +294,7 @@ class StructuredTests(unittest.TestCase):
         self.assertEqual(provider.discarded, 1)
         self.assertEqual(report.source_inventory[0]["status"], "invalid_response")
 
-    def test_review_failure_preserves_condition_errors_in_repair_and_report(self):
+    def test_structural_repair_precedes_review_and_preserves_condition_errors(self):
         for repair_succeeds in (False, True):
             with self.subTest(repair_succeeds=repair_succeeds):
                 def generate(result, payload):
@@ -308,39 +310,37 @@ class StructuredTests(unittest.TestCase):
                     claim["condition_root"] = "either" if repair_succeeds and payload["repair"] else "online"
 
                 def review(result, payload):
-                    if not payload["concepts"]:
-                        # Reproduce the live Apertus failure: coverage despite
-                        # having no structurally valid proposal to reference.
-                        result["block_coverage"][0].update(decision="covered", reason="Invalid review text")
+                    self.assertTrue(repair_succeeds)
+                    self.assertEqual(len(payload["concepts"]), 1)
 
                 provider = Provider(generate, review)
                 progress = []
                 report = self.engine(provider, progress=progress.append).extract(
                     self.page("<p>Apply online or apply by post.</p>"))
-                self.assertEqual(len(provider.calls), 4)
+                self.assertEqual(len(provider.calls), 3 if repair_succeeds else 2)
                 first = report.semantic_reviews[0]["history"][0]
-                self.assertEqual(first["error"], "represented coverage requires a concept reference")
-                self.assertEqual(first["failure_stage"], "review_validation")
+                self.assertEqual(first["error"], "1 proposal(s) failed structural validation")
+                self.assertEqual(first["failure_stage"], "structural_validation")
                 self.assertEqual(first["structural_rejections"][0]["reason"], "unconnected conditions or groups")
                 self.assertEqual(first["proposals"][0]["claims"][0]["condition_root"], "online")
-                self.assertIn("Invalid review text", first["raw_completion"])
-                repair = json.loads(provider.calls[2]["user_prompt"])["repair"]
+                self.assertNotIn("review", first)
+                repair = json.loads(provider.calls[1]["user_prompt"])["repair"]
                 self.assertEqual(repair["validation_error"], first["error"])
-                self.assertEqual(repair["failure_stage"], "review_validation")
+                self.assertEqual(repair["failure_stage"], "structural_validation")
                 self.assertEqual(repair["proposals"], first["proposals"])
                 self.assertEqual(repair["structural_rejections"], [dict(
-                    proposal_index=0, reason="unconnected conditions or groups")])
-                self.assertNotIn("Invalid review text", json.dumps(repair))
+                    proposal_index=0, reason="unconnected conditions or groups",
+                    errors=[{"path": "claims[0].condition_root", "reason": "unconnected conditions or groups"}])])
+                self.assertNotIn("raw_completion", repair)
                 self.assertTrue(any("unconnected conditions or groups" in line for line in progress))
-                self.assertTrue(any("review_validation failed" in warning for warning in report.warnings))
+                self.assertTrue(any("semantic review skipped" in warning for warning in report.warnings))
+                self.assertEqual(provider.discarded, 0)  # Schema-valid extraction checkpoints remain reusable.
                 if repair_succeeds:
                     self.assertEqual(len(report.candidates), 1)
                     self.assertEqual(report.candidates[0].structured_claims[0]["condition_root"], "either")
-                    self.assertEqual(provider.discarded, 1)
                     self.assertFalse(report.rejected_candidates)
                 else:
                     self.assertFalse(report.candidates)
-                    self.assertEqual(provider.discarded, 2)
                     self.assertEqual(report.rejected_candidates[0]["reason"], "unconnected conditions or groups")
                     self.assertEqual(report.quality_metrics["rejected_proposals"], 1)
                     self.assertEqual(report.source_inventory[0]["status"], "invalid_response")
@@ -353,7 +353,9 @@ class StructuredTests(unittest.TestCase):
             raise SemanticModelError("fixture review outage")
 
         provider = Provider(generate, review)
-        report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
+        # With no repair available, still review the valid subset of a mixed packet.
+        report = self.engine(provider, max_repair_attempts=0).extract(
+            self.page("<p>Apply online.</p><p>Bring proof.</p>"))
         self.assertEqual(len(provider.calls), 2)
         self.assertEqual(provider.discarded, 0)
         self.assertFalse(report.candidates)
@@ -375,7 +377,7 @@ class StructuredTests(unittest.TestCase):
 
         provider = Provider(generate, review)
         report = self.engine(provider).extract(self.page("<p>Apply online.</p>"))
-        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(len(provider.calls), 2)
         history = report.semantic_reviews[0]["history"]
         self.assertTrue(history[0]["structural_rejections"])
         self.assertEqual(history[1]["failure_stage"], "extraction_validation")
@@ -450,6 +452,303 @@ class StructuredTests(unittest.TestCase):
         for raw in ('{"concepts":[],"saturated":false,"saturated":true}', '{"concepts":[],"saturated":1}'):
             with self.assertRaises(ValueError):
                 contracts.decode(raw, schema)
+
+    def saved_residence(self, suffix="d1b9c10e"):
+        path = Path(__file__).parent / f"fixtures/apertus_v4_residence_{suffix}.json"
+        return json.loads(path.read_text(encoding="utf-8"))
+
+    def residence_page(self, saved):
+        # Replay exact normalized evidence and ownership, omitting navigation
+        # that was never sent to the model. No network or local job is needed.
+        return NormalizedPage("saved-residence", "fixture", "Residence", "en", "saved-evidence",
+            tuple(NormalizedSection(b["section_id"], "", b["text"], block_kind="paragraph",
+                                    scope_id=b["scope_id"]) for b in saved["evidence"].values()),
+            normalization_version="swisstip.logical-blocks/v2",
+            source_sha256=saved["provenance"]["source_sha256"])
+
+    def test_saved_root_and_quote_errors_are_reported_together_without_mutation(self):
+        saved = self.saved_residence("8d0e4648")
+        sections = {b["section_id"]: b["scope_id"] for b in saved["evidence"].values()}
+        for key in ("initial_proposals", "repaired_proposals"):
+            with self.subTest(revision=key):
+                item = saved[key][0]
+                original = copy.deepcopy(item)
+                with self.assertRaises(contracts.ConceptValidationError) as raised:
+                    contracts.validate_concept(item, saved["evidence"], sections)
+                errors = raised.exception.errors
+                self.assertEqual([e["path"] for e in errors],
+                    ["claims[0].condition_root", "claims[0].conditions[0].text"])
+                self.assertIn("defined group", errors[0]["hint"])
+                self.assertEqual(errors[1]["reason"], "condition text must be an exact source excerpt")
+                self.assertEqual(item, original)
+
+    def test_saved_failed_repair_uses_two_calls_and_never_reviews_invalid_proposals(self):
+        saved = self.saved_residence("8d0e4648")
+        def generate(result, payload):
+            key = "repaired_proposals" if payload["repair"] else "initial_proposals"
+            result["concepts"] = copy.deepcopy(saved[key])
+        def review(result, payload):
+            self.fail("No review may be requested for these invalid proposals")
+        provider = Provider(generate, review)
+        report = self.engine(provider).extract(self.residence_page(saved))
+        self.assertEqual(len(provider.calls), 2)
+        self.assertEqual(report.quality_metrics["review_request_count"], 0)
+        self.assertEqual(report.quality_metrics["repair_request_count"], 1)
+        self.assertFalse(report.candidates)
+        self.assertEqual(provider.discarded, 0)
+        feedback = json.loads(provider.calls[1]["user_prompt"])["repair"]
+        self.assertEqual(feedback["proposals"], saved["initial_proposals"])
+        self.assertNotIn("proposal", feedback["structural_rejections"][0])
+        self.assertEqual(len(feedback["structural_rejections"][0]["errors"]), 2)
+        self.assertNotIn("raw_completion", feedback)
+        self.assertEqual(report.rejected_candidates[0]["proposal"], saved["repaired_proposals"][0])
+        self.assertEqual(len(report.rejected_candidates[0]["errors"]), 2)
+        self.assertTrue(all(row["status"] == "invalid_response" for row in report.source_inventory))
+        self.assertFalse(report.quality_metrics["coverage_complete"])
+
+    def test_fixed_structure_reaches_review_but_unsupported_roles_still_block_retention(self):
+        saved = self.saved_residence("8d0e4648")
+        def generate(result, payload):
+            result["concepts"] = copy.deepcopy(saved["initial_proposals"])
+            if payload["repair"]:
+                # Assistant-authored structural control, not Apertus output.
+                claim = result["concepts"][0]["claims"][0]
+                claim["condition_root"] = "either"
+                claim["condition_groups"] = [{"group_id": "either", "operator": "OR",
+                    "members": [c["condition_id"] for c in claim["conditions"]],
+                    "evidence_ids": claim["evidence_ids"]}]
+                claim["conditions"][0]["text"] = "works during his/her stay in Switzerland"
+        def review(result, payload):
+            self.assertEqual(len(provider.calls), 3)
+            claim = payload["concepts"][0]["claims"][0]
+            self.assertEqual(claim["condition_root"], "either")
+            self.assertEqual(claim["conditions"][0]["text"], "works during his/her stay in Switzerland")
+            result["concept_reviews"][0]["claim_support"][0]["scope_fields"]["recipient"].update(
+                decision="unsupported", reason="Issuance does not establish an application recipient.")
+        provider = Provider(generate, review)
+        report = self.engine(provider).extract(self.residence_page(saved))
+        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(report.quality_metrics["review_request_count"], 1)
+        self.assertFalse(report.candidates)
+        self.assertEqual(report.rejected_candidates[0]["stage"], "structured_review")
+        self.assertEqual(report.semantic_reviews[0]["history"][0]["failure_stage"], "structural_validation")
+        self.assertIn("review", report.semantic_reviews[0]["history"][1])
+
+    def test_invalid_duplicate_proposals_keep_both_clause_and_duplicate_errors(self):
+        saved = self.saved_residence("8d0e4648")
+        def generate(result, payload):
+            result["concepts"] = copy.deepcopy(saved["initial_proposals"] * 2)
+        report = self.engine(Provider(generate), max_repair_attempts=0).extract(self.residence_page(saved))
+        self.assertEqual(report.request_count, 1)
+        self.assertEqual(len(report.rejected_candidates), 2)
+        self.assertEqual(len(report.rejected_candidates[0]["errors"]), 2)
+        self.assertEqual([e["reason"] for e in report.rejected_candidates[1]["errors"]],
+            ["conditions require a valid explicit root", "condition text must be an exact source excerpt", "duplicate proposal"])
+
+    def test_mixed_packet_repairs_first_then_reviews_only_final_valid_subset(self):
+        def generate(result, payload):
+            result["concepts"][0]["claims"][0]["condition_root"] = "missing"
+        def review(result, payload):
+            self.assertEqual(len(provider.calls), 3)
+            self.assertEqual(len(payload["concepts"]), 1)
+            self.assertEqual(payload["concepts"][0]["primary_section_id"], "section-0002")
+        provider = Provider(generate, review)
+        report = self.engine(provider).extract(self.page("<p>Apply online.</p><p>Bring proof.</p>"))
+        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(len(report.candidates), 1)
+        self.assertEqual(len(report.rejected_candidates), 1)
+        self.assertEqual(report.source_inventory[0]["status"], "missing")
+        self.assertEqual(report.source_inventory[1]["status"], "covered")
+
+    def test_early_structural_repair_preserves_later_packets_budget(self):
+        def generate(result, payload):
+            if next(iter(payload["untrusted_source"]["evidence"].values()))["text"].startswith("A\n"):
+                result["concepts"][0]["claims"][0]["condition_root"] = "missing"
+        page = self.page("<h1>A</h1><p>" + "word " * 700 + "</p><h1>B</h1><p>" + "word " * 700 + "</p>")
+        provider = Provider(generate)
+        engine = self.engine(provider, max_model_requests_per_page=4)
+        report = engine.extract(page)
+        self.assertEqual(engine.planned_request_count(page), 4)
+        self.assertEqual(len(provider.calls), 3)
+        self.assertEqual(report.quality_metrics["repair_request_count"], 0)
+        self.assertEqual(report.quality_metrics["review_request_count"], 1)
+        self.assertEqual(len(report.candidates), 1)
+        self.assertEqual(report.candidates[0].primary_section_id, "section-0004")
+
+    def test_early_repair_does_not_exceed_preview_or_disabled_repair_limit(self):
+        for schema_invalid in (False, True):
+            for page_budget, repairs in ((3, 1), (12, 0)):
+                with self.subTest(schema_invalid=schema_invalid, page_budget=page_budget, repairs=repairs):
+                    def generate(result, payload):
+                        if schema_invalid:
+                            result["unknown"] = True
+                        else:
+                            result["concepts"][0]["claims"][0]["condition_root"] = "missing"
+                    provider = Provider(generate)
+                    engine = self.engine(provider, max_model_requests_per_page=page_budget, max_repair_attempts=repairs)
+                    page = self.page("<p>Apply online.</p>")
+                    report = engine.extract(page)
+                    self.assertEqual(engine.planned_request_count(page), 2)
+                    self.assertEqual(len(provider.calls), 1)
+                    self.assertEqual(report.quality_metrics["review_request_count"], 0)
+                    self.assertFalse(report.candidates)
+
+    def test_independent_errors_in_later_claims_survive_bad_root_and_reference(self):
+        evidence = {"e1": {"section_id": "s1", "text": "Apply online."}}
+        item = concept("e1", evidence["e1"])
+        first = item["claims"][0]
+        first["condition_root"] = "missing"
+        first["conditions"] = [{"condition_id": "c1", "text": "Invented quote", "evidence_ids": ["e1", "unknown"],
+            "operator": "gt", "value": "NaN", "subject": "unspecified", "unit": "days", "time_window": "unspecified"}]
+        second = copy.deepcopy(first)
+        second["claim_id"] = "claim-2"
+        second["conditions"][0]["value"] = "not numeric"
+        item["claims"].append(second)
+        with self.assertRaises(contracts.ConceptValidationError) as raised:
+            contracts.validate_concept(item, evidence, {"s1": "scope1"})
+        errors = raised.exception.errors
+        self.assertEqual(errors[0]["reason"], "unknown or out-of-scope evidence reference")
+        self.assertEqual({e["path"] for e in errors}, {"claims", "claims[0].condition_root", "claims[1].condition_root",
+            "claims[0].conditions[0].value", "claims[0].conditions[0].text",
+            "claims[1].conditions[0].value", "claims[1].conditions[0].text"})
+
+    def test_tree_diagnostics_still_reject_cycles_dangling_and_repeated_nodes(self):
+        evidence = {"e1": {"section_id": "s1", "text": "Apply online."}}
+        base = concept("e1", evidence["e1"])
+        claim = base["claims"][0]
+        claim["conditions"] = [{"condition_id": "c1", "text": "Apply online.", "evidence_ids": ["e1"],
+            "operator": "stated", "value": "unspecified", "subject": "unspecified", "unit": "unspecified", "time_window": "unspecified"}]
+        claim["condition_groups"] = [{"group_id": "g1", "operator": "AND", "members": ["c1"], "evidence_ids": ["e1"]}]
+        claim["condition_root"] = "g1"
+        contracts.validate_concept(base, evidence, {"s1": "scope1"})
+        for members, reason in ((["g1"], "cyclic or dangling"), (["absent"], "cyclic or dangling"),
+                                (["c1", "c1"], "duplicate logical operands")):
+            with self.subTest(members=members):
+                item = copy.deepcopy(base)
+                item["claims"][0]["condition_groups"][0]["members"] = members
+                with self.assertRaises(contracts.ConceptValidationError) as raised:
+                    contracts.validate_concept(item, evidence, {"s1": "scope1"})
+                self.assertTrue(any(reason in e["reason"] for e in raised.exception.errors))
+        claim["condition_groups"].append({"group_id": "g2", "operator": "AND", "members": ["c1"], "evidence_ids": ["e1"]})
+        claim["condition_groups"][0]["members"].append("g2")
+        with self.assertRaisesRegex(contracts.ConceptValidationError, "repeated condition subtree"):
+            contracts.validate_concept(base, evidence, {"s1": "scope1"})
+
+    def flag_saved_residence_errors(self, result, payload):
+        # Assistant-authored assessment, NOT a newly observed model response.
+        # Deliberately leave every broad summary supported to exercise the gate.
+        first = result["concept_reviews"][0]["claim_support"][0]
+        first["condition_logic"].update(source_applicability="conditional", decision="unsupported",
+            reason="Work OR a stay longer than three months is missing from the condition tree.")
+        for review in result["concept_reviews"]:
+            review["claim_support"][0]["scope_fields"]["actor"].update(decision="unsupported",
+                reason="The office is the actor of a separate issuance assertion, not this assertion.")
+        result["block_coverage"][0].update(decision="partial",
+            reason="The office's issuing action is not represented by a claim.")
+        for block in result["block_coverage"][1:]:
+            block.update(decision="not_substantive", concept_indices=[], reason="Saved ancillary block.")
+
+    def test_saved_legacy_review_cannot_satisfy_detailed_contract(self):
+        saved = self.saved_residence()
+        blocks = [b["section_id"] for b in saved["evidence"].values()]
+        with self.assertRaisesRegex(ValueError, "schema_version"):
+            contracts.parse_review(json.dumps(saved["initial_review"]), saved["initial_proposals"], blocks)
+        # A legacy broad approval must not be reused as a detailed approval.
+        legacy = copy.deepcopy(saved["initial_review"]["concept_reviews"][0])
+        legacy["scope"]["decision"] = legacy["completeness"]["decision"] = "supported"
+        self.assertFalse(contracts.review_passes(legacy))
+
+    def test_saved_proposals_fail_detailed_checks_and_preserve_repair_feedback(self):
+        saved = self.saved_residence()
+        def generate(result, payload):
+            key = "repaired_proposals" if payload["repair"] else "initial_proposals"
+            result["concepts"] = copy.deepcopy(saved[key])
+        provider = Provider(generate, self.flag_saved_residence_errors)
+        report = self.engine(provider).extract(self.residence_page(saved))
+        self.assertEqual(len(provider.calls), 4)
+        self.assertFalse(report.candidates)
+        self.assertEqual(len(report.rejected_candidates), 2)
+        self.assertEqual(provider.discarded, 0)  # Valid negative audits are retained.
+        feedback = json.loads(provider.calls[2]["user_prompt"])["repair"]
+        self.assertEqual(feedback["proposals"], saved["initial_proposals"])
+        detail = feedback["review"]["concept_reviews"][0]["claim_support"][0]
+        self.assertEqual(detail["decision"], "supported")
+        self.assertEqual(detail["condition_logic"]["decision"], "unsupported")
+        self.assertEqual(detail["scope_fields"]["actor"]["decision"], "unsupported")
+        self.assertEqual(report.semantic_reviews[0]["review_contract_version"], contracts.REVIEW_VERSION)
+        self.assertEqual(report.semantic_reviews[0]["history"][1]["proposals"], saved["repaired_proposals"])
+
+    def test_each_detailed_failure_blocks_a_supported_summary(self):
+        for field in ("condition_logic", *contracts.SCOPE_FIELDS):
+            with self.subTest(field=field):
+                def review(result, payload):
+                    claim = result["concept_reviews"][0]["claim_support"][0]
+                    check = claim[field] if field == "condition_logic" else claim["scope_fields"][field]
+                    check.update(decision="unsupported", reason="Deliberate isolated negative control.")
+                report = self.engine(Provider(review=review), max_repair_attempts=0).extract(self.page("<p>Apply online.</p>"))
+                self.assertFalse(report.candidates)
+                self.assertEqual(report.rejected_candidates[0]["stage"], "structured_review")
+
+    def test_missing_per_claim_checks_are_rejected_instead_of_defaulting_to_supported(self):
+        for missing in ("condition_logic", "scope_fields", *contracts.SCOPE_FIELDS):
+            with self.subTest(missing=missing):
+                def review(result, payload):
+                    item = result["concept_reviews"][0]["claim_support"][0]
+                    del (item if missing in {"condition_logic", "scope_fields"} else item["scope_fields"])[missing]
+                provider = Provider(review=review)
+                report = self.engine(provider, max_repair_attempts=0).extract(self.page("<p>Apply online.</p>"))
+                self.assertFalse(report.candidates)
+                self.assertEqual(provider.discarded, 1)
+                self.assertEqual(report.semantic_reviews[0]["history"][0]["failure_stage"], "review_validation")
+
+    def test_saved_empty_conditions_cannot_receive_supported_conditional_review(self):
+        saved = self.saved_residence()
+        for revision in ("initial_proposals", "repaired_proposals"):
+            with self.subTest(revision=revision):
+                provider = Provider(generate=lambda result, payload: result.update(concepts=copy.deepcopy(saved[revision])),
+                    review=lambda result, payload: result["concept_reviews"][0]["claim_support"][0]["condition_logic"].update(
+                        source_applicability="conditional"))
+                report = self.engine(provider, max_repair_attempts=0).extract(self.residence_page(saved))
+                self.assertFalse(report.candidates)
+                self.assertEqual(provider.discarded, 1)
+                error = report.semantic_reviews[0]["history"][0]["error"]
+                self.assertIn("claim claim-0001", error)
+                self.assertIn("empty conditions", error)
+
+    def test_unconditional_obligation_and_issuance_fact_can_have_empty_conditions(self):
+        def generate(result, payload):
+            claim = result["concepts"][0]["claims"][0]
+            claim.update(kind="requirement", statement="Visitors must wear badges.")
+            claim["scope"]["actor"] = "visitors"
+            issuance = copy.deepcopy(claim)
+            issuance.update(claim_id="issuer", kind="fact", statement="The Site Office issues badges.")
+            issuance["scope"]["actor"] = "Site Office"
+            result["concepts"][0]["claims"].append(issuance)
+        report = self.engine(Provider(generate)).extract(self.page(
+            "<p>Visitors must wear badges. The Site Office issues badges.</p>"))
+        self.assertEqual(len(report.candidates), 1)
+        self.assertEqual(len(report.candidates[0].structured_claims), 2)
+        self.assertFalse(report.quality_metrics["publication_eligible"])
+
+    def test_uncertain_applicability_cannot_receive_supported_logic(self):
+        provider = Provider(review=lambda result, payload: result["concept_reviews"][0]["claim_support"][0]["condition_logic"].update(
+            source_applicability="uncertain"))
+        report = self.engine(provider, max_repair_attempts=0).extract(self.page("<p>Apply online.</p>"))
+        self.assertFalse(report.candidates)
+        self.assertIn("uncertain source applicability", report.semantic_reviews[0]["history"][0]["error"])
+
+    def test_unconditional_review_cannot_approve_added_conditions(self):
+        def generate(result, payload):
+            claim = result["concepts"][0]["claims"][0]
+            claim["conditions"] = [{"condition_id": "invented", "text": "Apply online.",
+                "evidence_ids": claim["evidence_ids"], "subject": "unspecified", "operator": "stated",
+                "value": "unspecified", "unit": "unspecified", "time_window": "unspecified"}]
+            claim["condition_root"] = "invented"
+        provider = Provider(generate, lambda result, payload: result["concept_reviews"][0]["claim_support"][0]["condition_logic"].update(
+            source_applicability="unconditional"))
+        report = self.engine(provider, max_repair_attempts=0).extract(self.page("<p>Apply online.</p>"))
+        self.assertFalse(report.candidates)
+        self.assertIn("supported added conditions", report.semantic_reviews[0]["history"][0]["error"])
 
 
 if __name__ == "__main__":

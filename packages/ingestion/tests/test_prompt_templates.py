@@ -1,23 +1,46 @@
 from __future__ import annotations
 
 import tempfile
+import json
 import unittest
 from pathlib import Path
 
 from swisstip.ingestion.prompt_templates import load_prompts
+from swisstip.ingestion.prompt_templates import load_bundled_prompt
+from swisstip.ingestion import claim_contracts as contracts
 
 
 class PromptTemplateTests(unittest.TestCase):
+    def test_worked_example_has_cited_connected_logic_and_separate_issuing_role(self):
+        text = load_bundled_prompt("structured_claim_example_v4.md")
+        ref = text.split("Source evidence ID: ")[1].splitlines()[0]
+        source = text.split("Source text: ")[1].splitlines()[0]
+        evidence = {ref: {"section_id": "section-example", "text": source}}
+        example = contracts.decode(text.split("```json\n")[1].split("```")[0],
+                                   contracts.extraction_schema([ref], 6))
+        item = example["concepts"][0]
+        contracts.validate_concept(item, evidence, {"section-example": "example-scope"})
+        requirement, issuance = item["claims"]
+        self.assertEqual(requirement["condition_root"], "either")
+        self.assertEqual(requirement["condition_groups"][0]["operator"], "OR")
+        threshold = requirement["conditions"][1]
+        self.assertEqual((threshold["operator"], threshold["value"], threshold["unit"]), ("gt", "5", "days"))
+        self.assertEqual(requirement["scope"]["actor"], "visitor")
+        self.assertEqual(issuance["scope"]["actor"], "Site Office")
+        self.assertEqual(issuance["kind"], "fact")
+        self.assertFalse(issuance["conditions"])
+        self.assertTrue(all(c["scope"]["recipient"] == "unspecified" for c in item["claims"]))
+
     def test_bundled_prompts_match_reviewed_system_prompt_bytes(self):
         # v1-v3 preserve the original Python literals. v4 was revised to clarify
-        # condition roots, required nesting, statement coverage and semantic roles.
+        # source-bounded coverage, explicit per-claim review and a worked example.
         expected = {
             "concept_extraction_v1": ("c518de718fc062fde17189160eb86fa1208be5f057c5a3af8d7207b6cece9404", None),
             "concept_extraction_v2": ("8db37071451acce8b4475a8cea6e4c2f44c4fc927aff2a4f8bcecc01df6fd1d4", None),
             "concept_extraction_v3": ("ccd968b7b59b7ef144255483d42cda016872c0c82b49d00deb384578b234ee83",
                                       "893394d896520067767f1c69eaeefd8efad780658710b99fde64112d8390c78e"),
-            "concept_extraction_v4": ("63bc1325d82bac92cac88f406811daa49195385d2ba2f4a3040cac727e654fe2",
-                                      "60c90403561caa628b409a4d4f2b639d3b2ae5e9eec692b707a8d98486945a87"),
+            "concept_extraction_v4": ("4b870022420a0be39e16b8d993a8b1a44ee122375088807835d3d1c4efc5290e",
+                                      "19412842e494e320b666a084c9c97da89d0204dd60e64465ac67ff14762ce284"),
         }
         for profile, (extraction, review) in expected.items():
             with self.subTest(profile=profile):

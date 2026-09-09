@@ -16,6 +16,7 @@ from swisstip.builder.extraction_review import export_packet, import_decisions
 from swisstip.builder.model_profiles import load_model_profiles, ModelProfileConfigurationError
 from swisstip.builder.concept_recovery import RecoverableProvider, CHECKPOINT_VERSION, _digest
 from swisstip.ingestion.concepts import normalize_downloaded_page, ModelCompletion
+from swisstip.ingestion.claim_contracts import REVIEW_VERSION, SCOPE_FIELDS
 from test_concept_batch import report
 from test_model_profiles import VALID_CONFIG
 
@@ -81,7 +82,7 @@ class StructuredWorkflowTests(unittest.TestCase):
                 payload = json.loads(request["user_prompt"])
                 result = {"concepts": [], "saturated": False}
                 if "concepts" in payload:
-                    result = {"concept_reviews": [], "block_coverage": [
+                    result = {"schema_version": REVIEW_VERSION, "concept_reviews": [], "block_coverage": [
                         {"section_id": b["section_id"], "decision": "missing", "concept_indices": [],
                          "reason": "Fixture omission."} for b in payload["untrusted_source"]["evidence"].values()]}
                 model = load_model_profiles(self_config).active_profile.model
@@ -106,6 +107,54 @@ class StructuredWorkflowTests(unittest.TestCase):
         first = replace(original, candidates=(replace(original.candidates[0], structured_claims=({"operator": "gt", "value": "90"},)),))
         second = replace(original, candidates=(replace(original.candidates[0], structured_claims=({"operator": "gte", "value": "90"},)),))
         self.assertEqual(len(summarize_reports([first, second])["consolidated_concepts"]), 2)
+
+    def test_structurally_invalid_extraction_checkpoints_replay_without_review_calls(self):
+        self.source.write_text("<p>Anyone who works during his/her stay requires a permit.</p>", encoding="utf-8")
+        model = load_model_profiles(self.config).active_profile.model
+        class InvalidTreeProvider:
+            def __init__(self):
+                self.calls = 0
+
+            def generate_structured(self, **request):
+                self.calls += 1
+                payload = json.loads(request["user_prompt"])
+                if "concepts" in payload:
+                    raise AssertionError("Invalid extraction must not trigger a review call")
+                ref, block = next(iter(payload["untrusted_source"]["evidence"].items()))
+                claim = {"claim_id": "requirement", "kind": "requirement", "statement": block["text"],
+                    "evidence_ids": [ref], "scope_evidence_ids": [ref],
+                    "scope": {field: "unspecified" for field in SCOPE_FIELDS},
+                    "conditions": [{"condition_id": "works", "text": "works during their stay",
+                        "evidence_ids": [ref], "subject": "person", "operator": "stated", "value": "works",
+                        "unit": "unspecified", "time_window": "unspecified"}],
+                    "condition_groups": [], "condition_root": "OR", "exceptions": [], "limitations": []}
+                result = {"concepts": [{"label": "Permit", "concept_type": "RULE",
+                    "primary_section_id": block["section_id"], "claims": [claim], "questions": [], "limitations": []}],
+                    "saturated": False}
+                return ModelCompletion(json.dumps(result), "ollama", model, requested_model=model, observed_model=model)
+
+        provider = InvalidTreeProvider()
+        checkpoint_dir = self.root / "checkpoints"
+        argv = [str(self.source), "--config", str(self.config), "--structured", "--checkpoint-dir", str(checkpoint_dir)]
+        saved_checkpoints = None
+        for iteration in range(2):
+            stream = io.StringIO()
+            with patch("swisstip.builder.concept_cli.create_semantic_model_provider", return_value=provider), redirect_stdout(stream):
+                self.assertEqual(main(argv), 0)
+            result = json.loads(stream.getvalue())
+            page = result["reports"][0]
+            self.assertFalse(page["candidates"])
+            self.assertEqual(page["quality_metrics"]["request_attempt_count"], 2)
+            self.assertEqual(page["quality_metrics"]["review_request_count"], 0)
+            self.assertEqual(len(page["rejected_candidates"][0]["errors"]), 2)
+            self.assertEqual(result["execution"]["checkpoint_hits"], 2 if iteration else 0)
+            self.assertEqual(result["execution"]["network_attempts"], 0 if iteration else 2)
+            checkpoint_bytes = {p.name: p.read_bytes() for p in checkpoint_dir.glob("*.json")}
+            self.assertEqual(len(checkpoint_bytes), 2)
+            if saved_checkpoints is not None:
+                self.assertEqual(checkpoint_bytes, saved_checkpoints)
+            saved_checkpoints = checkpoint_bytes
+        self.assertEqual(provider.calls, 2)
 
     def test_legacy_serialization_keeps_original_candidate_and_report_shape(self):
         original = report("legacy.html")

@@ -12,7 +12,7 @@ _EXTRACTION_FILES = {
     "concept_extraction_v1": ("concept_extraction_v1.md",),
     "concept_extraction_v2": ("concept_extraction_v2.md",),
     "concept_extraction_v3": ("concept_extraction_v2.md", "concept_extraction_v3_extension.md"),
-    "concept_extraction_v4": ("structured_claim_extraction_v4.md",),
+    "concept_extraction_v4": ("structured_claim_extraction_v4.md", "structured_claim_example_v4.md"),
 }
 _REVIEW_FILES = {
     "concept_extraction_v3": ("concept_review_v3.md",),

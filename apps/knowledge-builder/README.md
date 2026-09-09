@@ -57,6 +57,31 @@ includes offline review export/import commands and validation limits. Select
 `concept_extraction_v3` in a separate configuration for comparisons with the
 frozen POC-01 evidence.
 
+V4's `swisstip.structured-review/v2` response contract requires a separate
+`condition_logic` assessment and six `scope_fields` assessments on every claim.
+A negative detail check prevents retention even when a broad summary approves
+the concept. The validator also rejects a review that calls a source rule
+conditional while approving empty conditions. It permits empty conditions for
+unconditional assertions, including obligations. These checks enforce complete,
+internally consistent model assessments; they do not independently prove source
+entailment or detect every mistaken approval. Reports preserve the review version
+and original assessments. Old reports remain readable, while changed prompt/schema
+bytes prevent their review checkpoints from satisfying the new request contract.
+
+After JSON shape validation, v4 collects independent reference, condition-tree
+and clause errors together in each rejection's `errors` array. Entries identify
+the affected field path and reason; the existing `reason` remains the first-error
+summary. A bad root no longer hides an altered quotation or errors in later claims.
+When a repair and its follow-up audit fit the remaining budget, invalid proposals
+are sent for repair before semantic review. The repair payload contains each
+proposal once and all its collected diagnostics, subject to the existing input
+size limit. If every proposal is still invalid, review is skipped and the source
+stays unresolved. With no repair left, valid proposals in a mixed result can still
+be reviewed. A genuinely empty extraction still receives a coverage audit.
+Schema-valid extraction checkpoints remain available for replay and revalidation;
+changing repair feedback changes the repair checkpoint key. The planned call
+ceiling and one-repair limit remain enforced, including odd page request limits.
+
 `swisstip-concepts` accepts one or more local file paths, directory paths, or
 wildcard patterns. Eligible files have an `.html`, `.htm`, `.txt`, `.md`, or
 `.markdown` extension. Directory scanning recursively includes supported files
@@ -153,7 +178,8 @@ The system prompts live in
 [`packages/ingestion/src/swisstip/ingestion/prompts`](../../packages/ingestion/src/swisstip/ingestion/prompts/README.md)
 as bundled Markdown resources. That directory's README maps every profile to
 its extraction and review files. The v3 extraction prompt combines the v2 base
-and a v3 extension; the other extraction profiles use a single file.
+and a v3 extension; v4 combines its instructions and a synthetic worked example.
+The v1 and v2 extraction profiles each use a single file.
 
 To customize prompts without editing application code, add either or both
 optional fields to the existing `[extraction]` table in your model config:

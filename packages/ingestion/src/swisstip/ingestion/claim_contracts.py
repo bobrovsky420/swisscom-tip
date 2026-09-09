@@ -9,6 +9,8 @@ import json
 import math
 
 VERSION = "swisstip.structured-claims/v1"
+REVIEW_VERSION = "swisstip.structured-review/v2"
+SCOPE_FIELDS = ("population", "jurisdiction", "permit_status", "actor", "recipient", "procedure_branch")
 POLICY = {"schema_version": "swisstip.extraction-content-policy/v1",
           "include": ["substantive_prose", "conditions", "procedures", "tables", "authority_contacts"],
           "exclude": ["navigation", "heading_only"],
@@ -87,8 +89,7 @@ def extraction_schema(evidence_ids, max_concepts):
     claim = obj({"claim_id": string(40),
                  "kind": enum(["fact", "requirement", "permission", "prohibition", "procedure"]),
                  "statement": string(), "evidence_ids": refs,
-                 "scope": obj({field: string(240) for field in (
-                     "population", "jurisdiction", "permit_status", "actor", "recipient", "procedure_branch")}),
+                 "scope": obj({field: string(240) for field in SCOPE_FIELDS}),
                  "scope_evidence_ids": refs,
                  "conditions": array(condition), "condition_groups": array(group),
                  "condition_root": {"type": "string", "maxLength": 40, "minLength": 0},
@@ -109,62 +110,127 @@ def evidence_references(concept):
                 yield from item["evidence_ids"]
 
 
-def validate_concept(concept, evidence, sections):
-    """Reject cross-group references, dangling logic, cycles and uncited clauses."""
-    if concept["primary_section_id"] not in sections:
-        raise ValueError("unknown or out-of-scope primary section")
-    refs = list(evidence_references(concept))
-    if any(ref not in evidence for ref in refs):
-        raise ValueError("unknown or out-of-scope evidence reference")
-    if isinstance(sections, dict) and any(sections[evidence[ref]["section_id"]] != sections[concept["primary_section_id"]] for ref in refs):
-        raise ValueError("evidence crosses unrelated source ownership groups")
-    if not any(evidence[ref]["section_id"] == concept["primary_section_id"] for ref in refs):
-        raise ValueError("primary section has no supporting evidence")
-    ids = [c["claim_id"] for c in concept["claims"]]
-    if len(set(ids)) != len(ids):
-        raise ValueError("duplicate claim IDs")
-    for claim in concept["claims"]:
-        conditions = {c["condition_id"]: c for c in claim["conditions"]}
-        groups = {g["group_id"]: g for g in claim["condition_groups"]}
-        if len(conditions) != len(claim["conditions"]) or len(groups) != len(claim["condition_groups"]) or set(conditions) & set(groups):
-            raise ValueError("duplicate condition/group IDs")
-        nodes = set(conditions) | set(groups)
-        root = claim["condition_root"]
-        if bool(nodes) != bool(root) or (root and root not in nodes):
-            raise ValueError("conditions require a valid explicit root")
-        visited = set()
+class ConceptValidationError(ValueError):
+    """All independently checkable issues in a schema-valid proposal."""
 
-        def visit(identity, active):
-            if identity in active or identity not in nodes:
-                raise ValueError("cyclic or dangling condition logic")
-            if identity in visited:
-                raise ValueError("repeated condition subtree; use a bounded logical tree")
+    def __init__(self, errors):
+        self.errors = errors
+        # Preserve the first-error summary for existing report consumers.
+        super().__init__(errors[0]["reason"])
+
+
+def _condition_tree_errors(claim, path):
+    errors = []
+    def add(field, reason, **details):
+        errors.append({"path": f"{path}.{field}", "reason": reason, **details})
+
+    conditions = {c["condition_id"]: c for c in claim["conditions"]}
+    groups = {g["group_id"]: g for g in claim["condition_groups"]}
+    duplicate_ids = (len(conditions) != len(claim["conditions"])
+                     or len(groups) != len(claim["condition_groups"]) or set(conditions) & set(groups))
+    if duplicate_ids:
+        add("conditions", "duplicate condition/group IDs")
+    nodes = set(conditions) | set(groups)
+    root = claim["condition_root"]
+    root_valid = bool(nodes) == bool(root) and (not root or root in nodes)
+    if not root_valid:
+        add("condition_root", "conditions require a valid explicit root",
+            hint="Use a defined condition_id or group_id as the root. Put AND/OR on a defined group with members, not in the root as an operator.")
+    if any(g["operator"] == "UNRESOLVED" for g in groups.values()) and not claim["limitations"]:
+        add("limitations", "unresolved logic requires an explicit limitation")
+    # Duplicate IDs make graph traversal ambiguous; clause checks still run.
+    if duplicate_ids:
+        return errors
+
+    incoming = {}
+    for index, group in enumerate(claim["condition_groups"]):
+        members = group["members"]
+        field = f"condition_groups[{index}].members"
+        if len(members) != len(set(members)):
+            add(field, "duplicate logical operands")
+        if any(member not in nodes for member in members):
+            add(field, "cyclic or dangling condition logic")
+        for member in dict.fromkeys(members):
+            if member in incoming:
+                add(field, "repeated condition subtree; use a bounded logical tree")
+                break
+        for member in members:
+            incoming[member] = True
+
+    # Inspect every component, including when the root itself is invalid.
+    states = {}
+    group_indices = {g["group_id"]: i for i, g in enumerate(claim["condition_groups"])}
+    def visit(identity):
+        states[identity] = "active"
+        if identity in groups:
+            for member in groups[identity]["members"]:
+                if member not in nodes:
+                    continue
+                if states.get(member) == "active":
+                    add(f"condition_groups[{group_indices[identity]}].members", "cyclic or dangling condition logic")
+                elif member not in states:
+                    visit(member)
+        states[identity] = "complete"
+    for identity in [*conditions, *groups]:
+        if identity not in states:
+            visit(identity)
+
+    if root_valid and root:
+        visited, pending = set(), [root]
+        while pending:
+            identity = pending.pop()
+            if identity in visited or identity not in nodes:
+                continue
             visited.add(identity)
             if identity in groups:
-                members = groups[identity]["members"]
-                if len(members) != len(set(members)):
-                    raise ValueError("duplicate logical operands")
-                for member in members:
-                    visit(member, active | {identity})
-
-        if root:
-            visit(root, set())
+                pending.extend(groups[identity]["members"])
         if visited != nodes:
-            raise ValueError("unconnected conditions or groups")
-        if any(g["operator"] == "UNRESOLVED" for g in groups.values()) and not claim["limitations"]:
-            raise ValueError("unresolved logic requires an explicit limitation")
-        for condition in conditions.values():
+            add("condition_root", "unconnected conditions or groups")
+    return errors
+
+
+def validate_concept(concept, evidence, sections):
+    """Collect independent reference, tree and clause errors after schema validation.
+
+    An invalid root must not hide bad quotations or errors in later claims.
+    No source text or proposed logic is corrected by this validator.
+    """
+    errors = []
+    def add(path, reason):
+        errors.append({"path": path, "reason": reason})
+
+    primary = concept["primary_section_id"]
+    if primary not in sections:
+        add("primary_section_id", "unknown or out-of-scope primary section")
+    refs = list(evidence_references(concept))
+    known_refs = [ref for ref in refs if ref in evidence]
+    if len(known_refs) != len(refs):
+        add("claims", "unknown or out-of-scope evidence reference")
+    if primary in sections and isinstance(sections, dict) and any(
+            sections[evidence[ref]["section_id"]] != sections[primary] for ref in known_refs):
+        add("claims", "evidence crosses unrelated source ownership groups")
+    if primary in sections and not any(evidence[ref]["section_id"] == primary for ref in known_refs):
+        add("primary_section_id", "primary section has no supporting evidence")
+    ids = [c["claim_id"] for c in concept["claims"]]
+    if len(set(ids)) != len(ids):
+        add("claims", "duplicate claim IDs")
+    for index, claim in enumerate(concept["claims"]):
+        path = f"claims[{index}]"
+        errors.extend(_condition_tree_errors(claim, path))
+        for condition_index, condition in enumerate(claim["conditions"]):
+            field = f"{path}.conditions[{condition_index}]"
             if condition["operator"] in {"gt", "gte", "lt", "lte"}:
                 try:
-                    number = float(condition["value"])
+                    finite = math.isfinite(float(condition["value"]))
                 except ValueError:
-                    raise ValueError("numeric comparison requires a finite numeric value") from None
-                if not math.isfinite(number):
-                    raise ValueError("numeric comparison requires a finite numeric value")
-            # The original condition must be visible verbatim, separately from
-            # the proposed machine interpretation (which still needs review).
-            if not any(condition["text"] in evidence[ref]["text"] for ref in condition["evidence_ids"]):
-                raise ValueError("condition text must be an exact source excerpt")
+                    finite = False
+                if not finite:
+                    add(f"{field}.value", "numeric comparison requires a finite numeric value")
+            available = [ref for ref in condition["evidence_ids"] if ref in evidence]
+            if available and not any(condition["text"] in evidence[ref]["text"] for ref in available):
+                add(f"{field}.text", "condition text must be an exact source excerpt")
+    if errors:
+        raise ConceptValidationError(errors)
 
 
 ASSESSMENT = obj({"decision": enum(["supported", "unsupported", "uncertain"]), "reason": string(500)})
@@ -172,9 +238,14 @@ ASSESSMENT = obj({"decision": enum(["supported", "unsupported", "uncertain"]), "
 
 def review_schema(concepts, block_ids):
     indices = {"type": "integer", **({"enum": list(range(len(concepts)))} if concepts else {})}
-    return obj({"concept_reviews": array(obj({
+    claim_assessment = obj({"claim_id": string(40), **ASSESSMENT["properties"],
+        "condition_logic": obj({
+            "source_applicability": enum(["conditional", "unconditional", "uncertain"]),
+            **ASSESSMENT["properties"]}),
+        "scope_fields": obj({field: ASSESSMENT for field in SCOPE_FIELDS})})
+    return obj({"schema_version": enum([REVIEW_VERSION]), "concept_reviews": array(obj({
         "concept_index": indices,
-        "claim_support": array(obj({"claim_id": string(40), **ASSESSMENT["properties"]}), 8),
+        "claim_support": array(claim_assessment, 8),
         "scope": ASSESSMENT, "completeness": ASSESSMENT,
         "questions": array(obj({"question_index": {"type": "integer"}, **ASSESSMENT["properties"]}), 3),
     }), len(concepts), len(concepts)),
@@ -194,6 +265,20 @@ def parse_review(content, concepts, block_ids):
         expected = {c["claim_id"] for c in concept["claims"]}
         if len(review["claim_support"]) != len(expected) or {c["claim_id"] for c in review["claim_support"]} != expected:
             raise ValueError("review must assess every claim exactly once")
+        claims = {c["claim_id"]: c for c in concept["claims"]}
+        for assessment in review["claim_support"]:
+            logic = assessment["condition_logic"]
+            if logic["decision"] != "supported":
+                continue
+            claim = claims[assessment["claim_id"]]
+            applicability = logic["source_applicability"]
+            prefix = f"concept {review['concept_index']}, claim {claim['claim_id']}: "
+            if applicability == "uncertain":
+                raise ValueError(prefix + "uncertain source applicability cannot have supported condition logic")
+            if applicability == "conditional" and not claim["conditions"]:
+                raise ValueError(prefix + "conditional source rule cannot have supported condition logic with empty conditions")
+            if applicability == "unconditional" and (claim["conditions"] or claim["condition_groups"] or claim["condition_root"]):
+                raise ValueError(prefix + "unconditional source assertion cannot have supported added conditions")
         if len(review["questions"]) != len(concept["questions"]) or {q["question_index"] for q in review["questions"]} != set(range(len(concept["questions"]))):
             raise ValueError("review must assess every question exactly once")
     if {r["section_id"] for r in result["block_coverage"]} != set(block_ids):
@@ -209,8 +294,16 @@ def parse_review(content, concepts, block_ids):
 
 
 def review_passes(review):
-    return all(item["decision"] == "supported" for item in
-               [*review["claim_support"], review["scope"], review["completeness"], *review["questions"]])
+    # Detailed failures cannot be hidden by a supported statement or summary.
+    # These are model assessments, not deterministic source entailment checks.
+    assessments = [review["scope"], review["completeness"], *review["questions"]]
+    for claim in review["claim_support"]:
+        if "condition_logic" not in claim or "scope_fields" not in claim:
+            return False
+        if set(claim["scope_fields"]) != set(SCOPE_FIELDS):
+            return False
+        assessments.extend([claim, claim["condition_logic"], *claim["scope_fields"].values()])
+    return all(item["decision"] == "supported" for item in assessments)
 
 
 def describe(concept):

@@ -18,6 +18,17 @@ def _hash(value):
                                      separators=(",", ":")).encode()).hexdigest()
 
 
+def _repair_feedback(record):
+    """Keep all diagnostics, with each proposal once and no raw review text."""
+    result = {key: value for key, value in record.items() if key not in {"raw_completion", "error"}}
+    result["structural_rejections"] = [
+        {key: value for key, value in item.items() if key != "proposal"}
+        for item in record.get("structural_rejections", [])]
+    if "error" in record:
+        result["validation_error"] = record["error"]
+    return result
+
+
 class StructuredExtraction:
     def __init__(self, engine):
         self.engine = engine
@@ -74,6 +85,9 @@ class StructuredExtraction:
     def extract(self, page):
         engine = self.engine
         jobs, inventory = self.plan(page)
+        # The preview is an upper bound even for odd configured page budgets.
+        request_ceiling = min(engine._max_model_requests_per_page // 2 * 2,
+                              len(jobs) * 2 * (1 + engine._max_repair_attempts))
         by_block = {row["section_id"]: row for row in inventory}
         candidates, rejected, reviews, queue, completions, warnings = [], [], [], [], [], []
         attempt_counts = {"generation": 0, "review": 0, "repair": 0}
@@ -97,7 +111,7 @@ class StructuredExtraction:
             for revision in range(engine._max_repair_attempts + 1):
                 # Reserve initial extraction/audit calls for every planned packet
                 # before spending remaining slots on a repair.
-                if revision and engine._max_model_requests_per_page - sum(attempt_counts.values()) < 2 * (len(jobs) - job_index) + 2:
+                if revision and request_ceiling - sum(attempt_counts.values()) < 2 * (len(jobs) - job_index) + 2:
                     break
                 engine._progress(f"Structured group {job_index}/{len(jobs)}, revision {revision}: extraction and coverage review")
                 revision_completion = None
@@ -120,15 +134,43 @@ class StructuredExtraction:
                     saturated = raw["saturated"] or len(proposed) == engine._max_concepts_per_chunk
                     valid, invalid, identities = [], [], set()
                     for index, concept in enumerate(proposed):
+                        errors = []
                         try:
                             contracts.validate_concept(concept, evidence, {b.section_id: b.scope_id for b in blocks})
-                            if _hash(concept) in identities:
-                                raise ValueError("duplicate proposal")
-                            identities.add(_hash(concept))
-                            valid.append(concept)
                         except ValueError as exc:
-                            invalid.append({"proposal_index": index, "reason": str(exc), "proposal": concept})
-                            engine._progress(f"Structured proposal {index} rejected: {exc}")
+                            errors = getattr(exc, "errors", [{"path": "concept", "reason": str(exc)}])
+                        identity = _hash(concept)
+                        if identity in identities:
+                            errors.append({"path": "concept", "reason": "duplicate proposal"})
+                        identities.add(identity)
+                        if errors:
+                            invalid.append({"proposal_index": index, "reason": errors[0]["reason"],
+                                            "errors": errors, "proposal": concept})
+                            for error in errors:
+                                engine._progress(f"Structured proposal {index} rejected at {error['path']}: {error['reason']}")
+                        else:
+                            valid.append(concept)
+                    repair_available = (revision < engine._max_repair_attempts and
+                        request_ceiling - sum(attempt_counts.values()) >= 2 * (len(jobs) - job_index) + 2)
+                    if invalid and (repair_available or not valid):
+                        # Repair a malformed packet before paying to review it.
+                        # A genuinely empty extraction has no rejections and still
+                        # needs a source coverage audit. With no repair left, a
+                        # mixed packet may still audit its valid proposals below.
+                        reason = "repairing structural errors" if repair_available else "no structurally valid proposals"
+                        record = {"revision": revision, "failure_stage": "structural_validation",
+                                  "error": f"{len(invalid)} proposal(s) failed structural validation",
+                                  "proposals": proposed, "structural_rejections": invalid,
+                                  "saturated": saturated, "review_skipped": reason}
+                        history.append(record)
+                        final_concepts, final_review = [], None
+                        feedback = _repair_feedback(record)
+                        message = f"Structured group {job_index}, revision {revision}: semantic review skipped; {reason}"
+                        engine._progress(message)
+                        warnings.append(message)
+                        if repair_available:
+                            continue
+                        break
                     stage = "review_input"
                     review_input = {"untrusted_source": source,
                                     "concepts": [dict(c, rendered_description=contracts.describe(c)) for c in valid]}
@@ -157,7 +199,7 @@ class StructuredExtraction:
                         r["decision"] in {"missing", "partial", "uncertain"} for r in audit["block_coverage"])
                     if not repair_needed:
                         break
-                    feedback = history[-1]
+                    feedback = _repair_feedback(history[-1])
                 except ValueError as exc:
                     discard = getattr(engine._provider, "discard_last_checkpoint", None)
                     if (discard is not None and revision_completion is not None
@@ -172,10 +214,7 @@ class StructuredExtraction:
                     # A review failure must not mask errors in the proposals it
                     # could not review. Include each proposal once; raw review
                     # text stays in history, outside the bounded repair payload.
-                    feedback = {"validation_error": str(exc), "failure_stage": stage,
-                                "proposals": proposed,
-                                "structural_rejections": [{"proposal_index": item["proposal_index"],
-                                                           "reason": item["reason"]} for item in invalid]}
+                    feedback = _repair_feedback(history[-1])
                     if stage == "extraction_validation" and revision_completion is not None and not proposed:
                         # A schema-invalid response never became a proposal, but
                         # the repair still needs to see what it must correct.
@@ -195,6 +234,7 @@ class StructuredExtraction:
                     provider_failed = True
                     break
             reviews.append({"scope_ids": source["scope_ids"], "section_ids": block_ids, "history": history,
+                            "review_contract_version": contracts.REVIEW_VERSION,
                             "decision": "recorded_for_human_review", "issue": "human_promotion_required"})
             if history:
                 rejected.extend(dict(item, stage="structural_validation")

@@ -21,14 +21,30 @@ For primary_section_id copy the section_id field of a supplied evidence entry.
 Do not copy that entry's scope_id or its evidence ID: section-NNNN, scope-NNNN,
 and section-NNNN:0:length are different identifier types. Evidence arrays use the
 full evidence ID; primary_section_id uses only the supplied section_id value.
-First inventory substantive content throughout ALL supplied blocks, including
-tables and actionable authority contacts. Then propose bounded concepts and their
-connected claims. A heading is context, not proof of a factual claim. Blocks in
-this bundle may have DIFFERENT scope_ids: never borrow evidence across them.
-Shared ownership is not proof of identical semantic scope. Preserve sponsor
-versus joining person, permit/status, actors, recipients,
-and distinct procedure branches. The primary section anchors cited evidence;
-supporting blocks may be cited only when they establish this same scoped claim.
+First inventory the separate assertions actually present throughout ALL supplied
+blocks, including requirements, actions by authorities, categories, tables and
+actionable contacts. Represent each substantive assertion in a claim, even when
+several claims belong to one concept. Mentioning an authority in scope is not a
+claim about what it does. A citation to a whole paragraph does not represent
+sentences omitted from the claims. Do not invent details to expand the source.
+A heading is context, not proof of a factual claim. Blocks in this bundle may
+have DIFFERENT scope_ids: never borrow evidence across them. Shared ownership
+alone does not establish identical semantic scope. The primary section anchors
+cited evidence; supporting blocks must establish this same scoped claim.
+Choose kind to match the assertion: an obligation is a requirement, not a fact
+with its prerequisites left unstructured. Preserve a rule's complete alternatives
+in one claim: if the source says A OR B requires C, keep both A and B and the OR.
+Represent stated prerequisites in conditions even when also written in statement.
+Use kind=fact for descriptive assertions such as an authority's issuing role or
+a list of categories; do not turn these into eligibility conditions.
+Set every scope field from the relationship asserted in THAT claim. The actor
+performs that action; the recipient receives it. An issuing authority is the
+actor of an issuance claim, not an application recipient in a requirement claim.
+Use 'unspecified' for roles, populations or procedure branches the cited evidence
+does not establish. Do not infer applicants or foreign-national scope from a site
+title, navigation or brochure label. permit_status describes an evidenced status
+or permit category, not words such as 'required' or 'available types'. Preserve
+sponsor versus joining person and separate procedure branches.
 For each condition copy an exact source excerpt into text, separately proposing
 subject/operator/value/unit/time_window. Use 'unspecified' for unstated fields.
 Build explicit AND/OR condition groups and root; never detach conditions from the
@@ -36,8 +52,7 @@ claim they govern. condition_root must reach EVERY condition and group exactly o
 For example, if group g1 combines c1 OR c2, set condition_root="g1", not "c1".
 For one condition with no groups, use that condition's ID as the root. With no
 conditions, use empty conditions and condition_groups arrays and condition_root="".
-Do not turn every descriptive statement into conditions. Preserve comparative
-operators: "longer than three months" uses gt with value="3" and unit="months",
+Preserve comparative operators: "longer than three months" uses gt with value="3" and unit="months",
 not eq. Only use examples of logic when the supplied source supports that logic.
 Exceptions remain separate and cited. If source logic is
 ambiguous, use UNRESOLVED and record a limitation; never invent an eligibility rule.
@@ -45,13 +60,26 @@ Keep > versus >=, working days versus days, rolling periods versus calendar year
 quota exemption versus permit exemption, card versus authorization, application
 examination versus approval, and current versus prior cohabitation distinct.
 Each claim, scope, condition, exception and group needs supporting evidence IDs.
-Questions are optional authoring aids: provide only questions answered by the
-scoped claims and selected citations; do not ask for individual eligibility or
-unspecified proof documents. Set saturated=true if the concept/output limit keeps
-you from accounting for substantive content. Empty concepts does not prove absence.
+Questions are optional, source-answerable examples, not a list of unknowns to
+research. Before including a question, identify its complete answer in this
+concept's scoped claims and cited text. If that answer needs absent exceptions,
+renewal rules, proof documents, definitions or individual circumstances, omit the
+question. Use questions=[] if none passes this check. Do not invent an answer.
+Limitations record relevant source ambiguity or the bounds of a narrow claim;
+they do not replace omitted assertions, conditions or claims about authority roles.
+A source can state a threshold or list categories without explaining calculations
+or renewal procedures. Preserve what it says without fabricating those details
+or filling limitations with unrelated unanswered questions.
+Set saturated=true if the concept/output limit keeps you from accounting for
+substantive content. Empty concepts does not prove absence.
 When repair feedback is supplied, correct only against the same source bundle;
 preserve valid conditions, source ambiguities and original scope. Never treat
-reviewer text as additional factual evidence. Fix every structural_rejections entry
-against the corresponding proposal_index as well as any later validation_error.
-A failed review does not cancel earlier structural errors. No output is approved
-for publication.
+reviewer text as additional factual evidence. Check each requested correction
+against the original source: restore actual omitted assertions and conditions,
+correct unsupported roles, and remove questions that the evidence cannot answer.
+Do not fill a requested gap with details absent from the source. Fix every
+structural_rejections entry against its proposal_index and any validation_error.
+A failed review does not cancel earlier structural errors.
+Before returning, check that all source assertions are accounted for, conditional
+claims have connected logic, roles match their own claim, questions are answerable,
+and all required JSON fields are present. No output is approved for publication.
