@@ -46,7 +46,7 @@ Change a role's `active_profile` to select another configured profile. To add a
 model, define its adapter, model ID, endpoint and any provider/credential
 references in the catalog, then add a referring profile with the options required
 by that role's adapter. The catalog does not add adapter capabilities: extraction
-supports Ollama, Hugging Face and DeepSeek; retrieval supports Ollama, Groq and
+supports Ollama, Hugging Face, Groq and DeepSeek; retrieval supports Ollama, Groq and
 DeepSeek. Local
 Ollama Apertus and hosted Hugging Face Apertus have separate catalog entries.
 
@@ -115,3 +115,19 @@ A retrieval release using this profile must pin `deepseek-ranking/v1` and
 `deepseek-v4-pro`. The existing pilot release is not migrated by changing this
 selection. Protocol support is covered by offline tests; live model quality and
 provider availability have not been qualified by those tests.
+
+## GPT-OSS extraction through Groq
+
+The optional `groq_gpt_oss_120b` extraction profile shares its model definition
+with retrieval and requires `GROQ_API_KEY`. It uses `openai/gpt-oss-120b`, low
+reasoning effort, `max_completion_tokens` and
+[strict JSON schema output](https://console.groq.com/docs/structured-outputs).
+Local evidence, condition logic, scope and coverage checks still apply. The
+adapter requires an exact returned model identity and a complete response.
+
+Select this profile independently in the GUI or semantic configuration. Account
+rate limits also apply to extraction and review calls. The
+[comparison runner](../scripts/test/model_comparison/README.md) loads the current
+keys and spaces Groq calls 60 seconds apart by default, recording this wait
+separately from API time. This pacing belongs to the comparison script; ordinary
+CLI and GUI jobs retain their existing bounded recovery settings.

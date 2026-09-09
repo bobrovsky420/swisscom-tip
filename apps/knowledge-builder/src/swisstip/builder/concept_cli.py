@@ -327,7 +327,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Sequence[str] | None = None) -> int:
+def main(argv: Sequence[str] | None = None, *, provider_factory=None) -> int:
     args = build_parser().parse_args(argv)
     started_at = time.monotonic()
     recovery_provider = None
@@ -352,10 +352,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
         )
         progress(f"Prompt profile={extraction.prompt_profile}")
-        if profile.adapter in {"huggingface", "deepseek"}:
+        if profile.adapter in {"huggingface", "deepseek", "groq"}:
             progress(f"Response mode={profile.response_mode}; local validation remains required")
         if profile.adapter == "deepseek":
             progress("DeepSeek thinking=disabled; schema supplied in the system prompt")
+        if profile.adapter == "groq":
+            progress("Groq reasoning_effort=low; strict JSON schema output")
         from swisstip.ingestion.prompt_templates import load_prompts
         prompts = load_prompts(
             extraction.prompt_profile,
@@ -449,7 +451,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             sys.stdout.write("\n")
             return 0
         progress("Creating semantic-model provider")
-        provider = create_semantic_model_provider(config)
+        provider = (provider_factory or create_semantic_model_provider)(config)
         recovery_provider = RecoverableProvider(
             provider, config, checkpoint_dir=args.checkpoint_dir,
             fresh=args.fresh_inference, progress=progress,

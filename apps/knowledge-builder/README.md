@@ -242,6 +242,7 @@ The available values are:
 | `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
 | `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Repository default |
 | `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Optional JSON-object extraction/review; requires `DEEPSEEK_API_KEY` |
+| `groq_gpt_oss_120b` | Groq API | `openai/gpt-oss-120b` | Optional strict-schema extraction/review; requires `GROQ_API_KEY` |
 
 For example, switching to local 8B requires only:
 
@@ -254,7 +255,7 @@ Each extraction profile refers to a catalog entry using `model_profile` and keep
 its timeout, response mode and any Ollama context/keep-alive settings. The catalog
 owns adapter, URL, model, provider and optional billing configuration. Generation
 and extraction limits apply across extraction profiles. To add another model using
-Ollama, Hugging Face or DeepSeek, define it once in the catalog and add a referring extraction
+Ollama, Hugging Face, Groq or DeepSeek, define it once in the catalog and add a referring extraction
 profile; future switches change only `active_profile`. A new provider API requires
 a corresponding adapter implementation. See the [configuration examples and
 standalone-config compatibility](../../config/README.md).
@@ -264,6 +265,12 @@ the system prompt and thinking explicitly disabled. Extraction/review still
 validate schema, evidence and coverage locally. Select `deepseek_v4_pro` in the GUI
 or this file and set `DEEPSEEK_API_KEY` before starting the process. See the
 [DeepSeek setup and validation limits](../../config/README.md#deepseek-v4-pro).
+
+GPT-OSS 120B uses Groq strict JSON schema output and low reasoning effort. Select
+`groq_gpt_oss_120b` and set `GROQ_API_KEY` before launching. The
+[three-model comparison runner](../../scripts/test/model_comparison/README.md)
+exercises this same extraction/review pipeline with frozen source/configuration,
+redacted API diagnostics and separate measurements of API time and quota pacing.
 
 Selection is explicit and fail-closed. The command does not fall back to another
 profile or model after an authentication, quota, availability, transport, or
@@ -300,7 +307,7 @@ The optional `[recovery]` table controls `max_retries`, `backoff_seconds`,
 at 30 seconds, while provider-requested waits are allowed up to 300 seconds by
 default, with the exact header logged and progress every 15 seconds. The
 repository configuration allows two additional
-attempts for transient HF or DeepSeek failures. All attempts count toward existing page/run
+attempts for transient HF, Groq or DeepSeek failures. All attempts count toward existing page/run
 limits, and no authentication or validation failure is retried. Result
 `execution` metrics distinguish new attempts and tokens from cached responses;
 report token totals include historical usage from those reused responses.

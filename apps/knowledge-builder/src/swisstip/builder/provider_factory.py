@@ -11,6 +11,7 @@ from swisstip.ingestion.ollama import OllamaOptions, OllamaSemanticModelProvider
 
 from .huggingface_provider import HuggingFaceRouterProvider
 from .deepseek_provider import DeepSeekSemanticModelProvider
+from .groq_provider import GroqSemanticModelProvider
 from .model_profiles import SemanticModelConfig
 
 
@@ -51,7 +52,7 @@ def create_semantic_model_provider(
             **opener_arguments,
         )
 
-    if profile.adapter in {"huggingface", "deepseek"}:
+    if profile.adapter in {"huggingface", "deepseek", "groq"}:
         if profile.token_env is None or (profile.adapter == "huggingface" and profile.provider is None):
             raise ProviderFactoryConfigurationError(
                 f"Hosted profile {profile.name!r} is incomplete"
@@ -67,6 +68,11 @@ def create_semantic_model_provider(
             return DeepSeekSemanticModelProvider(token=token, model=profile.model, base_url=profile.base_url,
                                                 timeout=profile.timeout_seconds, max_tokens=config.generation.max_output_tokens,
                                                 temperature=config.generation.temperature, **opener_arguments)
+        if profile.adapter == "groq":
+            return GroqSemanticModelProvider(token=token, model=profile.model, base_url=profile.base_url,
+                                            timeout_seconds=profile.timeout_seconds, max_tokens=config.generation.max_output_tokens,
+                                            temperature=config.generation.temperature, response_mode=profile.response_mode,
+                                            **opener_arguments)
         return HuggingFaceRouterProvider(
             token=token,
             model=profile.model,

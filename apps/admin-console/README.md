@@ -61,10 +61,10 @@ credential presence, never values. Ollama still runs in WSL.
   existing semantic config may impose stricter input and request limits.
 - **Run extraction -> Confirm extraction** runs the existing structured v4
   extractor and model-assisted review using a selected named semantic profile.
-  Profiles in `config/semantic-models.toml` refer to Ollama/Hugging Face/DeepSeek definitions
+  Profiles in `config/semantic-models.toml` refer to Ollama/Hugging Face/Groq/DeepSeek definitions
   in the shared `config/model-profiles.toml` catalog.
-  Groq evidence ranking is separate; the pilot's diagnostic Groq extraction
-  scripts have not become a general builder adapter through this GUI.
+  For GPT-OSS 120B extraction and review, set `GROQ_API_KEY` before launching
+  and select `groq_gpt_oss_120b`. Ranking remains an independent selection.
   For DeepSeek V4 Pro, set `DEEPSEEK_API_KEY` before launching and select
   `deepseek_v4_pro`; see the [setup details](../../config/README.md#deepseek-v4-pro).
 - Each job freezes its source catalog or fully resolved model configuration;

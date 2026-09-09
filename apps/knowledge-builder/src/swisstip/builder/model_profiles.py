@@ -12,7 +12,7 @@ from urllib.parse import urlsplit
 from swisstip.core.model_profiles import load_model_config
 from swisstip.core.deepseek import validate_settings as validate_deepseek_settings
 
-AdapterName: TypeAlias = Literal["ollama", "huggingface", "deepseek"]
+AdapterName: TypeAlias = Literal["ollama", "huggingface", "deepseek", "groq"]
 CONFIG_SCHEMA_VERSION = "swisstip.semantic-model-profiles/v1"
 
 _FORBIDDEN_SECRET_FIELDS = frozenset({"api_key", "token"})
@@ -32,7 +32,7 @@ _HUGGINGFACE_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {
     "bill_to",
     "response_mode",
 }
-_DEEPSEEK_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {"token_env", "response_mode"}
+_DIRECT_HOSTED_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {"token_env", "response_mode"}
 
 
 class ModelProfileConfigurationError(ValueError):
@@ -285,16 +285,16 @@ def _prompt_path(table: Mapping[str, object], key: str, config_directory: Path) 
 def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
     path = f"profiles.{name}"
     adapter_value = _required_non_empty_string(table, "adapter", path)
-    if adapter_value not in {"ollama", "huggingface", "deepseek"}:
+    if adapter_value not in {"ollama", "huggingface", "deepseek", "groq"}:
         raise ModelProfileConfigurationError(
-            f"{path}.adapter must be 'ollama', 'huggingface' or 'deepseek'"
+            f"{path}.adapter must be 'ollama', 'huggingface', 'deepseek' or 'groq'"
         )
     adapter = cast(AdapterName, adapter_value)
 
     if adapter == "ollama":
         _reject_unknown_fields(table, _OLLAMA_PROFILE_FIELDS, path)
-    elif adapter == "deepseek":
-        _reject_unknown_fields(table, _DEEPSEEK_PROFILE_FIELDS, path)
+    elif adapter in {"deepseek", "groq"}:
+        _reject_unknown_fields(table, _DIRECT_HOSTED_PROFILE_FIELDS, path)
     else:
         _reject_unknown_fields(table, _HUGGINGFACE_PROFILE_FIELDS, path)
 
@@ -333,6 +333,15 @@ def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
         )
 
     token_env = _required_non_empty_string(table, "token_env", path)
+    if adapter == "groq":
+        if token_env != "GROQ_API_KEY" or model not in {"openai/gpt-oss-20b", "openai/gpt-oss-120b"}:
+            raise ModelProfileConfigurationError(f"{path}: Groq requires GPT-OSS and token_env='GROQ_API_KEY'")
+        if parsed_base_url.scheme != "https" or timeout_seconds > 300:
+            raise ModelProfileConfigurationError(f"{path}: Groq requires HTTPS and timeout_seconds <= 300")
+        if table.get("response_mode", "json_schema") != "json_schema":
+            raise ModelProfileConfigurationError(f"{path}: Groq requires response_mode='json_schema'")
+        return ActiveModelProfile(name=name, adapter=adapter, model=model, base_url=base_url,
+                                  timeout_seconds=timeout_seconds, token_env=token_env, response_mode="json_schema")
     if adapter == "deepseek":
         if token_env != "DEEPSEEK_API_KEY":
             raise ModelProfileConfigurationError(f"{path}.token_env must be 'DEEPSEEK_API_KEY'")

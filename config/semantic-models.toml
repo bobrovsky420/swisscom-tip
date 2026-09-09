@@ -62,3 +62,8 @@ response_mode = "prompt_only"
 model_profile = "deepseek_v4_pro"
 timeout_seconds = 180.0
 response_mode = "json_object"
+
+[profiles.groq_gpt_oss_120b]
+model_profile = "groq_gpt_oss_120b"
+timeout_seconds = 180.0
+response_mode = "json_schema"

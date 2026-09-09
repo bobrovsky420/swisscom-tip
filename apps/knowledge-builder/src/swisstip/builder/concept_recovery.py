@@ -21,6 +21,7 @@ from swisstip.ingestion.concepts import ModelCompletion, NormalizedPage, Semanti
 from swisstip.ingestion.concept_review import REVIEW_SYSTEM_PROMPT, parse_verdicts, review_schema
 from swisstip.core.deepseek import DeepSeekHTTPError, DeepSeekTransportError, DeepSeekIncompleteCompletionError
 from .deepseek_provider import DeepSeekProviderError
+from .groq_provider import GroqHTTPError, GroqTransportError, GroqIncompleteCompletionError
 from .huggingface_provider import (
     HuggingFaceHTTPError, HuggingFaceTransportError, HuggingFaceIncompleteCompletionError,
     is_approved_model_identity,
@@ -138,9 +139,10 @@ class RecoverableProvider:
             try:
                 completion = self.provider.generate_structured(**request)
             except (HuggingFaceIncompleteCompletionError, HuggingFaceHTTPError,
-                    HuggingFaceTransportError, DeepSeekProviderError) as exc:
+                    HuggingFaceTransportError, DeepSeekProviderError, GroqHTTPError,
+                    GroqTransportError, GroqIncompleteCompletionError) as exc:
                 failure = exc.failure if isinstance(exc, DeepSeekProviderError) else exc
-                if isinstance(failure, (HuggingFaceIncompleteCompletionError, DeepSeekIncompleteCompletionError)):
+                if isinstance(failure, (HuggingFaceIncompleteCompletionError, DeepSeekIncompleteCompletionError, GroqIncompleteCompletionError)):
                     self.incomplete_completions.append(failure.diagnostics)
                     self.progress(f"Rejected incomplete completion: {json.dumps(failure.diagnostics, ensure_ascii=True)}; "
                                   "partial content not checkpointed; identical request not retried")
@@ -151,9 +153,9 @@ class RecoverableProvider:
                         return self._split_review(request, review, key)
                     raise
                 if not isinstance(failure, (HuggingFaceHTTPError, HuggingFaceTransportError,
-                                            DeepSeekHTTPError, DeepSeekTransportError)):
+                                            DeepSeekHTTPError, DeepSeekTransportError, GroqHTTPError, GroqTransportError)):
                     raise
-                transient = isinstance(failure, (HuggingFaceTransportError, DeepSeekTransportError)) or failure.status_code in TRANSIENT_HTTP
+                transient = isinstance(failure, (HuggingFaceTransportError, DeepSeekTransportError, GroqTransportError)) or failure.status_code in TRANSIENT_HTTP
                 delay = self._retry_delay(failure, retry) if transient else None
                 if not transient or retry == recovery.max_retries or not self._budget_available():
                     self.progress("Provider failure; no further retry permitted; successful checkpoints retained")
@@ -243,7 +245,7 @@ class RecoverableProvider:
                                    c.observed_model == first.observed_model for c in completions
                                ) else None))
 
-    def _retry_delay(self, exc: HuggingFaceHTTPError | HuggingFaceTransportError | DeepSeekHTTPError | DeepSeekTransportError,
+    def _retry_delay(self, exc: HuggingFaceHTTPError | HuggingFaceTransportError | DeepSeekHTTPError | DeepSeekTransportError | GroqHTTPError | GroqTransportError,
                      retry: int) -> float | None:
         recovery = self.config.recovery
         delay = min(recovery.max_backoff_seconds, recovery.backoff_seconds * 2 ** retry)
