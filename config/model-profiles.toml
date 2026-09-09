@@ -54,3 +54,9 @@ adapter = "groq"
 model = "openai/gpt-oss-120b"
 base_url = "https://api.groq.com/openai/v1"
 token_env = "GROQ_API_KEY"
+
+[profiles.deepseek_v4_pro]
+adapter = "deepseek"
+model = "deepseek-v4-pro"
+base_url = "https://api.deepseek.com"
+token_env = "DEEPSEEK_API_KEY"

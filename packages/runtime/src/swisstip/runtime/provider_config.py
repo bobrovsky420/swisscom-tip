@@ -7,7 +7,7 @@ from pydantic import Field, model_validator
 
 from swisstip.core.contracts import ShortText, StrictModel
 from swisstip.core.model_profiles import load_model_config
-from .providers import GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider
+from .providers import DeepSeekRankingProvider, GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider
 
 
 class OllamaProfile(StrictModel):
@@ -36,7 +36,20 @@ class GroqProfile(StrictModel):
                         expected_model=self.model, token_env=self.token_env)
 
 
-RetrievalProfile = Annotated[OllamaProfile | GroqProfile, Field(discriminator="adapter")]
+class DeepSeekProfile(StrictModel):
+    adapter: Literal["deepseek"]
+    role: Literal["ranking"]
+    model: Literal["deepseek-v4-pro"]
+    base_url: ShortText
+    token_env: Annotated[str, Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")] = "DEEPSEEK_API_KEY"
+    timeout_seconds: Annotated[float, Field(gt=0, le=300)] = 60.0
+
+    def create_provider(self):
+        return DeepSeekRankingProvider(self.base_url, timeout=self.timeout_seconds,
+                                       expected_model=self.model, token_env=self.token_env)
+
+
+RetrievalProfile = Annotated[OllamaProfile | GroqProfile | DeepSeekProfile, Field(discriminator="adapter")]
 ProfileName = Annotated[str, Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9_-]*$", max_length=200)]
 
 

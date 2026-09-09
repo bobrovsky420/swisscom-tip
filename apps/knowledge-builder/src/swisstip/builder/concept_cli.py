@@ -348,12 +348,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         profile = config.active_profile
         progress(
             f"Selected profile={profile.name}, adapter={profile.adapter}, "
-            f"provider={profile.provider or 'automatic'}, model={profile.model}, "
+            f"provider={profile.provider or profile.adapter}, model={profile.model}, "
             f"base_url={profile.base_url}, timeout_seconds={profile.timeout_seconds:g}"
         )
         progress(f"Prompt profile={extraction.prompt_profile}")
-        if profile.adapter == "huggingface":
+        if profile.adapter in {"huggingface", "deepseek"}:
             progress(f"Response mode={profile.response_mode}; local validation remains required")
+        if profile.adapter == "deepseek":
+            progress("DeepSeek thinking=disabled; schema supplied in the system prompt")
         from swisstip.ingestion.prompt_templates import load_prompts
         prompts = load_prompts(
             extraction.prompt_profile,

@@ -202,14 +202,16 @@ profile. Model alternatives are configuration options, not live qualifications.
 | `groq_gpt_oss_20b` | Ranking | `openai/gpt-oss-20b` |
 | `groq_gpt_oss_120b` | Ranking | `openai/gpt-oss-120b` |
 | `qwen_ranking_9b` | Ranking | `qwen3.5:9b` |
+| `deepseek_v4_pro` | Ranking | `deepseek-v4-pro` |
 
 Each profile declares `model_profile`, `role`, `timeout_seconds` and any scoring
 contract. `model_profile` refers to the shared catalog, which owns `adapter`,
-`model`, `base_url` and, for Groq, `token_env`. Legacy inline definitions still
+`model`, `base_url` and, for hosted adapters, `token_env`. Legacy inline definitions still
 load. See the [shared configuration guide](../../config/README.md) for examples
 and relative path rules. Add more profiles using the supported adapters;
 Ollama supports embedding and ranking roles, while Groq supports ranking with
-the two GPT-OSS models accepted by this adapter. Unknown names, role mismatches,
+the two GPT-OSS models accepted by this adapter. DeepSeek supports V4 Pro ranking.
+Unknown names, role mismatches,
 unsupported adapters and invalid settings (including inactive profiles) fail
 configuration loading. Profile names are deployment labels, not release model IDs.
 There is no automatic switch to another profile on failure.
@@ -231,6 +233,13 @@ For a Groq ranking profile, set `GROQ_API_KEY` in the environment inherited by t
 MCP server or evaluation process. The config stores only the environment variable
 name; it does not load `.env` files. Groq ranking uses
 `https://api.groq.com/openai/v1/chat/completions`.
+
+For DeepSeek V4 Pro ranking, set `DEEPSEEK_API_KEY` and select `deepseek_v4_pro`.
+The direct API uses JSON-object output with thinking disabled; the adapter checks
+completion/model identity, duplicate keys, exact candidate IDs and finite scores.
+It uses the existing relevance instruction and a distinct `deepseek-ranking/v1`
+release adapter identity. See [DeepSeek setup](../../config/README.md#deepseek-v4-pro).
+Adding this profile does not change the active defaults or qualify model quality.
 
 Both CLI applications accept `--provider-config config/retrieval-models.toml`.
 Do not combine it with legacy provider URL/timeout flags. Configured models are

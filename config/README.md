@@ -46,7 +46,8 @@ Change a role's `active_profile` to select another configured profile. To add a
 model, define its adapter, model ID, endpoint and any provider/credential
 references in the catalog, then add a referring profile with the options required
 by that role's adapter. The catalog does not add adapter capabilities: extraction
-supports Ollama and Hugging Face; retrieval supports Ollama and Groq. Local
+supports Ollama, Hugging Face and DeepSeek; retrieval supports Ollama, Groq and
+DeepSeek. Local
 Ollama Apertus and hosted Hugging Face Apertus have separate catalog entries.
 
 Multiple profiles can refer to one model with different settings. For example,
@@ -73,3 +74,44 @@ and `--provider-config config/retrieval-models.toml` for retrieval. OpenCode's c
 model is configured separately. Retrieval releases still pin model and adapter
 identities and require a matching embedding index; configuration changes do not
 replace those release artifacts.
+
+## DeepSeek V4 Pro
+
+The optional `deepseek_v4_pro` profile is available in both role files and in the
+GUI's extraction profile selector. Both refer to the same direct API connection
+in the catalog, with model `deepseek-v4-pro` and base URL
+`https://api.deepseek.com`. The existing active selections are unchanged.
+
+Set `DEEPSEEK_API_KEY` in the environment of the CLI, MCP server or GUI launcher;
+no key is stored in TOML or sent to the browser. In a Unix-style shell:
+
+```shell
+export DEEPSEEK_API_KEY='your-key'
+./.venv/Scripts/python.exe scripts/admin/run.py
+```
+
+On PowerShell, set `$env:DEEPSEEK_API_KEY = 'your-key'` before launching. Restart
+an already running GUI to inherit the new key, then select `deepseek_v4_pro`.
+For CLI extraction, set `[semantic_model].active_profile = "deepseek_v4_pro"`;
+for ranking, set `[ranking].active_profile = "deepseek_v4_pro"` independently.
+Embedding remains a separate Ollama profile. Do not select DeepSeek for embedding.
+
+The adapter uses the documented [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/)
+with `response_format = {"type": "json_object"}` and explicitly disabled thinking.
+The trusted schema is included in the system prompt; DeepSeek's [JSON mode](https://api-docs.deepseek.com/guides/json_mode/)
+does not enforce that schema. Extraction and review retain local schema, evidence
+and coverage checks. Ranking validates exact candidate membership and finite
+numeric scores. Mismatched model identities, empty content, duplicate JSON keys
+and incomplete completions are rejected without accepting partial results.
+
+Extraction uses the configured generation limit (currently 4096 output tokens)
+and a 180-second timeout. Ranking uses 8192 output tokens and a 60-second timeout.
+Thinking mode is fixed off in this adapter; enabling it later requires evaluating
+the changed generation contract and checkpoint/release identity. CLI extraction
+uses bounded transient retries and checkpoints; GUI provider retries stay disabled.
+Runtime ranking makes one attempt, subject to the release's declared fallback.
+
+A retrieval release using this profile must pin `deepseek-ranking/v1` and
+`deepseek-v4-pro`. The existing pilot release is not migrated by changing this
+selection. Protocol support is covered by offline tests; live model quality and
+provider availability have not been qualified by those tests.

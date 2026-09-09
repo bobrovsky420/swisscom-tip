@@ -9,7 +9,7 @@ from threading import Thread
 import unittest
 from unittest.mock import patch
 
-from swisstip.runtime.providers import GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider, ProviderHttpFailure, _json
+from swisstip.runtime.providers import DeepSeekRankingProvider, GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider, ProviderHttpFailure, _json
 from swisstip.runtime.provider_config import load_provider_settings, ProviderSettings
 from swisstip.runtime.retrieval import RankingCandidate, RetrievalQuery, RetrievalFailure
 
@@ -204,7 +204,7 @@ class ProviderTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             ProviderSettings.model_validate(invalid)
 
-    @patch.dict(os.environ, {"GROQ_API_KEY": "test-only-token"})
+    @patch.dict(os.environ, {"GROQ_API_KEY": "test-only-token", "DEEPSEEK_API_KEY": "test-only-token"})
     def test_named_profiles_switch_embedding_and_ranking_independently(self):
         settings = load_provider_settings(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")
         embeddings = [name for name, profile in settings.profiles.items() if profile.role == "embedding"]
@@ -220,7 +220,7 @@ class ProviderTests(unittest.TestCase):
                     embed_response = dict(model=embed_profile["model"], embeddings=[[1.0, 0.0]])
                     expected_score = 3 if rank_profile.get("scoring_contract") == "answer_relevance_v2" else 0.8
                     content = json.dumps({"evidence-parent": expected_score})
-                    if rank_profile["adapter"] == "groq":
+                    if rank_profile["adapter"] in {"groq", "deepseek"}:
                         rank_response = dict(model=rank_profile["model"], choices=[dict(
                             finish_reason="stop", message=dict(content=content))])
                         rank_path = "/chat/completions"
@@ -243,6 +243,51 @@ class ProviderTests(unittest.TestCase):
                     self.assertEqual(rank_requests[0][0], rank_path)
                     self.assertEqual(embed_requests[0][1]["model"], embed_profile["model"])
                     self.assertEqual(rank_requests[0][1]["model"], rank_profile["model"])
+
+    @patch.dict(os.environ, {"DEEPSEEK_API_KEY": "deepseek-test-token"})
+    def test_deepseek_protocol_auth_and_local_score_validation(self):
+        response = dict(model="deepseek-v4-pro", choices=[dict(
+            finish_reason="stop", message=dict(content='{"evidence-parent":0.8}'))])
+        headers = []
+        with endpoint(response, headers_seen=headers) as (url, requests):
+            ranker = DeepSeekRankingProvider(url)
+            result = ranker.rank(self.query, self.candidates, model="deepseek-v4-pro")
+        self.assertEqual(result.model, "deepseek-v4-pro")
+        self.assertEqual(result.scores, {"evidence-parent": 0.8})
+        self.assertEqual(ranker.provider_id, "deepseek-ranking/v1")
+        self.assertEqual(headers[0]["Authorization"], "Bearer deepseek-test-token")
+        path, body = requests[0]
+        self.assertEqual(path, "/chat/completions")
+        self.assertEqual(body["response_format"], {"type": "json_object"})
+        self.assertEqual(body["thinking"], {"type": "disabled"})
+        self.assertEqual(body["max_tokens"], 8192)
+        self.assertIn("untrusted data", body["messages"][0]["content"])
+        self.assertEqual(json.loads(body["messages"][1]["content"])["candidates"][0]["original_excerpt"], self.candidates[0].original_excerpt)
+
+    @patch.dict(os.environ, {"DEEPSEEK_API_KEY": "deepseek-test-token"})
+    def test_deepseek_rejects_wrong_identity_truncation_and_invalid_scores(self):
+        for model, finish, content in [
+            ("deepseek-v4-flash", "stop", '{"evidence-parent":0.8}'),
+            ("deepseek-v4-pro", "length", '{"evidence-parent":0.8}'),
+            *[("deepseek-v4-pro", "stop", value) for value in (
+                '{}', '{"unknown":1}', '{"evidence-parent":true}', '{"evidence-parent":"0.8"}',
+                '{"evidence-parent":NaN}', '{"evidence-parent":1e999}', '{"evidence-parent":1,"evidence-parent":2}')],
+        ]:
+            response = dict(model=model, choices=[dict(finish_reason=finish, message=dict(content=content))])
+            with self.subTest(model=model, finish=finish, content=content), endpoint(response) as (url, requests):
+                with self.assertRaises(RetrievalFailure):
+                    DeepSeekRankingProvider(url).rank(self.query, self.candidates, model="deepseek-v4-pro")
+                self.assertEqual(len(requests), 1)
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_deepseek_credentials_and_release_model_are_checked_before_io(self):
+        with endpoint({}) as (url, requests):
+            ranker = DeepSeekRankingProvider(url)
+            with self.assertRaisesRegex(RetrievalFailure, "missing_or_invalid_ranking_credentials"):
+                ranker.rank(self.query, self.candidates, model="deepseek-v4-pro")
+            with self.assertRaisesRegex(RetrievalFailure, "configured_model_mismatch"):
+                ranker.rank(self.query, self.candidates, model="deepseek-v4-flash")
+            self.assertFalse(requests)
 
     def test_unknown_or_wrong_role_profile_selections_fail(self):
         settings = load_provider_settings(Path(__file__).resolve().parents[3] / "config/retrieval-models.toml")

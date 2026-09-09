@@ -12,6 +12,11 @@ import os
 import time
 from urllib.parse import urlsplit
 
+from swisstip.core.deepseek import (
+    BASE_URL as DEEPSEEK_BASE_URL, MODEL as DEEPSEEK_MODEL, DeepSeekError,
+    decode_completion as decode_deepseek_completion, request_payload as deepseek_request_payload,
+    validate_settings as validate_deepseek_settings,
+)
 from .retrieval import EmbeddingResponse, RankingResponse, RetrievalFailure
 
 
@@ -202,6 +207,40 @@ class GroqRankingProvider(_JsonProvider):
                 or choices[0].get("message", {}).get("refusal")):
             raise RetrievalFailure("incomplete_ranking_response")
         return RankingResponse(data["model"], _json(choices[0]["message"]["content"]))
+
+
+class DeepSeekRankingProvider(_JsonProvider):
+    """DeepSeek V4 Pro JSON-object scores with local identity and membership checks."""
+
+    provider_id = "deepseek-ranking/v1"
+
+    def __init__(self, base_url=DEEPSEEK_BASE_URL, *, token_env="DEEPSEEK_API_KEY", **kwargs):
+        super().__init__(base_url, **kwargs)
+        self._expected_model = self._expected_model or DEEPSEEK_MODEL
+        validate_deepseek_settings(self._expected_model, base_url, self._timeout, allow_loopback=True)
+        self._token_env = token_env
+
+    def rank(self, query, candidates, *, model):
+        self._check_model(model)
+        token = os.environ.get(self._token_env, "")
+        if not token or any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in token):
+            raise RetrievalFailure("missing_or_invalid_ranking_credentials")
+        schema = {"type": "object", "properties": {c.evidence_id: {"type": "number"} for c in candidates},
+                  "required": [c.evidence_id for c in candidates], "additionalProperties": False}
+        payload = deepseek_request_payload(model=model, system_prompt=RANKING_INSTRUCTION,
+                                           user_prompt=json.dumps({"query": asdict(query), "candidates": [asdict(c) for c in candidates]},
+                                                                  ensure_ascii=False),
+                                           response_schema=schema, max_tokens=8192)
+        data = self._post("/chat/completions", payload, headers={"Authorization": "Bearer " + token})
+        try:
+            result = decode_deepseek_completion(data, model=model, max_tokens=8192)
+        except DeepSeekError as exc:
+            raise RetrievalFailure(str(exc)) from exc
+        scores = _json(result.content)
+        if (set(scores) != {c.evidence_id for c in candidates}
+                or any(type(score) not in {int, float} or not math.isfinite(score) for score in scores.values())):
+            raise RetrievalFailure("invalid_ranking_scores")
+        return RankingResponse(result.model, scores)
 
 
 class GroqAnswerRelevanceProvider(GroqRankingProvider):

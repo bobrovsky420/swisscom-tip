@@ -1,4 +1,4 @@
-"""Local response checkpoints and bounded HF retries for extraction runs.
+"""Local response checkpoints and bounded hosted-provider retries for extraction runs.
 
 Checkpoints contain model output and usage, never credentials. They are an
 internal trusted cache, not an import format or authoritative reviewed data.
@@ -19,6 +19,8 @@ from pathlib import Path
 
 from swisstip.ingestion.concepts import ModelCompletion, NormalizedPage, SemanticModelError, SemanticModelProvider
 from swisstip.ingestion.concept_review import REVIEW_SYSTEM_PROMPT, parse_verdicts, review_schema
+from swisstip.core.deepseek import DeepSeekHTTPError, DeepSeekTransportError, DeepSeekIncompleteCompletionError
+from .deepseek_provider import DeepSeekProviderError
 from .huggingface_provider import (
     HuggingFaceHTTPError, HuggingFaceTransportError, HuggingFaceIncompleteCompletionError,
     is_approved_model_identity,
@@ -135,19 +137,24 @@ class RecoverableProvider:
             )
             try:
                 completion = self.provider.generate_structured(**request)
-            except HuggingFaceIncompleteCompletionError as exc:
-                self.incomplete_completions.append(exc.diagnostics)
-                self.progress(f"Rejected incomplete completion: {json.dumps(exc.diagnostics, ensure_ascii=True)}; "
-                              "partial content not checkpointed; identical request not retried")
-                if (exc.diagnostics["finish_reason"] == "length" and review is not None
-                        and len(review["proposals"]) > 1):
-                    if marker is not None:
-                        self._write_document(marker, {"version": "swisstip.review-split/v1", "key": key})
-                    return self._split_review(request, review, key)
-                raise
-            except (HuggingFaceHTTPError, HuggingFaceTransportError) as exc:
-                transient = isinstance(exc, HuggingFaceTransportError) or exc.status_code in TRANSIENT_HTTP
-                delay = self._retry_delay(exc, retry) if transient else None
+            except (HuggingFaceIncompleteCompletionError, HuggingFaceHTTPError,
+                    HuggingFaceTransportError, DeepSeekProviderError) as exc:
+                failure = exc.failure if isinstance(exc, DeepSeekProviderError) else exc
+                if isinstance(failure, (HuggingFaceIncompleteCompletionError, DeepSeekIncompleteCompletionError)):
+                    self.incomplete_completions.append(failure.diagnostics)
+                    self.progress(f"Rejected incomplete completion: {json.dumps(failure.diagnostics, ensure_ascii=True)}; "
+                                  "partial content not checkpointed; identical request not retried")
+                    if (failure.diagnostics["finish_reason"] == "length" and review is not None
+                            and len(review["proposals"]) > 1):
+                        if marker is not None:
+                            self._write_document(marker, {"version": "swisstip.review-split/v1", "key": key})
+                        return self._split_review(request, review, key)
+                    raise
+                if not isinstance(failure, (HuggingFaceHTTPError, HuggingFaceTransportError,
+                                            DeepSeekHTTPError, DeepSeekTransportError)):
+                    raise
+                transient = isinstance(failure, (HuggingFaceTransportError, DeepSeekTransportError)) or failure.status_code in TRANSIENT_HTTP
+                delay = self._retry_delay(failure, retry) if transient else None
                 if not transient or retry == recovery.max_retries or not self._budget_available():
                     self.progress("Provider failure; no further retry permitted; successful checkpoints retained")
                     raise
@@ -236,7 +243,7 @@ class RecoverableProvider:
                                    c.observed_model == first.observed_model for c in completions
                                ) else None))
 
-    def _retry_delay(self, exc: HuggingFaceHTTPError | HuggingFaceTransportError,
+    def _retry_delay(self, exc: HuggingFaceHTTPError | HuggingFaceTransportError | DeepSeekHTTPError | DeepSeekTransportError,
                      retry: int) -> float | None:
         recovery = self.config.recovery
         delay = min(recovery.max_backoff_seconds, recovery.backoff_seconds * 2 ** retry)
@@ -275,7 +282,7 @@ class RecoverableProvider:
 
     def _validate_model_identity(self, completion: ModelCompletion) -> None:
         profile = self.config.active_profile
-        provider = profile.provider if profile.adapter == "huggingface" else "ollama"
+        provider = profile.provider if profile.adapter == "huggingface" else profile.adapter
         requested = f"{profile.model}:{provider}" if profile.adapter == "huggingface" else profile.model
         if (completion.provider != provider or completion.model != profile.model
                 or completion.requested_model != requested):

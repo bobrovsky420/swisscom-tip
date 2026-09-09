@@ -53,3 +53,9 @@ model_profile = "groq_gpt_oss_20b"
 role = "ranking"
 scoring_contract = "answer_relevance_v2"
 timeout_seconds = 60.0
+
+# Direct DeepSeek API; release must pin deepseek-ranking/v1 and this model.
+[profiles.deepseek_v4_pro]
+model_profile = "deepseek_v4_pro"
+role = "ranking"
+timeout_seconds = 60.0

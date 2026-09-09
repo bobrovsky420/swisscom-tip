@@ -11,6 +11,7 @@ _ADAPTER_FIELDS = {
     "ollama": {"adapter", "model", "base_url"},
     "huggingface": _IDENTITY_FIELDS,
     "groq": {"adapter", "model", "base_url", "token_env"},
+    "deepseek": {"adapter", "model", "base_url", "token_env"},
 }
 
 
@@ -55,13 +56,15 @@ def load_model_catalog(path: str | Path) -> dict[str, dict]:
             raise ValueError(f"{label} must be a table")
         adapter = profile.get("adapter")
         if not isinstance(adapter, str) or adapter not in _ADAPTER_FIELDS:
-            raise ValueError(f"{label}.adapter must be ollama, huggingface or groq")
+            raise ValueError(f"{label}.adapter must be ollama, huggingface, groq or deepseek")
         unknown = set(profile) - _ADAPTER_FIELDS[adapter]
         if unknown:
             raise ValueError(f"{label} contains unknown fields: {', '.join(sorted(unknown))}")
         required = {"adapter", "model", "base_url"}
         if adapter == "huggingface":
             required |= {"provider", "token_env"}
+        if adapter == "deepseek":
+            required.add("token_env")
         if required - set(profile):
             raise ValueError(f"{label} requires {', '.join(sorted(required - set(profile)))}")
         for key, value in profile.items():

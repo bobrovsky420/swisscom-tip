@@ -10,8 +10,9 @@ from typing import Literal, TypeAlias, cast
 from urllib.parse import urlsplit
 
 from swisstip.core.model_profiles import load_model_config
+from swisstip.core.deepseek import validate_settings as validate_deepseek_settings
 
-AdapterName: TypeAlias = Literal["ollama", "huggingface"]
+AdapterName: TypeAlias = Literal["ollama", "huggingface", "deepseek"]
 CONFIG_SCHEMA_VERSION = "swisstip.semantic-model-profiles/v1"
 
 _FORBIDDEN_SECRET_FIELDS = frozenset({"api_key", "token"})
@@ -31,6 +32,7 @@ _HUGGINGFACE_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {
     "bill_to",
     "response_mode",
 }
+_DEEPSEEK_PROFILE_FIELDS = _COMMON_PROFILE_FIELDS | {"token_env", "response_mode"}
 
 
 class ModelProfileConfigurationError(ValueError):
@@ -76,7 +78,7 @@ class ActiveModelProfile:
     bill_to: str | None = None
     num_ctx: int | None = None
     keep_alive: str | None = None
-    response_mode: Literal["json_schema", "prompt_only"] = "json_schema"
+    response_mode: Literal["json_schema", "prompt_only", "json_object"] = "json_schema"
 
 
 @dataclass(frozen=True, slots=True)
@@ -283,14 +285,16 @@ def _prompt_path(table: Mapping[str, object], key: str, config_directory: Path) 
 def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
     path = f"profiles.{name}"
     adapter_value = _required_non_empty_string(table, "adapter", path)
-    if adapter_value not in {"ollama", "huggingface"}:
+    if adapter_value not in {"ollama", "huggingface", "deepseek"}:
         raise ModelProfileConfigurationError(
-            f"{path}.adapter must be 'ollama' or 'huggingface'"
+            f"{path}.adapter must be 'ollama', 'huggingface' or 'deepseek'"
         )
     adapter = cast(AdapterName, adapter_value)
 
     if adapter == "ollama":
         _reject_unknown_fields(table, _OLLAMA_PROFILE_FIELDS, path)
+    elif adapter == "deepseek":
+        _reject_unknown_fields(table, _DEEPSEEK_PROFILE_FIELDS, path)
     else:
         _reject_unknown_fields(table, _HUGGINGFACE_PROFILE_FIELDS, path)
 
@@ -329,6 +333,17 @@ def _load_profile(name: str, table: Mapping[str, object]) -> ActiveModelProfile:
         )
 
     token_env = _required_non_empty_string(table, "token_env", path)
+    if adapter == "deepseek":
+        if token_env != "DEEPSEEK_API_KEY":
+            raise ModelProfileConfigurationError(f"{path}.token_env must be 'DEEPSEEK_API_KEY'")
+        if table.get("response_mode", "json_object") != "json_object":
+            raise ModelProfileConfigurationError(f"{path}.response_mode must be 'json_object' for DeepSeek")
+        try:
+            validate_deepseek_settings(model, base_url, timeout_seconds)
+        except ValueError as exc:
+            raise ModelProfileConfigurationError(f"{path}: {exc}") from exc
+        return ActiveModelProfile(name=name, adapter=adapter, model=model, base_url=base_url,
+                                  timeout_seconds=timeout_seconds, token_env=token_env, response_mode="json_object")
     if token_env != "HF_TOKEN":
         raise ModelProfileConfigurationError(f"{path}.token_env must be 'HF_TOKEN'")
     provider = _required_non_empty_string(table, "provider", path)

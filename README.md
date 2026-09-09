@@ -57,8 +57,8 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Prepare and complete the POC-01 review](scripts/test/poc01/README.md)
 - [POC-01 progress, draft findings and resulting requirements](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
 
-The concept extractor has three preconfigured model profiles: local Ollama,
-Hugging Face Apertus 8B, and Hugging Face Apertus 70B. Switching
+The concept extractor has preconfigured profiles for local Ollama,
+Hugging Face Apertus 8B/70B, and direct DeepSeek V4 Pro. Switching
 between them changes one `active_profile` value. Extraction and retrieval share
 model definitions in `config/model-profiles.toml`; each keeps its own role settings
 and active selections. All Python work uses the

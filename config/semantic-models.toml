@@ -27,7 +27,7 @@ max_model_requests_per_page = 12
 max_model_requests_per_run = 30
 
 [recovery]
-# Additional attempts per transient HF failure, within the same request budgets.
+# Additional attempts per transient hosted-provider failure, within the same request budgets.
 max_retries = 2
 backoff_seconds = 2.0
 max_backoff_seconds = 30.0
@@ -56,3 +56,9 @@ timeout_seconds = 180.0
 model_profile = "apertus_70b"
 timeout_seconds = 180.0
 response_mode = "prompt_only"
+
+# Direct DeepSeek API; bounded non-thinking JSON output with local validation.
+[profiles.deepseek_v4_pro]
+model_profile = "deepseek_v4_pro"
+timeout_seconds = 180.0
+response_mode = "json_object"

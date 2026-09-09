@@ -10,6 +10,7 @@ from swisstip.ingestion.concepts import SemanticModelProvider
 from swisstip.ingestion.ollama import OllamaOptions, OllamaSemanticModelProvider
 
 from .huggingface_provider import HuggingFaceRouterProvider
+from .deepseek_provider import DeepSeekSemanticModelProvider
 from .model_profiles import SemanticModelConfig
 
 
@@ -26,7 +27,7 @@ def create_semantic_model_provider(
     """Create exactly the adapter named by ``config.active_profile``.
 
     The factory never falls back to another profile. Environment access is limited
-    to the token variable explicitly referenced by a Hugging Face profile.
+    to the token variable explicitly referenced by the selected hosted profile.
     """
 
     profile = config.active_profile
@@ -50,10 +51,10 @@ def create_semantic_model_provider(
             **opener_arguments,
         )
 
-    if profile.adapter == "huggingface":
-        if profile.provider is None or profile.token_env is None:
+    if profile.adapter in {"huggingface", "deepseek"}:
+        if profile.token_env is None or (profile.adapter == "huggingface" and profile.provider is None):
             raise ProviderFactoryConfigurationError(
-                f"Hugging Face profile {profile.name!r} is incomplete"
+                f"Hosted profile {profile.name!r} is incomplete"
             )
         environment = os.environ if environ is None else environ
         token = environment.get(profile.token_env)
@@ -62,6 +63,10 @@ def create_semantic_model_provider(
                 f"profile {profile.name!r} requires environment variable "
                 f"{profile.token_env}"
             )
+        if profile.adapter == "deepseek":
+            return DeepSeekSemanticModelProvider(token=token, model=profile.model, base_url=profile.base_url,
+                                                timeout=profile.timeout_seconds, max_tokens=config.generation.max_output_tokens,
+                                                temperature=config.generation.temperature, **opener_arguments)
         return HuggingFaceRouterProvider(
             token=token,
             model=profile.model,

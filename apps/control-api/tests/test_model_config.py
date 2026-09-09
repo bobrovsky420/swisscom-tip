@@ -49,6 +49,26 @@ class ModelConfigTests(unittest.TestCase):
             api.config_text("unknown")
         self.assertEqual(raised.exception.status_code, 422)
 
+    def test_deepseek_gui_profile_checks_its_own_key_and_freezes_json_mode(self):
+        with patch.object(api, "catalog_data", return_value={"sources": []}), patch.dict(
+            "os.environ", {"HF_TOKEN": "wrong-provider-token"}, clear=True
+        ):
+            profile = next(p for p in api.catalog()["profiles"] if p["name"] == "deepseek_v4_pro")
+            self.assertFalse(profile["credential_ready"])
+            with patch.dict("os.environ", {"DEEPSEEK_API_KEY": "deepseek-secret-sentinel"}):
+                profile = next(p for p in api.catalog()["profiles"] if p["name"] == "deepseek_v4_pro")
+                self.assertTrue(profile["credential_ready"])
+                snapshot = api.config_text("deepseek_v4_pro")
+        self.assertEqual(profile["adapter"], "deepseek")
+        self.assertNotIn("deepseek-secret-sentinel", snapshot)
+        self.catalog.unlink()
+        path = self.root / "job.toml"
+        path.write_text(snapshot, encoding="utf-8")
+        config = load_model_profiles(path)
+        self.assertEqual(config.active_profile.model, "deepseek-v4-pro")
+        self.assertEqual(config.active_profile.response_mode, "json_object")
+        self.assertEqual(config.recovery.max_retries, 0)
+
     def test_gui_snapshots_are_portable_and_keep_original_prompt_directory(self):
         document = self.semantic.read_text(encoding="utf-8")
         document = document.replace("[extraction]", '[extraction]\nextraction_prompt_file = "prompts/extract.md"\nreview_prompt_file = "prompts/review.md"')
