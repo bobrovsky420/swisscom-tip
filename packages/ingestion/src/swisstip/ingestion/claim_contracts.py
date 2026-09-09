@@ -65,7 +65,7 @@ def validate(value, schema, path="response"):
             raise ValueError(f"{path}: empty or oversized text")
 
 
-def decode(content, schema):
+def _decode_json(content):
     def unique(pairs):
         result = {}
         for key, value in pairs:
@@ -73,7 +73,11 @@ def decode(content, schema):
                 raise ValueError(f"duplicate JSON property: {key}")
             result[key] = value
         return result
-    value = json.loads(content, object_pairs_hook=unique)
+    return json.loads(content, object_pairs_hook=unique)
+
+
+def decode(content, schema):
+    value = _decode_json(content)
     validate(value, schema)
     return value
 
@@ -255,8 +259,40 @@ def review_schema(concepts, block_ids):
             "reason": string(500)}), len(block_ids), len(block_ids))})
 
 
-def parse_review(content, concepts, block_ids):
-    result = decode(content, review_schema(concepts, block_ids))
+def _normalize_review_nesting(result, schema):
+    """Relocate one observed JSON nesting error without changing assessments.
+
+    Some JSON-object providers put the complete scope_fields object inside
+    condition_logic. Move that existing object only when the two claim objects
+    otherwise have exactly their expected keys. Conflicting sibling/nested
+    assessments and other shape errors remain invalid. Full validation follows.
+    """
+    changes = []
+    if not isinstance(result, dict) or not isinstance(result.get("concept_reviews"), list):
+        return changes
+    claim_schema = schema["properties"]["concept_reviews"]["items"]["properties"]["claim_support"]["items"]
+    expected_claim_keys = set(claim_schema["properties"]) - {"scope_fields"}
+    expected_logic_keys = set(claim_schema["properties"]["condition_logic"]["properties"]) | {"scope_fields"}
+    for review_index, review in enumerate(result["concept_reviews"]):
+        if not isinstance(review, dict) or not isinstance(review.get("claim_support"), list):
+            continue
+        for claim_index, claim in enumerate(review["claim_support"]):
+            if not isinstance(claim, dict) or set(claim) != expected_claim_keys:
+                continue
+            logic = claim["condition_logic"]
+            if not isinstance(logic, dict) or set(logic) != expected_logic_keys:
+                continue
+            path = f"response.concept_reviews[{review_index}].claim_support[{claim_index}]"
+            claim["scope_fields"] = logic.pop("scope_fields")
+            changes.append({"from": f"{path}.condition_logic.scope_fields", "to": f"{path}.scope_fields"})
+    return changes
+
+
+def parse_review(content, concepts, block_ids, *, normalizations=None):
+    schema = review_schema(concepts, block_ids)
+    result = _decode_json(content)
+    changes = _normalize_review_nesting(result, schema)
+    validate(result, schema)
     reviews = result["concept_reviews"]
     if {r["concept_index"] for r in reviews} != set(range(len(concepts))):
         raise ValueError("review must assess every concept exactly once")
@@ -290,6 +326,8 @@ def parse_review(content, concepts, block_ids):
             raise ValueError("represented coverage requires a concept reference")
         if coverage["decision"] in {"missing", "not_substantive"} and coverage["concept_indices"]:
             raise ValueError("unrepresented coverage cannot reference concepts")
+    if normalizations is not None:
+        normalizations.extend(changes)
     return result
 
 

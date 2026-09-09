@@ -26,6 +26,13 @@ local validation, the next bounded revision supplies `review_validation_feedback
 to the reviewer as well as the existing repair feedback to the extractor. The
 diagnostic is capped at 2000 characters within the existing review input limit;
 it is not evidence or approval, and no additional revision or call is introduced.
+The review parser also handles the observed JSON-object provider error where a
+complete `scope_fields` object is nested inside `condition_logic`: it relocates
+the existing object only when the sibling is absent and the enclosing claim and
+logic keys otherwise match the contract. Full schema and semantic validation
+still apply. No assessments are generated or changed. Conflicting, incomplete or
+unknown fields remain errors. Successful relocations and the original raw review
+are recorded in revision history, and the progress log reports the correction.
 
 For local customization, copy the complete effective prompt from a dry-run
 report's `effective_prompts.extraction.text` or `effective_prompts.review.text`

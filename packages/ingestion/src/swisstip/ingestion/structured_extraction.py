@@ -195,15 +195,23 @@ class StructuredExtraction:
                     completions.append(review_completion)
                     revision_completion = review_completion
                     stage = "review_validation"
-                    audit = contracts.parse_review(review_completion.content, valid, block_ids)
+                    normalizations = []
+                    audit = contracts.parse_review(review_completion.content, valid, block_ids,
+                                                   normalizations=normalizations)
                     for coverage in audit["block_coverage"]:
                         if coverage["decision"] in {"covered", "partial"}:
                             for index in coverage["concept_indices"]:
                                 if not any(evidence[ref]["section_id"] == coverage["section_id"]
                                            for ref in contracts.evidence_references(valid[index])):
                                     raise ValueError("coverage reference is not supported by a citation to that block")
-                    history.append({"revision": revision, "proposals": proposed,
-                                    "structural_rejections": invalid, "review": audit, "saturated": saturated})
+                    record = {"revision": revision, "proposals": proposed,
+                              "structural_rejections": invalid, "review": audit, "saturated": saturated}
+                    if normalizations:
+                        record.update(review_normalizations=normalizations, raw_completion=review_completion.content)
+                        engine._progress(f"Structured group {job_index}, revision {revision}: normalized "
+                                         f"{len(normalizations)} misplaced scope_fields object(s); "
+                                         "all review assessments retained and validated")
+                    history.append(record)
                     final_concepts, final_review = valid, audit
                     repair_needed = invalid or saturated or any(not contracts.review_passes(r) for r in audit["concept_reviews"]) or any(
                         r["decision"] in {"missing", "partial", "uncertain"} for r in audit["block_coverage"])

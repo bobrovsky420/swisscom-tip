@@ -37,6 +37,10 @@ Windows executable path; activation is not required.
 
 ## Propose concepts from downloaded pages
 
+To repeat a saved GUI extraction from the command line with fresh model calls,
+use the [saved extraction script](../../scripts/admin/README.md). It preserves
+the original job and records a new report, progress log and draft-status summary.
+
 Hugging Face profiles default to `response_mode = "json_schema"`. The explicit
 `prompt_only` option instead supplies the schema in the system prompt and omits
 the API's `response_format` constraint. `apertus_70b_prompt_only` is an experimental

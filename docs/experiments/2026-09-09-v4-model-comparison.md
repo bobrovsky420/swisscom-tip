@@ -1,5 +1,9 @@
 # V4 extraction comparison: Apertus 70B, GPT-OSS 120B and DeepSeek V4 Pro
 
+For the subsequent nine-run comparison using the updated review prompt and
+nesting correction, see the [comparison rerun](2026-09-09-v4-model-comparison-rerun.md).
+The historical measurements below remain unchanged.
+
 DeepSeek V4 Pro produced the most reliable extraction/review result on the saved
 English SEM Residence page: all three runs retained a source-complete candidate.
 GPT-OSS and Apertus retained no candidates in their three respective runs.

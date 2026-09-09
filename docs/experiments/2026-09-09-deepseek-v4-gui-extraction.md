@@ -1,5 +1,9 @@
 # DeepSeek V4 Pro GUI review-format failure
 
+This records the earlier prompt/feedback correction. A later GUI job repeated
+the nesting error; the [follow-up correction and successful live rerun](2026-09-09-residence-review-nesting-fix.md)
+now document the implemented parser correction and command-line reproduction.
+
 GUI job `f6c0078579204723af48065b59557fa0` ran the saved English SEM Residence
 page through `deepseek_v4_pro` and `concept_extraction_v4`. Four model calls took
 about 47 seconds and retained zero candidates. Reported usage was 17739 input

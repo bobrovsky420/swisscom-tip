@@ -67,3 +67,5 @@ independent adjudicated gold labels or proof of current legal correctness.
 
 See the [completed 2026-09-09 comparison](../../../docs/experiments/2026-09-09-v4-model-comparison.md)
 for measured results, source-level findings and provider limitations.
+The [three-model rerun after the review nesting correction](../../../docs/experiments/2026-09-09-v4-model-comparison-rerun.md)
+records nine fresh pipeline runs, source checks and browser links to the retained drafts.
