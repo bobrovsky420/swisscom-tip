@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -99,7 +100,7 @@ class ModelProfileTests(unittest.TestCase):
         self.assertEqual(config.extraction.max_total_input_characters, 120000)
         self.assertEqual(config.extraction.max_model_requests_per_page, 12)
         self.assertEqual(config.extraction.max_model_requests_per_run, 30)
-        self.assertEqual(config.extraction.prompt_profile, "concept_extraction_v3")
+        self.assertEqual(config.extraction.prompt_profile, "concept_extraction_v4")
 
     def test_file_selector_is_not_overridden_by_environment(self) -> None:
         with patch.dict(
@@ -140,7 +141,7 @@ class ModelProfileTests(unittest.TestCase):
 
     def test_response_mode_is_explicit_and_huggingface_only(self) -> None:
         bundled = (REPOSITORY_ROOT / "config" / "semantic-models.toml").read_text(encoding="utf-8")
-        bundled = bundled.replace('active_profile = "ollama_local"', 'active_profile = "apertus_70b_prompt_only"')
+        bundled = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_70b_prompt_only"', bundled, count=1)
         self.assertEqual(self._load(bundled).active_profile.response_mode, "prompt_only")
         document = VALID_CONFIG.replace('active_profile = "ollama_local"', 'active_profile = "apertus_70b"')
         self.assertEqual(self._load(document).active_profile.response_mode, "json_schema")

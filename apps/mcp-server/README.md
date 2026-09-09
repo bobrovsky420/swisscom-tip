@@ -62,14 +62,14 @@ bundles fail startup. The application does not crawl or publish releases and doe
 not load the experimental candidate-bundle format.
 
 Hybrid BUILD-05 bundles use the same three tools. To connect an evaluated bundle
-to local Qwen embeddings and Groq evidence ranking, add
+to local Qwen embeddings and Apertus 8B evidence ranking, add
 `--provider-config config/retrieval-models.toml` (use an absolute path in an MCP
-client config). Set `GROQ_API_KEY` in the parent process environment and start
-Ollama with `qwen3-embedding:0.6b` installed. The selected ranking model is
-`openai/gpt-oss-20b`. Select alternatives by changing `[embedding].active_profile`
+client config). Start Ollama with `qwen3-embedding:0.6b` and
+`MichelRosselli/apertus:8b-instruct-2509-q4_k_m` installed. The default pair needs
+no provider credentials. Select alternatives by changing `[embedding].active_profile`
 and `[ranking].active_profile` to names defined under `[profiles.<name>]` in the
-TOML file. The default pair requires the release to pin adapter `groq-ranking/v1`, embedding
-adapter `ollama-retrieval/v1`, these exact model names and a matching vector index.
+TOML file. The default pair requires the release to pin `ollama-retrieval/v1` for
+both roles, these exact model names and a matching vector index.
 The config performs no startup model calls and cannot rewrite sealed releases.
 Allow at least 120 seconds per MCP call for the configured 30-second embedding
 and 60-second ranking stages. OpenCode's caller model remains independent.

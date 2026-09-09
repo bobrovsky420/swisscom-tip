@@ -738,7 +738,7 @@
           "profile": {
             "type": "string",
             "title": "Profile",
-            "default": "ollama_local"
+            "default": "apertus_70b"
           },
           "crawl_profile": {
             "type": "string",

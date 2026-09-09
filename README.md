@@ -38,6 +38,9 @@ concept and vector retrieval, semantic ranking, verified-equivalence selection
 and declared provider fallback. Its [BUILD-05 checks](docs/experiments/2026-09-07-build05-retrieval.md)
 use synthetic releases; real reviewed coverage and live model qualification remain pending.
 
+- [One-minute jury pitch](docs/pitch/one-page-pitch.md)
+- [One-slide PowerPoint pitch with speaker notes](docs/pitch/swisstip-one-slide.pptx)
+- [Project and pitch review against the jury criteria](docs/pitch/project-review.md)
 - [Product specification](docs/product/product-functional-specification.md)
 - [Technical specification](docs/architecture/technical-specification.md)
 - [Hackathon operations, deployment and data transfer](docs/hackathon/hackathon-operations.md)

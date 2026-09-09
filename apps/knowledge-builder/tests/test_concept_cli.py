@@ -153,9 +153,10 @@ class ConceptCliTests(unittest.TestCase):
         self.addCleanup(self.config_directory.cleanup)
         self.config_path = Path(self.config_directory.name) / "semantic-models.toml"
         document = (REPOSITORY_ROOT / "config" / "semantic-models.toml").read_text(encoding="utf-8")
-        # Fake completions identify HF Apertus 8B, regardless of the operator's
-        # current profile. Preserve the real file and exercise the normal loader.
+        # Fake completions use the v3 contract and identify HF Apertus 8B,
+        # regardless of the operator's current defaults. Preserve the real file.
         document = re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "apertus_8b"', document)
+        document = re.sub(r'(?m)^prompt_profile\s*=.*$', 'prompt_profile = "concept_extraction_v3"', document)
         self.config_path.write_text(document, encoding="utf-8")
 
     def test_empty_input_is_rejected_in_cli_and_direct_resolution(self) -> None:

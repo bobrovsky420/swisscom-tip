@@ -50,7 +50,7 @@ class JobRequest(StrictModel):
     kind: Literal['crawl', 'plan', 'extract']
     source_ids: list[str] = Field(default_factory=list, max_length=10)
     asset_ids: list[str] = Field(default_factory=list, max_length=10)
-    profile: str = 'ollama_local'
+    profile: str = 'apertus_70b'
     crawl_profile: Literal['smoke'] = 'smoke'
 
 

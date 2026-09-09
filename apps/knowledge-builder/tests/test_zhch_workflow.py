@@ -90,6 +90,8 @@ class ZhChWorkflowTests(unittest.TestCase):
             try:
                 config = (ROOT / "config/semantic-models.toml").read_text(encoding="utf-8")
                 config = re.sub(r'(?m)^active_profile = "[^"]+"$', 'active_profile = "ollama_local"', config)
+                # The loopback model returns the historical v3 proposal/review contract.
+                config = re.sub(r'(?m)^prompt_profile\s*=.*$', 'prompt_profile = "concept_extraction_v3"', config)
                 self.assertIn('active_profile = "ollama_local"', config)
                 config = config.replace("http://127.0.0.1:11434", f"http://127.0.0.1:{server.server_port}")
                 config_path = Path(directory) / "test.toml"

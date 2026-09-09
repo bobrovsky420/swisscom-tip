@@ -196,9 +196,9 @@ class ProviderTests(unittest.TestCase):
         settings = load_provider_settings(config)
         embedding, ranking = settings.create_providers()
         self.assertEqual(embedding.provider_id, "ollama-retrieval/v1")
-        self.assertEqual(ranking.provider_id, "groq-ranking/v1")
+        self.assertEqual(ranking.provider_id, "ollama-retrieval/v1")
         self.assertEqual(settings.embedding_profile.model, "qwen3-embedding:0.6b")
-        self.assertEqual(settings.ranking_profile.model, "openai/gpt-oss-20b")
+        self.assertEqual(settings.ranking_profile.model, "MichelRosselli/apertus:8b-instruct-2509-q4_k_m")
         invalid = settings.model_dump()
         invalid["profiles"][settings.ranking.active_profile]["api_key"] = "do-not-store-secrets-in-config"
         with self.assertRaises(ValueError):

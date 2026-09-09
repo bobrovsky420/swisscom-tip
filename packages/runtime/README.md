@@ -180,10 +180,10 @@ semantic-model configuration, each role selects a `[profiles.<name>]` table:
 schema_version = "swisstip.retrieval-model-profiles/v1"
 
 [embedding]
-active_profile = "ollama_qwen_embedding_0_6b"
+active_profile = "qwen_embedding_0_6b"
 
 [ranking]
-active_profile = "groq_gpt_oss_20b"
+active_profile = "apertus_ranking_8b"
 ```
 
 Change only the corresponding `active_profile` to select another defined model.
@@ -193,12 +193,13 @@ profile. Model alternatives are configuration options, not live qualifications.
 
 | Profile | Role | Model |
 | --- | --- | --- |
-| `ollama_qwen_embedding_0_6b` (default) | Embedding | `qwen3-embedding:0.6b` |
-| `ollama_qwen_embedding_4b` | Embedding | `qwen3-embedding:4b` |
-| `ollama_qwen_embedding_8b` | Embedding | `qwen3-embedding:8b` |
-| `groq_gpt_oss_20b` (default) | Ranking | `openai/gpt-oss-20b` |
+| `qwen_embedding_0_6b` (default) | Embedding | `qwen3-embedding:0.6b` |
+| `qwen_embedding_4b` | Embedding | `qwen3-embedding:4b` |
+| `qwen_embedding_8b` | Embedding | `qwen3-embedding:8b` |
+| `apertus_ranking_8b` (default) | Ranking | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` |
+| `groq_gpt_oss_20b` | Ranking | `openai/gpt-oss-20b` |
 | `groq_gpt_oss_120b` | Ranking | `openai/gpt-oss-120b` |
-| `ollama_qwen_ranking_9b` | Ranking | `qwen3.5:9b` |
+| `qwen_ranking_9b` | Ranking | `qwen3.5:9b` |
 
 Each profile declares `role`, `adapter`, `model`, `base_url`, `timeout_seconds`
 and, for Groq, `token_env`. Add more profiles using the supported adapters;
@@ -213,14 +214,17 @@ The default selections resolve to:
 | Role | Service | Model | Release adapter ID |
 | --- | --- | --- | --- |
 | Embedding | Local Ollama | `qwen3-embedding:0.6b` | `ollama-retrieval/v1` |
-| Evidence ranking | Groq | `openai/gpt-oss-20b` | `groq-ranking/v1` |
+| Evidence ranking | Local Ollama | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` | `ollama-retrieval/v1` |
 
-Set `GROQ_API_KEY` in the environment inherited by the MCP server or evaluation
-process. The config stores only the environment variable name; it does not load
-`.env` files. Selecting Ollama for both roles needs no Groq credentials.
-Install/start Ollama and pull each selected local model, for example
-`ollama pull qwen3-embedding:0.6b` for the default embedding profile.
-Ollama serves embeddings at `http://127.0.0.1:11434/api/embed`; Groq ranking uses
+The default pair uses local Ollama without provider credentials. Install/start
+Ollama and pull `qwen3-embedding:0.6b` and
+`MichelRosselli/apertus:8b-instruct-2509-q4_k_m`. The Apertus model is the same
+unofficial community package available in the builder's local profile. Ollama
+serves embeddings at `http://127.0.0.1:11434/api/embed` and ranking at `/api/chat`.
+
+For a Groq ranking profile, set `GROQ_API_KEY` in the environment inherited by the
+MCP server or evaluation process. The config stores only the environment variable
+name; it does not load `.env` files. Groq ranking uses
 `https://api.groq.com/openai/v1/chat/completions`.
 
 Both CLI applications accept `--provider-config config/retrieval-models.toml`.

@@ -8,12 +8,12 @@ the loader. Source data and response schemas are assembled separately in Python.
 | --- | --- | --- |
 | `concept_extraction_v1` | `concept_extraction_v1.md` | None |
 | `concept_extraction_v2` | `concept_extraction_v2.md` | None |
-| `concept_extraction_v3` (app default) | `concept_extraction_v2.md` + `concept_extraction_v3_extension.md` | `concept_review_v3.md` |
-| `concept_extraction_v4` (`--structured`) | `structured_claim_extraction_v4.md` | `structured_claim_review_v4.md` |
+| `concept_extraction_v3` | `concept_extraction_v2.md` + `concept_extraction_v3_extension.md` | `concept_review_v3.md` |
+| `concept_extraction_v4` (repository default; `--structured`) | `structured_claim_extraction_v4.md` | `structured_claim_review_v4.md` |
 
 The v3 extraction files are concatenated exactly, with no added separator. The
 extension starts with a newline. Changes to the v2 base also affect the v3
-default. The original defaults are frozen by hash assertions in
+prompt. The original prompts are frozen by hash assertions in
 `tests/test_prompt_templates.py`; intentional changes need corresponding updates.
 
 For local customization, copy the complete effective prompt from a dry-run

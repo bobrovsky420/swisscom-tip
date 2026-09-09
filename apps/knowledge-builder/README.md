@@ -47,12 +47,15 @@ validation followed by semantic review. The response mode is recorded in the
 effective profile and separates model checkpoints. A complete JSON response alone
 does not establish valid claims or sufficient coverage.
 
-The opt-in `--structured` path adds logical source blocks, structured claims,
-separate semantic assessments, source coverage auditing and one bounded repair.
-Use `--structured --dry-run` to inspect the complete source inventory without a
-model call. The [v4 workflow](../../docs/experiments/2026-09-06-structured-extraction.md)
-includes offline review export/import commands and validation limits. The default
-v3 path remains available for comparisons with the frozen POC-01 evidence.
+The repository defaults to `concept_extraction_v4` with Apertus 70B through the
+Hugging Face router and PublicAI, using `HF_TOKEN` from the environment. V4 adds
+logical source blocks, structured claims, separate semantic assessments, source
+coverage auditing and one bounded repair. Use `--dry-run` to inspect the complete
+source inventory without a model call. `--structured` explicitly selects v4 when
+using another configuration. The [v4 workflow](../../docs/experiments/2026-09-06-structured-extraction.md)
+includes offline review export/import commands and validation limits. Select
+`concept_extraction_v3` in a separate configuration for comparisons with the
+frozen POC-01 evidence.
 
 `swisstip-concepts` accepts one or more local file paths, directory paths, or
 wildcard patterns. Eligible files have an `.html`, `.htm`, `.txt`, `.md`, or
@@ -129,7 +132,7 @@ The ordered `model_identities` entries retain the configured `model`, exact
 wire `requested_model`, raw response `observed_model`, provider and request ID
 for each generation or review completion. Missing observations remain unknown.
 
-The default `concept_extraction_v3` prompt selects numbered source spans and
+The historical `concept_extraction_v3` prompt selects numbered source spans and
 Python attaches the original quotations. Paragraphs, lists and table rows are
 preserved; generic contact, navigation, feedback and embedded news sections are
 filtered before chunking. Proposals must cite their primary section. A separate
@@ -157,7 +160,7 @@ optional fields to the existing `[extraction]` table in your model config:
 
 ```toml
 [extraction]
-prompt_profile = "concept_extraction_v3"
+prompt_profile = "concept_extraction_v4"
 extraction_prompt_file = "prompts/my-extraction.md"
 review_prompt_file = "prompts/my-review.md"
 # Keep the existing extraction limits here as well.
@@ -200,7 +203,7 @@ this value to select a complete preconfigured provider and model:
 
 ```toml
 [semantic_model]
-active_profile = "ollama_local"
+active_profile = "apertus_70b"
 ```
 
 The available values are:
@@ -209,13 +212,13 @@ The available values are:
 | --- | --- | --- | --- |
 | `ollama_local` | Local Ollama API | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` | Offline/local testing with an unofficial community package |
 | `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
-| `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Paid demo account |
+| `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Repository default |
 
-For example, switching to the 70B demo model requires only:
+For example, switching to local 8B requires only:
 
 ```toml
 [semantic_model]
-active_profile = "apertus_70b"
+active_profile = "ollama_local"
 ```
 
 The profile owns its adapter, URL, model, provider, timeout, and optional billing
@@ -288,7 +291,7 @@ available locally:
 ollama pull MichelRosselli/apertus:8b-instruct-2509-q4_k_m
 ```
 
-Keep `active_profile = "ollama_local"`. This profile calls
+Set `active_profile = "ollama_local"`. This profile calls
 `http://127.0.0.1:11434` and does not require a token. The configured quantized
 8B model is the practical local option; actual GPU residency and speed depend on
 available VRAM, context size, and Ollama's CPU offloading.
