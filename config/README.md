@@ -118,8 +118,13 @@ and coverage checks. Ranking validates exact candidate membership and finite
 numeric scores. Mismatched model identities, empty content, duplicate JSON keys
 and incomplete completions are rejected without accepting partial results.
 
-Extraction uses the configured generation limit (currently 4096 output tokens)
-and a 180-second timeout. Ranking uses 8192 output tokens and a 60-second timeout.
+Extraction and review use the shared generation limit (currently 8192 output
+tokens) and a 180-second timeout. The larger allowance is the next experiment
+after the [Zurich GUI extraction truncated at 4096 tokens](../docs/experiments/2026-09-10-deepseek-zh-gui-extraction.md);
+it has not yet demonstrated successful extraction on that page. This shared limit
+also applies when selecting another extraction profile. New GUI jobs load it
+without a server restart; existing job configurations remain frozen.
+Ranking uses 8192 output tokens and a 60-second timeout.
 Thinking mode is fixed off in this adapter; enabling it later requires evaluating
 the changed generation contract and checkpoint/release identity. CLI extraction
 uses bounded transient retries and checkpoints; GUI provider retries stay disabled.
@@ -129,6 +134,23 @@ A retrieval release using this profile must pin `deepseek-ranking/v1` and
 `deepseek-v4-pro`. The existing pilot release is not migrated by changing this
 selection. Protocol support is covered by offline tests; live model quality and
 provider availability have not been qualified by those tests.
+
+### DeepSeek V4.1 Flash
+
+Select `deepseek_v4_1_flash` in the GUI, or set
+`[semantic_model].active_profile = "deepseek_v4_1_flash"` for CLI extraction and
+review. The same profile is available independently under `[ranking]` in
+`retrieval-models.toml`. It shares `DEEPSEEK_API_KEY`, JSON-object output,
+disabled thinking, timeouts and local validation with the Pro profile.
+
+The catalog uses `deepseek-flash`, the Flash identifier returned by the live
+DeepSeek `/models` endpoint on 2026-09-10. A small live JSON completion with
+thinking disabled succeeded and returned that exact model identity. The public
+[model documentation](https://api-docs.deepseek.com/api/list-models/) checked
+that day still described V4 names; the API alias itself does not pin or verify
+the underlying V4.1 version. Recheck the provider's model mapping before a
+version-sensitive comparison. A retrieval release must pin `deepseek-ranking/v1`
+and `deepseek-flash`. Existing active profile selections are unchanged.
 
 ## GPT-OSS extraction through Groq
 

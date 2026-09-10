@@ -58,7 +58,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [POC-01 progress, draft findings and resulting requirements](docs/experiments/2026-09-06-poc-01-semantic-ground-truth.md)
 
 The concept extractor has preconfigured profiles for local Ollama,
-Hugging Face Apertus 8B/70B, and direct DeepSeek V4 Pro. Switching
+Hugging Face Apertus 8B/70B, and direct DeepSeek V4 Pro and V4.1 Flash. Switching
 between them changes one `active_profile` value. Extraction and retrieval share
 model definitions in `config/model-profiles.toml`; each keeps its own role settings
 and active selections. All Python work uses the

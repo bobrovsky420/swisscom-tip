@@ -1,4 +1,4 @@
-"""DeepSeek V4 Pro JSON chat protocol shared by extraction and ranking.
+"""DeepSeek JSON chat protocol shared by extraction and ranking.
 
 Protocol: https://api-docs.deepseek.com/api/create-chat-completion/
 JSON-object output is not schema enforcement. Callers validate their own schema.
@@ -9,12 +9,15 @@ from dataclasses import dataclass
 import http.client
 import json
 import math
+from typing import Literal, get_args
 from urllib.parse import urlsplit
 import urllib.error
 import urllib.request
 
 
 MODEL = "deepseek-v4-pro"
+DeepSeekModel = Literal["deepseek-v4-pro", "deepseek-flash"]
+SUPPORTED_MODELS = get_args(DeepSeekModel)
 BASE_URL = "https://api.deepseek.com"
 MAX_BYTES = 1_000_000
 
@@ -51,8 +54,8 @@ class DeepSeekCompletion:
 
 
 def validate_settings(model, base_url, timeout, *, allow_loopback=False):
-    if model != MODEL:
-        raise ValueError(f"DeepSeek adapter requires model {MODEL!r}")
+    if model not in SUPPORTED_MODELS:
+        raise ValueError(f"DeepSeek adapter requires one of {SUPPORTED_MODELS!r}")
     parsed = urlsplit(base_url)
     secure = parsed.scheme == "https" or (allow_loopback and parsed.scheme == "http" and
                                          parsed.hostname in {"localhost", "127.0.0.1", "::1"})
@@ -66,8 +69,8 @@ def validate_settings(model, base_url, timeout, *, allow_loopback=False):
 
 
 def request_payload(*, model, system_prompt, user_prompt, response_schema, max_tokens, temperature=0.0):
-    if model != MODEL:
-        raise ValueError(f"DeepSeek adapter requires model {MODEL!r}")
+    if model not in SUPPORTED_MODELS:
+        raise ValueError(f"DeepSeek adapter requires one of {SUPPORTED_MODELS!r}")
     if any(not isinstance(p, str) or not p.strip() for p in (system_prompt, user_prompt)):
         raise ValueError("DeepSeek prompts must be non-empty strings")
     if not isinstance(response_schema, dict) or not response_schema:

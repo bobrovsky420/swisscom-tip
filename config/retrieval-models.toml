@@ -59,3 +59,8 @@ timeout_seconds = 60.0
 model_profile = "deepseek_v4_pro"
 role = "ranking"
 timeout_seconds = 60.0
+
+[profiles.deepseek_v4_1_flash]
+model_profile = "deepseek_v4_1_flash"
+role = "ranking"
+timeout_seconds = 60.0

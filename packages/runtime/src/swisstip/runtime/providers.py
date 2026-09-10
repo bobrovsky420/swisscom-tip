@@ -210,7 +210,7 @@ class GroqRankingProvider(_JsonProvider):
 
 
 class DeepSeekRankingProvider(_JsonProvider):
-    """DeepSeek V4 Pro JSON-object scores with local identity and membership checks."""
+    """DeepSeek JSON-object scores with local identity and membership checks."""
 
     provider_id = "deepseek-ranking/v1"
 

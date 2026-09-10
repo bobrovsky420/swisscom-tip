@@ -246,6 +246,7 @@ The available values are:
 | `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
 | `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Optional hosted Apertus extraction/review |
 | `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Repository default; JSON-object extraction/review; requires `DEEPSEEK_API_KEY` |
+| `deepseek_v4_1_flash` | Direct DeepSeek API | `deepseek-flash` | Optional Flash extraction/review; requires `DEEPSEEK_API_KEY`; see [version mapping](../../config/README.md#deepseek-v41-flash) |
 | `groq_gpt_oss_120b` | Groq API | `openai/gpt-oss-120b` | Optional strict-schema extraction/review; requires `GROQ_API_KEY` |
 
 For example, switching to local 8B requires only:

@@ -72,6 +72,23 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(config.active_profile.response_mode, "json_object")
         self.assertEqual(config.recovery.max_retries, 0)
 
+    def test_flash_gui_selection_resolves_shared_model_into_job_snapshot(self):
+        with patch.object(api, "catalog_data", return_value={"sources": []}), patch.dict(
+            "os.environ", {"DEEPSEEK_API_KEY": "flash-secret-sentinel"}, clear=True
+        ):
+            profile = next(p for p in api.catalog()["profiles"] if p["name"] == "deepseek_v4_1_flash")
+            self.assertTrue(profile["credential_ready"])
+            self.assertFalse(profile["selected"])
+            snapshot = api.config_text("deepseek_v4_1_flash")
+        self.assertNotIn("flash-secret-sentinel", snapshot)
+        self.catalog.unlink()
+        path = self.root / "job.toml"
+        path.write_text(snapshot, encoding="utf-8")
+        config = load_model_profiles(path)
+        self.assertEqual(config.active_profile.model, "deepseek-flash")
+        self.assertEqual(config.active_profile.response_mode, "json_object")
+        self.assertEqual(config.recovery.max_retries, 0)
+
     def test_gui_snapshots_are_portable_and_keep_original_prompt_directory(self):
         document = self.semantic.read_text(encoding="utf-8")
         document = document.replace("[extraction]", '[extraction]\nextraction_prompt_file = "prompts/extract.md"\nreview_prompt_file = "prompts/review.md"')

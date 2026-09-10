@@ -6,6 +6,7 @@ from typing import Annotated, Literal
 from pydantic import Field, model_validator
 
 from swisstip.core.contracts import ShortText, StrictModel
+from swisstip.core.deepseek import DeepSeekModel
 from swisstip.core.model_profiles import load_model_config
 from .providers import DeepSeekRankingProvider, GroqAnswerRelevanceProvider, GroqRankingProvider, OllamaRetrievalProvider
 
@@ -39,7 +40,7 @@ class GroqProfile(StrictModel):
 class DeepSeekProfile(StrictModel):
     adapter: Literal["deepseek"]
     role: Literal["ranking"]
-    model: Literal["deepseek-v4-pro"]
+    model: DeepSeekModel
     base_url: ShortText
     token_env: Annotated[str, Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")] = "DEEPSEEK_API_KEY"
     timeout_seconds: Annotated[float, Field(gt=0, le=300)] = 60.0

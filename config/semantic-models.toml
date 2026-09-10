@@ -7,7 +7,8 @@ active_profile = "deepseek_v4_pro"
 
 [generation]
 temperature = 0.0
-max_output_tokens = 4096
+# Structured multi-concept pages need room for complete extraction/review JSON.
+max_output_tokens = 8192
 
 [extraction]
 # Structured claims, coverage review and bounded repair are the default.
@@ -60,6 +61,11 @@ response_mode = "prompt_only"
 # Direct DeepSeek API; bounded non-thinking JSON output with local validation.
 [profiles.deepseek_v4_pro]
 model_profile = "deepseek_v4_pro"
+timeout_seconds = 180.0
+response_mode = "json_object"
+
+[profiles.deepseek_v4_1_flash]
+model_profile = "deepseek_v4_1_flash"
 timeout_seconds = 180.0
 response_mode = "json_object"
 

@@ -60,3 +60,10 @@ adapter = "deepseek"
 model = "deepseek-v4-pro"
 base_url = "https://api.deepseek.com"
 token_env = "DEEPSEEK_API_KEY"
+
+[profiles.deepseek_v4_1_flash]
+adapter = "deepseek"
+# Flash identifier returned by the live /models endpoint on 2026-09-10.
+model = "deepseek-flash"
+base_url = "https://api.deepseek.com"
+token_env = "DEEPSEEK_API_KEY"

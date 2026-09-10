@@ -71,6 +71,25 @@ class DeepSeekBuilderTests(unittest.TestCase):
         self.opener.open.assert_called_once()
         self.assertNotIn("test-only-token", "".join(p.read_text() for p in (self.path / "checkpoints").rglob("*.json")))
 
+    def test_flash_profile_preserves_identity_and_rejects_pro_responses(self):
+        text = self.config_path.read_text(encoding="utf-8").replace(
+            'active_profile = "deepseek_v4_pro"', 'active_profile = "deepseek_v4_1_flash"')
+        self.config_path.write_text(text, encoding="utf-8")
+        config = load_model_profiles(self.config_path)
+        provider = create_semantic_model_provider(
+            config, environ={"DEEPSEEK_API_KEY": "test-only-token"}, opener=self.opener)
+        self.opener.open.return_value = self.reply(model="deepseek-flash")
+        result = provider.generate_structured(**REQUEST)
+        self.assertEqual((result.model, result.requested_model, result.observed_model),
+                         ("deepseek-flash",) * 3)
+        payload = json.loads(self.opener.open.call_args.args[0].data)
+        self.assertEqual(payload["model"], "deepseek-flash")
+        self.assertEqual(payload["response_format"], {"type": "json_object"})
+        self.assertEqual(payload["thinking"], {"type": "disabled"})
+        self.opener.open.return_value = self.reply(model=MODEL)
+        with self.assertRaises(DeepSeekProviderError):
+            provider.generate_structured(**REQUEST)
+
     def test_transient_retry_uses_shared_attempt_budget(self):
         failure = urllib.error.HTTPError("https://api.deepseek.com", 429, "rate limit", {"Retry-After": "3"}, io.BytesIO())
         self.opener.open.side_effect = [failure, self.reply()]
