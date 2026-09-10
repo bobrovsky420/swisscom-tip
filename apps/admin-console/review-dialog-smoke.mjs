@@ -24,7 +24,7 @@ const job = {
   result_sha256: resultHash, error: null, cancel_requested: false,
   created_at: '2026-09-10T08:25:00Z', started_at: '2026-09-10T08:25:00Z', finished_at: '2026-09-10T08:26:00Z',
 };
-const catalog = { sources: [], profiles: [], crawl_profiles: [], max_pages: 10, max_requests: 30 };
+const catalog = { extraction_profile: 'concept_extraction_v3', sources: [], profiles: [], crawl_profiles: [], max_pages: 10, max_requests: 30 };
 const browser = await chromium.launch({ channel: process.platform === 'win32' ? 'msedge' : undefined, headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = [];

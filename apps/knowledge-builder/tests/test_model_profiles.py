@@ -100,12 +100,12 @@ class ModelProfileTests(unittest.TestCase):
     def test_repository_config_resolves_selected_profile(self) -> None:
         config = load_model_profiles(REPOSITORY_ROOT / "config" / "semantic-models.toml")
 
-        self.assertEqual(config.active_profile.name, "deepseek_v4_pro")
+        self.assertEqual(config.active_profile.name, "deepseek_v4_1_flash")
         self.assertEqual(
             config.schema_version,
             "swisstip.semantic-model-profiles/v1",
         )
-        self.assertEqual(config.active_profile.model, "deepseek-v4-pro")
+        self.assertEqual(config.active_profile.model, "deepseek-flash")
         self.assertEqual(config.active_profile.adapter, "deepseek")
         self.assertIsNone(config.active_profile.num_ctx)
         self.assertIsNone(config.active_profile.keep_alive)
@@ -126,7 +126,7 @@ class ModelProfileTests(unittest.TestCase):
         self.assertEqual(config.extraction.max_total_input_characters, 120000)
         self.assertEqual(config.extraction.max_model_requests_per_page, 12)
         self.assertEqual(config.extraction.max_model_requests_per_run, 30)
-        self.assertEqual(config.extraction.prompt_profile, "concept_extraction_v4")
+        self.assertEqual(config.extraction.prompt_profile, "concept_extraction_v3")
 
     def test_file_selector_is_not_overridden_by_environment(self) -> None:
         with patch.dict(

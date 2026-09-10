@@ -60,8 +60,9 @@ def execute(job):
             path = folder / (asset_id + Path(asset['filename']).suffix)
             path.write_bytes(raw)
             paths.append(str(path))
+        # The frozen config selects the extraction workflow, including older V4 jobs.
         command = prefix + ['swisstip.builder.concept_cli', *paths, '--config', str(config),
-                            '--structured', '--verbose', '--checkpoint-dir', str(folder / 'checkpoints')]
+                            '--verbose', '--checkpoint-dir', str(folder / 'checkpoints')]
         if job['kind'] == 'plan':
             command += ['--dry-run']
     environment = os.environ.copy()

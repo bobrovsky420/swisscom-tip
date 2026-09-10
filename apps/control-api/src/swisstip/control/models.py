@@ -34,6 +34,7 @@ class Catalog(BaseModel):
     crawl_profiles: list[str]
     max_pages: int
     max_requests: int
+    extraction_profile: str
 
 
 class Asset(BaseModel):
@@ -50,7 +51,7 @@ class JobRequest(StrictModel):
     kind: Literal['crawl', 'plan', 'extract']
     source_ids: list[str] = Field(default_factory=list, max_length=10)
     asset_ids: list[str] = Field(default_factory=list, max_length=10)
-    profile: str = 'apertus_70b'
+    profile: str | None = None
     crawl_profile: Literal['smoke'] = 'smoke'
 
 
@@ -104,6 +105,7 @@ class Section(BaseModel):
 
 
 class Preview(BaseModel):
+    extraction_profile: str
     title: str
     language: str | None
     sections: list[Section]

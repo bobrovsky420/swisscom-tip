@@ -312,7 +312,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
     parser.add_argument("--structured", action="store_true",
-                        help="select v4 logical blocks, structured claims, coverage audit and bounded repair (repository default)")
+                        help="select v4 logical blocks, structured claims, coverage audit and bounded repair instead of the configured profile")
     parser.add_argument("--dry-run", action="store_true",
                         help="normalize and plan locally without creating a model provider or sending requests")
     parser.add_argument("--checkpoint-dir", type=Path,

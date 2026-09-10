@@ -1,5 +1,9 @@
 # Extraction pause checkpoint - 10 September 2026
 
+Historical checkpoint: the user subsequently chose the simpler V3 extraction
+workflow and DeepSeek V4.1 Flash. See the [switch and prepared offline plan](2026-09-10-v3-flash-switch.md)
+for the current resume point. The V4 results and review history below are preserved.
+
 Status: paused at the user's request after the latest live-result audit. No new
 extraction, prompt correction or review decision is part of saving this checkpoint.
 The next discussion should address the extraction approach and evaluation scope

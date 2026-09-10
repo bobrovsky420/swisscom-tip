@@ -51,15 +51,19 @@ validation followed by semantic review. The response mode is recorded in the
 effective profile and separates model checkpoints. A complete JSON response alone
 does not establish valid claims or sufficient coverage.
 
-The repository defaults to `concept_extraction_v4` with DeepSeek V4 Pro through
-the direct DeepSeek API, using `DEEPSEEK_API_KEY` from the environment. V4 adds
-logical source blocks, structured claims, separate semantic assessments, source
-coverage auditing and one bounded repair. Use `--dry-run` to inspect the complete
-source inventory without a model call. `--structured` explicitly selects v4 when
-using another configuration. The [v4 workflow](../../docs/experiments/2026-09-06-structured-extraction.md)
-includes offline review export/import commands and validation limits. Select
-`concept_extraction_v3` in a separate configuration for comparisons with the
-frozen POC-01 evidence.
+The repository defaults to `concept_extraction_v3` with DeepSeek V4.1 Flash through
+the direct DeepSeek API, using `DEEPSEEK_API_KEY` from the environment. V3 proposes
+concepts with textual scope, questions and exact source evidence, followed by
+model-assisted review. Use `--dry-run` to inspect request estimates without a
+model call. V3 does not generate structured claim conditions or audit every
+source block for omissions; retained proposals still need human source review.
+
+`--structured` explicitly selects V4's logical source blocks, structured claims,
+separate semantic assessments, source coverage auditing and bounded repair.
+V4 dry runs also include the complete source inventory. The
+[v4 workflow](../../docs/experiments/2026-09-06-structured-extraction.md) includes
+offline review export/import commands and validation limits. Existing saved V4
+results remain available for comparison with the simpler V3 pilot.
 
 V4's `swisstip.structured-review/v2` response contract requires a separate
 `condition_logic` assessment and six `scope_fields` assessments on every claim.
@@ -221,7 +225,7 @@ The ordered `model_identities` entries retain the configured `model`, exact
 wire `requested_model`, raw response `observed_model`, provider and request ID
 for each generation or review completion. Missing observations remain unknown.
 
-The historical `concept_extraction_v3` prompt selects numbered source spans and
+The `concept_extraction_v3` prompt selects numbered source spans and
 Python attaches the original quotations. Paragraphs, lists and table rows are
 preserved; generic contact, navigation, feedback and embedded news sections are
 filtered before chunking. Proposals must cite their primary section. A separate
@@ -295,7 +299,7 @@ this value to select a preconfigured profile:
 
 ```toml
 [semantic_model]
-active_profile = "deepseek_v4_pro"
+active_profile = "deepseek_v4_1_flash"
 ```
 
 The available values are:
@@ -305,8 +309,8 @@ The available values are:
 | `ollama_local` | Local Ollama API | `MichelRosselli/apertus:8b-instruct-2509-q4_k_m` | Offline/local testing with an unofficial community package |
 | `apertus_8b` | Hugging Face router | `swiss-ai/Apertus-8B-Instruct-2509` | Free-account testing |
 | `apertus_70b` | Hugging Face router | `swiss-ai/Apertus-70B-Instruct-2509` | Optional hosted Apertus extraction/review |
-| `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Repository default; JSON-object extraction/review; requires `DEEPSEEK_API_KEY` |
-| `deepseek_v4_1_flash` | Direct DeepSeek API | `deepseek-flash` | Optional Flash extraction/review; requires `DEEPSEEK_API_KEY`; see [version mapping](../../config/README.md#deepseek-v41-flash) |
+| `deepseek_v4_pro` | Direct DeepSeek API | `deepseek-v4-pro` | Optional Pro extraction/review; requires `DEEPSEEK_API_KEY` |
+| `deepseek_v4_1_flash` | Direct DeepSeek API | `deepseek-flash` | Repository default; JSON-object extraction/review; requires `DEEPSEEK_API_KEY`; see [version mapping](../../config/README.md#deepseek-v41-flash) |
 | `groq_gpt_oss_120b` | Groq API | `openai/gpt-oss-120b` | Optional strict-schema extraction/review; requires `GROQ_API_KEY` |
 
 For example, switching to local 8B requires only:
@@ -325,9 +329,9 @@ profile; future switches change only `active_profile`. A new provider API requir
 a corresponding adapter implementation. See the [configuration examples and
 standalone-config compatibility](../../config/README.md).
 
-DeepSeek V4 Pro uses `response_mode = "json_object"` with the trusted schema in
+DeepSeek profiles use `response_mode = "json_object"` with the trusted schema in
 the system prompt and thinking explicitly disabled. Extraction/review still
-validate schema, evidence and coverage locally. Select `deepseek_v4_pro` in the GUI
+validate schema, evidence and profile-specific checks locally. Select `deepseek_v4_1_flash` in the GUI
 or this file and set `DEEPSEEK_API_KEY` before starting the process. See the
 [DeepSeek setup and validation limits](../../config/README.md#deepseek-v4-pro).
 

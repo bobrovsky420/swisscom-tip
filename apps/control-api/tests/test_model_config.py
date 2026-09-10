@@ -13,6 +13,7 @@ from fastapi import HTTPException
 
 from swisstip.builder.model_profiles import load_model_profiles, ModelProfileConfigurationError
 from swisstip.control import api
+from swisstip.control.models import JobRequest
 from swisstip.core.model_profiles import load_model_config
 from swisstip.runtime.provider_config import load_provider_settings
 
@@ -44,7 +45,9 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(profiles["ollama_local"]["adapter"], "ollama")
         self.assertEqual(profiles["apertus_70b"]["model"], "swiss-ai/Apertus-70B-Instruct-2509")
         self.assertFalse(profiles["apertus_70b"]["selected"])
-        self.assertTrue(profiles["deepseek_v4_pro"]["selected"])
+        self.assertFalse(profiles["deepseek_v4_pro"]["selected"])
+        self.assertTrue(profiles["deepseek_v4_1_flash"]["selected"])
+        self.assertEqual(data["extraction_profile"], "concept_extraction_v3")
         self.assertTrue(profiles["deepseek_v4_pro"]["credential_ready"])
         self.assertTrue(profiles["apertus_70b"]["credential_ready"])
         self.assertNotIn("secret-sentinel", json.dumps(data))
@@ -72,13 +75,27 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(config.active_profile.response_mode, "json_object")
         self.assertEqual(config.recovery.max_retries, 0)
 
+    def test_job_creation_resolves_omitted_model_and_preserves_explicit_selection(self):
+        for selected, expected in ((None, 'deepseek_v4_1_flash'), ('deepseek_v4_pro', 'deepseek_v4_pro')):
+            with self.subTest(selected=selected):
+                body = JobRequest(kind='plan', asset_ids=['fixture-asset'],
+                                  **({} if selected is None else {'profile': selected}))
+                with patch.object(api, 'rows', return_value=[{'asset_id': 'fixture-asset'}]), patch.object(
+                    api, 'save_job', return_value={'job_id': 'fixture-job'}
+                ) as save_job:
+                    api.create_job(body)
+                stored, snapshot = save_job.call_args.args
+                self.assertEqual(stored.profile, expected)
+                self.assertEqual(tomllib.loads(snapshot)['semantic_model']['active_profile'], expected)
+                self.assertEqual(body.profile, selected)
+
     def test_flash_gui_selection_resolves_shared_model_into_job_snapshot(self):
         with patch.object(api, "catalog_data", return_value={"sources": []}), patch.dict(
             "os.environ", {"DEEPSEEK_API_KEY": "flash-secret-sentinel"}, clear=True
         ):
             profile = next(p for p in api.catalog()["profiles"] if p["name"] == "deepseek_v4_1_flash")
             self.assertTrue(profile["credential_ready"])
-            self.assertFalse(profile["selected"])
+            self.assertTrue(profile["selected"])
             snapshot = api.config_text("deepseek_v4_1_flash")
         self.assertNotIn("flash-secret-sentinel", snapshot)
         self.catalog.unlink()

@@ -6,7 +6,7 @@ their use:
 
 | File | Settings | Current selection |
 | --- | --- | --- |
-| [semantic-models.toml](semantic-models.toml) | Extraction/review profile, prompts, generation, limits and recovery | `deepseek_v4_pro`, `concept_extraction_v4` |
+| [semantic-models.toml](semantic-models.toml) | Extraction/review profile, prompts, generation, limits and recovery | `deepseek_v4_1_flash`, `concept_extraction_v3` |
 | [retrieval-models.toml](retrieval-models.toml) | Embedding and ranking profiles, timeouts and scoring contracts | `qwen_embedding_0_6b`, `apertus_ranking_8b` |
 
 For example, the shared local Apertus definition is:
@@ -91,8 +91,8 @@ records the live evidence and the remaining provider-side availability constrain
 
 ## DeepSeek V4 Pro
 
-The `deepseek_v4_pro` profile is the default for extraction and review, and is
-also available as an optional ranking profile. Both refer to the same direct API connection
+The `deepseek_v4_pro` profile is available for extraction, review and optional
+ranking. Both roles refer to the same direct API connection
 in the catalog, with model `deepseek-v4-pro` and base URL
 `https://api.deepseek.com`. Embedding uses local Qwen and ranking uses local Apertus 8B.
 
@@ -114,7 +114,7 @@ The adapter uses the documented [Chat Completions API](https://api-docs.deepseek
 with `response_format = {"type": "json_object"}` and explicitly disabled thinking.
 The trusted schema is included in the system prompt; DeepSeek's [JSON mode](https://api-docs.deepseek.com/guides/json_mode/)
 does not enforce that schema. Extraction and review retain local schema, evidence
-and coverage checks. Ranking validates exact candidate membership and finite
+and profile-specific checks (including coverage for V4). Ranking validates exact candidate membership and finite
 numeric scores. Mismatched model identities, empty content, duplicate JSON keys
 and incomplete completions are rejected without accepting partial results.
 
@@ -151,7 +151,9 @@ provider availability have not been qualified by those tests.
 
 ### DeepSeek V4.1 Flash
 
-Select `deepseek_v4_1_flash` in the GUI, or set
+The default extraction/review model profile is `deepseek_v4_1_flash`, with the
+`concept_extraction_v3` workflow. The GUI selects it for new sessions. Select it
+in an existing GUI session, or set
 `[semantic_model].active_profile = "deepseek_v4_1_flash"` for CLI extraction and
 review. The same profile is available independently under `[ranking]` in
 `retrieval-models.toml`. It shares `DEEPSEEK_API_KEY`, JSON-object output,
@@ -164,7 +166,7 @@ thinking disabled succeeded and returned that exact model identity. The public
 that day still described V4 names; the API alias itself does not pin or verify
 the underlying V4.1 version. Recheck the provider's model mapping before a
 version-sensitive comparison. A retrieval release must pin `deepseek-ranking/v1`
-and `deepseek-flash`. Existing active profile selections are unchanged.
+and `deepseek-flash`. Retrieval ranking and embedding selections are independent.
 
 ## GPT-OSS extraction through Groq
 

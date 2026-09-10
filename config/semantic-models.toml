@@ -3,20 +3,21 @@ schema_version = "swisstip.semantic-model-profiles/v1"
 model_profiles_file = "model-profiles.toml"
 
 [semantic_model]
-active_profile = "deepseek_v4_pro"
+active_profile = "deepseek_v4_1_flash"
 
 [generation]
 temperature = 0.0
-# Structured multi-concept pages need room for complete extraction/review JSON.
+# Leave room for complete multi-concept extraction/review JSON.
 max_output_tokens = 8192
 
 [extraction]
-# Structured claims, coverage review and bounded repair are the default.
-prompt_profile = "concept_extraction_v4"
+# Evidence-backed concepts with textual scope and model-assisted review.
+prompt_profile = "concept_extraction_v3"
 # Optional UTF-8 files replacing the complete system prompt for each role.
 # Paths are relative to this TOML file; omit to use packaged defaults.
 # extraction_prompt_file = "prompts/my-extraction.md"
 # review_prompt_file = "prompts/my-review.md"
+# Retained for explicit V4 runs; V3 does not use the structured repair loop.
 max_repair_attempts = 1
 chunk_content_characters = 6400
 # Complete structured review payload, including source, proposals and feedback.

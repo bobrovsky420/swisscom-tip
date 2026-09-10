@@ -11,7 +11,8 @@ from fastapi.staticfiles import StaticFiles
 from psycopg.types.json import Jsonb
 from swisstip.builder.source_catalog import load_source_catalog, build_plan
 from swisstip.core.model_profiles import load_model_config
-from swisstip.ingestion.concepts import normalize_downloaded_page, CandidateConceptExtractor, STRUCTURED_PROMPT_PROFILE
+from swisstip.ingestion.concepts import (normalize_downloaded_page, select_content_sections, CandidateConceptExtractor,
+                                        REVIEW_PROMPT_PROFILE, SPAN_PROMPT_PROFILE, STRUCTURED_PROMPT_PROFILE)
 from swisstip.ingestion.structured_extraction import StructuredExtraction
 from swisstip.runtime.postgres import connect, sha256
 from .models import (ActionRequest, Asset, Catalog, Evidence, Job, JobRequest, Message, Preview,
@@ -86,7 +87,8 @@ def catalog():
                                selected=name == config['semantic_model']['active_profile'])
                           for name, p in config['profiles'].items()],
                 crawl_profiles=['smoke'], max_pages=config['extraction']['max_pages_per_run'],
-                max_requests=config['extraction']['max_model_requests_per_run'])
+                max_requests=config['extraction']['max_model_requests_per_run'],
+                extraction_profile=config['extraction']['prompt_profile'])
 
 
 @app.get('/api/assets', response_model=list[Asset], operation_id='getAssets')
@@ -131,20 +133,31 @@ def preview(identifier: str):
     raw = bytes(found[0]['original_bytes'])
     if sha256(raw) != found[0]['sha256']:
         raise HTTPException(409, 'Snapshot hash mismatch')
+    config = load_model_config(ROOT / 'config/semantic-models.toml')
+    profile = config['extraction']['prompt_profile']
     with tempfile.TemporaryDirectory() as folder:
         path = Path(folder) / ('page' + Path(found[0]['filename']).suffix)
         path.write_bytes(raw)
         try:
-            page = normalize_downloaded_page(path, logical_blocks=True)
+            page = normalize_downloaded_page(path, preserve_structure=profile == REVIEW_PROMPT_PROFILE,
+                                             logical_blocks=profile == STRUCTURED_PROMPT_PROFILE)
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
-    _, inventory = StructuredExtraction(CandidateConceptExtractor(None, active_profile='preview',
-                                        prompt_profile=STRUCTURED_PROMPT_PROFILE)).plan(page)
-    visible = [s for s in inventory if s['status'] != 'excluded_policy']
-    return dict(title=page.title, language=page.language,
-                sections=[dict(section_id=s['section_id'], text=s['evidence_text']) for s in visible],
-                characters=sum(len(s['evidence_text']) for s in visible),
-                excluded_sections=len(inventory) - len(visible))
+    if profile == STRUCTURED_PROMPT_PROFILE:
+        _, inventory = StructuredExtraction(CandidateConceptExtractor(None, active_profile='preview',
+                                            prompt_profile=profile)).plan(page)
+        visible = [s for s in inventory if s['status'] != 'excluded_policy']
+        sections = [dict(section_id=s['section_id'], text=s['evidence_text']) for s in visible]
+        excluded_count = len(inventory) - len(visible)
+    else:
+        if profile in {SPAN_PROMPT_PROFILE, REVIEW_PROMPT_PROFILE}:
+            visible, excluded = select_content_sections(page, exclude_embedded_news=profile == REVIEW_PROMPT_PROFILE)
+        else:
+            visible, excluded = page.sections, ()
+        sections = [dict(section_id=s.section_id, text=s.evidence_text) for s in visible]
+        excluded_count = len(excluded)
+    return dict(extraction_profile=profile, title=page.title, language=page.language, sections=sections,
+                characters=sum(len(s['text']) for s in sections), excluded_sections=excluded_count)
 
 
 @app.get('/api/jobs', response_model=list[Job], operation_id='getJobs')
@@ -154,6 +167,9 @@ def list_jobs():
 
 @app.post('/api/jobs', response_model=Job, status_code=202, operation_id='createJob')
 def create_job(body: JobRequest):
+    if body.profile is None:
+        active = load_model_config(ROOT / 'config/semantic-models.toml')['semantic_model']['active_profile']
+        body = body.model_copy(update={'profile': active})
     config = config_text(body.profile)
     if body.kind == 'crawl':
         if not body.source_ids or body.asset_ids:

@@ -543,6 +543,10 @@
           "max_requests": {
             "type": "integer",
             "title": "Max Requests"
+          },
+          "extraction_profile": {
+            "type": "string",
+            "title": "Extraction Profile"
           }
         },
         "type": "object",
@@ -551,7 +555,8 @@
           "profiles",
           "crawl_profiles",
           "max_pages",
-          "max_requests"
+          "max_requests",
+          "extraction_profile"
         ],
         "title": "Catalog"
       },
@@ -736,9 +741,15 @@
             "title": "Asset Ids"
           },
           "profile": {
-            "type": "string",
-            "title": "Profile",
-            "default": "apertus_70b"
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile"
           },
           "crawl_profile": {
             "type": "string",
@@ -769,6 +780,10 @@
       },
       "Preview": {
         "properties": {
+          "extraction_profile": {
+            "type": "string",
+            "title": "Extraction Profile"
+          },
           "title": {
             "type": "string",
             "title": "Title"
@@ -802,6 +817,7 @@
         },
         "type": "object",
         "required": [
+          "extraction_profile",
           "title",
           "language",
           "sections",

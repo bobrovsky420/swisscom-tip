@@ -54,10 +54,10 @@ class DeepSeekBuilderTests(unittest.TestCase):
         run.begin_page(PAGE)
         return run
 
-    def test_factory_requires_selected_key_and_preserves_v4_defaults(self):
+    def test_factory_requires_selected_key_and_preserves_v3_defaults(self):
         self.assertEqual(self.config.active_profile.adapter, "deepseek")
         self.assertEqual(self.config.active_profile.response_mode, "json_object")
-        self.assertEqual(self.config.extraction.prompt_profile, "concept_extraction_v4")
+        self.assertEqual(self.config.extraction.prompt_profile, "concept_extraction_v3")
         with self.assertRaisesRegex(ProviderFactoryConfigurationError, "DEEPSEEK_API_KEY"):
             create_semantic_model_provider(self.config, environ={"HF_TOKEN": "wrong-provider-token"}, opener=self.opener)
         self.opener.open.assert_not_called()

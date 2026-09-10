@@ -34,13 +34,13 @@ credential presence, never values. Ollama still runs in WSL.
    the 59-source catalog. Click **Load saved pilot pages**. This copies the eight
    archived pages from database attachments into the immutable page inventory;
    loading again reuses identical snapshots. Three demo pages are preselected.
-2. In **Saved pages**, inspect the SEM English card's **parsed text**. Navigation
-   and heading exclusions use the existing structured extraction content policy.
-   Other non-substantive blocks can still remain for semantic coverage review.
+2. In **Saved pages**, inspect the SEM English card's **parsed text**. The preview
+   uses the configured extraction profile's normalization and content filters.
+   The current V3 profile excludes generic contact, navigation, feedback and news.
 3. Keep SEM English selected and deselect the other two demo pages. Click
    **Preview extraction plan**. The worker runs the real CLI in dry-run mode.
-4. In **Builds & review**, watch progress and inspect the readable block inventory.
-   The saved SEM page plans four requests and sends zero. Download its full report.
+4. In **Builds & review**, inspect the page and request estimates. The plan sends
+   zero model requests. Download its full report. V4 plans also show a block inventory.
 5. In **Stored knowledge**, browse Zurich and SEM excerpts and original citations.
    These are the existing experimental releases, not published facts.
 
@@ -59,19 +59,25 @@ credential presence, never values. Ollama still runs in WSL.
 - **Saved pages -> Preview extraction plan** checks selected content and request
   budgets without contacting a model. A maximum of ten pages is supported; the
   existing semantic config may impose stricter input and request limits.
-- **Run extraction -> Confirm extraction** runs the existing structured v4
-  extractor and model-assisted review using a selected named semantic profile.
+- **Run extraction -> Confirm extraction** runs the configured extractor and
+  model-assisted review using a selected named model profile. The current
+  extraction profile is `concept_extraction_v3`, independently of the selected
+  DeepSeek V4.1 Flash model. Change `extraction.prompt_profile` in
+  `config/semantic-models.toml` to select another extraction workflow.
   Profiles in `config/semantic-models.toml` refer to Ollama/Hugging Face/Groq/DeepSeek definitions
   in the shared `config/model-profiles.toml` catalog.
   For GPT-OSS 120B extraction and review, set `GROQ_API_KEY` before launching
   and select `groq_gpt_oss_120b`. Ranking remains an independent selection.
-  For DeepSeek V4 Pro, set `DEEPSEEK_API_KEY` before launching and select
-  `deepseek_v4_pro`; see the [setup details](../../config/README.md#deepseek-v4-pro).
+  For the default DeepSeek V4.1 Flash model, set `DEEPSEEK_API_KEY` before
+  launching and select `deepseek_v4_1_flash`; Pro remains available as
+  `deepseek_v4_pro`. See the [setup details](../../config/README.md#deepseek-v41-flash).
 - Each job freezes its source catalog or fully resolved model configuration;
   queued extraction jobs do not depend on later shared model catalog edits. Automatic
-  provider retries are disabled; configured extraction repairs remain bounded by
-  the displayed attempt ceiling. A run over its plan budget fails before inference.
-- Completed candidates appear beside source quotes. Record **accept draft**,
+  provider retries are disabled; V4 extraction repairs remain bounded by the
+  displayed attempt ceiling. V3 has no structured repair loop. A run over its plan
+  budget fails before inference.
+- V3 candidates show scope, questions and source quotes; saved V4 candidates
+  retain their structured claims. Record **accept draft**,
   **needs changes** or **reject**, with a reviewer name and notes. Each press of
   **needs changes** or **reject** opens a dialog for that candidate with a fresh
   comment field and the reviewer name. Enter a comment and choose **Save review**,
@@ -145,11 +151,15 @@ To check candidate review dialogs against the running console:
 
 ```shell
 node apps/admin-console/review-dialog-smoke.mjs
+node apps/admin-console/v3-extraction-smoke.mjs
 ```
 
 This focused browser check intercepts all API requests with synthetic data. It
 checks comments, cancellation, submission and retry, scroll position, and mobile
 layout without creating jobs or changing saved review decisions.
+The V3 check also covers Flash selection, parsed-source preview, request plans,
+scope/questions/evidence and historical V4 plans and claims, with all API requests
+mocked. Screenshots and reports are saved under `.local/admin/v3-extraction-smoke/`.
 
 Dependency versions are pinned in `package-lock.json`. TypeScript 5.9.3 is used
 for compatibility with the generator; the `js-yaml` override selects its patched

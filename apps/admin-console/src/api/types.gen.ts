@@ -69,6 +69,10 @@ export type Catalog = {
      * Max Requests
      */
     max_requests: number;
+    /**
+     * Extraction Profile
+     */
+    extraction_profile: string;
 };
 
 /**
@@ -184,7 +188,7 @@ export type JobRequest = {
     /**
      * Profile
      */
-    profile?: string;
+    profile?: string | null;
     /**
      * Crawl Profile
      */
@@ -205,6 +209,10 @@ export type Message = {
  * Preview
  */
 export type Preview = {
+    /**
+     * Extraction Profile
+     */
+    extraction_profile: string;
     /**
      * Title
      */

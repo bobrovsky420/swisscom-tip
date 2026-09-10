@@ -63,6 +63,12 @@ function download(value: unknown, name: string) {
   URL.revokeObjectURL(url);
 }
 const formatDate = (date: string) => new Date(date).toLocaleString();
+const extractionLabel = (profile?: string) =>
+  profile === "concept_extraction_v3"
+    ? "V3 concepts and evidence"
+    : profile === "concept_extraction_v4"
+      ? "V4 structured claims"
+      : profile || "Configured extraction";
 const statusColor = (status: string) =>
   ({
     completed: "teal",
@@ -77,6 +83,8 @@ type Candidate = {
   candidate_id: string;
   preferred_label: string;
   description: string;
+  scope?: string;
+  user_questions?: string[];
   structured_claims?: {
     claim_id: string;
     statement: string;
@@ -91,6 +99,7 @@ type Candidate = {
 };
 type Report = {
   title?: string;
+  prompt_profile?: string;
   candidates?: Candidate[];
   warnings?: string[];
   source_inventory?: unknown[];
@@ -527,8 +536,8 @@ export function App() {
                       <div>
                         <Title order={4}>Extraction model</Title>
                         <Text size="sm" c="dimmed">
-                          Uses the existing semantic-model profiles. Model
-                          outputs remain experimental.
+                          {extractionLabel(catalog.data?.extraction_profile)}.
+                          Model outputs remain experimental.
                         </Text>
                       </div>
                       <Select
@@ -785,8 +794,8 @@ export function App() {
         size="xl"
       >
         <Text size="sm" c="dimmed" mb="md">
-          Navigation filtering has been applied. The extraction plan shows which
-          remaining blocks are eligible.
+          The extraction profile has filtered this source. Review the text
+          before extracting concepts.
         </Text>
         {preview.isLoading ? (
           <Loader />
@@ -802,8 +811,9 @@ export function App() {
               </Badge>
             </Group>
             <Text size="xs" c="dimmed" mb="md">
-              {preview.data?.excluded_sections} navigation or heading blocks
-              excluded by the extraction policy.
+              {extractionLabel(preview.data?.extraction_profile)}.{" "}
+              {preview.data?.excluded_sections} sections excluded by the
+              extraction profile.
             </Text>
             <ScrollArea h={500}>
               {preview.data?.sections.map((s) => (
@@ -831,12 +841,12 @@ export function App() {
           <Text>
             {confirmation?.kind === "crawl"
               ? `Fetch pages from ${confirmation.source_ids?.length} selected official sources using the smoke crawl budget. Each run keeps a new snapshot.`
-              : `Send ${selectedAssets.length} saved pages to ${catalog.data?.profiles.find((p) => p.name === profile)?.model}. The configured ceiling is ${catalog.data?.max_requests} model attempts, including extraction and review.`}
+              : `Send ${selectedAssets.length} saved pages to ${catalog.data?.profiles.find((p) => p.name === profile)?.model} using ${extractionLabel(catalog.data?.extraction_profile)}. The configured ceiling is ${catalog.data?.max_requests} model attempts, including extraction and review.`}
           </Text>
           <Text size="sm" c="dimmed">
             {confirmation?.kind === "crawl"
               ? "Requests follow the existing source allowlists and robots rules."
-              : "Use Preview extraction plan first to inspect eligible content and planned requests. Provider availability and output quality may vary."}
+              : "Inspect parsed text and Preview extraction plan first to check the source and planned requests. Provider availability and output quality may vary."}
           </Text>
           <Text size="sm">
             Results remain drafts. Your existing stored releases stay available.
@@ -940,6 +950,10 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
   });
   const reports = (job.result?.reports || []) as Report[];
   const candidates = reports.flatMap((r) => r.candidates || []);
+  const extractionProfile =
+    typeof job.result?.prompt_profile === "string"
+      ? job.result.prompt_profile
+      : reports.find((report) => report.prompt_profile)?.prompt_profile;
   return (
     <Stack>
       <Paper withBorder p="lg">
@@ -955,6 +969,11 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
             <Text size="xs" c="dimmed">
               {formatDate(job.created_at)}
             </Text>
+            {extractionProfile && (
+              <Text size="sm" c="dimmed" mt="xs">
+                {extractionLabel(extractionProfile)}
+              </Text>
+            )}
           </div>
           <Badge color={statusColor(job.status)}>
             {job.status.replaceAll("_", " ")}
@@ -984,7 +1003,7 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
         )}
         {job.status === "needs_attention" && (
           <Alert color="orange" mt="md">
-            Inspect the warnings and coverage report. Process completion does
+            Inspect the warnings and extraction report. Process completion does
             not mean usable extraction.
           </Alert>
         )}
@@ -1002,9 +1021,7 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
         <Paper withBorder p="lg">
           <Group justify="space-between" mb="md">
             <Title order={4}>
-              {job.kind === "plan"
-                ? "Plan & content inventory"
-                : "Build result"}
+              {job.kind === "plan" ? "Plan details" : "Build result"}
             </Title>
             <Button
               variant="default"
@@ -1031,7 +1048,7 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
             </Text>
           )}
           <details>
-            <summary>Inspect full structured report</summary>
+            <summary>Inspect full report</summary>
             <pre className="json-view">
               {JSON.stringify(job.result, null, 2)}
             </pre>
@@ -1065,25 +1082,52 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
               <Text size="sm">{c.description}</Text>
               <div className="candidate-evidence">
                 <div>
-                  <Text fw={600} size="sm">
-                    Proposed claims
-                  </Text>
-                  {(c.structured_claims || []).map((claim) => (
-                    <div key={claim.claim_id}>
-                      <Text size="sm" mt="sm">
-                        {claim.statement}
+                  {c.structured_claims?.length ? (
+                    <>
+                      <Text fw={600} size="sm">
+                        Proposed claims
                       </Text>
-                      {!!claim.conditions?.length && (
-                        <ul>
-                          {claim.conditions.map((condition, index) => (
-                            <li key={index}>
-                              <Text size="xs">{condition.text}</Text>
-                            </li>
-                          ))}
-                        </ul>
+                      {c.structured_claims.map((claim) => (
+                        <div key={claim.claim_id}>
+                          <Text size="sm" mt="sm">
+                            {claim.statement}
+                          </Text>
+                          {!!claim.conditions?.length && (
+                            <ul>
+                              {claim.conditions.map((condition, index) => (
+                                <li key={index}>
+                                  <Text size="xs">{condition.text}</Text>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <Text fw={600} size="sm">
+                        Concept scope
+                      </Text>
+                      <Text size="sm" mt="sm">
+                        {c.scope || "No scope supplied in this report."}
+                      </Text>
+                      {!!c.user_questions?.length && (
+                        <>
+                          <Text fw={600} size="sm" mt="md">
+                            Questions this concept answers
+                          </Text>
+                          <ul>
+                            {c.user_questions.map((question, index) => (
+                              <li key={index}>
+                                <Text size="sm">{question}</Text>
+                              </li>
+                            ))}
+                          </ul>
+                        </>
                       )}
-                    </div>
-                  ))}
+                    </>
+                  )}
                 </div>
                 <div>
                   <Text fw={600} size="sm">
@@ -1273,8 +1317,30 @@ function PlanInventory({ result }: { result: Record<string, unknown> }) {
   };
   const pages = (result.pages || []) as {
     source: string;
-    source_inventory: Block[];
+    source_inventory?: Block[];
+    planned_request_ceiling?: number;
   }[];
+  if (result.prompt_profile === "concept_extraction_v3") {
+    return (
+      <Stack mb="md">
+        <Text size="sm">
+          V3 extracts concepts with source evidence, then reviews each
+          extraction. Inspect parsed text in Saved pages to review the source.
+        </Text>
+        {pages.map((page, index) => (
+          <Paper withBorder p="sm" key={page.source}>
+            <Text fw={600} size="sm">
+              Page {index + 1}: {page.planned_request_ceiling} planned model
+              requests
+            </Text>
+            <Text size="xs" c="dimmed" style={{ overflowWrap: "anywhere" }}>
+              {page.source.split(/[\\/]/).pop()}
+            </Text>
+          </Paper>
+        ))}
+      </Stack>
+    );
+  }
   return (
     <Stack>
       {pages.map((page, index) => (
@@ -1282,13 +1348,13 @@ function PlanInventory({ result }: { result: Record<string, unknown> }) {
           <summary>
             Page {index + 1}:{" "}
             {
-              page.source_inventory.filter(
+              (page.source_inventory || []).filter(
                 (b) => b.status !== "excluded_policy",
               ).length
             }{" "}
             content blocks
           </summary>
-          {page.source_inventory
+          {(page.source_inventory || [])
             .filter((b) => b.status !== "excluded_policy")
             .map((block) => (
               <div className="preview-section" key={block.section_id}>
@@ -1312,7 +1378,7 @@ function PlanInventory({ result }: { result: Record<string, unknown> }) {
             ))}
           <Text size="xs" c="dimmed" mt="sm">
             {
-              page.source_inventory.filter(
+              (page.source_inventory || []).filter(
                 (b) => b.status === "excluded_policy",
               ).length
             }{" "}
