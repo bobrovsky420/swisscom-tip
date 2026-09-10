@@ -48,6 +48,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Pilot knowledge and lessons](docs/pilots/2026-09-08-retrieval-pilot.md)
 - [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Local ingestion GUI: sources, parsing, builds and draft review](apps/admin-console/README.md)
+- [Paused extraction experiment and resume checkpoint](docs/experiments/2026-09-10-extraction-pause-checkpoint.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
 - [Hackathon residence source catalogue and later crawl/extraction commands](config/catalogs/README.md)
 - [zh.ch Apertus 8B/70B experiment results](docs/experiments/2026-09-05-zhch-concept-extraction.md)

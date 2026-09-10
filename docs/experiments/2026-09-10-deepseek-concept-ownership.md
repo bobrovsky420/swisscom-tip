@@ -89,9 +89,9 @@ The repeatable local audit under
 `.local/admin/zh-concept-ownership-b5ec2579-20260910/` contains `plan-verify.py`,
 the dry and GUI plans, the baseline snapshot and `plan-audit.json`. Original live
 and earlier preview files retain their hashes, and all 14 human reviews are
-unchanged. No live inference of this prompt change has been performed.
+unchanged. No live inference of this prompt change had been performed at preparation.
 
-## Prepared GUI checkpoint and live success criteria
+## Prepared GUI checkpoint and predeclared live success criteria
 
 Fresh preview `4284a491de6f45a2b3eae900725e3047` is the **Extraction plan** created
 at **13:50 Zurich time** on 10 September. Find it under **Builds & review**.
@@ -107,3 +107,129 @@ assignments. A higher retained count or structural success is not sufficient.
 Recheck the eight prior semantic findings and the previously accepted source
 bounds on the new report. Changed extraction output can introduce regressions
 elsewhere even though the source and limits are unchanged.
+
+## Live follow-up: 891e31a3 did not meet the ownership target
+
+The user ran job `891e31a32d0f4f09b16a6ab062eaae00`, created at **20:37 Zurich
+time** on 10 September. Extraction took 355.874 seconds and made 11 calls: four
+initial extractions, three repairs and four reviews. It reported 101376 input
+and 55624 output tokens, with no output-token truncation, automatic retry or
+checkpoint hit.
+The effective extraction prompt matches `caadc95f...`; the review prompt, frozen
+configuration, raw/normalized source, contracts and packet boundaries match the
+prepared experiment.
+
+Only seven candidates were retained, compared with fourteen in the baseline.
+The targeted contact concept still crossed ownership groups and was rejected.
+This run therefore does not demonstrate successful contact repair. The loss of
+previously accepted source content is a coverage regression; one stochastic run
+does not establish that the prompt change alone caused every other failure.
+
+| Packet | Observed result |
+| --- | --- |
+| 1 | The first review again described entry documents as unconditional while approving added conditions. Local review validation rejected the contradiction. Repair and review retained five drafts. |
+| 2 | Both revisions repeat five exact-quotation failures across B, self-employment and non-employment proposals. Review retained L and G and rejected the family-document logic. Four misplaced `scope_fields` objects were normalized without changing assessments. |
+| 3 | Initial extraction emitted 15 concepts for 15 blocks, exceeding six and including interface text. Repair returned six concepts, but the final review assigned two unrelated download blocks to a UK-document concept that did not cite them. The entire review failed locally. |
+| 4 | The four contact claims still combined scopes 0047, 0048 and 0050 in one concept. Eleven calls had been spent, leaving one slot; the remaining slot cannot fund the required repair-and-review pair. No usable contact proposal reached review. |
+
+The final inventory has 37 policy exclusions, 24 saturated-review blocks, 22
+invalid-response blocks, 12 model-assessed not-substantive blocks and 10 covered
+blocks. The unresolved count is 58, compared with 50 in the baseline. These
+statuses are not verified source recall. In particular, the 24 saturated blocks
+retain that conservative status even where the model identifies missing content.
+
+## Quotation and coverage findings
+
+Packet 2 did not correct the five failing condition quotations during repair.
+The B-permit condition reconstructs `unbefristeter Arbeitsvertrag` from a source
+that says `unbefristeter oder überjähriger Arbeitsvertrag`. Self-employment drops
+parenthetical evidence examples in two conditions and changes a comma to a period
+in the SVA condition. Non-employment reconstructs
+`ausreichende finanzielle Mittel nachgewiesen` from a longer coordinated clause.
+These are failures of the exact-excerpt contract, not evidence that every
+paraphrase is factually false. No source text or condition was silently rewritten.
+
+The family reviewer correctly rejects the flat six-way AND for conditional
+document requirements, as well as the resulting incomplete description and
+misleading document question. This is a useful rejection of a previously
+human-flagged issue. It does not mean the family content has been repaired or
+retained, and the reviewer still approves an unsupported document-recipient role.
+
+Packet 3's final review marks sections 0072 and 0076 covered by concept 2, whose
+UK-document claim cites only section 0065. Section 0072 refers to the Liechtenstein
+PDF; section 0076 lists other directives. The review's claim that these repeat
+the UK download is not supported. The strict per-block citation check remains
+appropriate. The repaired proposal also omits address and onsite hours from
+sections 0085/0086, which its review explicitly marks missing.
+
+An offline structural-capacity control removes only the three interface claims
+from the initial packet 3 proposals and groups the remaining 21 unchanged claims
+by ownership, splitting the Liechtenstein group at the existing eight-claim cap.
+The resulting five concepts have 7, 8, 1, 3 and 2 claims and pass the unchanged
+schema and ownership validator. This demonstrates available structural capacity,
+not semantic correctness or a successful model repair. No control replaced the
+saved output.
+
+The initial invalid completion has 21864 characters, but repair feedback includes
+only its first 6000 characters, ending inside the Brexit material. The complete
+source is still supplied. This fixed prefix is a concrete next diagnostic target:
+it may bias repair attention, but the saved run does not establish causation.
+Another useful diagnostic improvement would identify the offending block, concept
+index and actual citations when a coverage reference fails. Neither finding
+justifies weakening validation or increasing the current request limits.
+
+## Source review of the seven retained drafts
+
+All 12 retained evidence spans match their exact source offsets, and the 18
+claims remain within their respective concepts' ownership scopes. Recommended
+**accept draft**:
+
+- **Aufenthalt für EU/EFTA-Staatsangehörige** (`527faef8`): accept only as the
+  introductory source summary; its claim is unchanged.
+- **Kurzaufenthaltsbewilligung (L)** (`37056dc0`): preserves more than three
+  months AND less than one year AND more than 15 hours/week. Nested AND groups
+  remain equivalent to the earlier flat conjunction.
+- **Grenzgängerbewilligung (G)** (`bcb00440`): preserves EU/EFTA residence AND
+  Swiss employment. `kind=permission` matches the source's permission modality.
+
+Recommended **needs changes**, with GUI comments:
+
+| Draft | Comment |
+| --- | --- |
+| Personenfreizügigkeit (`0f26c28d`) | Structure the specialized AND qualified restriction without implying sufficient entitlement. |
+| Anmeldung bei der Wohngemeinde (`a29f3dcd`) | Represent within-canton OR across-canton move applicability explicitly, retain the 14-day reporting duty, and restore the supported procedure branches. |
+| Zulassung zur unselbständigen Erwerbstätigkeit (`90db79cd`) | Do not require a stay of exactly three months for job search. Restore the supported job-search and registration procedure branches. |
+| Meldeverfahren (90 Tage) (`945782e4`) | Leave the reporting actor unspecified unless the cited source identifies who submits the notification. |
+
+The job-search statement survives; the loss concerns its explicit procedure-branch
+field, not the whole assertion. Registration likewise loses explicit entry,
+registration, move, forwarding and card-issuance branch fields. The four retained
+previous change requests remain unresolved. The other four previous change
+requests concern B, family reunification, Brexit and Liechtenstein drafts, which
+are no longer retained. Previously accepted self-employment, non-employment and
+address/onsite contact drafts are also absent.
+
+## Current GUI resume checkpoint
+
+This experiment is now paused at the user's request. The
+[pause checkpoint](2026-09-10-extraction-pause-checkpoint.md) records the active
+configuration, preserved artifacts, pending review recommendations and the
+architectural/evaluation discussion to resume before further live tuning.
+
+Under **Builds & review**, select **Concept extraction** created at **20:37 Zurich
+time**, job `891e31a32d0f4f09b16a6ab062eaae00`. Record the three accept-draft and
+four needs-changes recommendations above. The audit found zero reviews on this
+new result. All fourteen decisions on the earlier job remain unchanged; even an
+identical candidate ID does not transfer a review to a new result revision.
+
+The read-only audit in `.local/admin/zh-ownership-live-891e31a3-20260910/` contains
+`verify.py`, `audit.json`, `quotation-failures.json`, `packet-failures.json`,
+`retained-review.json` and `draft-review-notes.json`. It verifies the prepared
+prompt, unchanged inputs/configuration, exact quotations, original file hashes,
+and both results' review bindings. No further inference, review mutation,
+prompt change or validation relaxation was performed during this audit.
+
+Raw result SHA-256:
+`5b2caebd29df8dda2052b3829ed8d8110b1056e187423d5fc587d924e52f13c7`.
+Canonical GUI result SHA-256:
+`6238166d7e7b9e79991db45dcce372ab967025c196331f888f12be5710cb9851`.
