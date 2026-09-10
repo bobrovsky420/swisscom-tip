@@ -5,6 +5,7 @@ from pathlib import Path
 import unittest
 
 from swisstip.ingestion.concepts import CandidateConceptExtractor, ModelCompletion, NormalizedPage, NormalizedSection
+from swisstip.ingestion.source_structure import VERSION as NORMALIZATION_VERSION
 
 
 class SavedReviewProvider:
@@ -55,7 +56,7 @@ class ReviewValidationFeedbackTests(unittest.TestCase):
         self.original = copy.deepcopy(self.saved)
         self.page = NormalizedPage("saved-residence", "fixture", "Residence", "en", "saved-evidence",
             tuple(NormalizedSection(b["section_id"], "", b["text"], block_kind="paragraph", scope_id=b["scope_id"])
-                  for b in self.saved["evidence"].values()), normalization_version="swisstip.logical-blocks/v2",
+                  for b in self.saved["evidence"].values()), normalization_version=NORMALIZATION_VERSION,
             source_sha256=self.saved["provenance"]["source_sha256"])
 
     def run_saved(self, *, options=None, **provider_options):

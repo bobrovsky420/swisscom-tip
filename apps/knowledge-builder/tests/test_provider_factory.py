@@ -78,6 +78,7 @@ class ProviderFactoryTests(unittest.TestCase):
 
     def test_builds_configured_local_ollama_profile(self) -> None:
         config = self._load_profile("ollama_local")
+        config = replace(config, generation=replace(config.generation, max_output_tokens=3072))
 
         provider = create_semantic_model_provider(
             config,
@@ -92,7 +93,7 @@ class ProviderFactoryTests(unittest.TestCase):
         )
         self.assertEqual(provider.options.base_url, "http://127.0.0.1:11434")
         self.assertEqual(provider.options.num_ctx, 8192)
-        self.assertEqual(provider.options.num_predict, 4096)
+        self.assertEqual(provider.options.num_predict, 3072)
         self.assertEqual(provider.options.temperature, 0.0)
         self.assertEqual(provider.options.keep_alive, "5m")
 

@@ -1,0 +1,727 @@
+{
+  "provenance": {
+    "job_id": "ed64c431b32f42129035a6bde9ff1330",
+    "report_sha256": "e029162f5b4efb370c10231e897994bb9e6bfc7a5763798f640ff22d5ee29d5d",
+    "source_sha256": "b2da0b36fe559eda757496393c8e9db616cf7444fd796e14a8a8e030b458f1f4",
+    "input_hash": "5c025b220f51341c1a9b3969fc14dc52e8db710a0815a7c2b0d62d155f67aabb",
+    "normalization_version": "swisstip.logical-blocks/v3"
+  },
+  "evidence": {
+    "section-0037:0:291": {
+      "section_id": "section-0037",
+      "scope_id": "scope-0031",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur unselbst\u00e4ndigen Erwerbst\u00e4tigkeit > Grenzg\u00e4ngerbewilligung (G)\nEU/EFTA-Staatsangeh\u00f6rigen kann eine Grenzg\u00e4ngerbewilligung erteilt werden, sofern sie in einem EU/EFTA-Staat wohnen und von einem Arbeitgeber in der Schweiz angestellt sind."
+    },
+    "section-0038:0:210": {
+      "section_id": "section-0038",
+      "scope_id": "scope-0031",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur unselbst\u00e4ndigen Erwerbst\u00e4tigkeit > Grenzg\u00e4ngerbewilligung (G)\nMehr Informationen zur Grenzg\u00e4ngerbewilligung finden Sie auf der entsprechenden Themenseite."
+    },
+    "section-0039:0:129": {
+      "section_id": "section-0039",
+      "scope_id": "scope-0031",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur unselbst\u00e4ndigen Erwerbst\u00e4tigkeit > Grenzg\u00e4ngerbewilligung (G)\nGrenzg\u00e4nger"
+    },
+    "section-0043:0:198": {
+      "section_id": "section-0043",
+      "scope_id": "scope-0032",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit\nFolgende Punkte m\u00fcssen erf\u00fcllt sein, damit die Erwerbst\u00e4tigkeit als selbst\u00e4ndige Erwerbst\u00e4tigkeit gepr\u00fcft wird:"
+    },
+    "section-0044:0:500": {
+      "section_id": "section-0044",
+      "scope_id": "scope-0032",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit\nDie Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit (z.B. Auszug aus dem Handelsregister, Arbeitsvolumen, Bilanz/Erfolgsrechnung) muss nachgewiesen werden.\n\nAnerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die Sozialversicherungsanstalt des Kantons Z\u00fcrichs (SVA) muss vorliegen,\n\nEinkommens- und Verm\u00f6gensnachweise (z.B. Bankkontoauszug) m\u00fcssen vorliegen."
+    },
+    "section-0045:0:207": {
+      "section_id": "section-0045",
+      "scope_id": "scope-0032",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit\nDas Aufenthaltsgesuch f\u00fcr die Aufnahme einer selbst\u00e4ndigen Erwerbst\u00e4tigkeit m\u00fcssen Sie bei der Wohnortsgemeinde stellen."
+    },
+    "section-0046:0:164": {
+      "section_id": "section-0046",
+      "scope_id": "scope-0032",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit\nAufenthaltsbewilligung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit beantragen\n\nStarten"
+    },
+    "section-0048:0:172": {
+      "section_id": "section-0048",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nFolgende EU/EFTA-Staatsangeh\u00f6rige k\u00f6nnen eine Bewilligung zum erwerbslosen Aufenthalt beantragen:"
+    },
+    "section-0049:0:208": {
+      "section_id": "section-0049",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nSch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten;\n\nRentnerinnen und Rentner;\n\nStellensuchende und\n\n\u00fcbrige Nichterwerbst\u00e4tige."
+    },
+    "section-0050:0:285": {
+      "section_id": "section-0050",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nIn jedem Fall m\u00fcssen daf\u00fcr ausreichende finanzielle Mittel sowie eine ausreichende Kranken- und Unfallversicherung nachgewiesen werden k\u00f6nnen. Je nach Aufenthaltszweck kommen noch weitere Voraussetzungen hinzu."
+    },
+    "section-0051:0:212": {
+      "section_id": "section-0051",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nDie weiteren Zulassungsvoraussetzungen sowie detaillierte Informationen finden Sie in unserer Weisung zum Freiz\u00fcgigkeitsabkommen EU/EFTA."
+    },
+    "section-0052:0:158": {
+      "section_id": "section-0052",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nDownload\n\nFreiz\u00fcgigkeitsabkommen EU/EFTA-Staaten\nPDF | 33 Seiten | Deutsch | 352 KB"
+    },
+    "section-0053:0:139": {
+      "section_id": "section-0053",
+      "scope_id": "scope-0033",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Aufenthalt ohne Erwerbst\u00e4tigkeit\nAufenthaltsbewilligung ohne Erwerbst\u00e4tigkeit beantragen\n\nStarten"
+    },
+    "section-0055:0:274": {
+      "section_id": "section-0055",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nEU/EFTA-Staatsangeh\u00f6rige, die in der Schweiz schon eine ausl\u00e4nderrechtliche Bewilligung haben, haben Anspruch auf Nachzug ihrer Familienangeh\u00f6rigen. Als Familienangeh\u00f6rige gelten ungeachtet ihrer Staatsangeh\u00f6rigkeit:"
+    },
+    "section-0056:0:315": {
+      "section_id": "section-0056",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nEhegatten, Kinder sowie Verwandte in absteigender Linie (Enkel) denen Unterhalt gew\u00e4hrt wird und\n\neigene Verwandte oder Verwandte der Ehegatten (ungeachtet deren Staatsangeh\u00f6rigkeit) in aufsteigender Linie, die unterst\u00fctzt werden (z.B. Eltern, Grosseltern)."
+    },
+    "section-0057:0:157": {
+      "section_id": "section-0057",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nDamit der Familiennachzug bewilligt werden kann, m\u00fcssen folgende Unterlagen bzw. Angaben vorliegen:"
+    },
+    "section-0058:0:390": {
+      "section_id": "section-0058",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nEheschein und Geburtsschein bzw. eine von der zust\u00e4ndigen Beh\u00f6rde des Heimat- oder Herkunftsstaates ausgestellte Bescheinigung, mit welcher das Verwandtschaftsverh\u00e4ltnis best\u00e4tigt wird;\n\nSorgerechtsnachweis (Trennungs-, Scheidungsurteil) f\u00fcr die Kinder bei getrennten und geschiedenen Paaren bzw. Pflegekinderbewilligung bei Enkeln;"
+    },
+    "section-0059:0:463": {
+      "section_id": "section-0059",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nNichterwerbst\u00e4tige Personen m\u00fcssen gen\u00fcgend finanzielle Mittel nachweisen;\n\nbei Verwandten, denen Unterhalt gew\u00e4hrt wird, m\u00fcssen Nachweise \u00fcber die Dauer und der H\u00f6he der Unterst\u00fctzungsleistungen erbracht werden und falls eine gemeinsamer Wohnsitz im Ausland bestand, muss eine entsprechende Best\u00e4tigung aus dem Ausland beigebracht werden und\n\nKopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung."
+    },
+    "section-0060:0:162": {
+      "section_id": "section-0060",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nWeiterf\u00fchrende Information zum Familiennachzug finden Sie in unserer Weisung zum Freiz\u00fcgigkeitsabkommen."
+    },
+    "section-0061:0:141": {
+      "section_id": "section-0061",
+      "scope_id": "scope-0034",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Familiennachzug\nDownload\n\nFreiz\u00fcgigkeitsabkommen EU/EFTA-Staaten\nPDF | 33 Seiten | Deutsch | 352 KB"
+    },
+    "section-0063:0:416": {
+      "section_id": "section-0063",
+      "scope_id": "scope-0035",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Brexit\nDas Vereinigte K\u00f6nigreich (UK) ist am 31. Januar 2020 aus der Europ\u00e4ischen Union (EU) ausgetreten. In einer \u00dcbergangsphase bis zum 31. Dezember 2020 blieben die bilateralen Vertr\u00e4ge zwischen der Schweiz und der EU auf das UK anwendbar. Seit dem 1. Januar 2021 kommt das Freiz\u00fcgigkeitsabkommen (FZA) zwischen der Schwiez und der EU f\u00fcr das UK nicht mehr zur Anwendung."
+    },
+    "section-0064:0:546": {
+      "section_id": "section-0064",
+      "scope_id": "scope-0035",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Brexit\nDie Schweiz und das Vereinigte K\u00f6nigreich haben am 25. September 2019 ein Abkommen \u00fcber die Rechte der B\u00fcrgerinnen und B\u00fcrger infolge des Austritts des Vereinigten K\u00f6nigreichs aus der EU und dem Wegfall des Freiz\u00fcgigkeitsabkommens unterzeichnet. Was dies f\u00fcr die B\u00fcrgerinnen und B\u00fcrger des Vereinigten K\u00f6nigreichs, die bis am 31. Dezember 2020 von den Freiz\u00fcgigkeitsrechten Gebrauch gemacht haben, genau bedeutet, erfahren Sie in der Weisung zum Abkommen \u00fcber die erworbenen Rechte von UK-B\u00fcrgern."
+    },
+    "section-0065:0:142": {
+      "section_id": "section-0065",
+      "scope_id": "scope-0035",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Brexit\nDownload\n\nAbkommen \u00fcber die erworbenen Recht von UK-B\u00fcrgern\nPDF | 7 Seiten | Deutsch | 269 KB"
+    },
+    "section-0066:0:110": {
+      "section_id": "section-0066",
+      "scope_id": "scope-0035",
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Brexit\nInformationen des Staatssekretariats f\u00fcr Migration zum Brexit"
+    }
+  },
+  "raw_extraction": "{\n  \"concepts\": [\n    {\n      \"label\": \"Grenzg\u00e4ngerbewilligung (G)\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0037\",\n      \"claims\": [\n        {\n          \"claim_id\": \"grenzgaenger-bewilligung\",\n          \"kind\": \"permission\",\n          \"statement\": \"EU/EFTA-Staatsangeh\u00f6rigen kann eine Grenzg\u00e4ngerbewilligung erteilt werden, sofern sie in einem EU/EFTA-Staat wohnen und von einem Arbeitgeber in der Schweiz angestellt sind.\",\n          \"evidence_ids\": [\"section-0037:0:291\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"Grenzg\u00e4ngerbewilligung\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0037:0:291\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"wohnsitz-eu-efta\",\n              \"text\": \"in einem EU/EFTA-Staat wohnen\",\n              \"evidence_ids\": [\"section-0037:0:291\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"in einem EU/EFTA-Staat wohnen\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"arbeitgeber-schweiz\",\n              \"text\": \"von einem Arbeitgeber in der Schweiz angestellt sind\",\n              \"evidence_ids\": [\"section-0037:0:291\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"von einem Arbeitgeber in der Schweiz angestellt\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [\n            {\n              \"group_id\": \"voraussetzungen\",\n              \"operator\": \"AND\",\n              \"members\": [\"wohnsitz-eu-efta\", \"arbeitgeber-schweiz\"],\n              \"evidence_ids\": [\"section-0037:0:291\"]\n            }\n          ],\n          \"condition_root\": \"voraussetzungen\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [\n        \"Welche Voraussetzungen m\u00fcssen EU/EFTA-Staatsangeh\u00f6rige f\u00fcr eine Grenzg\u00e4ngerbewilligung erf\u00fcllen?\"\n      ],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0043\",\n      \"claims\": [\n        {\n          \"claim_id\": \"selbststaendig-voraussetzungen\",\n          \"kind\": \"requirement\",\n          \"statement\": \"Folgende Punkte m\u00fcssen erf\u00fcllt sein, damit die Erwerbst\u00e4tigkeit als selbst\u00e4ndige Erwerbst\u00e4tigkeit gepr\u00fcft wird: Nachweis der Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit, Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die SVA, Einkommens- und Verm\u00f6gensnachweise.\",\n          \"evidence_ids\": [\"section-0043:0:198\", \"section-0044:0:500\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"selbst\u00e4ndige Erwerbst\u00e4tigkeit\"\n          },\n          \"scope_evidence_ids\": [\"section-0043:0:198\", \"section-0044:0:500\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"unternehmensnachweis\",\n              \"text\": \"Die Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit (z.B. Auszug aus dem Handelsregister, Arbeitsvolumen, Bilanz/Erfolgsrechnung) muss nachgewiesen werden.\",\n              \"evidence_ids\": [\"section-0044:0:500\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Nachweis der Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"sva-anerkennung\",\n              \"text\": \"Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die Sozialversicherungsanstalt des Kantons Z\u00fcrichs (SVA) muss vorliegen\",\n              \"evidence_ids\": [\"section-0044:0:500\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die SVA\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"einkommensnachweise\",\n              \"text\": \"Einkommens- und Verm\u00f6gensnachweise (z.B. Bankkontoauszug) m\u00fcssen vorliegen.\",\n              \"evidence_ids\": [\"section-0044:0:500\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Einkommens- und Verm\u00f6gensnachweise\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [\n            {\n              \"group_id\": \"alle-voraussetzungen\",\n              \"operator\": \"AND\",\n              \"members\": [\"unternehmensnachweis\", \"sva-anerkennung\", \"einkommensnachweise\"],\n              \"evidence_ids\": [\"section-0044:0:500\"]\n            }\n          ],\n          \"condition_root\": \"alle-voraussetzungen\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"gesuch-wohnortsgemeinde\",\n          \"kind\": \"requirement\",\n          \"statement\": \"Das Aufenthaltsgesuch f\u00fcr die Aufnahme einer selbst\u00e4ndigen Erwerbst\u00e4tigkeit m\u00fcssen Sie bei der Wohnortsgemeinde stellen.\",\n          \"evidence_ids\": [\"section-0045:0:207\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"Wohnortsgemeinde\",\n            \"procedure_branch\": \"selbst\u00e4ndige Erwerbst\u00e4tigkeit\"\n          },\n          \"scope_evidence_ids\": [\"section-0045:0:207\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [\n        \"Welche Unterlagen m\u00fcssen f\u00fcr die Pr\u00fcfung einer selbst\u00e4ndigen Erwerbst\u00e4tigkeit eingereicht werden?\",\n        \"Wo muss das Aufenthaltsgesuch f\u00fcr eine selbst\u00e4ndige Erwerbst\u00e4tigkeit eingereicht werden?\"\n      ],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Aufenthalt ohne Erwerbst\u00e4tigkeit\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0048\",\n      \"claims\": [\n        {\n          \"claim_id\": \"bewilligung-erwerbslos\",\n          \"kind\": \"permission\",\n          \"statement\": \"Folgende EU/EFTA-Staatsangeh\u00f6rige k\u00f6nnen eine Bewilligung zum erwerbslosen Aufenthalt beantragen: Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten; Rentnerinnen und Rentner; Stellensuchende und \u00fcbrige Nichterwerbst\u00e4tige.\",\n          \"evidence_ids\": [\"section-0048:0:172\", \"section-0049:0:208\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"Bewilligung zum erwerbslosen Aufenthalt\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"Aufenthalt ohne Erwerbst\u00e4tigkeit\"\n          },\n          \"scope_evidence_ids\": [\"section-0048:0:172\", \"section-0049:0:208\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"kategorie-schueler\",\n              \"text\": \"Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten\",\n              \"evidence_ids\": [\"section-0049:0:208\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"kategorie-rentner\",\n              \"text\": \"Rentnerinnen und Rentner\",\n              \"evidence_ids\": [\"section-0049:0:208\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Rentnerinnen und Rentner\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"kategorie-stellensuchende\",\n              \"text\": \"Stellensuchende\",\n              \"evidence_ids\": [\"section-0049:0:208\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Stellensuchende\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"kategorie-uebrige\",\n              \"text\": \"\u00fcbrige Nichterwerbst\u00e4tige\",\n              \"evidence_ids\": [\"section-0049:0:208\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"\u00fcbrige Nichterwerbst\u00e4tige\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [\n            {\n              \"group_id\": \"kategorien\",\n              \"operator\": \"OR\",\n              \"members\": [\"kategorie-schueler\", \"kategorie-rentner\", \"kategorie-stellensuchende\", \"kategorie-uebrige\"],\n              \"evidence_ids\": [\"section-0049:0:208\"]\n            }\n          ],\n          \"condition_root\": \"kategorien\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"finanzielle-mittel\",\n          \"kind\": \"requirement\",\n          \"statement\": \"In jedem Fall m\u00fcssen daf\u00fcr ausreichende finanzielle Mittel sowie eine ausreichende Kranken- und Unfallversicherung nachgewiesen werden k\u00f6nnen.\",\n          \"evidence_ids\": [\"section-0050:0:285\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"Bewilligung zum erwerbslosen Aufenthalt\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"Aufenthalt ohne Erwerbst\u00e4tigkeit\"\n          },\n          \"scope_evidence_ids\": [\"section-0050:0:285\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"finanzielle-mittel-nachweis\",\n              \"text\": \"ausreichende finanzielle Mittel\",\n              \"evidence_ids\": [\"section-0050:0:285\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"ausreichende finanzielle Mittel\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"versicherung-nachweis\",\n              \"text\": \"ausreichende Kranken- und Unfallversicherung\",\n              \"evidence_ids\": [\"section-0050:0:285\"],\n              \"subject\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"ausreichende Kranken- und Unfallversicherung\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [\n            {\n              \"group_id\": \"nachweise\",\n              \"operator\": \"AND\",\n              \"members\": [\"finanzielle-mittel-nachweis\", \"versicherung-nachweis\"],\n              \"evidence_ids\": [\"section-0050:0:285\"]\n            }\n          ],\n          \"condition_root\": \"nachweise\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [\n        \"Welche Personengruppen k\u00f6nnen eine Bewilligung zum erwerbslosen Aufenthalt beantragen?\",\n        \"Welche Nachweise sind f\u00fcr den erwerbslosen Aufenthalt erforderlich?\"\n      ],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Familiennachzug\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0055\",\n      \"claims\": [\n        {\n          \"claim_id\": \"anspruch-familiennachzug\",\n          \"kind\": \"permission\",\n          \"statement\": \"EU/EFTA-Staatsangeh\u00f6rige, die in der Schweiz schon eine ausl\u00e4nderrechtliche Bewilligung haben, haben Anspruch auf Nachzug ihrer Familienangeh\u00f6rigen.\",\n          \"evidence_ids\": [\"section-0055:0:274\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"ausl\u00e4nderrechtliche Bewilligung\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"Familienangeh\u00f6rige\",\n            \"procedure_branch\": \"Familiennachzug\"\n          },\n          \"scope_evidence_ids\": [\"section-0055:0:274\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"familienangehoerige-definition\",\n          \"kind\": \"fact\",\n          \"statement\": \"Als Familienangeh\u00f6rige gelten ungeachtet ihrer Staatsangeh\u00f6rigkeit: Ehegatten, Kinder sowie Verwandte in absteigender Linie (Enkel) denen Unterhalt gew\u00e4hrt wird und eigene Verwandte oder Verwandte der Ehegatten (ungeachtet deren Staatsangeh\u00f6rigkeit) in aufsteigender Linie, die unterst\u00fctzt werden (z.B. Eltern, Grosseltern).\",\n          \"evidence_ids\": [\"section-0055:0:274\", \"section-0056:0:315\"],\n          \"scope\": {\n            \"population\": \"Familienangeh\u00f6rige von EU/EFTA-Staatsangeh\u00f6rigen\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"Familiennachzug\"\n          },\n          \"scope_evidence_ids\": [\"section-0055:0:274\", \"section-0056:0:315\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"unterlagen-familiennachzug\",\n          \"kind\": \"requirement\",\n          \"statement\": \"Damit der Familiennachzug bewilligt werden kann, m\u00fcssen folgende Unterlagen bzw. Angaben vorliegen: Eheschein und Geburtsschein bzw. Bescheinigung \u00fcber das Verwandtschaftsverh\u00e4ltnis; Sorgerechtsnachweis f\u00fcr Kinder bei getrennten und geschiedenen Paaren bzw. Pflegekinderbewilligung bei Enkeln; Nichterwerbst\u00e4tige m\u00fcssen gen\u00fcgend finanzielle Mittel nachweisen; bei Verwandten, denen Unterhalt gew\u00e4hrt wird, Nachweise \u00fcber Dauer und H\u00f6he der Unterst\u00fctzungsleistungen und ggf. Best\u00e4tigung \u00fcber gemeinsamen Wohnsitz im Ausland; Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung.\",\n          \"evidence_ids\": [\"section-0057:0:157\", \"section-0058:0:390\", \"section-0059:0:463\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"ausl\u00e4nderrechtliche Bewilligung\",\n            \"actor\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"recipient\": \"Familienangeh\u00f6rige\",\n            \"procedure_branch\": \"Familiennachzug\"\n          },\n          \"scope_evidence_ids\": [\"section-0057:0:157\", \"section-0058:0:390\", \"section-0059:0:463\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"ehe-geburtsnachweis\",\n              \"text\": \"Eheschein und Geburtsschein bzw. eine von der zust\u00e4ndigen Beh\u00f6rde des Heimat- oder Herkunftsstaates ausgestellte Bescheinigung, mit welcher das Verwandtschaftsverh\u00e4ltnis best\u00e4tigt wird\",\n              \"evidence_ids\": [\"section-0058:0:390\"],\n              \"subject\": \"Familienangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Eheschein und Geburtsschein bzw. Bescheinigung \u00fcber das Verwandtschaftsverh\u00e4ltnis\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"sorgerechtsnachweis\",\n              \"text\": \"Sorgerechtsnachweis (Trennungs-, Scheidungsurteil) f\u00fcr die Kinder bei getrennten und geschiedenen Paaren bzw. Pflegekinderbewilligung bei Enkeln\",\n              \"evidence_ids\": [\"section-0058:0:390\"],\n              \"subject\": \"Familienangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Sorgerechtsnachweis bzw. Pflegekinderbewilligung\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"finanzielle-mittel-nichterwerbstaetige\",\n              \"text\": \"Nichterwerbst\u00e4tige Personen m\u00fcssen gen\u00fcgend finanzielle Mittel nachweisen\",\n              \"evidence_ids\": [\"section-0059:0:463\"],\n              \"subject\": \"Nichterwerbst\u00e4tige Personen\",\n              \"operator\": \"stated\",\n              \"value\": \"gen\u00fcgend finanzielle Mittel\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"unterhaltsnachweise\",\n              \"text\": \"bei Verwandten, denen Unterhalt gew\u00e4hrt wird, m\u00fcssen Nachweise \u00fcber die Dauer und der H\u00f6he der Unterst\u00fctzungsleistungen erbracht werden\",\n              \"evidence_ids\": [\"section-0059:0:463\"],\n              \"subject\": \"Verwandte, denen Unterhalt gew\u00e4hrt wird\",\n              \"operator\": \"stated\",\n              \"value\": \"Nachweise \u00fcber Dauer und H\u00f6he der Unterst\u00fctzungsleistungen\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"wohnsitzbestaetigung\",\n              \"text\": \"falls eine gemeinsamer Wohnsitz im Ausland bestand, muss eine entsprechende Best\u00e4tigung aus dem Ausland beigebracht werden\",\n              \"evidence_ids\": [\"section-0059:0:463\"],\n              \"subject\": \"Familienangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Best\u00e4tigung \u00fcber gemeinsamen Wohnsitz im Ausland\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            },\n            {\n              \"condition_id\": \"mietvertrag\",\n              \"text\": \"Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung\",\n              \"evidence_ids\": [\"section-0059:0:463\"],\n              \"subject\": \"Familienangeh\u00f6rige\",\n              \"operator\": \"stated\",\n              \"value\": \"Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung\",\n              \"unit\": \"unspecified\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [\n            {\n              \"group_id\": \"alle-unterlagen\",\n              \"operator\": \"AND\",\n              \"members\": [\"ehe-geburtsnachweis\", \"sorgerechtsnachweis\", \"finanzielle-mittel-nichterwerbstaetige\", \"unterhaltsnachweise\", \"wohnsitzbestaetigung\", \"mietvertrag\"],\n              \"evidence_ids\": [\"section-0058:0:390\", \"section-0059:0:463\"]\n            }\n          ],\n          \"condition_root\": \"alle-unterlagen\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [\n        \"Wer gilt als Familienangeh\u00f6riger im Sinne des Familiennachzugs?\",\n        \"Welche Unterlagen sind f\u00fcr den Familiennachzug erforderlich?\"\n      ],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Brexit\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0063\",\n      \"claims\": [\n        {\n          \"claim_id\": \"fza-nicht-anwendbar\",\n          \"kind\": \"fact\",\n          \"statement\": \"Seit dem 1. Januar 2021 kommt das Freiz\u00fcgigkeitsabkommen (FZA) zwischen der Schweiz und der EU f\u00fcr das UK nicht mehr zur Anwendung.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"Vereinigtes K\u00f6nigreich\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"Brexit\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"abkommen-unterzeichnet\",\n          \"kind\": \"fact\",\n          \"statement\": \"Die Schweiz und das Vereinigte K\u00f6nigreich haben am 25. September 2019 ein Abkommen \u00fcber die Rechte der B\u00fcrgerinnen und B\u00fcrger infolge des Austritts des Vereinigten K\u00f6nigreichs aus der EU und dem Wegfall des Freiz\u00fcgigkeitsabkommens unterzeichnet.\",\n          \"evidence_ids\": [\"section-0064:0:546\"],\n          \"scope\": {\n            \"population\": \"B\u00fcrgerinnen und B\u00fcrger des Vereinigten K\u00f6nigreichs\",\n            \"jurisdiction\": \"Schweiz\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Schweiz und Vereinigtes K\u00f6nigreich\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"Brexit\"\n          },\n          \"scope_evidence_ids\": [\"section-0064:0:546\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    }\n  ],\n  \"saturated\": false\n}",
+  "failed_review": {
+    "error": "concept 2, claim finanzielle-mittel: unconditional source assertion cannot have supported added conditions",
+    "failure_stage": "review_validation",
+    "proposals": [
+      {
+        "claims": [
+          {
+            "claim_id": "grenzgaenger-bewilligung",
+            "condition_groups": [
+              {
+                "evidence_ids": [
+                  "section-0037:0:291"
+                ],
+                "group_id": "voraussetzungen",
+                "members": [
+                  "wohnsitz-eu-efta",
+                  "arbeitgeber-schweiz"
+                ],
+                "operator": "AND"
+              }
+            ],
+            "condition_root": "voraussetzungen",
+            "conditions": [
+              {
+                "condition_id": "wohnsitz-eu-efta",
+                "evidence_ids": [
+                  "section-0037:0:291"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "in einem EU/EFTA-Staat wohnen",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "in einem EU/EFTA-Staat wohnen"
+              },
+              {
+                "condition_id": "arbeitgeber-schweiz",
+                "evidence_ids": [
+                  "section-0037:0:291"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "von einem Arbeitgeber in der Schweiz angestellt sind",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "von einem Arbeitgeber in der Schweiz angestellt"
+              }
+            ],
+            "evidence_ids": [
+              "section-0037:0:291"
+            ],
+            "exceptions": [],
+            "kind": "permission",
+            "limitations": [],
+            "scope": {
+              "actor": "unspecified",
+              "jurisdiction": "Schweiz",
+              "permit_status": "Grenzg\u00e4ngerbewilligung",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige",
+              "procedure_branch": "unspecified",
+              "recipient": "EU/EFTA-Staatsangeh\u00f6rige"
+            },
+            "scope_evidence_ids": [
+              "section-0037:0:291"
+            ],
+            "statement": "EU/EFTA-Staatsangeh\u00f6rigen kann eine Grenzg\u00e4ngerbewilligung erteilt werden, sofern sie in einem EU/EFTA-Staat wohnen und von einem Arbeitgeber in der Schweiz angestellt sind."
+          }
+        ],
+        "concept_type": "RULE",
+        "label": "Grenzg\u00e4ngerbewilligung (G)",
+        "limitations": [],
+        "primary_section_id": "section-0037",
+        "questions": [
+          "Welche Voraussetzungen m\u00fcssen EU/EFTA-Staatsangeh\u00f6rige f\u00fcr eine Grenzg\u00e4ngerbewilligung erf\u00fcllen?"
+        ]
+      },
+      {
+        "claims": [
+          {
+            "claim_id": "selbststaendig-voraussetzungen",
+            "condition_groups": [
+              {
+                "evidence_ids": [
+                  "section-0044:0:500"
+                ],
+                "group_id": "alle-voraussetzungen",
+                "members": [
+                  "unternehmensnachweis",
+                  "sva-anerkennung",
+                  "einkommensnachweise"
+                ],
+                "operator": "AND"
+              }
+            ],
+            "condition_root": "alle-voraussetzungen",
+            "conditions": [
+              {
+                "condition_id": "unternehmensnachweis",
+                "evidence_ids": [
+                  "section-0044:0:500"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Die Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit (z.B. Auszug aus dem Handelsregister, Arbeitsvolumen, Bilanz/Erfolgsrechnung) muss nachgewiesen werden.",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Nachweis der Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit"
+              },
+              {
+                "condition_id": "sva-anerkennung",
+                "evidence_ids": [
+                  "section-0044:0:500"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die Sozialversicherungsanstalt des Kantons Z\u00fcrichs (SVA) muss vorliegen",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die SVA"
+              },
+              {
+                "condition_id": "einkommensnachweise",
+                "evidence_ids": [
+                  "section-0044:0:500"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Einkommens- und Verm\u00f6gensnachweise (z.B. Bankkontoauszug) m\u00fcssen vorliegen.",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Einkommens- und Verm\u00f6gensnachweise"
+              }
+            ],
+            "evidence_ids": [
+              "section-0043:0:198",
+              "section-0044:0:500"
+            ],
+            "exceptions": [],
+            "kind": "requirement",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "unspecified",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige",
+              "procedure_branch": "selbst\u00e4ndige Erwerbst\u00e4tigkeit",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0043:0:198",
+              "section-0044:0:500"
+            ],
+            "statement": "Folgende Punkte m\u00fcssen erf\u00fcllt sein, damit die Erwerbst\u00e4tigkeit als selbst\u00e4ndige Erwerbst\u00e4tigkeit gepr\u00fcft wird: Nachweis der Errichtung eines Unternehmens oder einer Betriebsst\u00e4tte in der Schweiz mit aktiver Gesch\u00e4ftst\u00e4tigkeit, Anerkennung der selbst\u00e4ndigen Erwerbst\u00e4tigkeit durch die SVA, Einkommens- und Verm\u00f6gensnachweise."
+          },
+          {
+            "claim_id": "gesuch-wohnortsgemeinde",
+            "condition_groups": [],
+            "condition_root": "",
+            "conditions": [],
+            "evidence_ids": [
+              "section-0045:0:207"
+            ],
+            "exceptions": [],
+            "kind": "requirement",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "unspecified",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige",
+              "procedure_branch": "selbst\u00e4ndige Erwerbst\u00e4tigkeit",
+              "recipient": "Wohnortsgemeinde"
+            },
+            "scope_evidence_ids": [
+              "section-0045:0:207"
+            ],
+            "statement": "Das Aufenthaltsgesuch f\u00fcr die Aufnahme einer selbst\u00e4ndigen Erwerbst\u00e4tigkeit m\u00fcssen Sie bei der Wohnortsgemeinde stellen."
+          }
+        ],
+        "concept_type": "RULE",
+        "label": "Zulassung zur selbst\u00e4ndigen Erwerbst\u00e4tigkeit",
+        "limitations": [],
+        "primary_section_id": "section-0043",
+        "questions": [
+          "Welche Unterlagen m\u00fcssen f\u00fcr die Pr\u00fcfung einer selbst\u00e4ndigen Erwerbst\u00e4tigkeit eingereicht werden?",
+          "Wo muss das Aufenthaltsgesuch f\u00fcr eine selbst\u00e4ndige Erwerbst\u00e4tigkeit eingereicht werden?"
+        ]
+      },
+      {
+        "claims": [
+          {
+            "claim_id": "bewilligung-erwerbslos",
+            "condition_groups": [
+              {
+                "evidence_ids": [
+                  "section-0049:0:208"
+                ],
+                "group_id": "kategorien",
+                "members": [
+                  "kategorie-schueler",
+                  "kategorie-rentner",
+                  "kategorie-stellensuchende",
+                  "kategorie-uebrige"
+                ],
+                "operator": "OR"
+              }
+            ],
+            "condition_root": "kategorien",
+            "conditions": [
+              {
+                "condition_id": "kategorie-schueler",
+                "evidence_ids": [
+                  "section-0049:0:208"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten"
+              },
+              {
+                "condition_id": "kategorie-rentner",
+                "evidence_ids": [
+                  "section-0049:0:208"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Rentnerinnen und Rentner",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Rentnerinnen und Rentner"
+              },
+              {
+                "condition_id": "kategorie-stellensuchende",
+                "evidence_ids": [
+                  "section-0049:0:208"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "Stellensuchende",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Stellensuchende"
+              },
+              {
+                "condition_id": "kategorie-uebrige",
+                "evidence_ids": [
+                  "section-0049:0:208"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "\u00fcbrige Nichterwerbst\u00e4tige",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "\u00fcbrige Nichterwerbst\u00e4tige"
+              }
+            ],
+            "evidence_ids": [
+              "section-0048:0:172",
+              "section-0049:0:208"
+            ],
+            "exceptions": [],
+            "kind": "permission",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "Bewilligung zum erwerbslosen Aufenthalt",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige",
+              "procedure_branch": "Aufenthalt ohne Erwerbst\u00e4tigkeit",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0048:0:172",
+              "section-0049:0:208"
+            ],
+            "statement": "Folgende EU/EFTA-Staatsangeh\u00f6rige k\u00f6nnen eine Bewilligung zum erwerbslosen Aufenthalt beantragen: Sch\u00fclerinnen und Sch\u00fcler bzw. Studentinnen und Studenten; Rentnerinnen und Rentner; Stellensuchende und \u00fcbrige Nichterwerbst\u00e4tige."
+          },
+          {
+            "claim_id": "finanzielle-mittel",
+            "condition_groups": [
+              {
+                "evidence_ids": [
+                  "section-0050:0:285"
+                ],
+                "group_id": "nachweise",
+                "members": [
+                  "finanzielle-mittel-nachweis",
+                  "versicherung-nachweis"
+                ],
+                "operator": "AND"
+              }
+            ],
+            "condition_root": "nachweise",
+            "conditions": [
+              {
+                "condition_id": "finanzielle-mittel-nachweis",
+                "evidence_ids": [
+                  "section-0050:0:285"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "ausreichende finanzielle Mittel",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "ausreichende finanzielle Mittel"
+              },
+              {
+                "condition_id": "versicherung-nachweis",
+                "evidence_ids": [
+                  "section-0050:0:285"
+                ],
+                "operator": "stated",
+                "subject": "EU/EFTA-Staatsangeh\u00f6rige",
+                "text": "ausreichende Kranken- und Unfallversicherung",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "ausreichende Kranken- und Unfallversicherung"
+              }
+            ],
+            "evidence_ids": [
+              "section-0050:0:285"
+            ],
+            "exceptions": [],
+            "kind": "requirement",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "Bewilligung zum erwerbslosen Aufenthalt",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige",
+              "procedure_branch": "Aufenthalt ohne Erwerbst\u00e4tigkeit",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0050:0:285"
+            ],
+            "statement": "In jedem Fall m\u00fcssen daf\u00fcr ausreichende finanzielle Mittel sowie eine ausreichende Kranken- und Unfallversicherung nachgewiesen werden k\u00f6nnen."
+          }
+        ],
+        "concept_type": "RULE",
+        "label": "Aufenthalt ohne Erwerbst\u00e4tigkeit",
+        "limitations": [],
+        "primary_section_id": "section-0048",
+        "questions": [
+          "Welche Personengruppen k\u00f6nnen eine Bewilligung zum erwerbslosen Aufenthalt beantragen?",
+          "Welche Nachweise sind f\u00fcr den erwerbslosen Aufenthalt erforderlich?"
+        ]
+      },
+      {
+        "claims": [
+          {
+            "claim_id": "anspruch-familiennachzug",
+            "condition_groups": [],
+            "condition_root": "",
+            "conditions": [],
+            "evidence_ids": [
+              "section-0055:0:274"
+            ],
+            "exceptions": [],
+            "kind": "permission",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "ausl\u00e4nderrechtliche Bewilligung",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz",
+              "procedure_branch": "Familiennachzug",
+              "recipient": "Familienangeh\u00f6rige"
+            },
+            "scope_evidence_ids": [
+              "section-0055:0:274"
+            ],
+            "statement": "EU/EFTA-Staatsangeh\u00f6rige, die in der Schweiz schon eine ausl\u00e4nderrechtliche Bewilligung haben, haben Anspruch auf Nachzug ihrer Familienangeh\u00f6rigen."
+          },
+          {
+            "claim_id": "familienangehoerige-definition",
+            "condition_groups": [],
+            "condition_root": "",
+            "conditions": [],
+            "evidence_ids": [
+              "section-0055:0:274",
+              "section-0056:0:315"
+            ],
+            "exceptions": [],
+            "kind": "fact",
+            "limitations": [],
+            "scope": {
+              "actor": "unspecified",
+              "jurisdiction": "Schweiz",
+              "permit_status": "unspecified",
+              "population": "Familienangeh\u00f6rige von EU/EFTA-Staatsangeh\u00f6rigen",
+              "procedure_branch": "Familiennachzug",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0055:0:274",
+              "section-0056:0:315"
+            ],
+            "statement": "Als Familienangeh\u00f6rige gelten ungeachtet ihrer Staatsangeh\u00f6rigkeit: Ehegatten, Kinder sowie Verwandte in absteigender Linie (Enkel) denen Unterhalt gew\u00e4hrt wird und eigene Verwandte oder Verwandte der Ehegatten (ungeachtet deren Staatsangeh\u00f6rigkeit) in aufsteigender Linie, die unterst\u00fctzt werden (z.B. Eltern, Grosseltern)."
+          },
+          {
+            "claim_id": "unterlagen-familiennachzug",
+            "condition_groups": [
+              {
+                "evidence_ids": [
+                  "section-0058:0:390",
+                  "section-0059:0:463"
+                ],
+                "group_id": "alle-unterlagen",
+                "members": [
+                  "ehe-geburtsnachweis",
+                  "sorgerechtsnachweis",
+                  "finanzielle-mittel-nichterwerbstaetige",
+                  "unterhaltsnachweise",
+                  "wohnsitzbestaetigung",
+                  "mietvertrag"
+                ],
+                "operator": "AND"
+              }
+            ],
+            "condition_root": "alle-unterlagen",
+            "conditions": [
+              {
+                "condition_id": "ehe-geburtsnachweis",
+                "evidence_ids": [
+                  "section-0058:0:390"
+                ],
+                "operator": "stated",
+                "subject": "Familienangeh\u00f6rige",
+                "text": "Eheschein und Geburtsschein bzw. eine von der zust\u00e4ndigen Beh\u00f6rde des Heimat- oder Herkunftsstaates ausgestellte Bescheinigung, mit welcher das Verwandtschaftsverh\u00e4ltnis best\u00e4tigt wird",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Eheschein und Geburtsschein bzw. Bescheinigung \u00fcber das Verwandtschaftsverh\u00e4ltnis"
+              },
+              {
+                "condition_id": "sorgerechtsnachweis",
+                "evidence_ids": [
+                  "section-0058:0:390"
+                ],
+                "operator": "stated",
+                "subject": "Familienangeh\u00f6rige",
+                "text": "Sorgerechtsnachweis (Trennungs-, Scheidungsurteil) f\u00fcr die Kinder bei getrennten und geschiedenen Paaren bzw. Pflegekinderbewilligung bei Enkeln",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Sorgerechtsnachweis bzw. Pflegekinderbewilligung"
+              },
+              {
+                "condition_id": "finanzielle-mittel-nichterwerbstaetige",
+                "evidence_ids": [
+                  "section-0059:0:463"
+                ],
+                "operator": "stated",
+                "subject": "Nichterwerbst\u00e4tige Personen",
+                "text": "Nichterwerbst\u00e4tige Personen m\u00fcssen gen\u00fcgend finanzielle Mittel nachweisen",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "gen\u00fcgend finanzielle Mittel"
+              },
+              {
+                "condition_id": "unterhaltsnachweise",
+                "evidence_ids": [
+                  "section-0059:0:463"
+                ],
+                "operator": "stated",
+                "subject": "Verwandte, denen Unterhalt gew\u00e4hrt wird",
+                "text": "bei Verwandten, denen Unterhalt gew\u00e4hrt wird, m\u00fcssen Nachweise \u00fcber die Dauer und der H\u00f6he der Unterst\u00fctzungsleistungen erbracht werden",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Nachweise \u00fcber Dauer und H\u00f6he der Unterst\u00fctzungsleistungen"
+              },
+              {
+                "condition_id": "wohnsitzbestaetigung",
+                "evidence_ids": [
+                  "section-0059:0:463"
+                ],
+                "operator": "stated",
+                "subject": "Familienangeh\u00f6rige",
+                "text": "falls eine gemeinsamer Wohnsitz im Ausland bestand, muss eine entsprechende Best\u00e4tigung aus dem Ausland beigebracht werden",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Best\u00e4tigung \u00fcber gemeinsamen Wohnsitz im Ausland"
+              },
+              {
+                "condition_id": "mietvertrag",
+                "evidence_ids": [
+                  "section-0059:0:463"
+                ],
+                "operator": "stated",
+                "subject": "Familienangeh\u00f6rige",
+                "text": "Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung",
+                "time_window": "unspecified",
+                "unit": "unspecified",
+                "value": "Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung"
+              }
+            ],
+            "evidence_ids": [
+              "section-0057:0:157",
+              "section-0058:0:390",
+              "section-0059:0:463"
+            ],
+            "exceptions": [],
+            "kind": "requirement",
+            "limitations": [],
+            "scope": {
+              "actor": "EU/EFTA-Staatsangeh\u00f6rige",
+              "jurisdiction": "Schweiz",
+              "permit_status": "ausl\u00e4nderrechtliche Bewilligung",
+              "population": "EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz",
+              "procedure_branch": "Familiennachzug",
+              "recipient": "Familienangeh\u00f6rige"
+            },
+            "scope_evidence_ids": [
+              "section-0057:0:157",
+              "section-0058:0:390",
+              "section-0059:0:463"
+            ],
+            "statement": "Damit der Familiennachzug bewilligt werden kann, m\u00fcssen folgende Unterlagen bzw. Angaben vorliegen: Eheschein und Geburtsschein bzw. Bescheinigung \u00fcber das Verwandtschaftsverh\u00e4ltnis; Sorgerechtsnachweis f\u00fcr Kinder bei getrennten und geschiedenen Paaren bzw. Pflegekinderbewilligung bei Enkeln; Nichterwerbst\u00e4tige m\u00fcssen gen\u00fcgend finanzielle Mittel nachweisen; bei Verwandten, denen Unterhalt gew\u00e4hrt wird, Nachweise \u00fcber Dauer und H\u00f6he der Unterst\u00fctzungsleistungen und ggf. Best\u00e4tigung \u00fcber gemeinsamen Wohnsitz im Ausland; Kopie des Wohnungsmietvertrages f\u00fcr eine angemessene Wohnung."
+          }
+        ],
+        "concept_type": "RULE",
+        "label": "Familiennachzug",
+        "limitations": [],
+        "primary_section_id": "section-0055",
+        "questions": [
+          "Wer gilt als Familienangeh\u00f6riger im Sinne des Familiennachzugs?",
+          "Welche Unterlagen sind f\u00fcr den Familiennachzug erforderlich?"
+        ]
+      },
+      {
+        "claims": [
+          {
+            "claim_id": "fza-nicht-anwendbar",
+            "condition_groups": [],
+            "condition_root": "",
+            "conditions": [],
+            "evidence_ids": [
+              "section-0063:0:416"
+            ],
+            "exceptions": [],
+            "kind": "fact",
+            "limitations": [],
+            "scope": {
+              "actor": "unspecified",
+              "jurisdiction": "Schweiz",
+              "permit_status": "unspecified",
+              "population": "Vereinigtes K\u00f6nigreich",
+              "procedure_branch": "Brexit",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0063:0:416"
+            ],
+            "statement": "Seit dem 1. Januar 2021 kommt das Freiz\u00fcgigkeitsabkommen (FZA) zwischen der Schweiz und der EU f\u00fcr das UK nicht mehr zur Anwendung."
+          },
+          {
+            "claim_id": "abkommen-unterzeichnet",
+            "condition_groups": [],
+            "condition_root": "",
+            "conditions": [],
+            "evidence_ids": [
+              "section-0064:0:546"
+            ],
+            "exceptions": [],
+            "kind": "fact",
+            "limitations": [],
+            "scope": {
+              "actor": "Schweiz und Vereinigtes K\u00f6nigreich",
+              "jurisdiction": "Schweiz",
+              "permit_status": "unspecified",
+              "population": "B\u00fcrgerinnen und B\u00fcrger des Vereinigten K\u00f6nigreichs",
+              "procedure_branch": "Brexit",
+              "recipient": "unspecified"
+            },
+            "scope_evidence_ids": [
+              "section-0064:0:546"
+            ],
+            "statement": "Die Schweiz und das Vereinigte K\u00f6nigreich haben am 25. September 2019 ein Abkommen \u00fcber die Rechte der B\u00fcrgerinnen und B\u00fcrger infolge des Austritts des Vereinigten K\u00f6nigreichs aus der EU und dem Wegfall des Freiz\u00fcgigkeitsabkommens unterzeichnet."
+          }
+        ],
+        "concept_type": "RULE",
+        "label": "Brexit",
+        "limitations": [],
+        "primary_section_id": "section-0063",
+        "questions": []
+      }
+    ],
+    "raw_completion": "{\n  \"schema_version\": \"swisstip.structured-review/v2\",\n  \"concept_reviews\": [\n    {\n      \"concept_index\": 0,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"grenzgaenger-bewilligung\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source text: EU/EFTA nationals may be granted a cross-border commuter permit if they reside in an EU/EFTA state and are employed by a Swiss employer.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source rule is conditional on residence in an EU/EFTA state and employment by a Swiss employer. The extracted conditions and AND group correctly represent these prerequisites.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige' is explicitly stated in the source.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied by the context of Swiss permits and the mention of a Swiss employer.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status 'Grenzg\u00e4ngerbewilligung' is explicitly named in the source.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor is unspecified in the claim, which is appropriate because the source does not specify who grants the permit.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient 'EU/EFTA-Staatsangeh\u00f6rige' is supported as the permit is granted to them.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch is unspecified, which is appropriate because the source does not specify a particular procedure branch.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept scope correctly identifies the population, jurisdiction, permit status, and recipient as stated in the source. Actor and procedure branch are unspecified, which is appropriate.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept fully captures the rule from the source block, including both conditions and the AND relationship. No additional details are present in the source.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks for the prerequisites for the cross-border commuter permit, which are fully answered by the concept's conditions.\"\n        }\n      ]\n    },\n    {\n      \"concept_index\": 1,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"selbststaendig-voraussetzungen\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement accurately summarizes the three requirements from the source: proof of business establishment, SVA recognition, and income/asset documentation.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states that these points must be fulfilled for the activity to be examined as self-employment. The extracted conditions and AND group correctly represent these prerequisites.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige' is implied by the page context and the heading.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is supported by the mention of Switzerland in the business establishment requirement.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified, which is appropriate because the source does not specify a particular permit status for this requirement.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they must fulfill the requirements.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate because the source does not specify who receives the proof.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'selbst\u00e4ndige Erwerbst\u00e4tigkeit' is explicitly stated in the source.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"gesuch-wohnortsgemeinde\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source: the application for self-employment must be submitted to the municipality of residence.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states the requirement without conditions. The extracted empty conditions correctly represent this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige' is implied by the page context.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied by the context of Swiss municipalities.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified, which is appropriate because the source does not specify a permit status.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they must submit the application.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient 'Wohnortsgemeinde' is explicitly stated as the place where the application must be submitted.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'selbst\u00e4ndige Erwerbst\u00e4tigkeit' is explicitly stated.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept scope correctly identifies the population, jurisdiction, actor, recipient, and procedure branch for both claims. Unspecified fields are appropriate where the source does not provide information.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept captures all substantive statements from the source blocks: the three requirements and the submission location. No additional details are present.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks for the documents required for self-employment examination, which are fully listed in the concept's conditions.\"\n        },\n        {\n          \"question_index\": 1,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks where to submit the application, which is answered by the second claim.\"\n        }\n      ]\n    },\n    {\n      \"concept_index\": 2,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"bewilligung-erwerbslos\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement accurately lists the categories of EU/EFTA nationals who can apply for a residence permit without employment, matching the source.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states that the following categories can apply, implying a condition of belonging to one of these categories. The extracted OR group correctly represents this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige' is explicitly stated.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied by the context of Swiss residence permits.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status 'Bewilligung zum erwerbslosen Aufenthalt' is explicitly stated.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they are the ones applying.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate because the source does not specify who receives the application.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Aufenthalt ohne Erwerbst\u00e4tigkeit' is explicitly stated.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"finanzielle-mittel\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source: sufficient financial means and health/accident insurance must be proven in every case.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states 'In jedem Fall' (in every case), indicating an unconditional requirement. The extracted conditions represent the required proofs, but the condition logic should be empty for an unconditional requirement. However, the extracted conditions are not prerequisites but the content of the requirement itself. This is a misrepresentation: the conditions should be empty, and the requirement should be stated without conditions. Therefore, the condition logic is unsupported.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige' is implied by the context.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status 'Bewilligung zum erwerbslosen Aufenthalt' is implied by the context.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they must provide the proofs.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Aufenthalt ohne Erwerbst\u00e4tigkeit' is explicitly stated.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept scope correctly identifies the population, jurisdiction, permit status, actor, and procedure branch. Unspecified fields are appropriate.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept captures all substantive statements from the source blocks: the categories and the financial/insurance requirement. No additional details are present.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks for the categories of persons who can apply, which are fully listed in the first claim.\"\n        },\n        {\n          \"question_index\": 1,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks for the required proofs, which are stated in the second claim.\"\n        }\n      ]\n    },\n    {\n      \"concept_index\": 3,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"anspruch-familiennachzug\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source: EU/EFTA nationals with a residence permit in Switzerland have the right to family reunification.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states the right without conditions. The extracted empty conditions correctly represent this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz' is explicitly stated.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is explicitly stated.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status 'ausl\u00e4nderrechtliche Bewilligung' is explicitly stated.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they have the right.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient 'Familienangeh\u00f6rige' is supported as they are the ones being brought.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Familiennachzug' is explicitly stated.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"familienangehoerige-definition\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement accurately lists the categories of family members as defined in the source.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source provides a definition without conditions. The extracted empty conditions correctly represent this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'Familienangeh\u00f6rige von EU/EFTA-Staatsangeh\u00f6rigen' is supported by the context.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified, which is appropriate because the definition does not specify a permit status.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor is unspecified, which is appropriate because the definition does not specify an actor.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Familiennachzug' is implied by the context.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"unterlagen-familiennachzug\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement accurately lists the required documents and information for family reunification as stated in the source.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"conditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states that these documents must be present for the family reunification to be approved, implying conditions. The extracted conditions and AND group correctly represent these requirements.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'EU/EFTA-Staatsangeh\u00f6rige mit ausl\u00e4nderrechtlicher Bewilligung in der Schweiz' is supported by the context.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is implied.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status 'ausl\u00e4nderrechtliche Bewilligung' is implied.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'EU/EFTA-Staatsangeh\u00f6rige' is supported as they must provide the documents.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient 'Familienangeh\u00f6rige' is supported as the documents relate to them.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Familiennachzug' is explicitly stated.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept scope correctly identifies the population, jurisdiction, permit status, actor, recipient, and procedure branch for each claim. Unspecified fields are appropriate.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept captures all substantive statements from the source blocks: the right, the definition, and the required documents. No additional details are present.\"\n      },\n      \"questions\": [\n        {\n          \"question_index\": 0,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks who counts as a family member, which is answered by the definition claim.\"\n        },\n        {\n          \"question_index\": 1,\n          \"decision\": \"supported\",\n          \"reason\": \"The question asks for the required documents, which are listed in the third claim.\"\n        }\n      ]\n    },\n    {\n      \"concept_index\": 4,\n      \"claim_support\": [\n        {\n          \"claim_id\": \"fza-nicht-anwendbar\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source: since January 1, 2021, the FZA no longer applies to the UK.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states a fact without conditions. The extracted empty conditions correctly represent this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'Vereinigtes K\u00f6nigreich' is explicitly stated.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is explicitly stated.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified, which is appropriate because the fact does not specify a permit status.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor is unspecified, which is appropriate because the fact does not specify an actor.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Brexit' is implied by the context.\"\n              }\n            }\n          }\n        },\n        {\n          \"claim_id\": \"abkommen-unterzeichnet\",\n          \"decision\": \"supported\",\n          \"reason\": \"The statement directly matches the source: Switzerland and the UK signed an agreement on citizens' rights on September 25, 2019.\",\n          \"condition_logic\": {\n            \"source_applicability\": \"unconditional\",\n            \"decision\": \"supported\",\n            \"reason\": \"The source states a fact without conditions. The extracted empty conditions correctly represent this.\",\n            \"scope_fields\": {\n              \"population\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Population 'B\u00fcrgerinnen und B\u00fcrger des Vereinigten K\u00f6nigreichs' is supported by the context.\"\n              },\n              \"jurisdiction\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Jurisdiction 'Schweiz' is explicitly stated.\"\n              },\n              \"permit_status\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Permit status is unspecified, which is appropriate.\"\n              },\n              \"actor\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Actor 'Schweiz und Vereinigtes K\u00f6nigreich' is explicitly stated.\"\n              },\n              \"recipient\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Recipient is unspecified, which is appropriate because the agreement is not directed at a specific recipient.\"\n              },\n              \"procedure_branch\": {\n                \"decision\": \"supported\",\n                \"reason\": \"Procedure branch 'Brexit' is implied by the context.\"\n              }\n            }\n          }\n        }\n      ],\n      \"scope\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept scope correctly identifies the population, jurisdiction, and actor for each claim. Unspecified fields are appropriate.\"\n      },\n      \"completeness\": {\n        \"decision\": \"supported\",\n        \"reason\": \"The concept captures the two substantive facts from the source blocks. No additional details are present.\"\n      },\n      \"questions\": []\n    }\n  ],\n  \"block_coverage\": [\n    {\n      \"section_id\": \"section-0037\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [0],\n      \"reason\": \"The block contains the rule for the cross-border commuter permit, which is fully represented by concept 0, claim 'grenzgaenger-bewilligung'.\"\n    },\n    {\n      \"section_id\": \"section-0038\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a link to more information and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0039\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains the heading 'Grenzg\u00e4nger' and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0043\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [1],\n      \"reason\": \"The block introduces the requirements for self-employment, which are represented by concept 1, claim 'selbststaendig-voraussetzungen'.\"\n    },\n    {\n      \"section_id\": \"section-0044\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [1],\n      \"reason\": \"The block lists the three requirements, which are represented by concept 1, claim 'selbststaendig-voraussetzungen'.\"\n    },\n    {\n      \"section_id\": \"section-0045\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [1],\n      \"reason\": \"The block states where to submit the application, which is represented by concept 1, claim 'gesuch-wohnortsgemeinde'.\"\n    },\n    {\n      \"section_id\": \"section-0046\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a button to start the application and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0048\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [2],\n      \"reason\": \"The block introduces the categories of persons who can apply, which are represented by concept 2, claim 'bewilligung-erwerbslos'.\"\n    },\n    {\n      \"section_id\": \"section-0049\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [2],\n      \"reason\": \"The block lists the categories, which are represented by concept 2, claim 'bewilligung-erwerbslos'.\"\n    },\n    {\n      \"section_id\": \"section-0050\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [2],\n      \"reason\": \"The block states the financial and insurance requirements, which are represented by concept 2, claim 'finanzielle-mittel'.\"\n    },\n    {\n      \"section_id\": \"section-0051\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only refers to further information in a directive and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0052\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a download link and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0053\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a button to start the application and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0055\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [3],\n      \"reason\": \"The block states the right to family reunification and introduces the definition, which are represented by concept 3, claims 'anspruch-familiennachzug' and 'familienangehoerige-definition'.\"\n    },\n    {\n      \"section_id\": \"section-0056\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [3],\n      \"reason\": \"The block lists the family members, which are represented by concept 3, claim 'familienangehoerige-definition'.\"\n    },\n    {\n      \"section_id\": \"section-0057\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [3],\n      \"reason\": \"The block introduces the required documents, which are represented by concept 3, claim 'unterlagen-familiennachzug'.\"\n    },\n    {\n      \"section_id\": \"section-0058\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [3],\n      \"reason\": \"The block lists the first set of documents, which are represented by concept 3, claim 'unterlagen-familiennachzug'.\"\n    },\n    {\n      \"section_id\": \"section-0059\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [3],\n      \"reason\": \"The block lists the remaining documents, which are represented by concept 3, claim 'unterlagen-familiennachzug'.\"\n    },\n    {\n      \"section_id\": \"section-0060\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only refers to further information in a directive and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0061\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a download link and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0063\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [4],\n      \"reason\": \"The block states the fact about the FZA no longer applying, which is represented by concept 4, claim 'fza-nicht-anwendbar'.\"\n    },\n    {\n      \"section_id\": \"section-0064\",\n      \"decision\": \"covered\",\n      \"concept_indices\": [4],\n      \"reason\": \"The block states the fact about the signed agreement, which is represented by concept 4, claim 'abkommen-unterzeichnet'.\"\n    },\n    {\n      \"section_id\": \"section-0065\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a download link and no substantive content.\"\n    },\n    {\n      \"section_id\": \"section-0066\",\n      \"decision\": \"not_substantive\",\n      \"concept_indices\": [],\n      \"reason\": \"The block only contains a link to external information and no substantive content.\"\n    }\n  ]\n}",
+    "revision": 0,
+    "saturated": false,
+    "structural_rejections": []
+  },
+  "original_repair_characters": 25775,
+  "compact_repair_characters": 24755
+}

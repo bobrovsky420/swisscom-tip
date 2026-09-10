@@ -17,7 +17,7 @@ from .concepts import (HTML_PAGE_SUFFIXES, TEXT_PAGE_SUFFIXES, NormalizedPage,
                        NormalizedSection, PageNormalizationError,
                        _normalize_language_tag, _normalize_plain_text)
 
-VERSION = "swisstip.logical-blocks/v2"
+VERSION = "swisstip.logical-blocks/v3"
 _VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
 _HIDDEN = {"script", "style", "noscript", "svg", "template", "head"}
 _ATOMIC = {"p": "paragraph", "address": "address", "ul": "list", "ol": "list",
@@ -31,6 +31,12 @@ _NAVIGATION_CLASSES = {
     "mdl-page-header__breadcrumb", "mdl-page-header__logo-container",
     "mdl-footer__menu", "mdl-footer__submenu", "mdl-footer__social-media",
     "site-map", "mod-socialshare", "mdl-scroll2top", "mdl-backtochat",
+}
+# These Zurich related-link components were previously emitted as ordinary
+# lists. Classify their existing blocks without collapsing the subtree, so
+# section IDs, ownership and evidence offsets remain comparable to v2.
+_CONTENT_NAVIGATION_CLASSES = {
+    "mdl-related-content", "mdl-content_nav", "mdl-content_nav__list",
 }
 _CONTENT_CONTAINERS = {"main", "article", "section", "aside", "details"}
 
@@ -139,6 +145,10 @@ def _navigation(node, in_content):
             and (role == "banner" or node.attrs.get("id") == "header"))
 
 
+def _content_navigation(node):
+    return bool(set((node.attrs.get("class") or "").lower().split()) & _CONTENT_NAVIGATION_CLASSES)
+
+
 def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
     sections = []
     title, language = path.stem, None
@@ -163,13 +173,14 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
         if any(n.tag not in {"html", "body", "p", "li", "td", "th", "tr", "tbody"} for n in parser.stack[1:]):
             parser.issues.add("unclosed_html_structure")
 
-        def walk(node, headings, owner, contextual=False, in_content=False):
+        def walk(node, headings, owner, contextual=False, in_content=False, in_navigation=False):
             nonlocal title, language
             in_content = in_content or node.tag in _CONTENT_CONTAINERS or node.attrs.get("role") == "main"
+            in_navigation = in_navigation or _content_navigation(node)
             pending = []
 
             def flush():
-                emit("".join(pending), "text", headings, owner, parser.issues)
+                emit("".join(pending), "navigation" if in_navigation else "text", headings, owner, parser.issues)
                 pending.clear()
 
             for child in node.children:
@@ -210,17 +221,18 @@ def normalize_blocks(path: Path, value: str, raw: bytes) -> NormalizedPage:
                         return any(n.attrs.get(a) not in (None, "1") for a in ("rowspan", "colspan")) or any(table_spans(c) for c in n.children)
                     if child.tag == "table" and table_spans(child):
                         issues.add("table_spans_require_review")
-                    emit(_text(child), _ATOMIC[child.tag], headings, owner, issues)
+                    kind = "navigation" if in_navigation or _content_navigation(child) else _ATOMIC[child.tag]
+                    emit(_text(child), kind, headings, owner, issues)
                 elif _owned(child):
                     flush()
                     is_context = child.tag == "aside" or any(marker in (child.attrs.get("class") or "").lower()
                                                             for marker in ("infobox", "info-box"))
                     # A nested infobox supports its enclosing block group; its
                     # heading is local and must not relabel the continued list.
-                    walk(child, dict(headings), owner if is_context else scope(), is_context, in_content)
+                    walk(child, dict(headings), owner if is_context else scope(), is_context, in_content, in_navigation)
                 else:
                     flush()
-                    headings, owner = walk(child, headings, owner, contextual, in_content)
+                    headings, owner = walk(child, headings, owner, contextual, in_content, in_navigation)
             flush()
             return headings, owner
 

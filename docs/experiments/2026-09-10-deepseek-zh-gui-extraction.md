@@ -1,4 +1,10 @@
-# DeepSeek Zurich GUI extraction: output truncation
+# DeepSeek Zurich GUI extraction: truncation and partial rerun
+
+Latest live job `ed64c431b32f42129035a6bde9ff1330` used the independent review
+allowance and navigation correction. All three bundles reached review, but only
+two drafts were retained. A subsequent whitespace-only repair-input correction
+is now verified offline and has not had a live run. See the latest follow-up
+and current checkpoint below; earlier runs remain preserved for comparison.
 
 GUI job `008afd0e4bb14328867ae790e945a880` retained zero candidates from the
 saved `zh-eu-efta` page. Its first extraction response ended with
@@ -22,7 +28,7 @@ The first bundle's 26 blocks became `provider_failure`; the remaining 43 were
 `not_processed_provider_failure`. All remain unresolved. No partial response
 was checkpointed or retained as a candidate.
 
-## Prepared adjustment, verified offline only
+## Initial adjustment and offline verification
 
 `config/semantic-models.toml` now sets `generation.max_output_tokens=8192`.
 This shared setting affects extraction and review for any selected semantic
@@ -32,8 +38,9 @@ unchanged. GUI provider retries remain disabled. New GUI jobs read the current
 configuration without restarting the server; old jobs retain their frozen
 4096-token setting.
 
-Doubling the allowance is a controlled next experiment. The truncated response
-does not reveal how much output was needed, so 8192 is not an established fix.
+Doubling the allowance was prepared as a controlled experiment. The truncated
+response did not reveal how much output was needed; the later result below
+establishes no truncation in one run, not reliable extraction on this page.
 Complete output must still fit the separate 25600-character source/proposal
 review-input allowance and pass all existing checks. A larger limit permits
 more output and potentially longer and more costly calls, even though the
@@ -52,7 +59,8 @@ the offline audit script. Provider construction was blocked. The plan sent
 zero model requests and retained the same 12-call ceiling, source inventory,
 source hashes and effective prompts. The only effective configuration change
 from the failed job is the output limit. All six Control API configuration
-tests and 13 builder profile tests passed. No live retry was performed.
+tests and 13 builder profile tests passed. No live retry was performed during
+that offline preparation.
 
 | Preserved artifact | SHA-256 |
 | --- | --- |
@@ -62,14 +70,226 @@ tests and 13 builder profile tests passed. No live retry was performed.
 
 All original job files retained their hashes during verification.
 
-## GUI resume checkpoint
+## Live follow-up at 8192 output tokens
 
-In **Saved pages**, select only **Zurich EU/EFTA** (`zh-eu-efta`), keep
-`deepseek_v4_pro`, and click **Preview extraction plan**. Verify the new job's
-frozen configuration has 8192 output tokens, one page, at most 12 planned
-requests and zero sent. Continue to **Run extraction** / **Confirm extraction**
-as the following user-controlled GUI step. Check actual network attempts,
-retained candidates, review history and source coverage after the run.
+Preview `f8161975084d4498a1835066a4eb0630` froze the larger output allowance,
+same source hash and 12-request ceiling with zero requests sent. The user then
+ran GUI extraction `e4f1f67a1f8a423baa40999cbc6f339e`. It took 271.607 seconds,
+made seven model calls (three initial extractions, three repairs and one review),
+and retained four candidates. No response was truncated; there were no provider
+retries or checkpoint hits. Reported usage was 58646 input and 34561 output
+tokens. All candidates have empty questions, which the schema permits.
+
+| Bundle | Initial extraction | Repair and final outcome |
+| --- | --- | --- |
+| 1, 26 blocks | Seven concepts exceeded the six-concept schema limit. | Six structurally valid concepts with 17 claims; review input was 27011 characters, exceeding the 25600-character allowance. No review or retained draft. |
+| 2, 24 blocks | A concept used unsupported concept type `FACT`. | Five structurally valid concepts with 10 claims; review input was 28634 characters, exceeding the same allowance. No review or retained draft. |
+| 3, 19 blocks | One contact concept combined evidence from separate ownership groups. | Repair repeated that grouping. The invalid contact concept was rejected; the remaining four were reviewed and retained. |
+
+The review-input sizes were reconstructed offline from the saved inventory and
+repaired proposals using the pipeline's source payload and rendered descriptions.
+Compact JSON alone would still exceed the limit (25864 and 27687 characters).
+Increasing the output cap exposed this independent input-allowance constraint;
+raising output again would not address it. No input limit or validator was
+changed during this diagnosis, and no new model calls were made.
+
+The report marks 50 source blocks `invalid_response`, seven `covered`, seven
+`not_substantive`, five `missing` and 36 `excluded_policy`. Its 62 unresolved
+blocks include the model's seven not-substantive assessments, which still need
+human disposition. Retention is therefore not evidence of full page coverage.
+The missing contact material includes address/opening hours, telephone details
+and the contact-form instruction, which the rejected proposal grouped across
+three ownership scopes. Those sections are related to the same office, but the
+proposal does not satisfy the current single-scope concept contract.
+
+Assistant inspection of the four retained drafts found:
+
+- **Liechtenstein und Freizügigkeit:** all eight full statements match the saved
+  substantive paragraphs. Nationality OR fixed-residence applicability survives
+  in statement and population scope, but the corresponding claim has no
+  condition tree and the reviewer calls it unconditional. Whether that
+  applicability also requires explicit branches merits review; this is less
+  clear-cut than the German Residence draft's missing work qualifier.
+- **Weiterführende Informationen und Downloads:** accurately lists document
+  titles and file metadata. It is a reference list, not extraction of the linked
+  documents' substantive contents, and the candidate omits their target URLs.
+- **Das könnte Sie auch interessieren:** copies related-page teaser keywords
+  from `section-0096`. The original HTML explicitly wraps these links in
+  `mdl-related-content` and `mdl-content_nav`. Normalization classified it as a
+  list, and the reviewer marked it covered. Retaining it as substantive knowledge
+  conflicts with the navigation exclusion policy. Recommend **reject**.
+- **Zuständigkeit:** the source supports the Migrationsamt's responsibility.
+  The wording `Für dieses Thema zuständig` should name the page's topic so that
+  the claim can stand alone; this authority fact itself is supported.
+
+These are saved-source assessments, not current legal verification. The report
+remains immutable at `.local/admin/jobs/e4f1f67a1f8a423baa40999cbc6f339e/result.json`,
+SHA-256 `e178ee6cac5e67a78332dadb985809820ad8211ce00df46dee436329af8fbc69`.
+Its frozen configuration SHA-256 is
+`0708f09107713c9d1b82edcd82bf82ed700d0212f3d00d84ebb14eae57889ec6`.
+The source hash still matches the original run above.
+
+## Review-input and navigation corrections
+
+`extraction.max_review_input_characters` now independently bounds the complete
+serialized review user payload, including evidence, proposals, rendered
+descriptions and review-validation feedback. Its configured/default value is
+64000 characters; older TOML files that omit it use the same default. The CLI
+passes the setting to the extraction engine and records it in effective config.
+Non-integer and non-positive values are rejected. Overflow errors show actual
+and configured lengths before a review call. Source packet size and the
+existing extraction/repair feedback allowance are unchanged; proposals are
+neither truncated nor edited to fit. Prompts and acceptance checks are unchanged.
+
+The normalizer now marks exact Zurich `mdl-related-content`, `mdl-content_nav`
+and `mdl-content_nav__list` components as navigation while retaining their
+blocks for audit. On the saved HTML, only `section-0096` changes classification
+from list to navigation. All 105 block IDs, scopes, headings, text and evidence
+remain identical. The next plan has 68 eligible and 37 excluded blocks. Contacts,
+downloads and substantive linked lists remain eligible; a broad link-density
+filter would lose useful material. Normalization version is now
+`swisstip.logical-blocks/v3`, changing normalized source and checkpoint identity
+while the original HTML SHA-256 stays unchanged.
+
+`packages/ingestion/tests/fixtures/deepseek_v4_zh_e4f1f67a.json` preserves exact
+source evidence and initial/repaired completions for the first two bundles,
+with report/source provenance hashes. At the old explicit 25600-character cap,
+offline replay still sends two extraction calls and zero reviews per bundle.
+At 64000, each sends two extraction calls and one complete review. The supplied
+review responses are synthetic uncertain controls, not new model output, so
+they retain zero candidates. Every proposal and source block survives intact
+into the review request. Both paths stay within the existing request ceiling.
+
+Other tests cover exact size boundaries, rendered descriptions and diagnostic
+feedback counting toward the limit, the unchanged extraction feedback cap,
+strict/optional configuration, CLI forwarding and navigation identity/contacts.
+All 131 ingestion tests, 175 builder tests and seven Control API configuration
+tests passed (313 total). One factory test's old fixed 4096-token expectation
+was replaced with an explicit custom-generation fixture, so it now verifies
+forwarding without coupling to the repository's changing default.
+
+Offline plan, replay reports, exact review requests, verification script and
+audit are in `.local/admin/zh-review-input-e4f1f67a-20260910/`. The plan blocks
+provider construction and sends zero model requests. Original job files,
+including every saved checkpoint, retain their hashes. The new GUI preview also
+loads the corrected code and freezes 8192 output tokens, the 64000-character
+review cap, DeepSeek V4 Pro and zero retries.
+
+## Assistant source review and pending semantics
+
+The assistant review recommends keeping **Liechtenstein und Freizügigkeit**
+as a faithful draft with the applicability-modeling question above, and keeping
+the narrow **Zuständigkeit** responsibility assertion with explicit topic
+wording. It recommends rejecting **Weiterführende Informationen und Downloads**
+as a substantive concept (retain its document references separately) and
+**Das könnte Sie auch interessieren** as navigation.
+
+The database review history inspected during this step shows Alex accepting
+Liechtenstein, downloads and related links, and rejecting Zuständigkeit. These
+human decisions were preserved; the assistant's differing recommendations are
+recorded here, not substituted into Alex's review history.
+
+Inspection of repaired proposals that previously could not reach review found
+two concrete issues for the next semantic assessment:
+
+- Bundle 1, `ausweis-ausstellung`: the full statement preserves the source's
+  `Wenn` prerequisite for issuing a permit, but the repair removes its explicit
+  conditions and root. The initial proposal had a condition.
+- Bundle 2, `unterlagen-familiennachzug`: one AND group combines documents with
+  different applicability branches. In particular, proof of prior common
+  residence loses the source's `falls ... bestand` prerequisite. Similar
+  branching applies to non-employed people and supported relatives. The
+  submission recipient `Familienangehörige` is not supported by that relation.
+
+The input allowance correction lets a reviewer assess these proposals; it does
+not fix or approve their meaning. A further live run must be inspected for
+false approvals, omissions and source coverage. The German Residence work
+qualifier issue also remains pending.
+
+## Latest live follow-up: review reached, validation still failing
+
+The user ran job `ed64c431b32f42129035a6bde9ff1330` after the corrected GUI
+preview. It used 8192 output tokens, the 64000-character review cap, normalization
+v3, the same source and the 12-call ceiling. It took 363.587 seconds and made
+eight calls: three initial extractions, two repair extractions and three reviews.
+There was no truncation, provider retry, checkpoint reuse or review-input overflow.
+Related-link navigation remained excluded. Reported usage was 68597 input and
+38043 output tokens. Two candidates were retained, both from the first bundle.
+
+- Bundle 1 again exceeded the concept-array bound initially. Repair produced four
+  proposals; two failed exact-quotation/ownership validation. The other two were
+  reviewed and retained as **Aufenthalt für EU/EFTA-Staatsangehörige** and
+  **Personenfreizügigkeit**.
+- Bundle 2's reviewer called `finanzielle-mittel` unconditional while approving
+  added conditions. Its prose also disputed that logic. The validator rejected
+  this contradictory review; it did not infer a corrected verdict from prose.
+  The next repair payload measured 25775 characters against the 25600-character
+  source/feedback allowance, so no repair request was sent for this bundle.
+- Bundle 3 repeated cross-ownership contact grouping after repair. Review of
+  the valid subset then assigned `partial` coverage to seven contact blocks
+  with no concept references. None of the valid proposals cites those blocks.
+  Adding references would invent represented coverage; changing `partial` to
+  `missing` would change the review judgment. This review remains invalid.
+
+The inventory has 37 policy exclusions, three covered blocks, 14 model-assessed
+not-substantive blocks, nine missing blocks and 42 invalid-response blocks.
+The report's unresolved count is 65. Two retained introductory concepts do not
+establish successful extraction of the page's detailed rules and procedures.
+
+Assistant inspection found the introductory **Aufenthalt für
+EU/EFTA-Staatsangehörige** sentence faithful to its bounded evidence. It is not
+a substitute for the separate registration and permit requirements elsewhere
+on the page. **Personenfreizügigkeit** preserves its three full sentences, but
+`drittstaaten-begrenzt` leaves the restriction to specialized AND qualified
+workers only in prose: conditions/groups/root are empty and population scope
+only identifies third-country nationals. Recommend **needs changes** to preserve
+that necessary restriction structurally without implying those attributes alone
+guarantee permission. Empty questions are allowed and are not rejection grounds.
+
+Live report SHA-256:
+`e029162f5b4efb370c10231e897994bb9e6bfc7a5763798f640ff22d5ee29d5d`.
+Frozen configuration SHA-256:
+`60109f9fa691c17fff738fa90f8e4d0b1878d3c99d57692bef5c68ede7cdc2e8`.
+The original source hash remains unchanged.
+
+## Prepared correction: lossless JSON whitespace compaction
+
+When serialized extraction/repair input exceeds its existing allowance, the
+pipeline now retries serialization with compact separators. Every JSON value
+is unchanged. For the saved bundle 2 repair this saves 1020 characters,
+reducing 25775 to 24755 and fitting the same 25600-character cap. The raw invalid
+review was already excluded from feedback; no additional source, proposal or
+diagnostic is removed. No limit, prompt, request ceiling or verdict changed.
+Normal-sized request bytes remain unchanged. A still-oversized compact payload
+is rejected with its original/compact sizes and limit before any call.
+
+`packages/ingestion/tests/fixtures/deepseek_v4_zh_ed64c431.json` preserves the
+exact extraction completion, invalid review record, source evidence and hashes.
+Offline replay now reaches the previously blocked repair and its review within
+four calls. The replayed repair deliberately repeats the saved extraction;
+it is a synthetic control, not a live correction. Repeating the actual invalid
+review still retains zero candidates, and the next reviewer receives the
+original validation diagnostic. Tests compare all source/feedback values and
+exact sizes, reject a larger control payload without sending a partial repair,
+and preserve serialization for requests that already fit.
+
+All 134 ingestion tests and 12 builder structured-workflow tests passed.
+The offline audit, replay report, repair request, progress and unchanged dry plan
+are under `.local/admin/zh-compact-repair-ed64c431-20260910/`. The plan still
+reserves at most 12 calls and sends zero; provider construction is blocked.
+All original live job files and checkpoints retain their hashes. This removes
+the observed whitespace overhead, not every possible repair-size failure or
+the model's remaining extraction and review errors. No live rerun was performed.
+
+## Current GUI resume checkpoint
+
+Review the two candidates in job `ed64c431b32f42129035a6bde9ff1330`. In
+**Personenfreizügigkeit**, record **needs changes** with this note:
+"Preserve the restriction to specialized AND qualified workers in structured
+fields. Do not imply that those attributes alone guarantee permission."
+The other draft is acceptable as a narrow source summary. No assistant review
+decision has been written to the GUI. The whitespace correction is ready for
+a subsequent fresh preview and user-controlled extraction step.
 
 The earlier GUI decisions remain separate: Alex accepted the English Residence
 draft from job `87ca1a63d46f49c7afa6343714fb4e8d`. The latest German decision for

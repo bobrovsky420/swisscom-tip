@@ -19,6 +19,8 @@ prompt_profile = "concept_extraction_v4"
 # review_prompt_file = "prompts/my-review.md"
 max_repair_attempts = 1
 chunk_content_characters = 6400
+# Complete structured review payload, including source, proposals and feedback.
+max_review_input_characters = 64000
 chunk_overlap_characters = 400
 max_concepts_per_chunk = 6
 max_pages_per_run = 10

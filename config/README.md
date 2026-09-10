@@ -119,11 +119,19 @@ numeric scores. Mismatched model identities, empty content, duplicate JSON keys
 and incomplete completions are rejected without accepting partial results.
 
 Extraction and review use the shared generation limit (currently 8192 output
-tokens) and a 180-second timeout. The larger allowance is the next experiment
-after the [Zurich GUI extraction truncated at 4096 tokens](../docs/experiments/2026-09-10-deepseek-zh-gui-extraction.md);
-it has not yet demonstrated successful extraction on that page. This shared limit
+tokens) and a 180-second timeout. After the
+[Zurich GUI extraction truncated at 4096 tokens](../docs/experiments/2026-09-10-deepseek-zh-gui-extraction.md),
+one rerun at 8192 avoided truncation and retained four drafts. Extraction remains
+partial: two bundles exceeded the separate review-input allowance, and the
+retained drafts still need content review. This shared limit
 also applies when selecting another extraction profile. New GUI jobs load it
 without a server restart; existing job configurations remain frozen.
+V4 now separately bounds the serialized review user payload with
+`extraction.max_review_input_characters` (64000 characters by default, also when
+an older configuration omits the field). This includes source, proposals,
+rendered descriptions and validation feedback; it does not expand source packet
+sizes or extraction/repair input limits. The saved Zurich proposals reach review
+in offline replay under this limit; their semantic quality is still unapproved.
 Ranking uses 8192 output tokens and a 60-second timeout.
 Thinking mode is fixed off in this adapter; enabling it later requires evaluating
 the changed generation contract and checkpoint/release identity. CLI extraction

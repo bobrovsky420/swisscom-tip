@@ -65,6 +65,21 @@ token_env = "HF_TOKEN"
 
 
 class ModelProfileTests(unittest.TestCase):
+    def test_review_input_allowance_is_optional_explicit_and_strict(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "models.toml"
+            path.write_text(VALID_CONFIG, encoding="utf-8")
+            self.assertEqual(load_model_profiles(path).extraction.max_review_input_characters, 64000)
+            for value in ("32768", "0", "-1", "true", "64000.0", '\"64000\"'):
+                with self.subTest(value=value):
+                    path.write_text(VALID_CONFIG.replace("[extraction]",
+                        f"[extraction]\nmax_review_input_characters = {value}"), encoding="utf-8")
+                    if value == "32768":
+                        self.assertEqual(load_model_profiles(path).extraction.max_review_input_characters, 32768)
+                    else:
+                        with self.assertRaises(ModelProfileConfigurationError):
+                            load_model_profiles(path)
+
     def test_repository_config_resolves_selected_profile(self) -> None:
         config = load_model_profiles(REPOSITORY_ROOT / "config" / "semantic-models.toml")
 

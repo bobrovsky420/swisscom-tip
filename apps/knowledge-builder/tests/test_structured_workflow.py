@@ -22,6 +22,34 @@ from test_model_profiles import VALID_CONFIG
 
 
 class StructuredWorkflowTests(unittest.TestCase):
+    def test_cli_passes_review_input_allowance_and_reports_effective_value(self):
+        self.config.write_text(VALID_CONFIG.replace("[extraction]",
+            "[extraction]\nmax_review_input_characters = 1\nmax_repair_attempts = 0"), encoding="utf-8")
+        model = load_model_profiles(self.config).active_profile.model
+        class Provider:
+            def __init__(self):
+                self.calls = 0
+
+            def generate_structured(self, **request):
+                self.calls += 1
+                self_payload = json.loads(request["user_prompt"])
+                if "concepts" in self_payload:
+                    raise AssertionError("Review input must be rejected before a provider call")
+                return ModelCompletion('{"concepts": [], "saturated": false}', "ollama", model,
+                                       requested_model=model, observed_model=model)
+
+        provider = Provider()
+        output = io.StringIO()
+        with redirect_stdout(output):
+            code = main([str(self.source), "--config", str(self.config), "--structured"],
+                        provider_factory=lambda config: provider)
+        self.assertEqual(code, 0)
+        self.assertEqual(provider.calls, 1)
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["effective_config"]["extraction"]["max_review_input_characters"], 1)
+        self.assertTrue(any("max_review_input_characters=1" in w for w in result["reports"][0]["warnings"]))
+        self.assertEqual(result["reports"][0]["quality_metrics"]["review_request_count"], 0)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

@@ -86,6 +86,27 @@ Schema-valid extraction checkpoints remain available for replay and revalidation
 changing repair feedback changes the repair checkpoint key. The planned call
 ceiling and one-repair limit remain enforced, including odd page request limits.
 
+V4 review input has its own `[extraction].max_review_input_characters` limit,
+defaulting to 64000 when omitted from an older configuration. It counts the full
+serialized user payload: source evidence, proposals, rendered descriptions and
+review-validation feedback. It excludes the separately supplied system prompt
+and response schema. Oversized review input is rejected with actual/configured
+character counts before a model call; nothing is shortened to fit. This limit
+is independent of `chunk_content_characters`, which still controls source packing
+and the existing four-times-source extraction/repair input allowance.
+If extraction or repair input exceeds that allowance, the pipeline tries compact
+JSON separators, preserving every source and feedback value. It logs the size
+reduction when this fits; input still over the limit is rejected before a call.
+Normal-sized requests retain their existing bytes and checkpoint keys. This
+formatting fallback adds no request, retry or allowance and changes no verdict.
+
+Logical normalization version `swisstip.logical-blocks/v3` classifies explicitly
+marked Zurich related-content navigation as excluded inventory. Source text,
+block IDs and ownership remain intact. Contacts, download references and
+substantive condition lists remain available for review; link density alone
+does not determine exclusion. The changed version separates new source hashes
+and checkpoint identities from old normalization results.
+
 `swisstip-concepts` accepts one or more local file paths, directory paths, or
 wildcard patterns. Eligible files have an `.html`, `.htm`, `.txt`, `.md`, or
 `.markdown` extension. Directory scanning recursively includes supported files

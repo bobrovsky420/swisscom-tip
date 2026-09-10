@@ -118,9 +118,21 @@ class StructuredExtraction:
                 proposed, invalid, saturated = [], [], False
                 stage = "extraction_input"
                 try:
-                    extraction_text = json.dumps({"untrusted_source": source, "repair": feedback}, ensure_ascii=False)
-                    if len(extraction_text) > engine._chunk_content_characters * 4:
-                        raise ValueError("extraction input exceeds bounded source/feedback allowance")
+                    extraction_input = {"untrusted_source": source, "repair": feedback}
+                    extraction_text = json.dumps(extraction_input, ensure_ascii=False)
+                    extraction_limit = engine._chunk_content_characters * 4
+                    if len(extraction_text) > extraction_limit:
+                        original_characters = len(extraction_text)
+                        extraction_text = json.dumps(extraction_input, ensure_ascii=False, separators=(",", ":"))
+                        if len(extraction_text) > extraction_limit:
+                            raise ValueError(
+                                "extraction input exceeds bounded source/feedback allowance: "
+                                f"{len(extraction_text)} characters after JSON whitespace compaction "
+                                f"(from {original_characters}) > {extraction_limit}")
+                        engine._progress(
+                            f"Structured group {job_index}, revision {revision}: compacted extraction JSON "
+                            f"whitespace from {original_characters} to {len(extraction_text)} characters "
+                            f"(limit={extraction_limit}); source and feedback unchanged")
                     attempt_counts["repair" if revision else "generation"] += 1
                     stage = "extraction"
                     completion = engine._provider.generate_structured(system_prompt=engine.prompts.extraction.text,
@@ -184,10 +196,14 @@ class StructuredExtraction:
                             "validation_error": error[:2000],
                             "validation_error_truncated": len(error) > 2000,
                         }
-                    # Bound review input including verbose model output, not just source text.
+                    # Bound the complete review payload independently of source packing.
+                    # This includes proposals, rendered descriptions and validation feedback.
                     review_text = json.dumps(review_input, ensure_ascii=False)
-                    if len(review_text) > engine._chunk_content_characters * 4:
-                        raise ValueError("review input exceeds bounded source/proposal allowance")
+                    if len(review_text) > engine._max_review_input_characters:
+                        raise ValueError(
+                            "review input exceeds bounded source/proposal allowance: "
+                            f"{len(review_text)} characters > "
+                            f"max_review_input_characters={engine._max_review_input_characters}")
                     attempt_counts["review"] += 1
                     stage = "review"
                     review_completion = engine._provider.generate_structured(system_prompt=engine.prompts.review.text,

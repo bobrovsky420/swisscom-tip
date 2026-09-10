@@ -12,6 +12,7 @@ from swisstip.ingestion.concepts import (
     STRUCTURED_PROMPT_PROFILE, normalize_downloaded_page,
 )
 from swisstip.ingestion.structured_extraction import StructuredExtraction
+from swisstip.ingestion.source_structure import VERSION as NORMALIZATION_VERSION
 
 
 def concept(ref, block):
@@ -158,7 +159,7 @@ class StructuredTests(unittest.TestCase):
                          {"Residence\nApply online.", "Residence\nAttach proof."})
         substantive = [b for b in page.sections if b.block_kind in {"paragraph", "list"}]
         self.assertEqual(substantive[0].scope_id, substantive[1].scope_id)
-        self.assertEqual(page.normalization_version, "swisstip.logical-blocks/v2")
+        self.assertEqual(page.normalization_version, NORMALIZATION_VERSION)
 
     def test_zurich_navigation_preserves_article_header_wrapper_conditions_and_contacts(self):
         page = self.page('''<body>
@@ -463,7 +464,7 @@ class StructuredTests(unittest.TestCase):
         return NormalizedPage("saved-residence", "fixture", "Residence", "en", "saved-evidence",
             tuple(NormalizedSection(b["section_id"], "", b["text"], block_kind="paragraph",
                                     scope_id=b["scope_id"]) for b in saved["evidence"].values()),
-            normalization_version="swisstip.logical-blocks/v2",
+            normalization_version=NORMALIZATION_VERSION,
             source_sha256=saved["provenance"]["source_sha256"])
 
     def test_saved_root_and_quote_errors_are_reported_together_without_mutation(self):
