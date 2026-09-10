@@ -85,6 +85,17 @@ be reviewed. A genuinely empty extraction still receives a coverage audit.
 Schema-valid extraction checkpoints remain available for replay and revalidation;
 changing repair feedback changes the repair checkpoint key. The planned call
 ceiling and one-repair limit remain enforced, including odd page request limits.
+Schema-repair diagnostics include actual array counts and bounds, or the invalid
+enum value and bounded allowed values. This identifies late invalid fields even
+when the raw completion excerpt is truncated; invalid values are still rejected.
+
+V4 source packets contain at most `max_concepts_per_chunk` ownership scopes as
+well as fitting `chunk_content_characters`. Whole ownership groups stay together.
+Since concepts cannot borrow evidence from unrelated scopes, this avoids asking
+for more separately owned topics than the concept array can hold. Extra packets
+still need an extraction/review pair within the existing page budget; omitted
+blocks remain visible as `not_processed_budget`. Reaching the concept limit
+still marks a result saturated and subject to bounded repair and human review.
 
 V4 review input has its own `[extraction].max_review_input_characters` limit,
 defaulting to 64000 when omitted from an older configuration. It counts the full
@@ -93,8 +104,15 @@ review-validation feedback. It excludes the separately supplied system prompt
 and response schema. Oversized review input is rejected with actual/configured
 character counts before a model call; nothing is shortened to fit. This limit
 is independent of `chunk_content_characters`, which still controls source packing
-and the existing four-times-source extraction/repair input allowance.
-If extraction or repair input exceeds that allowance, the pipeline tries compact
+and the initial extraction input allowance of four times that character limit.
+V4 repairs can separately set `[extraction].max_repair_input_characters`; when
+omitted, repairs retain the legacy four-times-source allowance. The repository
+configuration explicitly sets 64000 to fit complete source, proposals and review
+feedback. The cap counts the serialized repair user payload, excluding the system
+prompt and response schema. It does not enlarge source packets or review input,
+and does not change request budgets, validation or the one-repair limit. A larger
+repair cap cannot bypass an oversized initial source request.
+If extraction or repair input exceeds its allowance, the pipeline tries compact
 JSON separators, preserving every source and feedback value. It logs the size
 reduction when this fits; input still over the limit is rejected before a call.
 Normal-sized requests retain their existing bytes and checkpoint keys. This

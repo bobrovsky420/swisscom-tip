@@ -132,6 +132,12 @@ an older configuration omits the field). This includes source, proposals,
 rendered descriptions and validation feedback; it does not expand source packet
 sizes or extraction/repair input limits. The saved Zurich proposals reach review
 in offline replay under this limit; their semantic quality is still unapproved.
+`extraction.max_repair_input_characters` independently caps the full serialized
+V4 repair user payload, including source, proposals and review feedback. The
+repository sets 64000; older configurations that omit it retain
+`chunk_content_characters * 4`. It does not change the initial source allowance,
+review limit or request ceiling. Complete repair feedback can use more input
+tokens, and previously blocked repairs can now consume their reserved calls.
 Ranking uses 8192 output tokens and a 60-second timeout.
 Thinking mode is fixed off in this adapter; enabling it later requires evaluating
 the changed generation contract and checkpoint/release identity. CLI extraction

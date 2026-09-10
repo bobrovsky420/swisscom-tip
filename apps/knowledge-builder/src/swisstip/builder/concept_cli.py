@@ -416,6 +416,7 @@ def main(argv: Sequence[str] | None = None, *, provider_factory=None) -> int:
             max_model_requests_per_page=extraction.max_model_requests_per_page,
             max_repair_attempts=extraction.max_repair_attempts,
             max_review_input_characters=extraction.max_review_input_characters,
+            max_repair_input_characters=extraction.max_repair_input_characters,
             progress=progress,
         )
         extractor = CandidateConceptExtractor(None, **extractor_options)

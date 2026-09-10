@@ -3,10 +3,12 @@ import copy
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from swisstip.ingestion import claim_contracts as contracts
 from swisstip.ingestion.concepts import CandidateConceptExtractor, ModelCompletion, NormalizedPage, NormalizedSection
 from swisstip.ingestion.source_structure import VERSION as NORMALIZATION_VERSION
+from swisstip.ingestion.structured_extraction import StructuredExtraction
 from test_structured_extraction import Provider
 import test_structured_extraction as helpers
 
@@ -57,8 +59,13 @@ class ReviewInputLimitTests(unittest.TestCase):
         engine = CandidateConceptExtractor(provider, active_profile="offline-replay",
             prompt_profile="concept_extraction_v4", max_concepts_per_chunk=6,
             max_review_input_characters=limit)
-        ceiling = engine.planned_request_count(page)
-        report = engine.extract(page)
+        # Replay the original request boundaries: the current scope-aware
+        # planner would split the historical first bundle. This isolates review
+        # input validation without changing any saved evidence or concept limit.
+        _, inventory = StructuredExtraction(engine).plan(page)
+        with patch.object(StructuredExtraction, "plan", return_value=([list(page.sections)], inventory)):
+            ceiling = engine.planned_request_count(page)
+            report = engine.extract(page)
         self.assertEqual(group, original)
         self.assertLessEqual(len(provider.calls), ceiling)
         return provider, report

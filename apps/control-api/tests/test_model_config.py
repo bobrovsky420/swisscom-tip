@@ -108,6 +108,26 @@ class ModelConfigTests(unittest.TestCase):
         self.assertEqual(load_model_profiles(job_config), expected)
         self.assertEqual(data["extraction"]["review_prompt_file"], str((self.root / "config/prompts/review.md").resolve()))
 
+    def test_gui_snapshots_preserve_explicit_and_omitted_repair_input_limits(self):
+        document = self.semantic.read_text(encoding="utf-8")
+        for allowance in (None, 32768):
+            with self.subTest(allowance=allowance):
+                without_limit = re.sub(r'(?m)^max_repair_input_characters\s*=.*\n?', '', document)
+                configured = without_limit if allowance is None else without_limit.replace(
+                    "[extraction]", f"[extraction]\nmax_repair_input_characters = {allowance}")
+                self.semantic.write_text(configured, encoding="utf-8")
+                snapshot = api.config_text("deepseek_v4_pro")
+                data = tomllib.loads(snapshot)
+                if allowance is None:
+                    self.assertNotIn("max_repair_input_characters", data["extraction"])
+                else:
+                    self.assertEqual(data["extraction"]["max_repair_input_characters"], allowance)
+                path = self.root / "job.toml"
+                path.write_text(snapshot, encoding="utf-8")
+                config = load_model_profiles(path)
+                self.assertEqual(config.extraction.max_repair_input_characters, allowance)
+                self.assertEqual(config.extraction.max_review_input_characters, 64000)
+
     def test_shared_edit_updates_both_consumers_but_not_existing_job_snapshots(self):
         snapshot = api.config_text("ollama_local")
         self.semantic.write_text(re.sub(r'(?m)^active_profile\s*=.*$', 'active_profile = "ollama_local"',

@@ -22,6 +22,37 @@ from test_model_profiles import VALID_CONFIG
 
 
 class StructuredWorkflowTests(unittest.TestCase):
+    def test_cli_passes_repair_input_allowance_and_reports_effective_value(self):
+        model = load_model_profiles(self.config).active_profile.model
+
+        class InvalidProvider:
+            def __init__(self):
+                self.calls = 0
+
+            def generate_structured(self, **request):
+                self.calls += 1
+                payload = json.loads(request["user_prompt"])
+                if "concepts" in payload:
+                    raise AssertionError("Schema-invalid extraction must not be reviewed")
+                return ModelCompletion('{"concepts": [], "saturated": false, "unexpected": true}',
+                    "ollama", model, requested_model=model, observed_model=model)
+
+        for allowance, calls in ((1, 1), (64000, 2)):
+            with self.subTest(allowance=allowance):
+                self.config.write_text(VALID_CONFIG.replace("[extraction]",
+                    f"[extraction]\nmax_repair_input_characters = {allowance}"), encoding="utf-8")
+                provider = InvalidProvider()
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    code = main([str(self.source), "--config", str(self.config), "--structured"],
+                                provider_factory=lambda config: provider)
+                self.assertEqual(code, 0)
+                self.assertEqual(provider.calls, calls)
+                result = json.loads(output.getvalue())
+                self.assertEqual(result["effective_config"]["extraction"]["max_repair_input_characters"], allowance)
+                self.assertEqual(result["reports"][0]["quality_metrics"]["repair_request_count"], calls - 1)
+                self.assertEqual(result["reports"][0]["quality_metrics"]["review_request_count"], 0)
+
     def test_cli_passes_review_input_allowance_and_reports_effective_value(self):
         self.config.write_text(VALID_CONFIG.replace("[extraction]",
             "[extraction]\nmax_review_input_characters = 1\nmax_repair_attempts = 0"), encoding="utf-8")

@@ -63,6 +63,7 @@ class ExtractionConfig:
     extraction_prompt_file: str | None = None
     review_prompt_file: str | None = None
     max_review_input_characters: int = 64_000
+    max_repair_input_characters: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -221,6 +222,7 @@ def _load_extraction(table: Mapping[str, object], config_directory: Path) -> Ext
             "extraction_prompt_file",
             "review_prompt_file",
             "max_review_input_characters",
+            "max_repair_input_characters",
         },
         path,
     )
@@ -279,6 +281,10 @@ def _load_extraction(table: Mapping[str, object], config_directory: Path) -> Ext
         max_review_input_characters=(
             _required_positive_integer(table, "max_review_input_characters", path)
             if "max_review_input_characters" in table else 64_000
+        ),
+        max_repair_input_characters=(
+            _required_positive_integer(table, "max_repair_input_characters", path)
+            if "max_repair_input_characters" in table else None
         ),
     )
 

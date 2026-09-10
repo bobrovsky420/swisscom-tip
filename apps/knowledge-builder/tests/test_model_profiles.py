@@ -65,6 +65,23 @@ token_env = "HF_TOKEN"
 
 
 class ModelProfileTests(unittest.TestCase):
+    def test_repair_input_allowance_is_optional_explicit_and_strict(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "models.toml"
+            path.write_text(VALID_CONFIG, encoding="utf-8")
+            self.assertIsNone(load_model_profiles(path).extraction.max_repair_input_characters)
+            for value in ("32768", "0", "-1", "true", "64000.0", '\"64000\"'):
+                with self.subTest(value=value):
+                    path.write_text(VALID_CONFIG.replace("[extraction]",
+                        f"[extraction]\nmax_repair_input_characters = {value}"), encoding="utf-8")
+                    if value == "32768":
+                        extraction = load_model_profiles(path).extraction
+                        self.assertEqual(extraction.max_repair_input_characters, 32768)
+                        self.assertEqual(extraction.max_review_input_characters, 64000)
+                    else:
+                        with self.assertRaises(ModelProfileConfigurationError):
+                            load_model_profiles(path)
+
     def test_review_input_allowance_is_optional_explicit_and_strict(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "models.toml"
@@ -105,6 +122,7 @@ class ModelProfileTests(unittest.TestCase):
         )
         self.assertEqual(config.extraction.max_pages_per_run, 10)
         self.assertEqual(config.extraction.max_concepts_per_chunk, 6)
+        self.assertEqual(config.extraction.max_repair_input_characters, 64000)
         self.assertEqual(config.extraction.max_total_input_characters, 120000)
         self.assertEqual(config.extraction.max_model_requests_per_page, 12)
         self.assertEqual(config.extraction.max_model_requests_per_run, 30)

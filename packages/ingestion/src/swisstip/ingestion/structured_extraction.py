@@ -63,11 +63,14 @@ class StructuredExtraction:
                     records[block.section_id].update(status=problem[0], reason=problem[1])
             else:
                 eligible.append(blocks)
-        # Pack whole ownership groups together to reduce calls without permitting
-        # evidence borrowing between the distinct groups in a packet.
+        # Each ownership group needs its own concept to represent substantive
+        # evidence. Bound both source size and scope count so the concept limit
+        # does not force unrelated groups to be combined or omitted.
         packets = []
         for group in eligible:
-            if not packets or sum(len(b.evidence_text) for b in [*packets[-1], *group]) > self.engine._chunk_content_characters:
+            if (not packets
+                    or len({b.scope_id for b in packets[-1]}) >= self.engine._max_concepts_per_chunk
+                    or sum(len(b.evidence_text) for b in [*packets[-1], *group]) > self.engine._chunk_content_characters):
                 packets.append([])
             packets[-1].extend(group)
         jobs = packets[:self.engine._max_model_requests_per_page // 2]
@@ -120,7 +123,8 @@ class StructuredExtraction:
                 try:
                     extraction_input = {"untrusted_source": source, "repair": feedback}
                     extraction_text = json.dumps(extraction_input, ensure_ascii=False)
-                    extraction_limit = engine._chunk_content_characters * 4
+                    extraction_limit = (engine._max_repair_input_characters if revision
+                                        else engine._chunk_content_characters * 4)
                     if len(extraction_text) > extraction_limit:
                         original_characters = len(extraction_text)
                         extraction_text = json.dumps(extraction_input, ensure_ascii=False, separators=(",", ":"))
@@ -128,7 +132,8 @@ class StructuredExtraction:
                             raise ValueError(
                                 "extraction input exceeds bounded source/feedback allowance: "
                                 f"{len(extraction_text)} characters after JSON whitespace compaction "
-                                f"(from {original_characters}) > {extraction_limit}")
+                                f"(from {original_characters}) > {extraction_limit}"
+                                + (f" (max_repair_input_characters={extraction_limit})" if revision else ""))
                         engine._progress(
                             f"Structured group {job_index}, revision {revision}: compacted extraction JSON "
                             f"whitespace from {original_characters} to {len(extraction_text)} characters "
@@ -257,6 +262,10 @@ class StructuredExtraction:
                     message = f"Structured group {job_index}, revision {revision}: {stage} failed: {exc}"
                     warnings.append(message)
                     engine._progress(message)
+                    if stage == "extraction_input" and revision == 0:
+                        # A model repair cannot reduce an oversized initial source.
+                        # Do not bypass that source limit with the repair allowance.
+                        break
                 except SemanticModelError as exc:
                     history.append({"revision": revision, "provider_error": str(exc),
                                     "failure_stage": stage, "proposals": proposed,

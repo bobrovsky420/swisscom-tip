@@ -712,6 +712,7 @@ class CandidateConceptExtractor:
         max_repair_attempts: int = 1,
         prompts: PromptSet | None = None,
         max_review_input_characters: int = 64_000,
+        max_repair_input_characters: int | None = None,
     ) -> None:
         if prompt_profile not in {DEFAULT_PROMPT_PROFILE, *_SPAN_PROFILES, STRUCTURED_PROMPT_PROFILE}:
             raise ConceptExtractionError(f"unsupported prompt profile: {prompt_profile}")
@@ -719,6 +720,9 @@ class CandidateConceptExtractor:
             raise ConceptExtractionError("chunk_content_characters must be at least 500")
         if type(max_review_input_characters) is not int or max_review_input_characters <= 0:
             raise ConceptExtractionError("max_review_input_characters must be a positive integer")
+        if max_repair_input_characters is not None and (
+                type(max_repair_input_characters) is not int or max_repair_input_characters <= 0):
+            raise ConceptExtractionError("max_repair_input_characters must be a positive integer or None")
         if not 0 <= chunk_overlap_characters <= chunk_content_characters // 2:
             raise ConceptExtractionError(
                 "chunk_overlap_characters must be non-negative and no more than "
@@ -740,6 +744,8 @@ class CandidateConceptExtractor:
             raise ConceptExtractionError("prompt set must match the selected prompt profile")
         self._chunk_content_characters = chunk_content_characters
         self._max_review_input_characters = max_review_input_characters
+        self._max_repair_input_characters = (
+            chunk_content_characters * 4 if max_repair_input_characters is None else max_repair_input_characters)
         self._chunk_overlap_characters = chunk_overlap_characters
         self._max_concepts_per_chunk = max_concepts_per_chunk
         self._max_model_requests_per_page = max_model_requests_per_page

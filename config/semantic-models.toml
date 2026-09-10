@@ -21,6 +21,9 @@ max_repair_attempts = 1
 chunk_content_characters = 6400
 # Complete structured review payload, including source, proposals and feedback.
 max_review_input_characters = 64000
+# Complete repair payload, including source and validation/coverage diagnostics.
+# Omit to retain the legacy allowance of four times chunk_content_characters.
+max_repair_input_characters = 64000
 chunk_overlap_characters = 400
 max_concepts_per_chunk = 6
 max_pages_per_run = 10

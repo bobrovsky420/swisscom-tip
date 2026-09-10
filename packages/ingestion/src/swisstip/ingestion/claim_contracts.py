@@ -44,7 +44,21 @@ def validate(value, schema, path="response"):
     if not matches[kind]:
         raise ValueError(f"{path}: expected {kind}")
     if "enum" in schema and value not in schema["enum"]:
-        raise ValueError(f"{path}: unknown value")
+        # Model strings and source evidence enums can be large. Show enough to
+        # repair the invalid field without expanding the bounded feedback.
+        def preview(item):
+            if isinstance(item, str):
+                text = json.dumps(item[:80], ensure_ascii=True)
+                return text[:117] + "..." if len(item) > 80 or len(text) > 120 else text
+            if type(item) is int and item.bit_length() > 256:
+                return "<integer exceeds 256 bits>"
+            if isinstance(item, (dict, list)):
+                return f"<{type(item).__name__}>"
+            return repr(item)[:120]
+        allowed = schema["enum"]
+        choices = ", ".join(preview(item) for item in allowed[:12])
+        omitted = f" ({len(allowed) - 12} more omitted)" if len(allowed) > 12 else ""
+        raise ValueError(f"{path}: unknown value; received={preview(value)}; allowed=[{choices}]{omitted}")
     if kind == "object":
         if set(value) != set(schema["properties"]):
             missing = sorted(set(schema["properties"]) - set(value))
@@ -57,7 +71,9 @@ def validate(value, schema, path="response"):
             validate(item, schema["properties"][key], f"{path}.{key}")
     elif kind == "array":
         if not schema["minItems"] <= len(value) <= schema["maxItems"]:
-            raise ValueError(f"{path}: array bounds exceeded")
+            raise ValueError(
+                f"{path}: array bounds exceeded "
+                f"(received={len(value)}, min={schema['minItems']}, max={schema['maxItems']})")
         for index, item in enumerate(value):
             validate(item, schema["items"], f"{path}[{index}]")
     elif kind == "string" and "minLength" in schema:
