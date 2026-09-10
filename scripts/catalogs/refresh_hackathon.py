@@ -1,4 +1,4 @@
-"""Refresh derived source index and draft contract hashes, without network access."""
+"""Refresh the marked source index and draft hashes, preserving the curated plan."""
 
 from __future__ import annotations
 
@@ -12,6 +12,8 @@ from swisstip.core.identity import json_content_hash, seal_artifact
 
 ROOT = Path(__file__).resolve().parents[2]
 DIRECTORY = ROOT / "config/catalogs"
+REGISTRY_START = "<!-- BEGIN GENERATED SOURCE REGISTRY -->"
+REGISTRY_END = "<!-- END GENERATED SOURCE REGISTRY -->"
 
 
 def main() -> int:
@@ -29,7 +31,7 @@ def main() -> int:
     seed = seal_artifact(seed)
     directory_url = next(source["definition"]["start_url"] for source in data["sources"]
                          if source["definition"]["source_id"] == "ch-sem-authorities")
-    lines = ["# Residence in Switzerland - source catalogue", "",
+    lines = ["## Registered seed index", "",
              "Operator-authored source references only. Discovery dates and references are recorded",
              "per source in the registry. Authority discovery includes the",
              f"[SEM cantonal authority directory]({directory_url}).",
@@ -52,8 +54,16 @@ def main() -> int:
         lines.append(f"| `{definition['source_id']}` | [{source['title']}]({definition['start_url']}) | "
                      f"{jurisdiction} | {definition['language']} | {source['priority']} | {source['scan_status']} | "
                      f"{groups.get(definition['source_id'], '-')} |")
+    source_document = (DIRECTORY / "hackathon.sources.md").read_text(encoding="utf-8")
+    if source_document.count(REGISTRY_START) != 1 or source_document.count(REGISTRY_END) != 1:
+        raise ValueError("Source catalogue must contain exactly one generated registry marker pair")
+    curated_plan, _, registry_tail = source_document.partition(REGISTRY_START)
+    if REGISTRY_END not in registry_tail:
+        raise ValueError("Source catalogue registry end marker must follow its start marker")
+    _, _, suffix = registry_tail.partition(REGISTRY_END)
+    source_index = curated_plan + REGISTRY_START + "\n\n" + "\n".join(lines) + "\n" + REGISTRY_END + suffix
     outputs = {
-        "hackathon.sources.md": "\n".join(lines) + "\n",
+        "hackathon.sources.md": source_index,
         "hackathon.language-policy.json": policy.model_dump_json(indent=2) + "\n",
         "hackathon.seed.json": seed.model_dump_json(indent=2) + "\n",
     }

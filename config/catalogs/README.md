@@ -1,7 +1,9 @@
-# Hackathon knowledge space - residence in Switzerland
+# Hackathon MVP knowledge space - residence permit in Switzerland
 
-The `hackathon` Knowledge Space is prepared as a source-only catalogue for a
-later operator-triggered build. It contains **59 official source references**:
+The residence-permit MCP pilot is the hackathon MVP. Its curated source plan,
+nationwide inventory and acquisition gaps live in [the source catalogue](hackathon.sources.md).
+The `hackathon` Knowledge Space remains source-only pending an operator-triggered
+build. Its machine-readable scan registry currently contains **59 official source references**:
 24 federal references, 34 cantonal references covering all 26 cantons, and one
 municipal reference for the City of Zurich. Zurich has additional topic pages;
 the other cantons initially have one migration/residence entry point each.
@@ -219,7 +221,9 @@ translations with distinct language hints and matching authority/jurisdiction;
 each seed can belong to one group, whose alignment remains `NOT_EVALUATED`.
 The former `preferred_source_id` substitution field is rejected by validation.
 Verify actual source links before changing translated URL
-slugs. Then regenerate the readable index and reseal the
+slugs. Edit the curated MVP plan in `hackathon.sources.md` directly; the refresh
+helper preserves that text and only replaces the marked generated registry section.
+Keep both registry markers intact. Then regenerate the registered seed index and reseal the
 draft language policy/catalog and their source-reference hash:
 
 ```shell
