@@ -1,0 +1,294 @@
+{
+  "provenance": {
+    "job_id": "9210329deaa64ef49abc26cef7bfc7a9",
+    "report_sha256": "6fcd22ea4bcaacd5eadfd5251937f5d95d37fedb3b73bb12720e2fc47776027d",
+    "source_sha256": "b2da0b36fe559eda757496393c8e9db616cf7444fd796e14a8a8e030b458f1f4",
+    "input_hash": "5c025b220f51341c1a9b3969fc14dc52e8db710a0815a7c2b0d62d155f67aabb",
+    "normalization_version": "swisstip.logical-blocks/v3",
+    "claim_contract_version": "swisstip.structured-claims/v1",
+    "review_contract_version": "swisstip.structured-review/v2",
+    "group_index": 2,
+    "description": "Exact saved G3 source evidence and two extraction completions. Four ISO calendar comparisons in three proposals were rejected by the v1 numeric-only validator. Offline tests use explicitly synthetic uncertain reviews; they do not replay a model approval of these date proposals.",
+    "completions": [
+      {
+        "request_id": "a8af0cab-4e93-4e90-bb62-5c93be6a6a77",
+        "checkpoint_key": "ac91fb77af5b7840ea5fc8be5bc7dafcbcea5dceb145aadfe073862f24a09ed3",
+        "checkpoint_sha256": "deed489e0f9662a4c0eb324ee9e2ac92ed09c424cb43a46d807eb0988082c829",
+        "raw_completion_sha256": "2d1b1f925c7b33eaca4a4f872d1bffe5be17358822d0702d5ae3c1f8b6acf0f8"
+      },
+      {
+        "request_id": "08be987e-cd83-461e-b0b8-b72c84758e70",
+        "checkpoint_key": "43e9951d1ace74ae06c3a3bd06eca1c3485c70d6eb06a1ad3e027b8234cc3a4d",
+        "checkpoint_sha256": "0bd5db53e8705124de228223cb8f01bb6d2d2753fa501d24591ef9974239f9da",
+        "raw_completion_sha256": "2d1b1f925c7b33eaca4a4f872d1bffe5be17358822d0702d5ae3c1f8b6acf0f8"
+      }
+    ]
+  },
+  "source_blocks": [
+    {
+      "section_id": "section-0063",
+      "scope_id": "scope-0035",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit",
+      "text": "Das Vereinigte Königreich (UK) ist am 31. Januar 2020 aus der Europäischen Union (EU) ausgetreten. In einer Übergangsphase bis zum 31. Dezember 2020 blieben die bilateralen Verträge zwischen der Schweiz und der EU auf das UK anwendbar. Seit dem 1. Januar 2021 kommt das Freizügigkeitsabkommen (FZA) zwischen der Schwiez und der EU für das UK nicht mehr zur Anwendung.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0064",
+      "scope_id": "scope-0035",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit",
+      "text": "Die Schweiz und das Vereinigte Königreich haben am 25. September 2019 ein Abkommen über die Rechte der Bürgerinnen und Bürger infolge des Austritts des Vereinigten Königreichs aus der EU und dem Wegfall des Freizügigkeitsabkommens unterzeichnet. Was dies für die Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben, genau bedeutet, erfahren Sie in der Weisung zum Abkommen über die erworbenen Rechte von UK-Bürgern.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0065",
+      "scope_id": "scope-0035",
+      "kind": "list",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit",
+      "text": "Download\n\nAbkommen über die erworbenen Recht von UK-Bürgern\nPDF | 7 Seiten | Deutsch | 269 KB",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0066",
+      "scope_id": "scope-0035",
+      "kind": "list",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit",
+      "text": "Informationen des Staatssekretariats für Migration zum Brexit",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0068",
+      "scope_id": "scope-0036",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein",
+      "text": "Das Fürstentum Liechtenstein ist kein Mitgliedstaat der Europäischen Union. Es wird zusammen mit der Schweiz, Island und Norwegen von der europäischen Freihandelsassoziation EFTA umfasst.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0069",
+      "scope_id": "scope-0036",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein",
+      "text": "Zwischen den Nachbarstaaten Schweiz und Liechtenstein besteht ein dichtes Netz von bilateralen Verträgen und Abkommen. So besteht seit 1923 ein Vertrag über den freien Personenverkehr, der offene Grenzen und die Zollunion ermöglicht.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0070",
+      "scope_id": "scope-0036",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein",
+      "text": "Seit dem 1. Januar 2005 gewährt die Schweiz Liechtenstein die volle Freizügigkeit gemäss dem Freizügigkeitsabkommen. Liechtensteinische Staatsangehörige können sich daher wie EU-Staatsangehörige auf das Freizügigkeitsabkommen berufen.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0071",
+      "scope_id": "scope-0036",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein",
+      "text": "Für liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein gelten in der Schweiz bzw. im Kanton Zürich zusätzlich bestimmte Sonderregelungen. Alle Informationen zu diesen Sonderregelungen finden Sie in der untenstehenden Weisung für Personen aus dem Fürstentum Liechtenstein.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0072",
+      "scope_id": "scope-0036",
+      "kind": "list",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein",
+      "text": "Download\n\nPersonen aus dem Fürstentum Liechtenstein\nPDF | 6 Seiten | Deutsch | 271 KB",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0074",
+      "scope_id": "scope-0038",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Weiterführende Informationen",
+      "text": "Verwenden Sie die Akkordeon-Bedienelemente, um die Sichtbarkeit der jeweiligen Panels (unterhalb der Bedienelemente) umzuschalten.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0076",
+      "scope_id": "scope-0039",
+      "kind": "list",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Weiterführende Informationen > Merkblätter & Downloads",
+      "text": "Download\n\nFreizügigkeitsabkommen EU/EFTA-Staaten\nPDF | 33 Seiten | Deutsch | 352 KB\n\nDownload\n\nAbkommen über die erworbenen Recht von UK-Bürgern\nPDF | 7 Seiten | Deutsch | 269 KB\n\nDownload\n\nPersonen aus dem Fürstentum Liechtenstein\nPDF | 6 Seiten | Deutsch | 271 KB",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0079",
+      "scope_id": "scope-0041",
+      "kind": "text",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Bitte geben Sie uns Feedback > Ist diese Seite verständlich?",
+      "text": "Ja",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0080",
+      "scope_id": "scope-0041",
+      "kind": "text",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Bitte geben Sie uns Feedback > Ist diese Seite verständlich?",
+      "text": "Nein",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0085",
+      "scope_id": "scope-0046",
+      "kind": "address",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Kontakt > Migrationsamt > Adresse",
+      "text": "Berninastrasse 45\n\nPostfach\n\n8090 Zürich\n\nRoute (Google)\n\nAdresse kopieren\n\nAdresse wurde kopiert\n\nAdresse konnte nicht kopiert werden",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0086",
+      "scope_id": "scope-0046",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt für EU/EFTA-Staatsangehörige > Kontakt > Migrationsamt > Adresse",
+      "text": "Montag bis Freitag\n\n08.00 bis 16.30 Uhr",
+      "structure_issues": []
+    }
+  ],
+  "evidence": {
+    "section-0063:0:416": {
+      "section_id": "section-0063",
+      "scope_id": "scope-0035",
+      "start": 0,
+      "end": 416,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit\nDas Vereinigte Königreich (UK) ist am 31. Januar 2020 aus der Europäischen Union (EU) ausgetreten. In einer Übergangsphase bis zum 31. Dezember 2020 blieben die bilateralen Verträge zwischen der Schweiz und der EU auf das UK anwendbar. Seit dem 1. Januar 2021 kommt das Freizügigkeitsabkommen (FZA) zwischen der Schwiez und der EU für das UK nicht mehr zur Anwendung."
+    },
+    "section-0064:0:546": {
+      "section_id": "section-0064",
+      "scope_id": "scope-0035",
+      "start": 0,
+      "end": 546,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit\nDie Schweiz und das Vereinigte Königreich haben am 25. September 2019 ein Abkommen über die Rechte der Bürgerinnen und Bürger infolge des Austritts des Vereinigten Königreichs aus der EU und dem Wegfall des Freizügigkeitsabkommens unterzeichnet. Was dies für die Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben, genau bedeutet, erfahren Sie in der Weisung zum Abkommen über die erworbenen Rechte von UK-Bürgern."
+    },
+    "section-0065:0:142": {
+      "section_id": "section-0065",
+      "scope_id": "scope-0035",
+      "start": 0,
+      "end": 142,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit\nDownload\n\nAbkommen über die erworbenen Recht von UK-Bürgern\nPDF | 7 Seiten | Deutsch | 269 KB"
+    },
+    "section-0066:0:110": {
+      "section_id": "section-0066",
+      "scope_id": "scope-0035",
+      "start": 0,
+      "end": 110,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Brexit\nInformationen des Staatssekretariats für Migration zum Brexit"
+    },
+    "section-0068:0:271": {
+      "section_id": "section-0068",
+      "scope_id": "scope-0036",
+      "start": 0,
+      "end": 271,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein\nDas Fürstentum Liechtenstein ist kein Mitgliedstaat der Europäischen Union. Es wird zusammen mit der Schweiz, Island und Norwegen von der europäischen Freihandelsassoziation EFTA umfasst."
+    },
+    "section-0069:0:317": {
+      "section_id": "section-0069",
+      "scope_id": "scope-0036",
+      "start": 0,
+      "end": 317,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein\nZwischen den Nachbarstaaten Schweiz und Liechtenstein besteht ein dichtes Netz von bilateralen Verträgen und Abkommen. So besteht seit 1923 ein Vertrag über den freien Personenverkehr, der offene Grenzen und die Zollunion ermöglicht."
+    },
+    "section-0070:0:318": {
+      "section_id": "section-0070",
+      "scope_id": "scope-0036",
+      "start": 0,
+      "end": 318,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein\nSeit dem 1. Januar 2005 gewährt die Schweiz Liechtenstein die volle Freizügigkeit gemäss dem Freizügigkeitsabkommen. Liechtensteinische Staatsangehörige können sich daher wie EU-Staatsangehörige auf das Freizügigkeitsabkommen berufen."
+    },
+    "section-0071:0:391": {
+      "section_id": "section-0071",
+      "scope_id": "scope-0036",
+      "start": 0,
+      "end": 391,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein\nFür liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein gelten in der Schweiz bzw. im Kanton Zürich zusätzlich bestimmte Sonderregelungen. Alle Informationen zu diesen Sonderregelungen finden Sie in der untenstehenden Weisung für Personen aus dem Fürstentum Liechtenstein."
+    },
+    "section-0072:0:169": {
+      "section_id": "section-0072",
+      "scope_id": "scope-0036",
+      "start": 0,
+      "end": 169,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Personen aus dem Fürstentum Liechtenstein\nDownload\n\nPersonen aus dem Fürstentum Liechtenstein\nPDF | 6 Seiten | Deutsch | 271 KB"
+    },
+    "section-0074:0:201": {
+      "section_id": "section-0074",
+      "scope_id": "scope-0038",
+      "start": 0,
+      "end": 201,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Weiterführende Informationen\nVerwenden Sie die Akkordeon-Bedienelemente, um die Sichtbarkeit der jeweiligen Panels (unterhalb der Bedienelemente) umzuschalten."
+    },
+    "section-0076:0:362": {
+      "section_id": "section-0076",
+      "scope_id": "scope-0039",
+      "start": 0,
+      "end": 362,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Weiterführende Informationen > Merkblätter & Downloads\nDownload\n\nFreizügigkeitsabkommen EU/EFTA-Staaten\nPDF | 33 Seiten | Deutsch | 352 KB\n\nDownload\n\nAbkommen über die erworbenen Recht von UK-Bürgern\nPDF | 7 Seiten | Deutsch | 269 KB\n\nDownload\n\nPersonen aus dem Fürstentum Liechtenstein\nPDF | 6 Seiten | Deutsch | 271 KB"
+    },
+    "section-0079:0:105": {
+      "section_id": "section-0079",
+      "scope_id": "scope-0041",
+      "start": 0,
+      "end": 105,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Bitte geben Sie uns Feedback > Ist diese Seite verständlich?\nJa"
+    },
+    "section-0080:0:107": {
+      "section_id": "section-0080",
+      "scope_id": "scope-0041",
+      "start": 0,
+      "end": 107,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Bitte geben Sie uns Feedback > Ist diese Seite verständlich?\nNein"
+    },
+    "section-0085:0:210": {
+      "section_id": "section-0085",
+      "scope_id": "scope-0046",
+      "start": 0,
+      "end": 210,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Kontakt > Migrationsamt > Adresse\nBerninastrasse 45\n\nPostfach\n\n8090 Zürich\n\nRoute (Google)\n\nAdresse kopieren\n\nAdresse wurde kopiert\n\nAdresse konnte nicht kopiert werden"
+    },
+    "section-0086:0:115": {
+      "section_id": "section-0086",
+      "scope_id": "scope-0046",
+      "start": 0,
+      "end": 115,
+      "text": "Aufenthalt für EU/EFTA-Staatsangehörige > Kontakt > Migrationsamt > Adresse\nMontag bis Freitag\n\n08.00 bis 16.30 Uhr"
+    }
+  },
+  "raw_initial_completion": "{\n  \"concepts\": [\n    {\n      \"label\": \"Brexit\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0063\",\n      \"claims\": [\n        {\n          \"claim_id\": \"uk-exit-date\",\n          \"kind\": \"fact\",\n          \"statement\": \"Das Vereinigte Königreich (UK) ist am 31. Januar 2020 aus der Europäischen Union (EU) ausgetreten.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Vereinigtes Königreich\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"transition-period\",\n          \"kind\": \"fact\",\n          \"statement\": \"In einer Übergangsphase bis zum 31. Dezember 2020 blieben die bilateralen Verträge zwischen der Schweiz und der EU auf das UK anwendbar.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, EU, UK\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"transition-end\",\n              \"text\": \"bis zum 31. Dezember 2020\",\n              \"evidence_ids\": [\"section-0063:0:416\"],\n              \"subject\": \"Übergangsphase\",\n              \"operator\": \"lte\",\n              \"value\": \"2020-12-31\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"transition-end\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"fza-not-applicable\",\n          \"kind\": \"fact\",\n          \"statement\": \"Seit dem 1. Januar 2021 kommt das Freizügigkeitsabkommen (FZA) zwischen der Schwiez und der EU für das UK nicht mehr zur Anwendung.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, EU, UK\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"fza-start\",\n              \"text\": \"Seit dem 1. Januar 2021\",\n              \"evidence_ids\": [\"section-0063:0:416\"],\n              \"subject\": \"FZA\",\n              \"operator\": \"gte\",\n              \"value\": \"2021-01-01\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"fza-start\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Abkommen über die Rechte der Bürgerinnen und Bürger\",\n      \"concept_type\": \"DOCUMENT\",\n      \"primary_section_id\": \"section-0064\",\n      \"claims\": [\n        {\n          \"claim_id\": \"agreement-signed\",\n          \"kind\": \"fact\",\n          \"statement\": \"Die Schweiz und das Vereinigte Königreich haben am 25. September 2019 ein Abkommen über die Rechte der Bürgerinnen und Bürger infolge des Austritts des Vereinigten Königreichs aus der EU und dem Wegfall des Freizügigkeitsabkommens unterzeichnet.\",\n          \"evidence_ids\": [\"section-0064:0:546\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Schweiz und Vereinigtes Königreich\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0064:0:546\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"weisung-reference\",\n          \"kind\": \"fact\",\n          \"statement\": \"Was dies für die Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben, genau bedeutet, erfahren Sie in der Weisung zum Abkommen über die erworbenen Rechte von UK-Bürgern.\",\n          \"evidence_ids\": [\"section-0064:0:546\"],\n          \"scope\": {\n            \"population\": \"Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben\",\n            \"jurisdiction\": \"Schweiz, Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0064:0:546\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"freizuegigkeit-bis\",\n              \"text\": \"die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben\",\n              \"evidence_ids\": [\"section-0064:0:546\"],\n              \"subject\": \"Bürgerinnen und Bürger des Vereinigten Königreichs\",\n              \"operator\": \"lte\",\n              \"value\": \"2020-12-31\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"freizuegigkeit-bis\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Personen aus dem Fürstentum Liechtenstein\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0068\",\n      \"claims\": [\n        {\n          \"claim_id\": \"liechtenstein-efta\",\n          \"kind\": \"fact\",\n          \"statement\": \"Das Fürstentum Liechtenstein ist kein Mitgliedstaat der Europäischen Union. Es wird zusammen mit der Schweiz, Island und Norwegen von der europäischen Freihandelsassoziation EFTA umfasst.\",\n          \"evidence_ids\": [\"section-0068:0:271\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Liechtenstein, Schweiz, Island, Norwegen\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0068:0:271\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"bilateral-treaties\",\n          \"kind\": \"fact\",\n          \"statement\": \"Zwischen den Nachbarstaaten Schweiz und Liechtenstein besteht ein dichtes Netz von bilateralen Verträgen und Abkommen. So besteht seit 1923 ein Vertrag über den freien Personenverkehr, der offene Grenzen und die Zollunion ermöglicht.\",\n          \"evidence_ids\": [\"section-0069:0:317\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, Liechtenstein\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0069:0:317\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"full-free-movement\",\n          \"kind\": \"fact\",\n          \"statement\": \"Seit dem 1. Januar 2005 gewährt die Schweiz Liechtenstein die volle Freizügigkeit gemäss dem Freizügigkeitsabkommen. Liechtensteinische Staatsangehörige können sich daher wie EU-Staatsangehörige auf das Freizügigkeitsabkommen berufen.\",\n          \"evidence_ids\": [\"section-0070:0:318\"],\n          \"scope\": {\n            \"population\": \"Liechtensteinische Staatsangehörige\",\n            \"jurisdiction\": \"Schweiz, Liechtenstein\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Schweiz\",\n            \"recipient\": \"Liechtenstein\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0070:0:318\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"since-2005\",\n              \"text\": \"Seit dem 1. Januar 2005\",\n              \"evidence_ids\": [\"section-0070:0:318\"],\n              \"subject\": \"Freizügigkeit\",\n              \"operator\": \"gte\",\n              \"value\": \"2005-01-01\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"since-2005\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"special-rules\",\n          \"kind\": \"fact\",\n          \"statement\": \"Für liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein gelten in der Schweiz bzw. im Kanton Zürich zusätzlich bestimmte Sonderregelungen. Alle Informationen zu diesen Sonderregelungen finden Sie in der untenstehenden Weisung für Personen aus dem Fürstentum Liechtenstein.\",\n          \"evidence_ids\": [\"section-0071:0:391\"],\n          \"scope\": {\n            \"population\": \"Liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein\",\n            \"jurisdiction\": \"Schweiz, Kanton Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0071:0:391\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Migrationsamt Kontakt\",\n      \"concept_type\": \"SERVICE\",\n      \"primary_section_id\": \"section-0085\",\n      \"claims\": [\n        {\n          \"claim_id\": \"address\",\n          \"kind\": \"fact\",\n          \"statement\": \"Adresse: Berninastrasse 45, Postfach, 8090 Zürich\",\n          \"evidence_ids\": [\"section-0085:0:210\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0085:0:210\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"opening-hours\",\n          \"kind\": \"fact\",\n          \"statement\": \"Montag bis Freitag, 08.00 bis 16.30 Uhr\",\n          \"evidence_ids\": [\"section-0086:0:115\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0086:0:115\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    }\n  ],\n  \"saturated\": false\n}",
+  "raw_repaired_completion": "{\n  \"concepts\": [\n    {\n      \"label\": \"Brexit\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0063\",\n      \"claims\": [\n        {\n          \"claim_id\": \"uk-exit-date\",\n          \"kind\": \"fact\",\n          \"statement\": \"Das Vereinigte Königreich (UK) ist am 31. Januar 2020 aus der Europäischen Union (EU) ausgetreten.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Vereinigtes Königreich\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"transition-period\",\n          \"kind\": \"fact\",\n          \"statement\": \"In einer Übergangsphase bis zum 31. Dezember 2020 blieben die bilateralen Verträge zwischen der Schweiz und der EU auf das UK anwendbar.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, EU, UK\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"transition-end\",\n              \"text\": \"bis zum 31. Dezember 2020\",\n              \"evidence_ids\": [\"section-0063:0:416\"],\n              \"subject\": \"Übergangsphase\",\n              \"operator\": \"lte\",\n              \"value\": \"2020-12-31\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"transition-end\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"fza-not-applicable\",\n          \"kind\": \"fact\",\n          \"statement\": \"Seit dem 1. Januar 2021 kommt das Freizügigkeitsabkommen (FZA) zwischen der Schwiez und der EU für das UK nicht mehr zur Anwendung.\",\n          \"evidence_ids\": [\"section-0063:0:416\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, EU, UK\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0063:0:416\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"fza-start\",\n              \"text\": \"Seit dem 1. Januar 2021\",\n              \"evidence_ids\": [\"section-0063:0:416\"],\n              \"subject\": \"FZA\",\n              \"operator\": \"gte\",\n              \"value\": \"2021-01-01\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"fza-start\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Abkommen über die Rechte der Bürgerinnen und Bürger\",\n      \"concept_type\": \"DOCUMENT\",\n      \"primary_section_id\": \"section-0064\",\n      \"claims\": [\n        {\n          \"claim_id\": \"agreement-signed\",\n          \"kind\": \"fact\",\n          \"statement\": \"Die Schweiz und das Vereinigte Königreich haben am 25. September 2019 ein Abkommen über die Rechte der Bürgerinnen und Bürger infolge des Austritts des Vereinigten Königreichs aus der EU und dem Wegfall des Freizügigkeitsabkommens unterzeichnet.\",\n          \"evidence_ids\": [\"section-0064:0:546\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Schweiz und Vereinigtes Königreich\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0064:0:546\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"weisung-reference\",\n          \"kind\": \"fact\",\n          \"statement\": \"Was dies für die Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben, genau bedeutet, erfahren Sie in der Weisung zum Abkommen über die erworbenen Rechte von UK-Bürgern.\",\n          \"evidence_ids\": [\"section-0064:0:546\"],\n          \"scope\": {\n            \"population\": \"Bürgerinnen und Bürger des Vereinigten Königreichs, die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben\",\n            \"jurisdiction\": \"Schweiz, Vereinigtes Königreich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0064:0:546\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"freizuegigkeit-bis\",\n              \"text\": \"die bis am 31. Dezember 2020 von den Freizügigkeitsrechten Gebrauch gemacht haben\",\n              \"evidence_ids\": [\"section-0064:0:546\"],\n              \"subject\": \"Bürgerinnen und Bürger des Vereinigten Königreichs\",\n              \"operator\": \"lte\",\n              \"value\": \"2020-12-31\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"freizuegigkeit-bis\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Personen aus dem Fürstentum Liechtenstein\",\n      \"concept_type\": \"RULE\",\n      \"primary_section_id\": \"section-0068\",\n      \"claims\": [\n        {\n          \"claim_id\": \"liechtenstein-efta\",\n          \"kind\": \"fact\",\n          \"statement\": \"Das Fürstentum Liechtenstein ist kein Mitgliedstaat der Europäischen Union. Es wird zusammen mit der Schweiz, Island und Norwegen von der europäischen Freihandelsassoziation EFTA umfasst.\",\n          \"evidence_ids\": [\"section-0068:0:271\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Liechtenstein, Schweiz, Island, Norwegen\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0068:0:271\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"bilateral-treaties\",\n          \"kind\": \"fact\",\n          \"statement\": \"Zwischen den Nachbarstaaten Schweiz und Liechtenstein besteht ein dichtes Netz von bilateralen Verträgen und Abkommen. So besteht seit 1923 ein Vertrag über den freien Personenverkehr, der offene Grenzen und die Zollunion ermöglicht.\",\n          \"evidence_ids\": [\"section-0069:0:317\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Schweiz, Liechtenstein\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0069:0:317\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"full-free-movement\",\n          \"kind\": \"fact\",\n          \"statement\": \"Seit dem 1. Januar 2005 gewährt die Schweiz Liechtenstein die volle Freizügigkeit gemäss dem Freizügigkeitsabkommen. Liechtensteinische Staatsangehörige können sich daher wie EU-Staatsangehörige auf das Freizügigkeitsabkommen berufen.\",\n          \"evidence_ids\": [\"section-0070:0:318\"],\n          \"scope\": {\n            \"population\": \"Liechtensteinische Staatsangehörige\",\n            \"jurisdiction\": \"Schweiz, Liechtenstein\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Schweiz\",\n            \"recipient\": \"Liechtenstein\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0070:0:318\"],\n          \"conditions\": [\n            {\n              \"condition_id\": \"since-2005\",\n              \"text\": \"Seit dem 1. Januar 2005\",\n              \"evidence_ids\": [\"section-0070:0:318\"],\n              \"subject\": \"Freizügigkeit\",\n              \"operator\": \"gte\",\n              \"value\": \"2005-01-01\",\n              \"unit\": \"date\",\n              \"time_window\": \"unspecified\"\n            }\n          ],\n          \"condition_groups\": [],\n          \"condition_root\": \"since-2005\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"special-rules\",\n          \"kind\": \"fact\",\n          \"statement\": \"Für liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein gelten in der Schweiz bzw. im Kanton Zürich zusätzlich bestimmte Sonderregelungen. Alle Informationen zu diesen Sonderregelungen finden Sie in der untenstehenden Weisung für Personen aus dem Fürstentum Liechtenstein.\",\n          \"evidence_ids\": [\"section-0071:0:391\"],\n          \"scope\": {\n            \"population\": \"Liechtensteinische Staatsangehörige oder Personen mit festem Wohnsitz in Liechtenstein\",\n            \"jurisdiction\": \"Schweiz, Kanton Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"unspecified\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0071:0:391\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    },\n    {\n      \"label\": \"Migrationsamt Kontakt\",\n      \"concept_type\": \"SERVICE\",\n      \"primary_section_id\": \"section-0085\",\n      \"claims\": [\n        {\n          \"claim_id\": \"address\",\n          \"kind\": \"fact\",\n          \"statement\": \"Adresse: Berninastrasse 45, Postfach, 8090 Zürich\",\n          \"evidence_ids\": [\"section-0085:0:210\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0085:0:210\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"opening-hours\",\n          \"kind\": \"fact\",\n          \"statement\": \"Montag bis Freitag, 08.00 bis 16.30 Uhr\",\n          \"evidence_ids\": [\"section-0086:0:115\"],\n          \"scope\": {\n            \"population\": \"unspecified\",\n            \"jurisdiction\": \"Zürich\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0086:0:115\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    }\n  ],\n  \"saturated\": false\n}",
+  "original_rejections": [
+    {
+      "proposal_index": 0,
+      "reason": "numeric comparison requires a finite numeric value",
+      "errors": [
+        {
+          "path": "claims[1].conditions[0].value",
+          "reason": "numeric comparison requires a finite numeric value"
+        },
+        {
+          "path": "claims[2].conditions[0].value",
+          "reason": "numeric comparison requires a finite numeric value"
+        }
+      ]
+    },
+    {
+      "proposal_index": 1,
+      "reason": "numeric comparison requires a finite numeric value",
+      "errors": [
+        {
+          "path": "claims[1].conditions[0].value",
+          "reason": "numeric comparison requires a finite numeric value"
+        }
+      ]
+    },
+    {
+      "proposal_index": 2,
+      "reason": "numeric comparison requires a finite numeric value",
+      "errors": [
+        {
+          "path": "claims[2].conditions[0].value",
+          "reason": "numeric comparison requires a finite numeric value"
+        }
+      ]
+    }
+  ]
+}

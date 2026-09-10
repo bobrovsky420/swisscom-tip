@@ -97,6 +97,18 @@ still need an extraction/review pair within the existing page budget; omitted
 blocks remain visible as `not_processed_budget`. Reaching the concept limit
 still marks a result saturated and subject to bounded repair and human review.
 
+The current V4 prompt profile emits reports with claim contract
+`swisstip.structured-claims/v2`. An explicit condition `unit="date"` requires a
+real calendar date in canonical ASCII `YYYY-MM-DD` form for every operator.
+Ordered comparisons for other units still require finite numbers. No values,
+operators or source excerpts are coerced. Calendar validity does not establish
+which event is compared or whether the source supports the temporal meaning;
+those remain semantic-review duties. Incomplete dates retain their source wording
+and unresolved interpretation rather than gaining invented days or months.
+The JSON shape is unchanged; the contract version distinguishes candidate and
+revision IDs. Existing v1 reports and their human review decisions stay intact.
+See the [calendar-date experiment](../../docs/experiments/2026-09-10-deepseek-calendar-dates.md).
+
 V4 review input has its own `[extraction].max_review_input_characters` limit,
 defaulting to 64000 when omitted from an older configuration. It counts the full
 serialized user payload: source evidence, proposals, rendered descriptions and

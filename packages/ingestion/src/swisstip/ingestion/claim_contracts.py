@@ -5,10 +5,12 @@ The validators check shape, references and logical integrity, not entailment.
 """
 from __future__ import annotations
 
+from datetime import date
 import json
 import math
+import re
 
-VERSION = "swisstip.structured-claims/v1"
+VERSION = "swisstip.structured-claims/v2"
 REVIEW_VERSION = "swisstip.structured-review/v2"
 SCOPE_FIELDS = ("population", "jurisdiction", "permit_status", "actor", "recipient", "procedure_branch")
 POLICY = {"schema_version": "swisstip.extraction-content-policy/v1",
@@ -239,7 +241,15 @@ def validate_concept(concept, evidence, sections):
         errors.extend(_condition_tree_errors(claim, path))
         for condition_index, condition in enumerate(claim["conditions"]):
             field = f"{path}.conditions[{condition_index}]"
-            if condition["operator"] in {"gt", "gte", "lt", "lte"}:
+            if condition["unit"] == "date":
+                try:
+                    canonical = (re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", condition["value"]) is not None
+                                 and date.fromisoformat(condition["value"]).isoformat() == condition["value"])
+                except ValueError:
+                    canonical = False
+                if not canonical:
+                    add(f"{field}.value", "date condition requires a real calendar date in canonical YYYY-MM-DD format")
+            elif condition["operator"] in {"gt", "gte", "lt", "lte"}:
                 try:
                     finite = math.isfinite(float(condition["value"]))
                 except ValueError:

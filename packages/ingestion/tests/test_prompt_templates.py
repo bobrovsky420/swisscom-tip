@@ -44,14 +44,14 @@ class PromptTemplateTests(unittest.TestCase):
 
     def test_bundled_prompts_match_reviewed_system_prompt_bytes(self):
         # v1-v3 preserve the original Python literals. v4 was revised to clarify
-        # source-bounded coverage, explicit per-claim review and a worked example.
+        # source-bounded coverage, per-claim review, calendar dates and a worked example.
         expected = {
             "concept_extraction_v1": ("c518de718fc062fde17189160eb86fa1208be5f057c5a3af8d7207b6cece9404", None),
             "concept_extraction_v2": ("8db37071451acce8b4475a8cea6e4c2f44c4fc927aff2a4f8bcecc01df6fd1d4", None),
             "concept_extraction_v3": ("ccd968b7b59b7ef144255483d42cda016872c0c82b49d00deb384578b234ee83",
                                       "893394d896520067767f1c69eaeefd8efad780658710b99fde64112d8390c78e"),
-            "concept_extraction_v4": ("4b870022420a0be39e16b8d993a8b1a44ee122375088807835d3d1c4efc5290e",
-                                      "854222e23c4209f5786f2e09cd1ad97f7d9f9f314fe3340eb8a881a4c616ed9b"),
+            "concept_extraction_v4": ("b8683871a251a5d14498d95db4758fdf5fed875bec48072061aa752ba51d56e7",
+                                      "d2478d3ac3c84104941e47293fe315c2cf350f98bf0e81345829ac9aef3f698b"),
         }
         for profile, (extraction, review) in expected.items():
             with self.subTest(profile=profile):

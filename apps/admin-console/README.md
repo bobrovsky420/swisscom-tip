@@ -72,9 +72,15 @@ credential presence, never values. Ollama still runs in WSL.
   provider retries are disabled; configured extraction repairs remain bounded by
   the displayed attempt ceiling. A run over its plan budget fails before inference.
 - Completed candidates appear beside source quotes. Record **accept draft**,
-  **needs changes** or **reject**, with a reviewer name and notes. Decisions append
-  to a history bound to the exact result hash and candidate ID. They are local
-  authoring annotations, not independent semantic verification or release approval.
+  **needs changes** or **reject**, with a reviewer name and notes. Each press of
+  **needs changes** or **reject** opens a dialog for that candidate with a fresh
+  comment field and the reviewer name. Enter a comment and choose **Save review**,
+  or **Cancel** to leave the decision unchanged. Saving confirms the review beside
+  the candidate without scrolling to the top; a failed save keeps the dialog and
+  comment available to retry. Acceptance uses the separate optional acceptance note.
+  Decisions append to a history bound to the exact result hash and candidate ID.
+  They are local authoring annotations, not independent semantic verification or
+  release approval.
 
 `Needs attention` includes extraction reports with zero candidates, warnings or
 rejections even if the CLI returned exit code 0. A completed job is not a semantic
@@ -134,6 +140,16 @@ on Unix. It loads saved pages, inspects parsed text, completes a real offline pl
 browses stored evidence and checks mobile overflow. It creates one plan job in the
 pilot database and sends no crawl/model requests. Results and screenshots are
 saved under `.local/admin/`.
+
+To check candidate review dialogs against the running console:
+
+```shell
+node apps/admin-console/review-dialog-smoke.mjs
+```
+
+This focused browser check intercepts all API requests with synthetic data. It
+checks comments, cancellation, submission and retry, scroll position, and mobile
+layout without creating jobs or changing saved review decisions.
 
 Dependency versions are pinned in `package-lock.json`. TypeScript 5.9.3 is used
 for compatibility with the generator; the `js-yaml` override selects its patched

@@ -96,6 +96,16 @@ evidence, not just a brochure label or the topic of the page. A field set to
 permit_status must name an evidenced status/category, not merely 'required'.
 Check kind as well as statement. Obligations belong to requirement claims.
 Check AND/OR, inequalities, units, time windows, deadline triggers and negations.
+For unit="date", a canonical valid YYYY-MM-DD value only establishes format.
+Check the date and comparison boundary against the cited source, then identify
+whose event date or assertion-applicability date the subject represents. Distinguish
+a historical fact from a validity period or a person-specific cutoff. Do not approve
+an invented transition start, eligibility prerequisite or substitution of today's,
+application or residence date for another source event. A missing or ambiguous
+comparison subject remains unsupported or uncertain even when the date is valid.
+Incomplete source dates must remain unresolved rather than gaining invented days
+or months. An unresolved temporal restriction needs its source wording and limitation;
+it is not an unconditional assertion. A linked document does not establish its contents.
 For conditional claims, check that the structured condition tree represents the
 prerequisites in the prose. Empty condition fields do not preserve a conditional
 requirement merely because its statement mentions a threshold. A claim purporting

@@ -908,6 +908,12 @@ function Empty({
 function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
   const [reviewer, setReviewer] = useState("");
   const [notes, setNotes] = useState("");
+  const [reviewTarget, setReviewTarget] = useState<{
+    candidate: Candidate;
+    decision: "needs_changes" | "reject";
+    resultSha256: string;
+  } | null>(null);
+  const [comment, setComment] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const cache = useQueryClient();
@@ -918,9 +924,16 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
   const mutation = useMutation({
     mutationFn: (body: ReviewRequest) =>
       unwrap(api.addReview({ path: { identifier: job.job_id }, body })),
-    onSuccess: (data) => {
+    onMutate: () => {
+      setMessage("");
+      setError("");
+    },
+    onSuccess: (data, body) => {
       setMessage(data.message);
       setError("");
+      setReviewTarget(null);
+      setComment("");
+      if (body.decision === "accept_draft") setNotes("");
       void cache.invalidateQueries({ queryKey: ["reviews", job.job_id] });
     },
     onError: (e: Error) => setError(e.message),
@@ -1034,24 +1047,18 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
             <TextInput
               label="Reviewer name"
               value={reviewer}
+              maxLength={100}
+              disabled={mutation.isPending}
               onChange={(e) => setReviewer(e.currentTarget.value)}
             />
             <Textarea
-              label="Review note"
+              label="Acceptance note (optional)"
               value={notes}
+              maxLength={4000}
+              disabled={mutation.isPending}
               onChange={(e) => setNotes(e.currentTarget.value)}
             />
           </Group>
-          {message && (
-            <Alert color="teal" mb="md">
-              {message}
-            </Alert>
-          )}
-          {error && (
-            <Alert color="red" mb="md">
-              {error}
-            </Alert>
-          )}
           {candidates.map((c) => (
             <div className="candidate" key={c.candidate_id}>
               <h3>{c.preferred_label}</h3>
@@ -1106,23 +1113,55 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
                             ? "orange"
                             : "teal"
                       }
-                      disabled={!reviewer.trim()}
-                      loading={mutation.isPending}
-                      onClick={() =>
-                        mutation.mutate({
-                          candidate_id: c.candidate_id,
-                          decision,
-                          reviewer,
-                          notes,
-                          result_sha256: job.result_sha256!,
-                        })
+                      disabled={
+                        mutation.isPending ||
+                        !job.result_sha256 ||
+                        (decision === "accept_draft" && !reviewer.trim())
                       }
+                      loading={
+                        mutation.isPending &&
+                        mutation.variables?.candidate_id === c.candidate_id &&
+                        mutation.variables.decision === decision
+                      }
+                      onClick={() => {
+                        if (decision === "accept_draft") {
+                          mutation.mutate({
+                            candidate_id: c.candidate_id,
+                            decision,
+                            reviewer: reviewer.trim(),
+                            notes,
+                            result_sha256: job.result_sha256!,
+                          });
+                        } else {
+                          setReviewTarget({
+                            candidate: c,
+                            decision,
+                            resultSha256: job.result_sha256!,
+                          });
+                          setComment("");
+                          setMessage("");
+                          setError("");
+                        }
+                      }}
                     >
                       {decision.replaceAll("_", " ")}
                     </Button>
                   ),
                 )}
               </Group>
+              {mutation.variables?.candidate_id === c.candidate_id &&
+                message && (
+                  <Alert color="teal" mt="sm" role="status">
+                    {message}
+                  </Alert>
+                )}
+              {mutation.variables?.candidate_id === c.candidate_id &&
+                error &&
+                !reviewTarget && (
+                  <Alert color="red" mt="sm">
+                    {error}
+                  </Alert>
+                )}
             </div>
           ))}
           <Text size="xs" c="dimmed" mt="lg">
@@ -1137,6 +1176,90 @@ function JobView({ job, onCancel }: { job: Job; onCancel: () => void }) {
           </details>
         </Paper>
       )}
+      <Modal
+        opened={reviewTarget !== null}
+        onClose={() => {
+          if (!mutation.isPending) {
+            setReviewTarget(null);
+            setComment("");
+            setError("");
+          }
+        }}
+        title={
+          reviewTarget?.decision === "reject" ? "Reject draft" : "Needs changes"
+        }
+        centered
+        scrollAreaComponent={ScrollArea.Autosize}
+        closeOnClickOutside={!mutation.isPending}
+        closeOnEscape={!mutation.isPending}
+        withCloseButton={!mutation.isPending}
+      >
+        {reviewTarget && (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (mutation.isPending || !reviewer.trim() || !comment.trim())
+                return;
+              mutation.mutate({
+                candidate_id: reviewTarget.candidate.candidate_id,
+                decision: reviewTarget.decision,
+                reviewer: reviewer.trim(),
+                notes: comment.trim(),
+                result_sha256: reviewTarget.resultSha256,
+              });
+            }}
+          >
+            <Stack>
+              <Text fw={600}>{reviewTarget.candidate.preferred_label}</Text>
+              <TextInput
+                label="Reviewer name"
+                value={reviewer}
+                onChange={(event) => setReviewer(event.currentTarget.value)}
+                maxLength={100}
+                required
+                disabled={mutation.isPending}
+              />
+              <Textarea
+                label="Review comment"
+                description={
+                  reviewTarget.decision === "reject"
+                    ? "Explain why this draft should be rejected."
+                    : "Describe what needs to change in this draft."
+                }
+                value={comment}
+                onChange={(event) => setComment(event.currentTarget.value)}
+                rows={4}
+                maxLength={4000}
+                required
+                data-autofocus
+                disabled={mutation.isPending}
+              />
+              {error && <Alert color="red">{error}</Alert>}
+              <Group justify="flex-end">
+                <Button
+                  variant="default"
+                  disabled={mutation.isPending}
+                  onClick={() => {
+                    setReviewTarget(null);
+                    setComment("");
+                    setError("");
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  color={reviewTarget.decision === "reject" ? "red" : "orange"}
+                  loading={mutation.isPending}
+                  disabled={!reviewer.trim() || !comment.trim()}
+                >
+                  Save review
+                </Button>
+              </Group>
+            </Stack>
+          </form>
+        )}
+      </Modal>
     </Stack>
   );
 }

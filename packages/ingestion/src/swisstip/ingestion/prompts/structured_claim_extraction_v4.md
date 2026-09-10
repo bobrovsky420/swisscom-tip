@@ -54,6 +54,18 @@ For one condition with no groups, use that condition's ID as the root. With no
 conditions, use empty conditions and condition_groups arrays and condition_root="".
 Preserve comparative operators: "longer than three months" uses gt with value="3" and unit="months",
 not eq. Only use examples of logic when the supplied source supports that logic.
+For a complete calendar-date boundary, use unit="date" and a real date in
+canonical YYYY-MM-DD form as value. Preserve gt/gte/lt/lte rather than converting
+the date to a number. Other ordered comparisons require finite numeric values.
+Identify in subject whose event date or assertion-applicability date is compared.
+Distinguish historical facts, the period when an assertion applies, and a person's
+cutoff event. Do not substitute today's date, an application date or a residence
+date for a different event in the source. A dated historical statement does not
+create a new eligibility prerequisite. Do not invent a transition start or expand
+a year-only or otherwise incomplete date into a complete date. When the boundary
+cannot be normalized faithfully, retain its exact wording with operator="stated",
+value="unspecified", unit="unspecified" and record the unresolved interpretation
+in limitations. Never drop an evidenced temporal restriction just to pass validation.
 Exceptions remain separate and cited. If source logic is
 ambiguous, use UNRESOLVED and record a limitation; never invent an eligibility rule.
 Keep > versus >=, working days versus days, rolling periods versus calendar years,

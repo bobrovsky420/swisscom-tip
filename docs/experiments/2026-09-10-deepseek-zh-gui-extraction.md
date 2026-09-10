@@ -1,10 +1,12 @@
 # DeepSeek Zurich GUI extraction: partial runs and bounded corrections
 
-Latest live job `56850144d9a444129496dbfed6e9d45e` used four scope-bounded
-packets without the earlier concept-count or enum errors. Four drafts were
-retained from its first packet, but two later repairs exceeded the input cap.
-An explicit repair-input allowance is now verified offline. See the latest
-follow-up and current checkpoint below; earlier runs remain preserved.
+Latest live job `b5ec257972d849da9ddceb0cdb975b2c` retained 14 drafts in 11
+calls and exercised the new calendar-date validation. Its
+[date experiment and source review](2026-09-10-deepseek-calendar-dates.md)
+recommend six narrow accepts and eight needs-changes decisions. The earlier
+12-draft job `9210329deaa64ef49abc26cef7bfc7a9` and Alex's five accepts/seven
+needs-changes decisions remain preserved below. New IDs do not imply that
+previously identified semantic errors have been corrected.
 
 GUI job `008afd0e4bb14328867ae790e945a880` retained zero candidates from the
 saved `zh-eu-efta` page. Its first extraction response ended with
@@ -499,12 +501,111 @@ Live report SHA-256:
 Frozen configuration SHA-256:
 `60109f9fa691c17fff738fa90f8e4d0b1878d3c99d57692bef5c68ede7cdc2e8`.
 
-## Current GUI resume checkpoint
+## Previous GUI resume checkpoint after 56850144
 
-In **Builds & review**, select **Concept extraction** from 10 September at
-09:22 Zurich time (job `56850144d9a444129496dbfed6e9d45e`, **needs attention**).
-Review its four candidates using the notes above. The introductory residence
-draft is acceptable narrowly; the other three need changes. The assistant has
-not submitted any review decision. New extraction jobs will use the explicit
-64000-character repair allowance; this setting does not retroactively repair
-the saved candidates or edit earlier reviews.
+Alex saved all four decisions on job `56850144d9a444129496dbfed6e9d45e` at
+09:45 Zurich time: the introductory residence draft is accepted, and the FZA,
+employment and notification drafts are marked needs changes with the notes above.
+The assistant read these decisions without changing them; a snapshot is saved
+in the local audit directory as `human-reviews.json`.
+
+Fresh GUI preview `3cc1bf81cd09454c8966031c004653db` completed at 09:46 Zurich
+time with DeepSeek V4 Pro, the explicit 64000-character repair allowance, a
+12-call ceiling and zero model calls. Find it as **Extraction plan** under
+**Builds & review**. The next user-controlled extraction is for the single saved
+**Aufenthalt für EU/EFTA-Staatsangehörige | Kanton Zürich** page (`zh-eu-efta`).
+The setting does not retroactively repair saved candidates or edit earlier reviews.
+
+## Live follow-up: 9210329d retains twelve drafts
+
+The user ran the Zurich page with DeepSeek V4 Pro and the explicit repair cap.
+Job `9210329deaa64ef49abc26cef7bfc7a9` completed in 419.629 seconds with 11
+calls: four initial extractions, three repairs and four reviews. It reported
+97316 input and 48992 output tokens. No truncation, input overflow, provider
+retry or checkpoint hit occurred. The source, four-packet plan, prompts,
+8192-output-token limit and 12-call ceiling remained unchanged.
+
+- Packet 1's first reviewer approved added conditions while describing the
+  entry-document assertion as unconditional. The contradictory review was
+  rejected. Repair and a fresh review retained five drafts. Source inspection
+  below still finds omitted conditions and unsupported roles.
+- Packet 2 repaired the L-permit and self-employment quotation errors and
+  retained all six proposals after review. Ten misplaced review `scope_fields`
+  objects were moved losslessly and validated. Reaching six concepts keeps all
+  24 source blocks marked `saturated_requires_review` even though the model
+  reported their coverage as covered or not substantive.
+- Packet 3 repeated four ordered date comparisons that failed the numeric
+  validator. Three proposals remained rejected; review retained only the address
+  and onsite-hours draft. Brexit and Liechtenstein substance remains missing.
+- Packet 4 again combined three contact ownership scopes. It used call 11;
+  one remaining slot could not fund both repair and review. The pipeline stopped
+  within its budget rather than sending an unreviewable repair.
+
+The final inventory contains 37 policy exclusions, 24 saturated-review blocks,
+19 model-assessed not-substantive blocks, 12 covered blocks, seven invalid-response
+blocks and six missing blocks. The unresolved count is 56, down from 61. These
+are model/deterministic statuses, not measured source recall. More retained
+drafts and fewer unresolved blocks do not establish correct structured meaning.
+
+Reconstructed repair requests were 21298, 26393 and 16011 characters. Their
+compact equivalents were 20291, 25304 and 15303, all below the old 25600 cap.
+The new allowance accepted packet 2 without compaction, but this particular run
+does not demonstrate that 64000 was necessary for its newly generated responses.
+The earlier saved requests remain the evidence for the larger allowance.
+
+## Source review of 9210329d
+
+All retained evidence quotations and offsets match the saved source inventory.
+Five drafts are suitable to accept with their source bounds preserved:
+
+| Draft | Basis for narrow acceptance |
+| --- | --- |
+| Aufenthalt für EU/EFTA-Staatsangehörige (`49ac92fe`) | Faithful introductory assertion, not a complete summary of residence requirements. |
+| Kurzaufenthaltsbewilligung (L) (`24097dde`) | Preserves more than three months AND less than one year AND more than 15 hours per week. The repaired excerpts are exact. |
+| Grenzgängerbewilligung (G) (`12476263`) | Preserves residence in an EU/EFTA state AND Swiss employment and the source's permission modality. |
+| Selbständige Erwerbstätigkeit (`9f25c751`) | Preserves three cumulative requirements, document examples, application destination and examination rather than guaranteed approval. Active business in Switzerland remains in the exact condition text and should remain when refining shorter typed values. |
+| Migrationsamt Kontakt (`dcbbe5e2`) | Address and onsite opening hours match sections 0085/0086. This does not establish telephone availability or a complete contact record. |
+
+Seven drafts need changes despite the model's approvals:
+
+| Draft | Concrete review note |
+| --- | --- |
+| Personenfreizügigkeit (`0d27c5bf`) | Preserve the specialized AND qualified restriction in structured fields without treating it as sufficient entitlement. Section 0009's restriction remains only in prose. |
+| Anmeldung bei der Wohngemeinde (`d343127a`) | Restore within-canton OR across-canton move applicability and retain the 14-day notification duty. Both move conditions and their OR group were removed, bypassing the earlier quotation error. Required passport/ID alternatives remain in the statement; they should not be turned into prerequisites for the document obligation. |
+| Zulassung zur unselbständigen Erwerbstätigkeit (`ca897dda`) | Do not require a stay of exactly three months. Restore the explicit job-search procedure branch from section 0024. The work-duration threshold and 14-day registration statement remain faithful. |
+| Meldeverfahren (90 Tage) (`7aa8e89e`) | Leave the reporting actor unspecified unless evidence identifies who submits the notification. The passive source does not establish this actor; the 90-working-days/calendar-year condition and authority recipient are correct. |
+| Aufenthaltsbewilligung (B) (`216cc298`) | Encode (unbefristet OR überjährig) AND more than 15 hours/week explicitly. The prose already preserves the alternatives, but the OR remains inside a single opaque `stated` condition. |
+| Aufenthalt ohne Erwerbstätigkeit (`084efe9e`) | Restore section 0050's explicit qualification that further requirements depend on residence purpose. It is absent from the retained claims and limitations. |
+| Familiennachzug (`848602af`) | Replace the flat six-way AND with correctly scoped requirements for custody, non-employed persons, supported relatives and previous shared residence. Structure the existing-permit prerequisite. Preserve the nationality wording attached to Ehegatten without resolving source ambiguity by omission. |
+
+These recommendations concern the saved source representation, not independent
+verification of current law. Prior human reviews belong to their earlier jobs;
+they were not transferred to changed candidates or overwritten.
+
+## Remaining follow-ups and current GUI checkpoint
+
+Packet 3 used `unit="date"` with ordered comparisons against `2020-12-31`,
+`2021-01-01` and `2005-01-01`. The four date strings are valid ISO dates and
+match their cited source boundaries. The current ordered-comparison validator
+requires finite numbers, so all four fail in both revisions. This is a gap in
+calendar-date representation/guidance, not malformed numeric output. A separate
+date design or prompt correction must preserve the temporal meaning and receive
+its own checks; this review does not coerce dates or relax numeric validation.
+No further engine, prompt or request-limit change was made for this run.
+
+The read-only audit under `.local/admin/zh-review-9210329d-20260910/` records
+repair payloads, date failures, source-quote checks, hashes and all 12 suggested
+decisions. Original live files and checkpoints retain their hashes. No live
+inference or GUI review mutation was performed by the audit.
+
+Live report SHA-256:
+`6fcd22ea4bcaacd5eadfd5251937f5d95d37fedb3b73bb12720e2fc47776027d`.
+Frozen configuration SHA-256:
+`ffa3bbdc8018dd5312c2afe621546057ea6196147148431bca4e7a92e1912ac3`.
+
+Alex recorded five accept-draft and seven needs-changes decisions on this job
+between 10:10 and 10:13 Zurich time. All notes match the recommendations above.
+The read-only snapshot is `human-reviews.json` in this run's local audit folder.
+The next prepared step is the separately documented
+[calendar-date experiment](2026-09-10-deepseek-calendar-dates.md). No saved
+candidate or review decision was rewritten.
