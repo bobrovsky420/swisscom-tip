@@ -119,6 +119,7 @@ class NormalizedPage:
     sections: tuple[NormalizedSection, ...]
     normalization_version: str = "legacy"
     source_sha256: str | None = None
+    provenance: dict[str, object] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)
@@ -197,9 +198,12 @@ class ConceptProposalReport:
     source_sha256: str | None = None
     claim_contract_version: str | None = None
     effective_prompts: dict[str, object] = field(default_factory=dict)
+    provenance: dict[str, object] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, object]:
         result = asdict(self)
+        if not self.provenance:
+            result.pop("provenance")
         if self.prompt_profile != STRUCTURED_PROMPT_PROFILE:
             for field_name in ("source_inventory", "content_policy", "human_review_queue",
                                "normalization_version", "source_sha256", "claim_contract_version"):
@@ -884,6 +888,7 @@ class CandidateConceptExtractor:
             schema_version=REPORT_SCHEMA_VERSION,
             document_id=page.document_id,
             source=page.source,
+            provenance=page.provenance,
             title=page.title,
             language=page.language,
             input_hash=page.content_hash,

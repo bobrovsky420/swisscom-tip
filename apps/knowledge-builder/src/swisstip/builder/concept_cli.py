@@ -23,12 +23,13 @@ from swisstip.ingestion.concepts import (
     ConceptExtractionError,
     SemanticModelError,
     SUPPORTED_PAGE_SUFFIXES,
-    normalize_downloaded_page,
 )
 
 from .model_profiles import load_model_profiles
 from .concept_batch import summarize_reports
 from .provider_factory import create_semantic_model_provider
+from swisstip.ingestion.source_plugins import load_source_plugins
+from swisstip.ingestion.source_snapshots import normalize_source_snapshot
 
 
 BATCH_SCHEMA_VERSION = "swisstip.concept-proposal-batch/v1"
@@ -311,6 +312,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum filesystem entries inspected during discovery (default: 100000)",
     )
     parser.add_argument("--compact", action="store_true", help="emit compact JSON")
+    parser.add_argument("--source-plugin", action="append", help="enabled source normalization plugin; default: fedlex")
     parser.add_argument("--structured", action="store_true",
                         help="select v4 logical blocks, structured claims, coverage audit and bounded repair instead of the configured profile")
     parser.add_argument("--dry-run", action="store_true",
@@ -373,11 +375,13 @@ def main(argv: Sequence[str] | None = None, *, provider_factory=None) -> int:
             max_discovery_entries=args.max_discovery_entries,
         )
         progress(f"Discovered {len(page_paths)} supported page(s)")
+        source_plugins = load_source_plugins(args.source_plugin)
         pages = []
         for index, path in enumerate(page_paths, start=1):
             progress(f"Normalizing page {index}/{len(page_paths)}: {path}")
-            page = normalize_downloaded_page(
+            page = normalize_source_snapshot(
                 path,
+                plugins=source_plugins,
                 max_file_bytes=args.max_file_bytes,
                 preserve_structure=extraction.prompt_profile == REVIEW_PROMPT_PROFILE,
                 logical_blocks=extraction.prompt_profile == STRUCTURED_PROMPT_PROFILE,
@@ -447,6 +451,7 @@ def main(argv: Sequence[str] | None = None, *, provider_factory=None) -> int:
                        "model_requests_sent": 0,
                        "pages": [{"source": page.source, "input_hash": page.content_hash,
                                   "source_sha256": page.source_sha256,
+                                  "provenance": page.provenance,
                                   "planned_request_ceiling": count,
                                   "source_inventory": StructuredExtraction(extractor).plan(page)[1]
                                   if args.structured or extraction.prompt_profile == STRUCTURED_PROMPT_PROFILE else []}

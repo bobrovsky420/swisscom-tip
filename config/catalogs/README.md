@@ -15,7 +15,7 @@ the other cantons initially have one migration/residence entry point each.
 
 The sources include SEM/admin.ch, Fedlex, BAG, BAZG, BSV, BWO, ESTV, ch.ch, zh.ch and
 official cantonal sites. Discovery references and dates are recorded per source.
-These files contain URLs and planning metadata only. No source pages, extracts,
+These tracked catalogue files contain URLs and planning metadata only. No source pages, extracts,
 quotations, legal rules, facts or model-generated concepts are included.
 
 ## Scope and status
@@ -35,10 +35,11 @@ does not receive them as expected answers. The draft contract has only the
 `ready` means eligible for a later crawler test, not that content, live
 availability or robots access has been verified. Three access issues (AI, NW,
 TG) are recorded as `needs_access_review` and excluded from automatic runs.
-The three Fedlex ELI references are `manual_adapter_required`: the current HTML
-crawler sees a JavaScript shell, so a later document/data adapter is needed.
-The HTML brochure/directive indexes can be tested, but their linked PDFs also
-need a later PDF acquisition and normalization step.
+The three registered Fedlex ELI references retain `manual_adapter_required` for
+the HTML-only test crawler, which sees a JavaScript shell. The standard catalogue
+downloader now resolves supported ELI references through the bundled Fedlex plugin.
+The HTML brochure/directive indexes can be tested; linked PDFs must be explicitly
+identified for download, and PDF text normalization remains unimplemented.
 
 Each seed has an exact host allowlist and path scope. Department-only hosts may
 use `/`; shared cantonal portals use specific paths. A shallow scan of an
@@ -157,7 +158,67 @@ delays and local file I/O add wall-clock time. Runs are sequential. Broad sets
 are deliberate opt-ins; the default five-source smoke run allows at most five
 HTML pages and 25 HTTP requests.
 
-## Run a test crawl later
+## Download the MVP source inventory
+
+The Markdown catalogue includes sources beyond the 59-entry scan registry.
+`swisstip.builder.download_cli` downloads every distinct explicit HTTP(S) link in that
+document, including the generated registry section. It makes no recursive link
+requests. Source families without an exact URL remain discovery work.
+
+The 2026-09-10 run is stored locally at
+[`.local/corpora/hackathon-residence-2026-09-10`](../../.local/corpora/hackathon-residence-2026-09-10/README.md).
+It saved **107 of 115 listed URLs**. Eight remain unavailable after retry:
+two Basel-Landschaft pages, two Glarus pages, `wira.lu.ch`,
+`www.migrationsamt.tg.ch`, `awa.tg.ch` and the Biel/Bienne homepage.
+Reasons include robots access denial, DNS/certificate errors and connection failures.
+The local report and attempt manifests record each outcome; missing pages are not
+counted as acquired. These local files are excluded from Git.
+
+Eight saved Fedlex landing pages are flagged as JavaScript application shells.
+The supplementary `fedlex-documents` directory contains the **14 official files
+(German HTML and PDF for seven listed legal instruments)** resolved through
+Fedlex's public metadata endpoint. The selected versions have consolidation dates
+no later than the main plan's acquisition date. Their version URIs, metadata
+responses and source-page relationships are retained; this is acquisition, not
+legal currency or content review.
+
+To create a new download plan and then acquire it:
+
+```shell
+./.venv/Scripts/python.exe -m swisstip.builder.download_cli --output .local/corpora/residence-new-run
+./.venv/Scripts/python.exe -m swisstip.builder.download_cli --output .local/corpora/residence-new-run --download
+```
+
+The standard download command enables the bundled Fedlex source plugin. It
+resolves supported ELI links to dated HTML/PDF files and saves them under
+`fedlex-documents/`, recording plugin identity, language, version and metadata
+hashes. `plugin-plan.json` lists matching sources without making requests during
+planning. Use `--no-source-plugins` for only the explicit catalogue URLs, or repeat
+`--source-plugin NAME` to select installed adapters. The old download scripts are
+compatibility wrappers. See [source plugins](../../docs/architecture/source-plugins.md)
+for the extension interface and a third-party package example.
+
+To retry failures in the existing run using native curl certificate handling:
+
+```shell
+./.venv/Scripts/python.exe scripts/catalogs/download_hackathon.py --output .local/corpora/hackathon-residence-2026-09-10 --download --retry-failed --transport curl
+```
+
+Successful snapshots are reused after hash verification; each new attempt gets a
+separate folder. A changed catalogue requires a new plan/output directory.
+`plan.json` records the exact URL list and catalogue hash, `catalogue.md` preserves
+the input, `pages/<url-sha256>/attempt-NNN/` contains raw responses and manifests,
+and `summary.json`/`README.md` summarize current outcomes. Manifests retain requested
+and final URLs, UTC retrieval times, response type, byte count, SHA-256, source
+references and registry metadata where available.
+
+The downloader uses the existing crawler's robots and redirect checks, a 25 MB
+response cap, depth zero, and at most four host groups concurrently. The curl
+transport preserves certificate verification and leaves redirects to the crawler.
+Opt-in document types include PDF; default test crawls remain HTML-only. No
+extraction, normalization, embedding or MCP publication runs during acquisition.
+
+## Run a test crawl
 
 Only `--crawl` together with `--output` makes requests and saves HTML. The output
 directory must not already exist. Use a new run name for each experiment:
@@ -187,8 +248,9 @@ page or application shell; inspect content before inference.
 
 ## Extract concepts later
 
-The existing extractor accepts the saved directories recursively and ignores
-the JSON manifests. Select the model profile in `config/semantic-models.toml`
+The standard extractor accepts saved HTML/text directories recursively, reads
+adjacent download manifests, verifies byte hashes and binds source provenance.
+Select the model profile in `config/semantic-models.toml`
 and follow the [provider setup](../../apps/knowledge-builder/README.md).
 The checked-in profile's ten-page limit accommodates the five-page smoke run:
 
@@ -198,9 +260,14 @@ The checked-in profile's ten-page limit accommodates the five-page smoke run:
 
 This later command may call a configured model. Larger scans must be split
 into batches within the configured page/request budgets. Reports retain local
-input paths: join them to snapshot `relative_path` entries to recover official
-URLs and source provenance. Automatic manifest binding into normalized evidence
-and release contracts is still a later build stage.
+input paths and a `provenance` object with official source/document URLs, retrieval
+time, raw hash, version URI and plugin identity where available. Existing archives
+retain their original acquisition identity; normalization records the plugin used
+without relabelling the download. Publication/release binding remains a later stage.
+Select actual document HTML for Fedlex: flagged application shells are rejected,
+and PDFs remain archival files without PDF text extraction or OCR. Use `--dry-run`
+to inspect normalization and request budgets without calling a model. Select files
+or batches rather than the corpus root, which also contains reports and shells.
 
 Extraction proposes evidence-backed candidate concepts. Its current batch groups
 depend on language and extracted content; they are not stable public concept IDs

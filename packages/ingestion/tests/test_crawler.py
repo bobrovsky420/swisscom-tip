@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import hashlib
 import unittest
 from dataclasses import replace
 from email.message import Message
@@ -232,6 +233,34 @@ class SafeCrawlerTests(unittest.TestCase):
         self.assertEqual(report.stop_reason, "unsafe-start-url")
         self.assertEqual(report.requests_sent, 0)
         self.assertEqual(opener.requested, [])
+
+    def test_opt_in_pdf_snapshot_preserves_bytes_and_hash(self) -> None:
+        payload = b"%PDF-1.7\ncurated official document"
+        crawler, _ = crawler_for({
+            "https://official.example/robots.txt": FakeResponse(404),
+            "https://official.example/allowed/start": FakeResponse(200, payload, content_type="application/pdf"),
+        })
+        saved = []
+        crawler = SafeCrawler(crawler.source, crawler.limits, opener=crawler._opener,
+                              resolver=public_resolver, document_content_types=("application/pdf",),
+                              on_document=lambda page, body: saved.append((page, body)))
+        crawler.crawl()
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0][1], payload)
+        self.assertEqual(saved[0][0].sha256, hashlib.sha256(payload).hexdigest())
+
+    def test_opt_in_pdf_does_not_save_oversized_response(self) -> None:
+        crawler, _ = crawler_for({
+            "https://official.example/robots.txt": FakeResponse(404),
+            "https://official.example/allowed/start": FakeResponse(200, b"%PDF-" * 100, content_type="application/pdf"),
+        }, max_response_bytes=30)
+        saved = []
+        crawler = SafeCrawler(crawler.source, crawler.limits, opener=crawler._opener,
+                              resolver=public_resolver, document_content_types=("application/pdf",),
+                              on_document=lambda page, body: saved.append(body))
+        report = crawler.crawl()
+        self.assertEqual(saved, [])
+        self.assertEqual(report.pages[0].outcome, "response-too-large")
 
     def test_robots_failure_is_fail_closed(self) -> None:
         crawler, opener = crawler_for({})

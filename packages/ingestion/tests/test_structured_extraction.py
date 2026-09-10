@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from dataclasses import replace
 import json
 import tempfile
 import unittest
@@ -255,8 +256,10 @@ class StructuredTests(unittest.TestCase):
 
     def test_positive_control_retains_claims_and_requires_human_approval(self):
         page = self.page("<html lang='de'><h1>Antrag</h1><p>Apply online.</p></html>")
+        page = replace(page, provenance={"source_url": "https://example.gov/permit", "sha256": "b" * 64})
         provider = Provider()
         report = self.engine(provider).extract(page)
+        self.assertEqual(report.to_dict()["provenance"], page.provenance)
         self.assertEqual(len(provider.calls), 2)
         self.assertEqual(len(report.candidates), 1)
         candidate = report.candidates[0]

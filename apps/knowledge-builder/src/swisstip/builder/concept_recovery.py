@@ -71,6 +71,8 @@ class RecoverableProvider:
         # Include the full normalized page as well as its original input hash.
         # Token values and recovery timing do not affect response identity.
         page_data = asdict(page)
+        if not page.provenance:
+            page_data.pop("provenance", None)
         page_data["sections"] = tuple(section.content_dict() for section in page.sections)
         if page.normalization_version == "legacy":
             # Preserve v1-v3 checkpoint identity after adding optional v4 fields.

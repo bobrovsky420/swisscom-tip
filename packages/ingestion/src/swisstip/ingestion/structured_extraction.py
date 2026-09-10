@@ -342,6 +342,7 @@ class StructuredExtraction:
                              "reviews": reviews, "policy": contracts.POLICY})
         return ConceptProposalReport(
             schema_version="swisstip.concept-proposal-report/v2", document_id=page.document_id,
+            provenance=page.provenance,
             source=page.source, title=page.title, language=page.language, input_hash=page.content_hash,
             output_hash=result_hash, active_profile=engine._active_profile, provider=first.provider, model=first.model,
             operation="candidate_concept_extraction", prompt_profile=STRUCTURED_PROMPT_PROFILE,

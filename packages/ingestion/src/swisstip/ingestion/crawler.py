@@ -257,6 +257,8 @@ class SafeCrawler:
     Optional ``on_page`` receives accepted, parsed HTML and its original bytes
     after metadata hashing. It enables snapshot storage without a second fetch;
     storage failures propagate to the caller. The default retains metadata only.
+    ``document_content_types`` and ``on_document`` opt into saving additional
+    complete responses (for example PDFs), without traversing their contents.
     """
 
     def __init__(
@@ -270,6 +272,8 @@ class SafeCrawler:
         opener: urllib.request.OpenerDirector | None = None,
         resolver: Callable[..., Iterable[tuple]] = socket.getaddrinfo,
         on_page: Callable[[CrawledPage, bytes], None] | None = None,
+        document_content_types: tuple[str, ...] = (),
+        on_document: Callable[[CrawledPage, bytes], None] | None = None,
     ) -> None:
         if not user_agent.strip():
             raise CrawlConfigurationError("user_agent cannot be empty")
@@ -281,6 +285,8 @@ class SafeCrawler:
         self._opener = opener or urllib.request.build_opener(_NoRedirectHandler())
         self._resolver = resolver
         self._on_page = on_page
+        self._document_content_types = frozenset(document_content_types)
+        self._on_document = on_document
         self._report = CrawlReport(
             source_id=source.source_id,
             start_url=source.start_url,
@@ -362,6 +368,10 @@ class SafeCrawler:
                     continue
                 if not self._is_html(page.content_type):
                     page.outcome = "non-html"
+                    if page.content_type in self._document_content_types:
+                        page.sha256 = hashlib.sha256(result.body).hexdigest()
+                        if self._on_document is not None:
+                            self._on_document(page, result.body)
                     continue
 
                 extractor = _LinkExtractor(self.limits.max_links_per_page)
@@ -637,7 +647,7 @@ class SafeCrawler:
                 elif not allow_robots_path and content_type not in {
                     "text/html",
                     "application/xhtml+xml",
-                }:
+                } | self._document_content_types:
                     body, outcome, downloaded = b"", "content-type-skipped", 0
                 else:
                     body, outcome, downloaded = self._read_response(

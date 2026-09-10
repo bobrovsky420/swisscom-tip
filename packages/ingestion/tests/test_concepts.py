@@ -168,6 +168,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
         page = NormalizedPage(
             document_id="page-1",
             source="downloaded/permit.html",
+            provenance={"source_url": "https://example.gov/permit", "sha256": "b" * 64},
             title="Residence permits",
             language="en",
             content_hash="a" * 64,
@@ -187,6 +188,7 @@ class CandidateConceptExtractorTests(unittest.TestCase):
         ).extract(page)
 
         self.assertEqual(report.active_profile, "apertus_8b")
+        self.assertEqual(report.to_dict()["provenance"], page.provenance)
         self.assertEqual(report.provider, "test-provider")
         self.assertEqual(report.model, "test-model")
         self.assertEqual(report.operation, "candidate_concept_extraction")
