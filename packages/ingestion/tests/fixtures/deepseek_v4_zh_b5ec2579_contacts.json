@@ -1,0 +1,391 @@
+{
+  "provenance": {
+    "job_id": "b5ec257972d849da9ddceb0cdb975b2c",
+    "report_sha256": "ea4b01cc7cd110110fbb159eed93dc64092e5531028fb89c51d57899be3bad55",
+    "configuration_sha256": "ffa3bbdc8018dd5312c2afe621546057ea6196147148431bca4e7a92e1912ac3",
+    "source_sha256": "b2da0b36fe559eda757496393c8e9db616cf7444fd796e14a8a8e030b458f1f4",
+    "input_hash": "5c025b220f51341c1a9b3969fc14dc52e8db710a0815a7c2b0d62d155f67aabb",
+    "normalization_version": "swisstip.logical-blocks/v3",
+    "claim_contract_version": "swisstip.structured-claims/v2",
+    "review_contract_version": "swisstip.structured-review/v2",
+    "group_index": 3,
+    "effective_prompt_hashes": {
+      "extraction": "b8683871a251a5d14498d95db4758fdf5fed875bec48072061aa752ba51d56e7",
+      "review": "d2478d3ac3c84104941e47293fe315c2cf350f98bf0e81345829ac9aef3f698b"
+    },
+    "description": "Exact saved packet 4 source evidence and identical initial/repaired completions. One concept combines four claims from telephone, electronic-contact and topic-responsibility ownership groups. Offline tests use an explicitly synthetic, manually partitioned repair and synthetic reviews. They demonstrate structural routing only, not model repair, source entailment or approval.",
+    "completions": [
+      {
+        "request_id": "817c3bcc-cdff-4569-a23a-206e7df4c1fc",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "prompt_tokens": 4548,
+        "output_tokens": 847,
+        "checkpoint_key": "d538fce82b1f85bfebed42c40a74bdb2dad22a138660eac8524013b3cd8d3f75",
+        "checkpoint_sha256": "617026714c01cc5e63f72a3c0e7a3bdb527a138542a02b8d61c1ee2a77bf89fc",
+        "raw_completion_sha256": "3420114db7d32d3e05ff7b102b2aaed8c56df0b74c4b5f149eea822e56d8cfcd"
+      },
+      {
+        "request_id": "67506cd0-c181-4346-b46d-9892763c6c12",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "prompt_tokens": 5380,
+        "output_tokens": 847,
+        "checkpoint_key": "41cc9bb433db269f1259968d29a76d14121d83bb6ea165153b09bbefa6ca7d49",
+        "checkpoint_sha256": "b2db045c686987683664579406acbc195a94f1d9c229156c6718cc36701eb643",
+        "raw_completion_sha256": "3420114db7d32d3e05ff7b102b2aaed8c56df0b74c4b5f149eea822e56d8cfcd"
+      }
+    ]
+  },
+  "source_blocks": [
+    {
+      "section_id": "section-0088",
+      "scope_id": "scope-0047",
+      "kind": "text",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon",
+      "text": "+41 43 259 88 00",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0089",
+      "scope_id": "scope-0047",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon",
+      "text": "Telefon",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0090",
+      "scope_id": "scope-0047",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon",
+      "text": "Montag bis Freitag\n\n08.00 bis 11.45 Uhr und\n\n13.00 bis 16.30 Uhr",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0092",
+      "scope_id": "scope-0048",
+      "kind": "text",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail",
+      "text": "Online-Kontaktformular",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0093",
+      "scope_id": "scope-0048",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail",
+      "text": "Wenn Sie uns Ihr Anliegen auf elektronischem Weg mitteilen m\u00f6chten, nutzen Sie bitte das Kontaktformular. Wir verf\u00fcgen \u00fcber keine E-Mail-Adresse.",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0094",
+      "scope_id": "scope-0048",
+      "kind": "paragraph",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail",
+      "text": "Weiterf\u00fchrende Informationen zu unserer Praxis finden Sie hier",
+      "structure_issues": []
+    },
+    {
+      "section_id": "section-0098",
+      "scope_id": "scope-0050",
+      "kind": "list",
+      "heading_path": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > F\u00fcr dieses Thema zust\u00e4ndig:",
+      "text": "Migrationsamt",
+      "structure_issues": []
+    }
+  ],
+  "evidence": {
+    "section-0088:0:92": {
+      "section_id": "section-0088",
+      "scope_id": "scope-0047",
+      "start": 0,
+      "end": 92,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon\n+41 43 259 88 00"
+    },
+    "section-0089:0:83": {
+      "section_id": "section-0089",
+      "scope_id": "scope-0047",
+      "start": 0,
+      "end": 83,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon\nTelefon"
+    },
+    "section-0090:0:140": {
+      "section_id": "section-0090",
+      "scope_id": "scope-0047",
+      "start": 0,
+      "end": 140,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > Telefon\nMontag bis Freitag\n\n08.00 bis 11.45 Uhr und\n\n13.00 bis 16.30 Uhr"
+    },
+    "section-0092:0:97": {
+      "section_id": "section-0092",
+      "scope_id": "scope-0048",
+      "start": 0,
+      "end": 97,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail\nOnline-Kontaktformular"
+    },
+    "section-0093:0:220": {
+      "section_id": "section-0093",
+      "scope_id": "scope-0048",
+      "start": 0,
+      "end": 220,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail\nWenn Sie uns Ihr Anliegen auf elektronischem Weg mitteilen m\u00f6chten, nutzen Sie bitte das Kontaktformular. Wir verf\u00fcgen \u00fcber keine E-Mail-Adresse."
+    },
+    "section-0094:0:137": {
+      "section_id": "section-0094",
+      "scope_id": "scope-0048",
+      "start": 0,
+      "end": 137,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > Kontakt > Migrationsamt > E-Mail\nWeiterf\u00fchrende Informationen zu unserer Praxis finden Sie hier"
+    },
+    "section-0098:0:83": {
+      "section_id": "section-0098",
+      "scope_id": "scope-0050",
+      "start": 0,
+      "end": 83,
+      "text": "Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige > F\u00fcr dieses Thema zust\u00e4ndig:\nMigrationsamt"
+    }
+  },
+  "original_rejections": [
+    [
+      {
+        "errors": [
+          {
+            "path": "claims",
+            "reason": "evidence crosses unrelated source ownership groups"
+          }
+        ],
+        "proposal": {
+          "claims": [
+            {
+              "claim_id": "telefonnummer",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0088:0:92"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0088:0:92"
+              ],
+              "statement": "Telefonnummer des Migrationsamts: +41 43 259 88 00"
+            },
+            {
+              "claim_id": "telefonzeiten",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0090:0:140"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0090:0:140"
+              ],
+              "statement": "Telefonische Erreichbarkeit: Montag bis Freitag, 08.00 bis 11.45 Uhr und 13.00 bis 16.30 Uhr"
+            },
+            {
+              "claim_id": "kontaktformular",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0092:0:97",
+                "section-0093:0:220"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0092:0:97",
+                "section-0093:0:220"
+              ],
+              "statement": "F\u00fcr elektronische Anliegen steht ein Online-Kontaktformular zur Verf\u00fcgung; das Migrationsamt verf\u00fcgt \u00fcber keine E-Mail-Adresse."
+            },
+            {
+              "claim_id": "zust\u00e4ndigkeit",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0098:0:83"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0098:0:83"
+              ],
+              "statement": "F\u00fcr das Thema Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige ist das Migrationsamt zust\u00e4ndig."
+            }
+          ],
+          "concept_type": "SERVICE",
+          "label": "Kontakt Migrationsamt",
+          "limitations": [],
+          "primary_section_id": "section-0088",
+          "questions": []
+        },
+        "proposal_index": 0,
+        "reason": "evidence crosses unrelated source ownership groups"
+      }
+    ],
+    [
+      {
+        "errors": [
+          {
+            "path": "claims",
+            "reason": "evidence crosses unrelated source ownership groups"
+          }
+        ],
+        "proposal": {
+          "claims": [
+            {
+              "claim_id": "telefonnummer",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0088:0:92"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0088:0:92"
+              ],
+              "statement": "Telefonnummer des Migrationsamts: +41 43 259 88 00"
+            },
+            {
+              "claim_id": "telefonzeiten",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0090:0:140"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0090:0:140"
+              ],
+              "statement": "Telefonische Erreichbarkeit: Montag bis Freitag, 08.00 bis 11.45 Uhr und 13.00 bis 16.30 Uhr"
+            },
+            {
+              "claim_id": "kontaktformular",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0092:0:97",
+                "section-0093:0:220"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0092:0:97",
+                "section-0093:0:220"
+              ],
+              "statement": "F\u00fcr elektronische Anliegen steht ein Online-Kontaktformular zur Verf\u00fcgung; das Migrationsamt verf\u00fcgt \u00fcber keine E-Mail-Adresse."
+            },
+            {
+              "claim_id": "zust\u00e4ndigkeit",
+              "condition_groups": [],
+              "condition_root": "",
+              "conditions": [],
+              "evidence_ids": [
+                "section-0098:0:83"
+              ],
+              "exceptions": [],
+              "kind": "fact",
+              "limitations": [],
+              "scope": {
+                "actor": "Migrationsamt",
+                "jurisdiction": "unspecified",
+                "permit_status": "unspecified",
+                "population": "EU/EFTA-Staatsangeh\u00f6rige",
+                "procedure_branch": "unspecified",
+                "recipient": "unspecified"
+              },
+              "scope_evidence_ids": [
+                "section-0098:0:83"
+              ],
+              "statement": "F\u00fcr das Thema Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige ist das Migrationsamt zust\u00e4ndig."
+            }
+          ],
+          "concept_type": "SERVICE",
+          "label": "Kontakt Migrationsamt",
+          "limitations": [],
+          "primary_section_id": "section-0088",
+          "questions": []
+        },
+        "proposal_index": 0,
+        "reason": "evidence crosses unrelated source ownership groups"
+      }
+    ]
+  ],
+  "raw_initial_completion": "{\n  \"concepts\": [\n    {\n      \"label\": \"Kontakt Migrationsamt\",\n      \"concept_type\": \"SERVICE\",\n      \"primary_section_id\": \"section-0088\",\n      \"claims\": [\n        {\n          \"claim_id\": \"telefonnummer\",\n          \"kind\": \"fact\",\n          \"statement\": \"Telefonnummer des Migrationsamts: +41 43 259 88 00\",\n          \"evidence_ids\": [\"section-0088:0:92\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0088:0:92\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"telefonzeiten\",\n          \"kind\": \"fact\",\n          \"statement\": \"Telefonische Erreichbarkeit: Montag bis Freitag, 08.00 bis 11.45 Uhr und 13.00 bis 16.30 Uhr\",\n          \"evidence_ids\": [\"section-0090:0:140\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0090:0:140\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"kontaktformular\",\n          \"kind\": \"fact\",\n          \"statement\": \"F\u00fcr elektronische Anliegen steht ein Online-Kontaktformular zur Verf\u00fcgung; das Migrationsamt verf\u00fcgt \u00fcber keine E-Mail-Adresse.\",\n          \"evidence_ids\": [\"section-0092:0:97\", \"section-0093:0:220\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0092:0:97\", \"section-0093:0:220\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"zust\u00e4ndigkeit\",\n          \"kind\": \"fact\",\n          \"statement\": \"F\u00fcr das Thema Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige ist das Migrationsamt zust\u00e4ndig.\",\n          \"evidence_ids\": [\"section-0098:0:83\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0098:0:83\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    }\n  ],\n  \"saturated\": false\n}",
+  "raw_repaired_completion": "{\n  \"concepts\": [\n    {\n      \"label\": \"Kontakt Migrationsamt\",\n      \"concept_type\": \"SERVICE\",\n      \"primary_section_id\": \"section-0088\",\n      \"claims\": [\n        {\n          \"claim_id\": \"telefonnummer\",\n          \"kind\": \"fact\",\n          \"statement\": \"Telefonnummer des Migrationsamts: +41 43 259 88 00\",\n          \"evidence_ids\": [\"section-0088:0:92\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0088:0:92\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"telefonzeiten\",\n          \"kind\": \"fact\",\n          \"statement\": \"Telefonische Erreichbarkeit: Montag bis Freitag, 08.00 bis 11.45 Uhr und 13.00 bis 16.30 Uhr\",\n          \"evidence_ids\": [\"section-0090:0:140\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0090:0:140\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"kontaktformular\",\n          \"kind\": \"fact\",\n          \"statement\": \"F\u00fcr elektronische Anliegen steht ein Online-Kontaktformular zur Verf\u00fcgung; das Migrationsamt verf\u00fcgt \u00fcber keine E-Mail-Adresse.\",\n          \"evidence_ids\": [\"section-0092:0:97\", \"section-0093:0:220\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0092:0:97\", \"section-0093:0:220\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        },\n        {\n          \"claim_id\": \"zust\u00e4ndigkeit\",\n          \"kind\": \"fact\",\n          \"statement\": \"F\u00fcr das Thema Aufenthalt f\u00fcr EU/EFTA-Staatsangeh\u00f6rige ist das Migrationsamt zust\u00e4ndig.\",\n          \"evidence_ids\": [\"section-0098:0:83\"],\n          \"scope\": {\n            \"population\": \"EU/EFTA-Staatsangeh\u00f6rige\",\n            \"jurisdiction\": \"unspecified\",\n            \"permit_status\": \"unspecified\",\n            \"actor\": \"Migrationsamt\",\n            \"recipient\": \"unspecified\",\n            \"procedure_branch\": \"unspecified\"\n          },\n          \"scope_evidence_ids\": [\"section-0098:0:83\"],\n          \"conditions\": [],\n          \"condition_groups\": [],\n          \"condition_root\": \"\",\n          \"exceptions\": [],\n          \"limitations\": []\n        }\n      ],\n      \"questions\": [],\n      \"limitations\": []\n    }\n  ],\n  \"saturated\": false\n}"
+}

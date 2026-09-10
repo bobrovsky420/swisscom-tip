@@ -167,7 +167,79 @@ Frozen configuration SHA-256:
 
 ## Current GUI resume checkpoint
 
-Open **Builds & review**, select **Concept extraction** from 10 September at
-**10:25 Zurich time** (job `b5ec257972d849da9ddceb0cdb975b2c`), and record the
-six accept-draft and eight needs-changes decisions above. Prior reviews remain
-bound to their original reports. Review this result before another experiment.
+Human review is complete for all 14 retained candidates on job
+`b5ec257972d849da9ddceb0cdb975b2c`: Alex recorded six accept-draft and eight
+needs-changes decisions on 10 September between 13:13 and 13:42 Zurich time.
+The final decision accepts **Aufenthalt für EU/EFTA-Staatsangehörige**
+(`candidate-527faef8115421e318b3711f`) with the note
+"Accept only as the introductory source summary".
+
+The earlier 13 decisions are unchanged. All eight change comments preserve the
+source-review findings above. The other five acceptance notes are empty; their
+narrow acceptance bounds in this document remain audit recommendations, not
+additional human-recorded notes. Completed human review does not resolve the
+eight requested corrections or the unretained content described below.
+
+All 14 saved decisions reference distinct current candidates and the current
+result revision; none is stale or duplicated. The API result equals the saved
+`result.json` as JSON. Its canonical review-binding SHA-256 is
+`c9d104f99009e0246c40744e673586b993462eef61793aa6e30d2791447b119b`.
+This differs from the raw file hash above because the review hash uses sorted
+keys, compact separators and UTF-8 JSON. The content is unchanged. Every original
+source, result, configuration, log and checkpoint hash matches the earlier audit.
+
+The local audit directory now includes `human-reviews.json` and
+`human-review-audit.json`, preserving the read-only snapshot, per-comment findings
+and hash provenance. The earlier 13-decision checkpoint is preserved as
+`human-reviews-before-completion.json` and
+`human-review-audit-before-completion.json`. Validation did not change decisions
+or send model requests.
+
+## Continued validation: unretained contact content
+
+Packet 4's initial and repaired proposals are equal as parsed JSON. Its four
+claims each cite one ownership scope, but the single enclosing concept combines
+three scopes. Local validation applies ownership to the entire concept, so both
+revisions correctly fail with `evidence crosses unrelated source ownership groups`.
+The failed repair therefore leaves five substantive assertions unretained:
+
+| Ownership scope | Source sections | Unretained assertions |
+| --- | --- | --- |
+| `scope-0047` | 0088, 0090 | Telephone number; telephone hours, including the midday gap. |
+| `scope-0048` | 0092, 0093 | Use the online contact form for electronic inquiries; no email address is available. |
+| `scope-0050` | 0098 | The Migrationsamt is responsible for this page's topic. |
+
+The seven `invalid_response` blocks also include section 0089's repeated telephone
+label and section 0094's further-information link. Their status does not imply
+seven separate missing factual assertions. The accepted address/onsite-hours
+candidate cites scope 0046 and does not cover the telephone or electronic-contact
+assertions above.
+
+A bounded offline control split the unchanged four claims into three concepts,
+anchored at sections 0088, 0092 and 0098. All three pass the unchanged structural
+validator. This demonstrates that the source can satisfy the existing ownership
+contract without relaxing it. It does not establish successful model repair or
+semantic correctness: the contact claims still assign an EU/EFTA population from
+page context without evidence of that restriction. No control proposal replaced
+the saved result or received a review decision.
+
+The smallest next correction to investigate is explicit extraction/repair guidance
+that one entire concept must stay within one supplied `scope_id`, including all
+its claims and evidence. Different ownership scopes need separate concepts even
+when they name the same authority. Merely keeping each individual claim within
+one scope is insufficient. The current validation does not change prompts,
+request limits or engine behavior.
+
+Packet 3's seven model-assessed `not_substantive` blocks were also inspected;
+they contain links, metadata or controls, with no additional substantive omission
+identified in that subset. Its existing false coverage findings remain: section
+0069's bilateral-treaty network assertion is omitted, and section 0064's UK cutoff
+is not structured despite a `covered` status. The eight human change requests
+therefore remain unresolved. `packet4-audit.json` in the local audit directory
+records the source excerpts, split control and its limits. No live requests were
+sent and the original result hash is unchanged.
+
+The subsequent prepared step is the
+[concept-ownership prompt experiment](2026-09-10-deepseek-concept-ownership.md),
+with its separate offline checks and GUI preview. The completed review of this
+date-experiment result remains unchanged.

@@ -28,9 +28,16 @@ several claims belong to one concept. Mentioning an authority in scope is not a
 claim about what it does. A citation to a whole paragraph does not represent
 sentences omitted from the claims. Do not invent details to expand the source.
 A heading is context, not proof of a factual claim. Blocks in this bundle may
-have DIFFERENT scope_ids: never borrow evidence across them. Shared ownership
-alone does not establish identical semantic scope. The primary section anchors
-cited evidence; supporting blocks must establish this same scoped claim.
+have DIFFERENT scope_ids. Ownership is a boundary for the ENTIRE CONCEPT:
+ALL evidence referenced by its claims, scope fields, conditions, groups and
+exceptions must have the same supplied scope_id as its primary section.
+Keeping each individual claim within one scope_id is not enough if the concept
+combines claims from different scope_ids. Create separate concepts for different
+ownership scopes, even when they name the same authority or related services.
+Choose a cited primary_section_id within each concept's own ownership scope.
+Shared ownership alone does not establish identical semantic scope. The primary
+section anchors cited evidence; supporting blocks must establish this same
+scoped claim. Ownership scope_id is source metadata, not a claim.scope value.
 Choose kind to match the assertion: an obligation is a requirement, not a fact
 with its prerequisites left unstructured. Preserve a rule's complete alternatives
 in one claim: if the source says A OR B requires C, keep both A and B and the OR.
@@ -91,6 +98,14 @@ against the original source: restore actual omitted assertions and conditions,
 correct unsupported roles, and remove questions that the evidence cannot answer.
 Do not fill a requested gap with details absent from the source. Fix every
 structural_rejections entry against its proposal_index and any validation_error.
+For an ownership-crossing rejection, separate complete claims from different
+ownership scopes into separate concepts. Preserve their evidence IDs and valid
+conditions; keep questions and limitations bound to each resulting concept.
+If a single claim itself crosses ownership scopes, re-evaluate its source support:
+do not duplicate an unsupported mixed-scope claim into separate concepts or cut
+apart its condition tree. Do not drop valid conditions or change source ownership
+to make a proposal pass. Every resulting claim must remain complete and supported
+within its own ownership scope.
 A failed review does not cancel earlier structural errors.
 Before returning, check that all source assertions are accounted for, conditional
 claims have connected logic, roles match their own claim, questions are answerable,

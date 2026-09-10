@@ -97,6 +97,15 @@ still need an extraction/review pair within the existing page budget; omitted
 blocks remain visible as `not_processed_budget`. Reaching the concept limit
 still marks a result saturated and subject to bounded repair and human review.
 
+The V4 extraction/repair prompt makes ownership a boundary for an entire concept:
+all its claim, scope, condition, group and exception evidence must belong to the
+primary section's source `scope_id`. Separate claims within one concept cannot
+use different ownership scopes, even when they describe the same authority.
+Repairs must separate complete claims into appropriately anchored concepts while
+preserving their source support and condition trees. This clarifies the existing
+validator; it does not automatically partition model output or approve its meaning.
+See the [concept-ownership experiment](../../docs/experiments/2026-09-10-deepseek-concept-ownership.md).
+
 The current V4 prompt profile emits reports with claim contract
 `swisstip.structured-claims/v2`. An explicit condition `unit="date"` requires a
 real calendar date in canonical ASCII `YYYY-MM-DD` form for every operator.
