@@ -4,10 +4,12 @@ Status: continued on 11 September. Corpus preparation and pitch statistics are
 saved. Step 2 (live MCP test) is recorded in the
 [live MCP check](2026-09-11-residence-live-mcp-check.md). The acquisition part of
 step 3 is recorded in the [download recovery](2026-09-11-residence-download-recovery.md):
-389 further raw responses were saved and are not yet in any intermediate,
-semantic or serving artifact. Exhaustive discovery, scope review, semantic
-interpretation and a rebuilt next version remain unfinished. Resume here instead
-of restarting extraction prompt experiments.
+389 further raw responses were saved. Step 5 is recorded in the
+[v2 extension](2026-09-11-residence-v2-extension.md): a four-part v2 collection
+keeps the v1 parts unchanged and adds a source-assertion part for the recovered
+pages and an assistant-authored V3 concept part for 100 of them. Exhaustive
+discovery, scope review and human semantic review remain unfinished. Resume
+here instead of restarting extraction prompt experiments.
 
 Code, source inventory and pitch baseline: commit
 `cc15341d52104251905d7348749a2330967197e4`
@@ -78,6 +80,9 @@ code does not back up or transfer the downloaded corpus and releases.
 | Live MCP check results (calls, summary, digest) | `.local/evaluations/residence-all-languages-2026-09-11-v1-live-mcp-check/` |
 | Pre-recovery copies of the raw-corpus ledgers | `.local/corpora/hackathon-residence-all-languages-2026-09-11/pre-recovery-2026-09-11/` |
 | Download recovery ledgers | `recovery-2026-09-11-results.json` and `recovery-2026-09-11-pass2-results.json` in the raw corpus |
+| v2 collection (v1 parts unchanged plus parts 003 and 004) | `.local/mvp/residence-all-languages-2026-09-11-v2/` |
+| Recovered-page intermediate and assertion export | `.local/intermediate/hackathon-residence-recovery-2026-09-11/`, `.local/semantic/hackathon-residence-recovery-2026-09-11/` |
+| Assistant V3 extraction work directory (requests, responses, runs, results) | `.local/extraction/assistant-v3-2026-09-11/` |
 
 Start with `coverage-report.json` in the raw corpus, `index.json` and
 `validation.json` in the intermediate, and `collection.json` in the serving
@@ -124,8 +129,8 @@ passed validation before and after serialization. Pure request preflight checked
 88 representative cases in part 001 and 54 in part 002. Every normalized document
 hash and block span was checked. Live MCP requests were not executed in the
 preparation pass; the later [live MCP check](2026-09-11-residence-live-mcp-check.md)
-records them separately, with 10 further standalone tests for the check and
-recovery scripts (35 standalone corpus tests in total).
+records them separately, with 11 further standalone tests for the check,
+recovery, concept-pack and assembly scripts (36 standalone corpus tests in total).
 
 Additional source languages use opt-in `tip-language-catalog/v4` and
 `evidence-object/v2`; legacy v3/v1 retains its five-language restrictions. This
@@ -178,14 +183,12 @@ fixtures only and do not establish legal validity or human approval.
    exceptions, procedural branches and applicability. The user's request for all
    information in all published languages is still open; do not mark it complete
    from quotation counts or contract validation alone.
-5. Put a changed corpus/release in a new version and update the statistics only
-   after its ledgers and validation are complete. The 389 recovered raw responses
-   are the first input for that version: extract, assign languages, export
-   assertions, package and finalize under new intermediate, semantic and release
-   identities, after parameterizing the script paths that are fixed to the
-   2026-09-11 snapshot. Do not run the extractor or finalizer against the v1
-   directories. Avoid rebuilding the unchanged corpus or repeating
-   extraction/model tuning to resume MCP testing.
+5. Done on 11 September as the [v2 extension](2026-09-11-residence-v2-extension.md):
+   the scripts were parameterized, the recovered pages were extracted, exported
+   and packaged as part 003 under new identities, and an assistant-authored V3
+   concept part 004 was added, all without touching the v1 directories. The
+   v1 finalizer and coverage ledgers were deliberately not rerun. Any later
+   change again goes into a new version with new release IDs.
 
 The [standalone workflow](../../scripts/corpora/README.md) documents download,
 Fedlex, rendered-page, four-shard extraction, OCR, assertion merge, packaging and
@@ -195,6 +198,9 @@ fixed to this snapshot; `--output` alone does not create a new release identity.
 Update and test those settings when deliberately producing the next version.
 
 ## Pitch and wrap-up
+
+The [MVP status and plan](../hackathon/2026-09-11-mvp-status-and-plan.md) wraps up
+the 11 September work across the whole hackathon MVP and orders the next steps.
 
 [Full presentation, slide 25](../pitch/full-presentation.md#slide-25---additional-info-nationwide-residence-permit-corpus)
 contains these statistics and limitations. The one-minute pitch and first-round

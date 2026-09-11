@@ -85,7 +85,7 @@ def merge_profiles(profiles,plans):
     return merged,graphs
 
 
-def build(output):
+def build(output,release_id=None):
     if output.exists():
         raise ValueError('Choose a new output directory; existing releases are immutable')
     # Completion marker prevents packaging a still-being-written assertion stream.
@@ -135,7 +135,7 @@ def build(output):
     for number,batch in enumerate(batches,1):
         part=output if len(batches)==1 else output/f'part-{number:03d}'
         part.mkdir(parents=True,exist_ok=True)
-        part_report=build_part(part,batch,number,len(batches))
+        part_report=build_part(part,batch,number,len(batches),release_id=release_id)
         part_report['release_file']=(part/'release.json').relative_to(output).as_posix()
         reports.append(part_report)
     write(output/'document-aliases.json',alias_ledger)
@@ -172,8 +172,10 @@ def build(output):
     return report
 
 
-def build_part(output,records,number,total):
-    rid='hackathon-residence-all-languages-2026-09-11-v1'+(f'-part-{number:03d}' if total>1 else '')
+def build_part(output,records,number,total,release_id=None):
+    # An explicit release identity names a single part exactly; multi-part builds add the part suffix.
+    base=release_id or 'hackathon-residence-all-languages-2026-09-11-v1'
+    rid=base if (release_id and total==1) else base+(f'-part-{number:03d}' if total>1 else '')
     external=[]; files=[]
     def external_file(identifier,data,relative):
         path=output/relative; path.parent.mkdir(parents=True,exist_ok=True); path.write_bytes(data)
@@ -300,4 +302,9 @@ def build_part(output,records,number,total):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__); parser.add_argument('--output',type=Path,default=DEST)
-    print(json.dumps(build(parser.parse_args().output.resolve()),indent=2))
+    parser.add_argument('--intermediate',type=Path,default=INTERMEDIATE,help='Intermediate export (default: 2026-09-11 snapshot)')
+    parser.add_argument('--semantic',type=Path,default=SEMANTIC,help='Semantic assertion directory (default: 2026-09-11 snapshot)')
+    parser.add_argument('--release-id',help='Explicit release identity for a single part, or the base for multi-part builds')
+    args=parser.parse_args()
+    INTERMEDIATE=args.intermediate.resolve(); SEMANTIC=args.semantic.resolve()
+    print(json.dumps(build(args.output.resolve(),args.release_id),indent=2))

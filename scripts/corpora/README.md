@@ -263,6 +263,59 @@ the next audit pass. Recovered raw responses are not yet in any intermediate,
 semantic or serving artifact: rebuild those as a new version before changing any
 published statistic.
 
+## Extending a collection with recovered pages
+
+The snapshot-fixed scripts accept explicit paths so a subset can become a new
+part without touching the v1 directories: `extract_expanded.py --retrieved-after
+TIMESTAMP --output DIR` exports only snapshots acquired at or after that time,
+`extract_source_assertions.py --intermediate DIR --semantic DIR` writes a separate
+assertion export, and `build_expanded_pack.py --intermediate DIR --semantic DIR
+--output DIR --release-id ID` packages it under an explicit release identity.
+`assemble_collection.py --output DIR --part NAME=DIR ...` copies validated parts
+unchanged into one collection with a root `mcp-client.json` and `collection.json`;
+re-running it adds parts whose hashes are new and keeps identical ones.
+
+```shell
+./.venv/Scripts/python.exe scripts/corpora/extract_expanded.py --output .local/intermediate/hackathon-residence-recovery-2026-09-11 --retrieved-after 2026-09-11T11:39:00
+./.venv/Scripts/python.exe scripts/corpora/extract_source_assertions.py --intermediate .local/intermediate/hackathon-residence-recovery-2026-09-11 --semantic .local/semantic/hackathon-residence-recovery-2026-09-11
+./.venv/Scripts/python.exe scripts/corpora/build_expanded_pack.py --intermediate .local/intermediate/hackathon-residence-recovery-2026-09-11 --semantic .local/semantic/hackathon-residence-recovery-2026-09-11 --output .local/mvp/residence-all-languages-2026-09-11-v2-part-003-build --release-id hackathon-residence-all-languages-2026-09-11-v2-part-003
+./.venv/Scripts/python.exe scripts/corpora/assemble_collection.py --output .local/mvp/residence-all-languages-2026-09-11-v2 --part part-001=.local/mvp/residence-all-languages-2026-09-11-v1/part-001 --part part-002=.local/mvp/residence-all-languages-2026-09-11-v1/part-002 --part part-003=.local/mvp/residence-all-languages-2026-09-11-v2-part-003-build
+```
+
+## Assistant-authored V3 concept extraction
+
+`assistant_extraction.py` runs the knowledge-builder's `swisstip.builder.concept_cli`
+unchanged with a file-exchange provider instead of a model. Each request the app
+would send (its V3 system prompt, the chunk's sections and evidence spans, and the
+response schema) is written to `requests/<key>.json`; the assistant writes the
+completion to `responses/<key>.json`; the next run serves it to the app, which
+validates it, attaches exact quotations, runs its review request and writes its
+ordinary `swisstip.concept-proposal-batch/v1` result. Completions carry the
+assistant identity (`anthropic-assistant` / `claude-fable-5-1`) through a
+configuration whose active profile is never contacted; no DeepSeek, Hugging Face,
+Groq or Ollama provider is created. The output has the same shape as a live V3
+run and is distinguishable by its `model_identities`.
+
+```shell
+./.venv/Scripts/python.exe scripts/corpora/assistant_extraction.py stage
+./.venv/Scripts/python.exe scripts/corpora/assistant_extraction.py run --on-missing capture
+# author responses/<key>.json for every extraction request, then:
+./.venv/Scripts/python.exe scripts/corpora/assistant_extraction.py check
+./.venv/Scripts/python.exe scripts/corpora/assistant_extraction.py run --on-missing capture   # captures review requests
+# author the review verdicts, then:
+./.venv/Scripts/python.exe scripts/corpora/assistant_extraction.py run --on-missing fail
+./.venv/Scripts/python.exe scripts/corpora/build_concept_pack.py --output DIR --release-id ID
+```
+
+`stage` copies recovered HTML pages with their acquisition manifests, drops print
+views, share links, duplicates and near-empty pages, and plans batches within the
+configured page, character and request limits. `check` validates authored
+responses against their requests before replay. `build_concept_pack.py` packages
+retained candidates from the batch results as a `serving-release/v1` part with
+exact quotation offsets, one fact per candidate and exact-scope profiles. Served
+entries must be `VERIFIED_AUTOMATIC`, so the candidate status is carried by the
+notice, the evaluation policy and `provenance.json`, not by the lifecycle.
+
 ## Live MCP check
 
 `live_mcp_check.py` starts the server from a completed collection's

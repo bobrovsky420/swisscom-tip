@@ -72,7 +72,7 @@ def extract_pdf(raw):
                 (['some_pdf_pages_have_no_text_no_ocr_performed'] if blank else []))
 
 
-def run(corpus, output, shard_index=0, shard_count=1, retry_failures=False, refresh_rtf=False):
+def run(corpus, output, shard_index=0, shard_count=1, retry_failures=False, refresh_rtf=False, retrieved_after=None):
     output.mkdir(parents=True, exist_ok=True)
     (output/'documents').mkdir(exist_ok=True)
     pointers = sorted(corpus.glob('pages/*/latest.json'))
@@ -92,9 +92,12 @@ def run(corpus, output, shard_index=0, shard_count=1, retry_failures=False, refr
     todo = []
     for pointer in pointers:
         manifest = json.loads(pointer.read_text(encoding='utf-8'))
-        if not manifest.get('snapshots'):
+        if not manifest.get('snapshots') and retrieved_after is None:
             unavailable.append(dict(source_url=manifest['url'],status=manifest['status'],error=manifest.get('error')))
         for snapshot in manifest.get('snapshots', []):
+            # A subset export keeps only snapshots acquired at or after the given time.
+            if retrieved_after is not None and snapshot.get('retrieved_at','') < retrieved_after:
+                continue
             relative = snapshot['relative_path']
             identifier = 'doc-' + sha(relative.encode())[:20]
             if int(identifier[4:12],16) % shard_count != shard_index:
@@ -199,6 +202,7 @@ def run(corpus, output, shard_index=0, shard_count=1, retry_failures=False, refr
         blocks=sum(i['blocks'] for i in index),text_characters=sum(i['text_characters'] for i in index),
         documents_with_pdf_pages_without_text=sum(bool(i['pdf_pages_without_text']) for i in index),
         unavailable=len(unavailable),semantic_status='not-yet-semantically-curated',
+        retrieved_after=retrieved_after,
         application_invoked=False,model_calls=0,network_calls=0,ocr_performed=False)
     for name,value in [('index',index),('summary',report),('unavailable',unavailable),('errors',errors)]:
         write(output/f'{name}-part-{shard_index}.json',value)
@@ -213,7 +217,9 @@ if __name__=='__main__':
     parser.add_argument('--shard-count',type=int,default=1)
     parser.add_argument('--retry-failures',action='store_true')
     parser.add_argument('--refresh-rtf',action='store_true')
+    parser.add_argument('--retrieved-after',help='Only snapshots retrieved at or after this ISO timestamp (subset export)')
     args=parser.parse_args()
     if not 0 <= args.shard_index < args.shard_count:
         parser.error('shard-index must be in [0, shard-count)')
-    run(args.corpus.resolve(),args.output.resolve(),args.shard_index,args.shard_count,args.retry_failures,args.refresh_rtf)
+    run(args.corpus.resolve(),args.output.resolve(),args.shard_index,args.shard_count,args.retry_failures,args.refresh_rtf,
+        args.retrieved_after)
