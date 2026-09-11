@@ -225,13 +225,16 @@ def validate_catalog(
                 issue(path + ".term_routes", "language_policy", "Evaluated route sources must belong to the profile.")
     for role, enabled, allowed in (
         ("term_languages", language_policy.term_languages, set(TERM_PROJECTIONS)),
-        ("source_languages", language_policy.source_languages, SOURCE_LANGUAGES),
+        ("source_languages", language_policy.source_languages,
+         set(language_policy.source_languages) if language_policy.platform_catalog == "tip-language-catalog/v4" else SOURCE_LANGUAGES),
         ("projection_languages", language_policy.projection_languages, SOURCE_LANGUAGES),
     ):
         if not set(enabled) <= allowed:
             issue("language_policy." + role, "language_policy", "Enabled languages exceed the closed v3 role.")
         if len(set(enabled)) != len(enabled):
             issue("language_policy." + role, "duplicate_value", "Enabled language declarations must be unique.")
+    if any(tag.split("-")[0] in {"und", "mul", "zxx"} for tag in language_policy.source_languages):
+        issue("language_policy.source_languages", "language_policy", "Each source language must identify a language.")
     if language_policy.approval_status == "APPROVED" and language_policy.evaluation_ref is None:
         issue("language_policy.evaluation_ref", "missing_evaluation", "Approved policy requires an evaluation reference.")
     if language_policy.source_declaration_aliases:

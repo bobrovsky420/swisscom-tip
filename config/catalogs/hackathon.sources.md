@@ -1,8 +1,46 @@
 # Residence permit in Switzerland - hackathon MVP source catalogue
 
-Research date: 2026-09-10. The residence-permit MCP pilot is the hackathon MVP.
+Research dates: 2026-09-10 and 2026-09-11. The residence-permit MCP pilot is the hackathon MVP.
 This catalogue owns its curated source plan and nationwide expansion inventory.
 It records source selection, not an acquired or published corpus.
+
+## Nationwide and multilingual expansion - 2026-09-11
+
+The user has requested all available residence-permit information from all
+identified official sources in every language published by those sources.
+The earlier federal/Zurich semantic subset is incomplete and does not satisfy
+that scope. All cantons require substantive source coverage, not contact rows alone.
+
+The machine-readable [expanded source inventory](hackathon.sources.expanded.json)
+records discovered language versions and linked residence-topic pages/documents,
+including advertised languages, discovery reasons and acquisition status. Full
+referring URLs and link labels remain in the local `audit-state.json` ledger.
+It supplements the legacy scan registry below. It is a working inventory, not
+an assertion of exhaustive discovery or independently reviewed legal knowledge.
+
+Audit the languages actually offered on each page and in linked documents; do not
+assume that every page has the site's full set of languages. Published language
+links must be fetched and checked for redirects, fallback text and empty shells.
+Retain all offered languages, including languages beyond DE/FR/IT/EN/RM. Automated
+translation widgets are not evidence of independently published translations.
+Fedlex language availability must come from the work's publication metadata.
+
+Follow substantive procedures, forms, checklists, fees and directives beyond
+landing pages. Keep unavailable downloads, unresolved dynamic sites and unreviewed
+links visible in the audit. Acquisition and language discovery precede semantic
+extraction; source-text extraction alone is not semantic completion.
+
+New acquisition storage: `.local/corpora/hackathon-residence-all-languages-2026-09-11/`.
+Its `audit-state.json` records language links and unselected links requiring scope
+review. Original downloads and the first experimental serving release are retained.
+
+The [coverage checkpoint](hackathon.sources.coverage.md) records the current
+download and native-text coverage for every canton. The standalone preparation
+workflow is documented in [scripts/corpora](../../scripts/corpora/README.md).
+Its expanded serving collection is under
+`.local/mvp/residence-all-languages-2026-09-11-v1/`; source assertions and OCR have
+separate intermediate directories and review ledgers. Serving-contract validation
+does not establish complete discovery, translation equivalence or semantic review.
 
 ## MVP source plan and registry status
 
@@ -226,7 +264,11 @@ or benefit questions. Defer general BAZG moving/customs, BWO housing and ESTV ta
 content from the initial permit corpus. These remain useful for a broader
 "moving to Switzerland" domain, but do not fill the permit-source gaps above.
 
-## First corpus for the hackathon MVP
+## Superseded staged acquisition proposal
+
+The following 2026-09-10 staging proposal is superseded by the nationwide,
+all-published-languages instruction above. It is retained as history, not an active
+restriction on acquisition or semantic extraction.
 
 Start with the current federal legal foundations, selected SEM directive sections
 and FAQs, ch.ch summaries, and complete procedural material for Zurich plus one

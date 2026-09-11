@@ -27,6 +27,15 @@ the Python models also enforce canonicalization and cross-field invariants, and
 `swisstip.core.validation` enforces catalog-dependent boundaries. JSON Schema
 validation alone does not establish catalog integrity or accepted coverage.
 
+Source-language expansion is opt-in: `tip-language-catalog/v4` permits an explicit
+release allowlist of up to 100 canonical BCP 47 source tags. `evidence-object/v2`
+supports those original source languages and requires a v4 policy at release
+validation. V1 evidence and v3 policies retain the existing five exact source
+languages. Term and projection languages retain their existing restrictions;
+enabling a source language does not assert translation or retrieval coverage.
+Unspecified (`und`), multiple (`mul`) and nonlinguistic (`zxx`) effective source
+tags are rejected: mixed-language material needs appropriately attributed spans.
+
 The `hackathon` authoring scope is residence in Switzerland, with federal sources,
 all 26 cantonal entry points and deeper Zurich sources. The proposed seed catalog
 contains only the space/domain/topic scaffold and no preselected concepts. Candidate entries and

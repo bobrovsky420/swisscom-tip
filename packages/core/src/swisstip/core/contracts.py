@@ -13,7 +13,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import (
     AfterValidator, BaseModel, ConfigDict, Field, StrictBool, StrictFloat,
-    StrictInt, StrictStr, StringConstraints, field_validator, model_validator,
+    StrictInt, StrictStr, StringConstraints, ValidationInfo, field_validator, model_validator,
 )
 
 
@@ -289,16 +289,16 @@ class TermProjectionRoute(StrictModel):
 
 
 class EvaluatedTermRoute(TermProjectionRoute):
-    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=5)]
+    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=100)]
     evaluation_ref: ArtifactRef
 
 
 class LanguagePolicy(StrictModel):
     schema_version: Literal["language-policy/v1"] = "language-policy/v1"
     identity: ArtifactRef
-    platform_catalog: Literal["tip-language-catalog/v3"] = "tip-language-catalog/v3"
+    platform_catalog: Literal["tip-language-catalog/v3", "tip-language-catalog/v4"] = "tip-language-catalog/v3"
     term_languages: Annotated[list[LanguageTag], Field(max_length=6)]
-    source_languages: Annotated[list[LanguageTag], Field(max_length=5)]
+    source_languages: Annotated[list[LanguageTag], Field(max_length=100)]
     projection_languages: Annotated[list[LanguageTag], Field(max_length=5)]
     term_aliases: Annotated[dict[LanguageTag, LanguageTag], Field(max_length=8)] = Field(default_factory=dict)
     routes: Annotated[list[TermProjectionRoute], Field(max_length=20)]
@@ -336,7 +336,7 @@ class CoverageProfile(StrictModel):
     max_descendant_depth: Annotated[int, Field(ge=0, le=20)] = 0
     max_concepts: Annotated[int, Field(ge=1, le=50)] = 20
     source_ids: Annotated[list[StableId], Field(min_length=1, max_length=100)]
-    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=5)]
+    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=100)]
     temporal_coverage: DateRange
     term_routes: Annotated[list[EvaluatedTermRoute], Field(max_length=40)] = Field(default_factory=list)
     projection_languages_complete: Annotated[list[LanguageTag], Field(max_length=5)] = Field(default_factory=list)
@@ -449,7 +449,7 @@ class Citation(StrictModel):
 
 
 class EvidenceObject(StrictModel):
-    schema_version: Literal["evidence-object/v1"] = "evidence-object/v1"
+    schema_version: Literal["evidence-object/v1", "evidence-object/v2"] = "evidence-object/v1"
     identity: ArtifactRef
     evidence_id: StableId
     release_id: StableId
@@ -473,9 +473,11 @@ class EvidenceObject(StrictModel):
 
     @field_validator("effective_source_language")
     @classmethod
-    def exact_source_role(cls, value: str) -> str:
-        if value not in {"en", "de", "fr", "it", "rm"}:
+    def exact_source_role(cls, value: str, info: ValidationInfo) -> str:
+        if info.data.get("schema_version", "evidence-object/v1") == "evidence-object/v1" and value not in {"en", "de", "fr", "it", "rm"}:
             raise ValueError("effective_language_requires_exact_v3_source_tag")
+        if value.split("-")[0] in {"und", "mul", "zxx"}:
+            raise ValueError("effective_source_language_must_identify_a_language")
         return value
 
     @model_validator(mode="after")
@@ -668,7 +670,7 @@ class TermRoute(StrictModel):
     requested_language: LanguageTag
     effective_term_language: LanguageTag
     projection_language: LanguageTag
-    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=5)]
+    source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=100)]
     terminology_refs: Annotated[list[ArtifactRef], Field(max_length=20)]
     language_policy_ref: ArtifactRef
     evaluation_ref: ArtifactRef
@@ -768,7 +770,7 @@ class RetrievalConfiguration(StrictModel):
 
 class RetrievalTrace(StrictModel):
     term_routes: Annotated[list[TermRoute], Field(max_length=20)]
-    effective_source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=5)] | None
+    effective_source_languages: Annotated[list[LanguageTag], Field(min_length=1, max_length=100)] | None
     channels: Annotated[list[Literal["lexical", "concept", "vector", "semantic_ranking"]], Field(max_length=4)]
     index_refs: Annotated[list[ArtifactRef], Field(max_length=20)]
     provider_configuration_ref: ArtifactRef

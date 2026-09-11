@@ -683,7 +683,7 @@
             "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
             "type": "string"
           },
-          "maxItems": 5,
+          "maxItems": 100,
           "minItems": 1,
           "title": "Source Languages",
           "type": "array"
@@ -804,7 +804,7 @@
             "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
             "type": "string"
           },
-          "maxItems": 5,
+          "maxItems": 100,
           "minItems": 1,
           "title": "Source Languages",
           "type": "array"
@@ -1007,8 +1007,11 @@
           "default": null
         },
         "schema_version": {
-          "const": "evidence-object/v1",
           "default": "evidence-object/v1",
+          "enum": [
+            "evidence-object/v1",
+            "evidence-object/v2"
+          ],
           "title": "Schema Version",
           "type": "string"
         },
@@ -1817,8 +1820,11 @@
           "$ref": "#/$defs/ArtifactRef"
         },
         "platform_catalog": {
-          "const": "tip-language-catalog/v3",
           "default": "tip-language-catalog/v3",
+          "enum": [
+            "tip-language-catalog/v3",
+            "tip-language-catalog/v4"
+          ],
           "title": "Platform Catalog",
           "type": "string"
         },
@@ -1886,7 +1892,7 @@
             "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
             "type": "string"
           },
-          "maxItems": 5,
+          "maxItems": 100,
           "title": "Source Languages",
           "type": "array"
         },
@@ -2767,7 +2773,7 @@
                 "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
                 "type": "string"
               },
-              "maxItems": 5,
+              "maxItems": 100,
               "minItems": 1,
               "type": "array"
             },
@@ -3371,7 +3377,7 @@
             "pattern": "^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$",
             "type": "string"
           },
-          "maxItems": 5,
+          "maxItems": 100,
           "minItems": 1,
           "title": "Source Languages",
           "type": "array"

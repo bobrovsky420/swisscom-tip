@@ -48,6 +48,17 @@ def evidence_payload():
 
 
 class RequestContractTests(unittest.TestCase):
+    def test_additional_evidence_languages_require_explicit_v2_opt_in(self):
+        payload = {**evidence_payload(), "effective_source_language": "uk"}
+        with self.assertRaises(ValidationError):
+            EvidenceObject.model_validate(payload)
+        value = EvidenceObject.model_validate({**payload, "schema_version": "evidence-object/v2"})
+        self.assertEqual(value.effective_source_language, "uk")
+        for unknown in ["und", "mul", "zxx"]:
+            with self.subTest(language=unknown), self.assertRaises(ValidationError):
+                EvidenceObject.model_validate({**payload, "schema_version": "evidence-object/v2",
+                                              "effective_source_language": unknown})
+
     def test_required_envelope_fields_and_no_conversation_fields(self):
         request = request_payload()
         for name in ("schema_version", "release_id", "knowledge_space_id", "domain_id", "topic_id", "intent", "jurisdiction", "context", "as_of", "scope_mode"):

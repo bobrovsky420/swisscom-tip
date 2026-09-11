@@ -100,6 +100,8 @@ def validate_release(bundle: ReleaseBundle) -> None:
     for doc in bundle.documents:
         require(doc.snapshot_ref in release.snapshot_refs, "document_snapshot_not_in_release")
     for item in evidence.values():
+        require(item.schema_version != "evidence-object/v2" or policy.platform_catalog == "tip-language-catalog/v4",
+                "extended_evidence_requires_v4_language_policy")
         doc = documents.get(item.normalized_document_ref)
         require(item.release_id == release.release_id and doc is not None, "evidence_release_or_document_mismatch")
         require(item.citation.accessed_at <= release.created_at, "evidence_access_after_release")

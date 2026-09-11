@@ -109,6 +109,18 @@ class FixtureTestCase(unittest.TestCase):
 
 class StructuredValidationTests(FixtureTestCase):
 
+    def test_source_language_expansion_requires_v4_policy_and_explicit_allowlist(self):
+        self.policy_data['source_languages'].append('uk')
+        catalog, policy = self.models()
+        self.assertTrue(validate_catalog(catalog, policy))
+        self.policy_data['platform_catalog'] = 'tip-language-catalog/v4'
+        catalog, policy = self.models()
+        self.assertFalse(validate_catalog(catalog, policy))
+        self.request['source_languages'] = ['ar']
+        self.assert_status('UNSUPPORTED_LANGUAGE')
+        self.request['source_languages'] = ['uk']
+        self.assert_status('OUT_OF_COVERAGE')
+
     def test_ready_is_validation_only_and_exact_scope_has_no_children(self):
         result = self.assert_status("READY")
         self.assertEqual(result.executed_concept_ids, ("test-concept",))

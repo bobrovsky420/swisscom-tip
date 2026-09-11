@@ -2,6 +2,8 @@
 
 This deck describes the proposed product and acceptance evidence. It does not establish implementation validation. Slide 12 is optional P2 stretch material; slides 13-22 cover the future product. These appendix topics are outside P0/P1 acceptance scope.
 
+Slide 25 adds measured corpus-preparation statistics as of 2026-09-11, with remaining coverage and review gaps.
+
 ## Slide 1 - Trusted Information Infrastructure
 
 # Swisscom Trusted Information Platform
@@ -462,3 +464,32 @@ Server evaluation starts at the structured request. Caller integration evaluatio
 **Responsibility boundary:** the caller interprets and explains; TIP prepares knowledge, validates scope and supplies supported evidence. Original-language terms can cross evaluated source-language boundaries without client translation into a common language.
 
 **Future hypothesis:** Swisscom could provide the infrastructure and distribution for governed information services used by applications, enterprises and publishers.
+
+---
+
+## Slide 25 - Additional Info: Nationwide Residence-Permit Corpus
+
+**A larger evidence base for MCP testing: federal sources, including Fedlex, and substantive source material from all 26 cantons.**
+
+Snapshot: **2026-09-11**. Experimental collection: `residence-all-languages-2026-09-11-v1`.
+
+| Measure | Recorded result |
+|---|---:|
+| Identified source URLs | 12,384 |
+| Saved source responses | 11,728 |
+| Responses with extracted native text | 11,060 |
+| Published language links checked | 22,850 |
+| Publisher language tags represented in source assertions | 31 |
+| Original-language source assertion sections | 105,798 |
+| Evidence sections in the serving collection, after exclusions and document deduplication | 96,197 |
+| Quotation fragments in the serving collection | 139,783 |
+| Validated MCP release parts | 2 |
+| Local OCR jobs completed / jobs producing text | 665 / 442 |
+
+**Validation:** 112 tests passed. Both release parts passed validation before and after serialization; all 11,728 intermediate records passed normalized-text hash and block-span checks. This preparation invoked neither the SwissTIP application nor another LLM. These results cover local artifacts and contracts; live MCP behavior and retrieval quality require separate evaluation.
+
+**Coverage and review remain incomplete:** 475 downloads failed, 10,404 discovered links await scope review, and 534 assertions were excluded from serving because of unresolved language or broken native font mappings. OCR quality, translation equivalence and semantic interpretation remain unreviewed. Counts include contextual and archival material; quotation fragments are not counts of reviewed eligibility rules.
+
+**Speaker note / Q&A:** The initial Zurich demonstration now has a nationwide corpus available for further MCP tests. Original-language text retains citations and exact spans. The 31 publisher language tags describe source metadata, not validated multilingual retrieval profiles. An empty download queue or a valid release file does not prove exhaustive source coverage or legal correctness.
+
+Evidence: [source catalogue](../../config/catalogs/hackathon.sources.md), [coverage checkpoint](../../config/catalogs/hackathon.sources.coverage.md), [release collection](../../.local/mvp/residence-all-languages-2026-09-11-v1/collection.json), and [preparation workflow](../../scripts/corpora/README.md). The release collection is a local generated artifact.

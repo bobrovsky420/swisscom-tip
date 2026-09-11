@@ -15,3 +15,11 @@ Our Zurich pilot demonstrates retrieval; reviewed knowledge and language validat
 The opportunity goes further: potential myAI integration, reuse across assistants, and a platform that banks, insurers and other regulated institutions could use as a governed source of truth for regulatory and compliance knowledge.
 
 SwissTIP: trusted knowledge, reusable across AI.
+
+---
+
+## Additional info for Q&A
+
+As of **2026-09-11**, the expanded residence-permit corpus contains **11,728 saved source responses**, with substantive material from **all 26 cantons** and federal sources including Fedlex. **Two validated MCP test release parts** contain **139,783 quotation fragments** backed by **96,197 evidence sections**.
+
+These are source-preparation statistics. Exhaustive coverage, semantic interpretation, translation equivalence and OCR review remain incomplete. [Full statistics and limitations](full-presentation.md#slide-25---additional-info-nationwide-residence-permit-corpus) are available as backup material outside the one-minute spoken script.
