@@ -47,6 +47,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Implementation gaps and validation plan](TODO.md)
 - [Pilot knowledge and lessons](docs/pilots/2026-09-08-retrieval-pilot.md)
 - [MVP status and plan - 11 September](docs/hackathon/2026-09-11-mvp-status-and-plan.md)
+- [One-day team rebuild plan with the existing residence knowledge base](docs/hackathon/one-day-rebuild-plan.md)
 - [Residence MCP corpus continuation checkpoint - 11 September](docs/pilots/2026-09-11-residence-mcp-checkpoint.md)
 - [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Local ingestion GUI: sources, parsing, builds and draft review](apps/admin-console/README.md)
