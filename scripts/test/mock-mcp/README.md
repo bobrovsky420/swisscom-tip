@@ -90,3 +90,28 @@ opencode
 
 Select the `residence-assistant` agent (Tab) and paste the question. Setting
 `OPENCODE_CONFIG` replaces the user configuration for that process only.
+
+## OpenCode desktop app
+
+The simplest way is the launcher script, from any PowerShell:
+
+```powershell
+./scripts/test/mock-mcp/Start-OpenCodeDesktop.ps1 -Server real
+./scripts/test/mock-mcp/Start-OpenCodeDesktop.ps1 -Server mock
+```
+
+It passes the configuration through `OPENCODE_CONFIG` and inline through
+`OPENCODE_CONFIG_CONTENT`. The inline copy is applied last, so it also overrides a
+project-level `opencode.json`; without it, opening the repository's `.local` folder
+as the project would silently swap in the `swisstip` entry of `.local/opencode.json`,
+which serves the synthetic BUILD-03 fixture ("no real-world coverage").
+
+The desktop app (Electron, `%LOCALAPPDATA%\Programs\@opencode-aidesktop\OpenCode.exe`)
+inherits `OPENCODE_CONFIG` from the shell that starts it, so the same PowerShell
+lines work with `OpenCode.exe` in place of `opencode`. Alternatively copy
+`.local/mock-mcp/opencode.json` or `opencode-real.json` as `opencode.json` into an
+empty folder and open that folder as the project in the app; OpenCode merges a
+project-level `opencode.json` without any environment variable. Do not start the
+app from a shell that runs inside VS Code's extension host (for example an agent's
+tool shell): that environment carries `ELECTRON_RUN_AS_NODE=1` and other Electron
+variables, which make the app exit immediately.

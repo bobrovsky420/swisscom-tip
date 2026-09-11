@@ -852,6 +852,34 @@ including OpenCode where available. Separate two tracks:
    final answers with citations and limitations. Never send the user question as
    `resolve` input.
 
+**Standing caller integration case (added 11 September 2026).** Keep this question
+and expected answer as a regression test for every caller/release combination:
+
+- Question, sent verbatim: `I'm a Czech citizen and starting my work in Zurich
+  next week. By when latest should I register my stay on the municipal authority?`
+- Expected behaviour: the caller consults the MCP before answering; derives
+  EU/EFTA, employment and canton Zurich without asking; states both limits from
+  the served facts (registration with the municipality within 14 days of arrival
+  in Switzerland AND before starting work, citing the SEM free-movement FAQ and
+  the Canton Zurich EU/EFTA page); never assumes the arrival date equals the first
+  working day; asks for the arrival date and first working day, or states the
+  rule and offers to compute the date; once the dates are known, names the
+  earlier of the two limits. Scenario A: arrival Sunday 13 September 2026, first
+  working day Wednesday 16 September 2026 -> register before 16 September (by
+  15 September); 27 September is not binding. Scenario B: arrived Tuesday
+  1 September 2026, first working day Friday 18 September 2026 -> register by
+  Tuesday 15 September 2026.
+- Failure signatures: 14 days counted from the first working day; "whichever is
+  later"; answers composed from model knowledge while citing the knowledge base;
+  the synthetic BUILD-03 fixture answering in place of a real release.
+- Harness and records: `scripts/test/mock-mcp/run_opencode_test.py --server real
+  --live` (mock server with `--server mock`), results in
+  [the mock note](docs/experiments/2026-09-11-opencode-mock-mcp-caller-test.md)
+  and [the real-server note](docs/experiments/2026-09-11-opencode-real-mcp-caller-test.md).
+  Ling 3.0 Flash passed against the mock and against pilot release v2 with the
+  guided tool descriptions; it failed against pilot v1, which lacks a fact
+  stating both limits.
+
 Use at least 20 fully specified supported scenarios and separately labelled
 missing-context/coverage/failure cases. Count cold discovery, pagination, evidence
 inspection, resubmissions and warm resolution calls separately. Measure bytes,
