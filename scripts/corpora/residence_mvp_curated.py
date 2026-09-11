@@ -11,6 +11,7 @@ WORK = 'doc-d7e5fa9b1ea72ea04a52'
 NOTIFY = 'doc-9b1cdec8a0d1eb938c6c'
 BIO = 'doc-026495cd7a981ddc2584'
 FAQ = 'doc-e4faac52bfd9dc95c90f'
+FZA_FAQ = 'doc-094ef42324485ec86493'
 ZH = 'doc-6fc4e12e684157ef4978'
 ZH_RETIRED = 'doc-3198cb2abda7d67422f7'
 CITY = 'doc-34ef0ec737a996b68d08'
@@ -145,6 +146,10 @@ CONCEPTS = [
     concept('city-zurich-arrival-documents', 'City of Zurich: documents for arrival from abroad', [
         claim('The City of Zurich lists a passport (an identity card suffices for EU/EFTA nationals), rental or housing documentation, permit assurance and visa authorisation if available, an employment contract or study confirmation, applicable migration fees, and original civil-status documents for registration from abroad.', CITY, 34, 42),
     ], canton='CH-ZH', municipality='261', selector=('arrival_origin', 'abroad')),
+    concept('eu-employment-registration-deadline', 'EU/EFTA employment: municipal registration deadline after arrival', [
+        claim('SEM states that EU/EFTA nationals taking up employment of more than three months must register with their municipality of residence and apply for a residence permit within 14 days of their arrival in Switzerland and before starting work. A valid identity card or passport and the employer\'s written confirmation of employment (for example the contract with its duration and workload) must be presented; the contract duration determines whether a short-stay permit L or a residence permit B is issued.', FZA_FAQ, 98, 99),
+        claim('SEM states that the steps needed to obtain the residence permit can be completed after arrival in Switzerland.', FZA_FAQ, 100),
+    ], selector=('population', 'eu_efta'), notes=['Both limits apply together: the 14-day period is counted from the arrival in Switzerland, not from the first working day, and registration must precede the start of work.']),
     concept('health-insurance-enrolment', 'Compulsory health-insurance enrolment timing', [
         claim('Where Swiss compulsory health insurance applies, enrolment must occur within three months of the start of the obligation and is retroactive to that date, including the premiums.', BAG, 45, 46),
         claim('With late enrolment, coverage starts only on joining; an inexcusable delay incurs a premium surcharge.', BAG, 47, 48),

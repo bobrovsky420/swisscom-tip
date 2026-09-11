@@ -21,11 +21,30 @@ from swisstip.runtime.provider_config import load_provider_settings
 
 TOOL_CONTRACTS = {
     "get_coverage": (GetCoverageRequest, GetCoverageResult,
-                     "Discover bounded catalog levels and inline context schemas. Pin the returned release on child and continuation requests."),
+                     "Discover the published catalog level by level. Call it first with no arguments to obtain "
+                     "the active release_id and the knowledge space entry; then repeat with that release_id and "
+                     "parent_id set to an entry_id to list its children (knowledge space > domain > topic > "
+                     "concepts). Topic and concept levels also return coverage_profiles and context_schemas: a "
+                     "profile states, for its concept_ids, the exact intent, jurisdiction (country_code, "
+                     "canton_code, municipality_id), scope_modes, temporal_coverage and context schema that "
+                     "resolve accepts. Identifiers cannot be guessed; use limit up to 100 and copy next_cursor "
+                     "unchanged to continue a listing."),
     "resolve": (StructuredGroundingRequest, StructuredGroundingResult,
-                "Resolve explicit published scope and typed context against a pinned release. Retrieval terms only rank eligible evidence. Returns facts and citations; no generated answer."),
+                "Return the published facts, original evidence excerpts and citations for the concepts of one "
+                "coverage profile of a pinned release; no generated answer. Build the request from a profile "
+                "returned by get_coverage: copy its knowledge_space_id, domain_id, topic_id, intent and "
+                "jurisdiction exactly (do not add a canton or municipality the profile does not list), use "
+                "concept_ids with that profile's concepts only (normally one concept per call; resolve related "
+                "concepts, including federal ones, in separate calls), a scope_mode from its scope_modes, an "
+                "as_of date inside its temporal_coverage, and context values for every required field of its "
+                "context schema. Leave retrieval_terms empty unless the release publishes term routes; "
+                "max_evidence is at most 5. NEEDS_CONTEXT lists the missing context fields; OUT_OF_COVERAGE with "
+                "unsupported_combination means the jurisdiction, concept set, scope_mode or as_of matches no "
+                "profile. Cite the returned evidence URLs when using the facts."),
     "get_evidence": (GetEvidenceRequest, GetEvidenceResult,
-                     "Read up to five original evidence excerpts and citations by their pinned release and evidence IDs."),
+                     "Read up to five original evidence excerpts and citations by release_id and the evidence_ids "
+                     "exactly as returned in resolve's evidence array. Rule, fact, concept, profile or document "
+                     "identifiers are not evidence IDs."),
 }
 
 

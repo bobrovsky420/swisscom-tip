@@ -35,6 +35,19 @@ successfully with OpenCode in this repository. Override with `--model`.
 ./.venv/Scripts/python.exe scripts/test/mock-mcp/run_opencode_test.py --live --scenario work-first --no-followup
 ```
 
+`--server real` runs the same test against the real SwissTIP MCP server
+(`swisstip.mcp_server.server`) on the assistant-curated pilot release, by default
+`.local/mvp/residence-semantic-2026-09-11-v2/` (override with `--release-file`
+and `--release-id`). Build it first with `scripts/corpora/build_residence_mvp.py`.
+The real-server config raises OpenCode's tool-output cap because topic-level
+discovery returns about 140 KB. Results are in the
+[real-server note](../../../docs/experiments/2026-09-11-opencode-real-mcp-caller-test.md).
+
+```shell
+./.venv/Scripts/python.exe scripts/test/mock-mcp/run_opencode_test.py --server real --check-connection
+./.venv/Scripts/python.exe scripts/test/mock-mcp/run_opencode_test.py --server real --live
+```
+
 Each live run creates `.local/mock-mcp/runs/run-<timestamp>/` with the generated
 `opencode.json`, one JSONL transcript per turn and `summary.json`. The
 configuration is passed to the child process only (`OPENCODE_CONFIG` and

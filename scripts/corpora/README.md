@@ -87,6 +87,9 @@ application, call providers or models, fetch sources, or access the database.
 
 The default output is `.local/mvp/residence-semantic-2026-09-11-v1/`. Choose a new
 directory with `--output` for another build; existing directories are not overwritten.
+When the curated selections change, also pass a new `--release-id` so earlier releases
+keep their identity (v2, built on 11 September 2026, adds the SEM free-movement FAQ
+concept on the EU/EFTA registration deadline).
 The curated block coordinates are pinned to the reviewed intermediate export hash.
 Changes to source text require another semantic review and updated selections.
 

@@ -26,10 +26,24 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
-SERVER = Path(__file__).resolve().parent / "mock_residence_mcp.py"
+MOCK_SERVER = Path(__file__).resolve().parent / "mock_residence_mcp.py"
+# Assistant-curated pilot release v2 (v1 plus the SEM free-movement FAQ concept on
+# the EU/EFTA registration deadline); override with --release-file/--release-id.
+PILOT_RELEASE = ROOT / ".local/mvp/residence-semantic-2026-09-11-v2/release.json"
+PILOT_RELEASE_ID = "hackathon-residence-semantic-2026-09-11-v2"
 DEFAULT_MODEL = "opencode/ling-3.0-flash-fin-free"
 AGENT = "residence-assistant"
-MCP_NAME = "swisstip_mock"
+# "mock" serves the hardcoded fact; "real" serves the assistant-curated 81-fact
+# pilot release through the real SwissTIP MCP server and runtime.
+SERVERS = {
+    "mock": {"mcp_name": "swisstip_mock", "args": [str(MOCK_SERVER)]},
+    "real": {"mcp_name": "swisstip",
+             "args": ["-m", "swisstip.mcp_server.server", "--release", str(PILOT_RELEASE),
+                      "--active-release-id", PILOT_RELEASE_ID],
+             # Topic-level discovery returns about 140 KB (59 inline profiles and
+             # context schemas); OpenCode's default 51,200-byte cap would truncate it.
+             "tool_output": {"max_bytes": 400000, "max_lines": 20000}},
+}
 QUESTION = ("I'm a Czech citizen and starting my work in Zurich next week. "
             "By when latest should I register my stay on the municipal authority?")
 BUILTIN_TOOLS_OFF = {name: False for name in (
@@ -74,12 +88,13 @@ def date_patterns(day):
             f"{day.day}nd {name}", f"{day.day}rd {name}", f"{name[:3]} {day.day}", f"{day.day} {name[:3]}"]
 
 
-def build_config(model, python, agent_prompt):
+def build_config(model, python, agent_prompt, server):
     return {
         "$schema": "https://opencode.ai/config.json",
         "model": model,
         "share": "disabled",
         "default_agent": AGENT,
+        **({"tool_output": server["tool_output"]} if server.get("tool_output") else {}),
         "tools": dict(BUILTIN_TOOLS_OFF),
         "agent": {AGENT: {
             "description": "Answers questions about living and working in Switzerland with the SwissTIP MCP tools.",
@@ -87,9 +102,9 @@ def build_config(model, python, agent_prompt):
             "prompt": agent_prompt,
             "tools": dict(BUILTIN_TOOLS_OFF),
         }},
-        "mcp": {MCP_NAME: {
+        "mcp": {server["mcp_name"]: {
             "type": "local",
-            "command": [python, str(SERVER)],
+            "command": [python, *server["args"]],
             "enabled": True,
             "timeout": 60000,
             "environment": {"PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"},
@@ -159,21 +174,24 @@ def summarize_turn(label, turn):
     return final
 
 
-def assess(scenario, first, second):
-    mcp_calls = [c for c in first["tool_calls"] if str(c["tool"]).startswith(MCP_NAME + "_")]
+def assess(scenario, first, second, mcp_name):
+    mcp_calls = [c for c in first["tool_calls"] if str(c["tool"]).startswith(mcp_name + "_")]
     final1 = first["texts"][-1] if first["texts"] else ""
     final2 = second["texts"][-1] if second and second["texts"] else ""
     asks_arrival = bool(re.search(r"arriv", final1, re.I)) and "?" in final1
     mentions_both = "14" in final1 and bool(re.search(
         r"before (you |your |the )?(actually )?(start|taking up|commenc|first working day)", final1, re.I))
-    premature_date = bool(re.search(r"\b(september|2026-09)\b", final1, re.I)) and not asks_arrival
+    # A computed deadline is a September 2026 date after the 10/11 September snapshot window.
+    premature_date = bool(re.search(
+        r"\b(1[2-9]|2\d|30)(?:st|nd|rd|th)? September\b|\bSeptember (1[2-9]|2\d|30)\b|2026-09-(1[2-9]|2\d|30)",
+        final1, re.I)) and not asks_arrival
     expected = SCENARIOS[scenario]
     date_hit = any(p.lower() in final2.lower() for d in expected["expected_dates"] for p in date_patterns(d))
     word_hit = all(w.lower() in final2.lower() for w in expected["expected_words"])
     return {
         "turn1_called_mcp": bool(mcp_calls),
         "turn1_mcp_tools": [c["tool"] for c in mcp_calls],
-        "turn1_used_resolve": any(c["tool"] == f"{MCP_NAME}_resolve" for c in mcp_calls),
+        "turn1_used_resolve": any(c["tool"] == f"{mcp_name}_resolve" for c in mcp_calls),
         "turn1_asks_for_arrival_date": asks_arrival,
         "turn1_states_14_days_and_before_work": mentions_both,
         "turn1_computed_date_without_arrival": premature_date,
@@ -187,6 +205,10 @@ def main():
     parser.add_argument("--live", action="store_true", help="Run OpenCode with the model; otherwise only prepare.")
     parser.add_argument("--check-connection", action="store_true", help="Run 'opencode mcp list' with the generated config.")
     parser.add_argument("--model", default=DEFAULT_MODEL)
+    parser.add_argument("--server", choices=list(SERVERS), default="mock",
+                        help="mock: hardcoded server; real: SwissTIP MCP server on the curated pilot release.")
+    parser.add_argument("--release-file", type=Path, default=PILOT_RELEASE, help="Release JSON for --server real.")
+    parser.add_argument("--release-id", default=PILOT_RELEASE_ID, help="Active release ID for --server real.")
     parser.add_argument("--scenario", choices=[*SCENARIOS, "both"], default="both")
     parser.add_argument("--no-followup", action="store_true", help="Send only the first question.")
     parser.add_argument("--prompt-file", type=Path, help="Replace the agent system prompt with this file's text.")
@@ -197,14 +219,21 @@ def main():
     if not Path(python).is_file():
         python = sys.executable
     prompt = args.prompt_file.read_text(encoding="utf-8") if args.prompt_file else SYSTEM_PROMPT
-    config = build_config(args.model, python, prompt)
+    server = dict(SERVERS[args.server])
+    if args.server == "real":
+        release_file = args.release_file.resolve()
+        if not release_file.is_file():
+            raise SystemExit(f"Pilot release not found: {release_file}")
+        server["args"] = ["-m", "swisstip.mcp_server.server", "--release", str(release_file),
+                          "--active-release-id", args.release_id]
+    config = build_config(args.model, python, prompt, server)
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    folder = args.output / f"run-{stamp}"
+    folder = args.output / (f"run-{stamp}" if args.server == "mock" else f"run-{stamp}-{args.server}")
     folder.mkdir(parents=True, exist_ok=False)
     config_path = folder / "opencode.json"
     config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    stable = args.output.parent / "opencode.json"
+    stable = args.output.parent / ("opencode.json" if args.server == "mock" else f"opencode-{args.server}.json")
     stable.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     workspace = Path(tempfile.gettempdir()) / "swisstip-mock-mcp-workspace"
     workspace.mkdir(exist_ok=True)
@@ -214,7 +243,8 @@ def main():
     env["OPENCODE_CONFIG"] = str(config_path)
     env["OPENCODE_CONFIG_CONTENT"] = json.dumps(config, ensure_ascii=False)
     executable = opencode_executable()
-    summary = {"model": args.model, "config": str(config_path), "question": QUESTION,
+    summary = {"model": args.model, "server": args.server, "mcp_name": server["mcp_name"],
+               "config": str(config_path), "question": QUESTION,
                "started_at": datetime.now(timezone.utc).isoformat(), "scenarios": {}}
     if sys.stdout and hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(errors="replace")
@@ -246,7 +276,7 @@ def main():
             summarize_turn(f"{scenario} turn 2 (dates supplied)", second)
         elif not args.no_followup:
             print("  no session ID found in the events; follow-up skipped")
-        verdict = assess(scenario, first, second or {"tool_calls": [], "texts": []})
+        verdict = assess(scenario, first, second or {"tool_calls": [], "texts": []}, server["mcp_name"])
         summary["scenarios"][scenario] = {"turn_1": first, "turn_2": second, "assessment": verdict}
         print("\n  assessment: " + json.dumps(verdict, indent=2, ensure_ascii=True))
     summary["finished_at"] = datetime.now(timezone.utc).isoformat()

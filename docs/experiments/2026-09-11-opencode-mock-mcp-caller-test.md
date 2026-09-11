@@ -749,6 +749,8 @@ Registration is only possible **from your actual move-in date** (which you've al
   the tool descriptions in general.
 - The mock's `resolve` result spells out the required user facts and the
   decision rule. The real release would have to carry equivalent guidance for
-  the calling LLM to behave the same way; the corpus pages alone do not.
+  the calling LLM to behave the same way; the corpus pages alone do not. The
+  [real-server test](2026-09-11-opencode-real-mcp-caller-test.md) follows up on
+  this.
 - The system prompt says that the SwissTIP tools exist. A run with an empty
   prompt (`--prompt-file`) or with the default OpenCode agent was not made.

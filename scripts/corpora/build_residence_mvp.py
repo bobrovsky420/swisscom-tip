@@ -328,11 +328,15 @@ The release has not been imported into the database or activated.
 
 
 def main():
+    global RELEASE_ID
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--intermediate', type=Path, default=ROOT / '.local/intermediate/hackathon-residence-2026-09-11-v1')
     parser.add_argument('--corpus', type=Path, default=ROOT / '.local/corpora/hackathon-residence-2026-09-10')
     parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-11-v1')
+    parser.add_argument('--release-id', default=RELEASE_ID,
+                        help='Release identity; choose a new one together with --output when the curated selections change.')
     args = parser.parse_args()
+    RELEASE_ID = args.release_id
     print(json.dumps(build(args.intermediate.resolve(), args.corpus.resolve(), args.output.resolve()), indent=2))
 
 
