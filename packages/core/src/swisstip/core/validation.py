@@ -419,7 +419,7 @@ def validate_request(
     if request.intent not in intents:
         return result("INVALID_ARGUMENT", "intent", "unknown_intent", "Intent is not a published operation.", intents)
     scoped = [profile for profile in published if (profile.knowledge_space_id, profile.domain_id, profile.topic_id, profile.intent) == (request.knowledge_space_id, request.domain_id, request.topic_id, request.intent)]
-    applicable = [profile for profile in scoped if profile.jurisdiction == request.jurisdiction and request.scope_mode in profile.scope_modes and profile.temporal_coverage.valid_from <= request.as_of and (profile.temporal_coverage.valid_through is None or request.as_of <= profile.temporal_coverage.valid_through)]
+    applicable = [profile for profile in scoped if profile.jurisdiction == request.jurisdiction and request.scope_mode in profile.scope_modes and profile.temporal_coverage.covers(request.as_of)]
     if applicable and not request.concept_ids and all(profile.concept_selection_required for profile in applicable):
         return result("INVALID_ARGUMENT", "concept_ids", "missing_concept_selector", "This operation requires a concept selector.")
     if request.max_evidence is not None and request.max_evidence > catalog.max_evidence:

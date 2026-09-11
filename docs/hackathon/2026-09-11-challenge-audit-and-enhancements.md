@@ -95,6 +95,10 @@ answered correctly with SEM and Canton Zurich citations.
 | Major | No human review of any served fact; every entry is assistant-authored and the release calls itself a test fixture with `APPROVED` flags "for the serving test-fixture contract only". The jury's manual review will read that wording. | Curated release README and `validation.json` |
 | Minor | `retrieval_terms` in any language return `UNSUPPORTED_LANGUAGE` on every real release because no term routes are published, while the pitch leads with five-language retrieval. | Probed today; live check record |
 
+Update, 11 September evening: the date-window blocker is fixed by E1; the
+[v3 validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md)
+has the rule, the rebuild and the verification.
+
 ### 3.2 Useful Swiss coverage
 
 Strength: 12,117 saved official responses from all 26 cantons and the
@@ -153,7 +157,7 @@ matter.
 
 | ID | Change | Why it moves the score | Where | Effort |
 | --- | --- | --- | --- | --- |
-| E1 | Open the temporal window: `valid_through=None` in `WINDOW`, rebuild as `...-v3` with a new release ID, keep the 30-day freshness policy for staleness. Rebuild once more from fresh snapshots in the week before the event (the intermediate-hash guard must be updated deliberately). | Removes the `OUT_OF_COVERAGE` result for every request dated after 11 September; grounding tests can pass. | `scripts/corpora/build_residence_mvp.py` | 2 h plus rebuild |
+| E1 | **Applied 11 September** as release v3, see the [validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md). Open the temporal window: `valid_through=None` in `WINDOW`, rebuild as `...-v3` with a new release ID, keep the 30-day freshness policy for staleness. Rebuild once more from fresh snapshots in the week before the event (the intermediate-hash guard must be updated deliberately). | Removes the `OUT_OF_COVERAGE` result for every request dated after 11 September; grounding tests can pass. | `scripts/corpora/build_residence_mvp.py` | 2 h plus rebuild |
 | E2 | Ship the knowledge in Git: commit the curated `release.json` (1.2 MB) under `releases/`, optionally parts 003 and 004 (18.5 MB); make `swisstip-mcp` default to the bundled release when `--release` is omitted; regenerate `mcp-client.json` and `opencode.json` examples without machine-specific paths. | A clean clone answers real questions; this is the deliverable the challenge names. | `apps/mcp-server/server.py`, new `releases/` | 3 h |
 | E3 | Quickstart-first README, `LICENSE`, `COVERAGE.md`, `LIMITATIONS.md`: what it is in two sentences, one install and one start command, an OpenCode and a generic MCP client snippet, one worked question, the coverage table (topics, jurisdictions, sources, languages, snapshot date), and the limits. Move the product vision below the fold. | Required by the challenge text; the first thing manual review reads. | `README.md`, root | 4 h |
 | E4 | Streamable HTTP transport and a hosted endpoint: `--transport streamable-http --host --port --token-env` using the SDK's `StreamableHTTPSessionManager` behind Starlette and uvicorn; bearer token; `Dockerfile` (slim Python image, editable installs of core, runtime and mcp-server, `COPY releases/`); deploy to one small host and record the URL and token exchange in the setup notes. Keep stdio unchanged. | The harness and Swisscom experts can connect without cloning; standard clients support `type: remote`. | `server.py`, new `Dockerfile` | 1 day |

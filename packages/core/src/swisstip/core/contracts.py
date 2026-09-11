@@ -158,14 +158,27 @@ class Jurisdiction(StrictModel):
 
 
 class DateRange(StrictModel):
-    valid_from: DateString
+    """Applicability window with open bounds by default.
+
+    Knowledge carries no commencement or expiry date unless its cited source
+    states one (a treaty applied from a fixed date, a law in force from a
+    future date). A missing bound is unbounded. Snapshot age is a separate
+    freshness concern recorded on each citation.
+    """
+
+    valid_from: DateString | None = None
     valid_through: DateString | None = None
 
     @model_validator(mode="after")
     def ordered(self) -> DateRange:
-        if self.valid_through is not None and self.valid_through < self.valid_from:
+        if self.valid_from is not None and self.valid_through is not None and self.valid_through < self.valid_from:
             raise ValueError("inverted_date_range")
         return self
+
+    def covers(self, day: str) -> bool:
+        """Whether a canonical YYYY-MM-DD applicability date lies inside the window."""
+        return ((self.valid_from is None or self.valid_from <= day)
+                and (self.valid_through is None or day <= self.valid_through))
 
 
 class ContextField(StrictModel):

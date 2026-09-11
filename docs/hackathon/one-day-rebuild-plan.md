@@ -122,9 +122,9 @@ residence release through the file-backed release store.
 
 Definition of done for the day:
 
-- The curated release `hackathon-residence-semantic-2026-09-11-v2` loads and
-  validates (83 facts, 83 evidence objects, 20 rules, 35 concepts, 60 coverage
-  profiles, SHA-256 `43a50b52...`).
+- The curated release `hackathon-residence-semantic-2026-09-11-v3` loads and
+  validates (84 facts, 84 evidence objects, 20 rules, 35 concepts, 60 coverage
+  profiles, SHA-256 `c8f02daf...`).
 - All 60 prepared resolve requests and the four negative cases in its
   `mcp-requests.json` return the recorded statuses through the rebuilt service.
 - The four MCP tests pass against the rebuilt server.
@@ -268,10 +268,10 @@ so it must be copied to each developer separately.
 
 ### Level 0 - serve the bundled release (seconds; the MVP demo data)
 
-`.local/mvp/residence-semantic-2026-09-11-v2/` (4.5 MB) is the release used by
+`.local/mvp/residence-semantic-2026-09-11-v3/` (4.5 MB) is the release used by
 the successful OpenCode test. Its single `release.json` covers federal
 requirements, Zurich canton and city procedures and the migration contacts of
-all 26 cantons from 12 saved official pages: 83 facts, 20 rules, 35 concepts
+all 26 cantons from 12 saved official pages: 84 facts, 20 rules, 35 concepts
 and 60 coverage profiles. Contents: `release.json` (1.2 MB, the
 `serving-release/v1` bundle), `mcp-client.json`, `mcp-requests.json` (discovery,
 60 resolve examples, four negative cases, one evidence request),
@@ -280,21 +280,23 @@ and 60 coverage profiles. Contents: `release.json` (1.2 MB, the
 `controls/`.
 
 ```shell
-./.venv/Scripts/python.exe -m swisstip.mcp_server.server --release .local/mvp/residence-semantic-2026-09-11-v2/release.json --active-release-id hackathon-residence-semantic-2026-09-11-v2
+./.venv/Scripts/python.exe -m swisstip.mcp_server.server --release .local/mvp/residence-semantic-2026-09-11-v3/release.json --active-release-id hackathon-residence-semantic-2026-09-11-v3
 ```
 
 Notes:
 
 - `mcp-client.json` contains absolute Windows paths of the reference machine;
   rewrite `command` and `--release` for each developer's checkout.
-- Requests must pin `as_of` inside the frozen window 2026-09-10 to 2026-09-11.
+- Validity is unbounded unless the cited source states a date, so `as_of` is
+  normally today; the UK employment concept applies from 2021-01-01.
 - Jurisdictions match exactly: federal concepts take the country only, Zurich
   concepts need `CH-ZH`, the city concept needs municipality `261`; one concept
   per resolve; `population: eu_efta` for the Zurich EU/EFTA concepts.
 - Topic-level `get_coverage` returns 120 to 145 KB; raise OpenCode's tool-output
   cap to 400,000 bytes (the harness does this).
 - The v1 release in the sibling directory lacks the SEM free-movement FAQ
-  concept and fails the work-first scenario; use v2.
+  concept and fails the work-first scenario; v2 carries a date window that ends
+  on 11 September 2026; use v3.
 
 The standing caller integration test:
 
@@ -373,7 +375,7 @@ because their `sources/` folders carry the raw snapshots (only their
 `release.json` files, 15 MB and 3.5 MB, are needed to serve them):
 
 ```text
-.local/mvp/residence-semantic-2026-09-11-v2/                    4.5 MB (release.json 1.2 MB)
+.local/mvp/residence-semantic-2026-09-11-v3/                    4.5 MB (release.json 1.2 MB)
 .local/corpora/hackathon-residence-2026-09-10/                  23 MB
 .local/intermediate/hackathon-residence-2026-09-11-v1/          61 MB
 .local/mvp/residence-all-languages-2026-09-11-v2/part-003/      117 MB (optional)

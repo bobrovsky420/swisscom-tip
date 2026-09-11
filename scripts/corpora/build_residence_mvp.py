@@ -25,8 +25,10 @@ from swisstip.runtime.release import ReleaseBundle, validate_release
 from residence_mvp_curated import CONCEPTS, CONTACT_ROWS, DIRECTORY, SELECTOR_VALUES, claim, concept
 
 ROOT = Path(__file__).resolve().parents[2]
-RELEASE_ID = 'hackathon-residence-semantic-2026-09-11-v1'
-WINDOW = dict(valid_from='2026-09-10', valid_through='2026-09-11')
+RELEASE_ID = 'hackathon-residence-semantic-2026-09-11-v3'
+# Validity is unbounded unless the cited source states a commencement or expiry
+# date; each concept in residence_mvp_curated.py may declare such a `validity`.
+BUILD_DATE = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 DISCLAIMER = 'Assistant-curated experimental MVP data; no independent human or legal review.'
 
 
@@ -99,7 +101,7 @@ def build(intermediate, corpus, output):
         classification='experimental', authoring='Assistant directly curated saved official source text.',
         human_review=False, legal_quality_evaluation=False, disclaimer=DISCLAIMER,
         approval_status_semantics='APPROVED flags satisfy the serving test-fixture contract only; no production approval is asserted.',
-        temporal_coverage_semantics='Frozen snapshot test window, not statutory commencement or expiry dates.',
+        temporal_coverage_semantics='Unbounded unless the cited source states a commencement or expiry date; each citation records its snapshot time (accessed_at) and the freshness policy governs staleness.',
         context_semantics='Selectors route populations; they do not decide eligibility.',
         semantic_search=False, runtime_tests_executed=False))
     provider = control('mvp-no-providers', dict(mode='none', model_calls=0, embedding_calls=0))
@@ -132,6 +134,10 @@ def build(intermediate, corpus, output):
             source_id=metadata[identifier]['source_id'], text=d['content_text'],
             sections=[dict(section_id='full-document', start_offset=0, end_offset=len(d['content_text']))]))
 
+    saved = sorted({datetime.fromisoformat(docs[i]['acquisition']['retrieved_at']).astimezone(timezone.utc).strftime('%Y-%m-%d')
+                    for i in used_ids})
+    saved_note = ('Curated from official pages saved on ' + saved[0] if len(saved) == 1
+                  else 'Curated from official pages saved between ' + saved[0] + ' and ' + saved[-1]) + '; not complete Swiss legal coverage.'
     policy = seal_artifact(LanguagePolicy(identity=ref('mvp-language-policy'),
         term_languages=[], source_languages=sorted({m['language'] for m in metadata.values()}),
         projection_languages=[], routes=[], approval_status='APPROVED', evaluation_ref=evaluation))
@@ -157,6 +163,7 @@ def build(intermediate, corpus, output):
         if row['municipality']:
             jurisdiction['municipality_id'] = row['municipality']
         fields, context, rule_refs = [], {}, []
+        validity = dict(row.get('validity') or {})
         fact_ids = [f'mvp-fact-{instance}-{n}' for n in range(1, len(row['claims']) + 1)]
         if row['selector']:
             field, value = row['selector']
@@ -185,7 +192,7 @@ def build(intermediate, corpus, output):
                 declared_language=[d['language_declared']] if d.get('language_declared') else [],
                 detected_language=None, effective_source_language=meta['language'],
                 language_detection_method='declared-metadata-or-source-registry', language_confidence=0.0,
-                canonical_concept_ids=[cid], jurisdiction=jurisdiction, temporal_coverage=WINDOW,
+                canonical_concept_ids=[cid], jurisdiction=jurisdiction, temporal_coverage=validity,
                 provenance_refs=[curation_ref, evaluation]))
             evidence.append(item)
             row_evidence.append(item)
@@ -203,15 +210,15 @@ def build(intermediate, corpus, output):
             intent=row['intent'], concept_selection_required=True, jurisdiction=jurisdiction,
             context_schema_ref=schema.identity, scope_modes=['exact'], max_descendant_depth=0, max_concepts=1,
             source_ids=sorted({e.citation.source_id for e in row_evidence}),
-            source_languages=sorted({e.effective_source_language for e in row_evidence}), temporal_coverage=WINDOW,
+            source_languages=sorted({e.effective_source_language for e in row_evidence}), temporal_coverage=validity,
             rule_refs=rule_refs, evaluation_ref=evaluation, approval_status='APPROVED',
-            exclusions=[DISCLAIMER, 'Frozen snapshot test window only; not complete Swiss legal coverage.', *row['notes']],
+            exclusions=[DISCLAIMER, saved_note, *row['notes']],
             freshness_policy=dict(max_age_days=30, policy_ref=evaluation)))
         plans.append(dict(coverage_profile_id=profile_id, portions=[dict(portion_id='mvp-portion-' + instance,
             concept_ids=[cid], fact_ids=[] if rule_refs else fact_ids, rule_refs=rule_refs)]))
         request = StructuredGroundingRequest(schema_version='structured-grounding/v1', release_id=RELEASE_ID,
             knowledge_space_id='hackathon', domain_id='immigration', topic_id='residence', concept_ids=[cid],
-            intent=row['intent'], jurisdiction=jurisdiction, context=context, as_of='2026-09-10',
+            intent=row['intent'], jurisdiction=jurisdiction, context=context, as_of=BUILD_DATE,
             scope_mode='exact', max_evidence=5)
         requests.append(dict(name=instance, tool='resolve', arguments=request.model_dump(exclude_none=True),
                              expected_fact_ids=fact_ids, expected_evidence_ids=[e.evidence_id for e in row_evidence]))
@@ -238,13 +245,14 @@ def build(intermediate, corpus, output):
             raise ValueError(f"Prepared request {request['name']} is not ready: {assessment}")
         request['validated_preflight_status'] = assessment.status
     # Exercise meaningful scope failures using the pure core validator, not the app.
-    base = next(r for r in requests if r['name'] == 'zh-eu-b')['arguments']
+    zh = next(r for r in requests if r['name'] == 'zh-eu-b')['arguments']
+    uk = next(r for r in requests if r['name'] == 'uk-new-employment')['arguments']
     negative_requests = []
-    for name, changes, expected in [
-        ('missing-population', {'context': {}}, 'NEEDS_CONTEXT'),
-        ('outside-canton', {'jurisdiction': {'country_code': 'CH', 'canton_code': 'CH-GE'}}, 'OUT_OF_COVERAGE'),
-        ('outside-test-window', {'as_of': '2026-09-12'}, 'OUT_OF_COVERAGE'),
-        ('wrong-release', {'release_id': 'unavailable-test-release'}, 'RELEASE_UNAVAILABLE'),
+    for name, base, changes, expected in [
+        ('missing-population', zh, {'context': {}}, 'NEEDS_CONTEXT'),
+        ('outside-canton', zh, {'jurisdiction': {'country_code': 'CH', 'canton_code': 'CH-GE'}}, 'OUT_OF_COVERAGE'),
+        ('before-source-stated-commencement', uk, {'as_of': '2020-12-31'}, 'OUT_OF_COVERAGE'),
+        ('wrong-release', zh, {'release_id': 'unavailable-test-release'}, 'RELEASE_UNAVAILABLE'),
     ]:
         arguments = {**deepcopy(base), **changes}
         assessment = validate_request(arguments, catalog, policy)
@@ -252,6 +260,17 @@ def build(intermediate, corpus, output):
             raise ValueError(f'{name}: expected {expected}, got {assessment}')
         negative_requests.append(dict(name=name, tool='resolve', arguments=arguments,
                                       validated_preflight_status=assessment.status))
+    # Unbounded validity accepts any applicability date; a stated commencement day is inclusive.
+    temporal_checks = []
+    for name, base, as_of in [('unbounded-far-past', zh, '1990-01-01'), ('unbounded-far-future', zh, '2099-12-31'),
+                              ('commencement-day', uk, '2021-01-01')]:
+        assessment = validate_request({**deepcopy(base), 'as_of': as_of}, catalog, policy)
+        if assessment.status != 'READY':
+            raise ValueError(f'{name}: expected READY, got {assessment}')
+        temporal_checks.append(dict(name=name, as_of=as_of, validated_preflight_status=assessment.status))
+    source_stated = [dict(concept='residence-' + row['key'], **row['validity']) for row in selected if row.get('validity')]
+    stated_note = ', '.join(s['concept'] + ' (' + ', '.join(f'{k}={v}' for k, v in s.items() if k != 'concept') + ')'
+                            for s in source_stated) or 'none'
     release_path = output / 'release.json'
     release_path.write_text(bundle.model_dump_json(indent=2) + '\n', encoding='utf-8', newline='\n')
     validate_release(ReleaseBundle.model_validate_json(release_path.read_text(encoding='utf-8')))
@@ -272,7 +291,7 @@ def build(intermediate, corpus, output):
     evidence_request = GetEvidenceRequest(release_id=RELEASE_ID, evidence_ids=[evidence[0].evidence_id])
     write_json(output / 'mcp-requests.json', dict(execution_status='Prepared and schema-validated; not sent to an application.',
         discovery=dict(tool='get_coverage', arguments=discovery.model_dump(exclude_none=True)),
-        resolve=requests, negative_cases=negative_requests,
+        resolve=requests, negative_cases=negative_requests, temporal_checks=temporal_checks,
         evidence=dict(tool='get_evidence', arguments=evidence_request.model_dump())))
     write_json(output / 'mcp-client.json', {'mcpServers': {'swisstip-residence-mvp': {
         'command': str(ROOT / '.venv/Scripts/python.exe'),
@@ -281,12 +300,13 @@ def build(intermediate, corpus, output):
         classification='experimental', validated=True, checks=['Existing validate_release before and after JSON serialization',
         'Raw snapshot and normalized source hashes', 'Exact evidence spans and block coordinates',
         'All packaged external dependency hashes', 'MCP request Pydantic schemas',
-        '59 positive and 4 negative core scope/context preflight checks'],
+        f'{len(requests)} positive, {len(negative_requests)} negative and {len(temporal_checks)} temporal core preflight checks'],
         facts=len(facts), evidence=len(evidence), rules=len(rules), concepts=len(seen_concepts),
         coverage_profiles=len(profiles), curated_documents=len(documents), cantonal_contacts=len(contacts),
         prepared_resolve_requests=len(requests), negative_preflight_cases=len(negative_requests),
         app_calls=0, external_model_calls=0,
-        runtime_requests_executed=0, human_review=False, temporal_test_window=WINDOW)
+        runtime_requests_executed=0, human_review=False, prepared_request_as_of=BUILD_DATE,
+        source_snapshot_dates=saved, temporal_coverage=dict(default='unbounded', source_stated=source_stated))
     write_json(output / 'validation.json', report)
     (output / 'README.md').write_text(f'''# Experimental residence MCP test data
 
@@ -308,9 +328,13 @@ Use `mcp-client.json` to configure a local MCP client, or run:
 ./.venv/Scripts/python.exe -m swisstip.mcp_server.server --release {release_path.relative_to(ROOT).as_posix() if release_path.is_relative_to(ROOT) else release_path.as_posix()} --active-release-id {RELEASE_ID}
 ```
 
-`mcp-requests.json` supplies discovery, {len(requests)} resolve examples, four negative cases and an evidence request.
-Select exactly one concept per resolve. Use the supplied context and `as_of=2026-09-10`.
-The declared window 2026-09-10 through 2026-09-11 is a frozen test scope, not statutory validity.
+`mcp-requests.json` supplies discovery, {len(requests)} resolve examples, {len(negative_requests)} negative cases,
+{len(temporal_checks)} temporal checks and an evidence request. Select exactly one concept per resolve and supply the
+listed context. `as_of` is the applicability date the caller asks about, normally today; the examples use the
+build date {BUILD_DATE}. Validity is unbounded unless the cited source states a commencement or expiry date.
+Source-stated limits in this release: {stated_note}.
+Each citation records when its page was saved (`accessed_at`; {', '.join(saved)}); the freshness policy reports
+results as STALE once that snapshot is older than 30 days.
 The deterministic concept/fact baseline requires no models. Free-text semantic retrieval,
 embeddings, reranking and multilingual projections are outside this pack.
 
@@ -332,7 +356,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--intermediate', type=Path, default=ROOT / '.local/intermediate/hackathon-residence-2026-09-11-v1')
     parser.add_argument('--corpus', type=Path, default=ROOT / '.local/corpora/hackathon-residence-2026-09-10')
-    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-11-v1')
+    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-11-v3')
     parser.add_argument('--release-id', default=RELEASE_ID,
                         help='Release identity; choose a new one together with --output when the curated selections change.')
     args = parser.parse_args()

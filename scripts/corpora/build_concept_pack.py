@@ -25,7 +25,7 @@ from swisstip.core.validation import validate_request
 from swisstip.runtime.release import ReleaseBundle, validate_release
 from audit_source_languages import ROOT, sha, write
 from build_residence_mvp import ref
-from build_expanded_pack import jurisdiction, merge_profiles, WINDOW
+from build_expanded_pack import BUILD_DATE, jurisdiction, merge_profiles, WINDOW
 from extract_expanded import language_hint
 
 DEFAULT_WORKDIR = ROOT / '.local/extraction/assistant-v3-2026-09-11'
@@ -190,7 +190,7 @@ def build(workdir, output, release_id):
             request = StructuredGroundingRequest(schema_version='structured-grounding/v1', release_id=rid,
                                                  knowledge_space_id='hackathon', domain_id='immigration', topic_id='residence',
                                                  concept_ids=[cid], intent=INTENT, jurisdiction=scope, context={},
-                                                 as_of=WINDOW['valid_from'], scope_mode='exact', max_evidence=5)
+                                                 as_of=BUILD_DATE, scope_mode='exact', max_evidence=5)
             requests.append(dict(tool='resolve', arguments=request.model_dump(exclude_none=True),
                                  source_url=report['provenance']['source_url'], evidence_ids=evidence_ids,
                                  expected_note='One assistant-authored candidate with its cited evidence.'))

@@ -116,6 +116,23 @@ class RequestContractTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             DateRange(valid_from="2026-09-06", valid_through="2026-09-05")
 
+    def test_date_range_bounds_are_open_unless_stated(self):
+        unbounded = DateRange()
+        self.assertIsNone(unbounded.valid_from)
+        self.assertIsNone(unbounded.valid_through)
+        for day in ("1990-01-01", "2026-09-24", "2099-12-31"):
+            self.assertTrue(unbounded.covers(day))
+        commenced = DateRange(valid_from="2021-01-01")
+        self.assertFalse(commenced.covers("2020-12-31"))
+        self.assertTrue(commenced.covers("2021-01-01"))
+        self.assertTrue(commenced.covers("2035-01-01"))
+        expiring = DateRange(valid_through="2029-12-31")
+        self.assertTrue(expiring.covers("1990-01-01"))
+        self.assertFalse(expiring.covers("2030-01-01"))
+        self.assertEqual(DateRange.model_validate_json("{}"), unbounded)
+        with self.assertRaises(ValidationError):
+            DateRange(valid_from="2026-9-6")
+
 
 class IdentifierAndLanguageTests(unittest.TestCase):
     def test_artifact_ref_is_pinned_and_frozen(self):

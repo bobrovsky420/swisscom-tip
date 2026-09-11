@@ -245,6 +245,23 @@ class StructuredValidationTests(FixtureTestCase):
         self.request["as_of"] = "2026-02-30"
         self.assert_status("INVALID_ARGUMENT")
 
+    def test_unbounded_validity_accepts_any_date_and_stated_bounds_are_enforced(self):
+        profile = self.catalog_data["coverage_profiles"][0]
+        profile["temporal_coverage"] = {}
+        for as_of in ("1990-01-01", "2026-09-24", "2099-12-31"):
+            self.request["as_of"] = as_of
+            self.assert_status("READY")
+        profile["temporal_coverage"] = {"valid_from": "2021-01-01"}
+        self.request["as_of"] = "2020-12-31"
+        self.assertEqual(self.assert_status("OUT_OF_COVERAGE").issues[0].reason, "unsupported_combination")
+        self.request["as_of"] = "2021-01-01"
+        self.assert_status("READY")
+        profile["temporal_coverage"] = {"valid_through": "2029-12-31"}
+        self.request["as_of"] = "2030-01-01"
+        self.assert_status("OUT_OF_COVERAGE")
+        self.request["as_of"] = "2029-12-31"
+        self.assert_status("READY")
+
     def test_language_only_terms_preserve_source_scope(self):
         self.request["retrieval_terms"] = [{"text": "Begriff", "language": "DE"}, {"text": "term", "language": "EN"}]
         result = self.assert_status("READY")

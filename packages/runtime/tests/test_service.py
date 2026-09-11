@@ -177,6 +177,26 @@ class ServiceTests(unittest.TestCase):
                 self.assertEqual(result.status, "INSUFFICIENT_VERIFIED_EVIDENCE")
                 self.assertFalse(result.evidence)
 
+    def test_unbounded_validity_serves_any_applicability_date(self):
+        bundle, _ = fixture()
+        for evidence in bundle.evidence:
+            evidence.temporal_coverage.valid_from = None
+            evidence.temporal_coverage.valid_through = None
+        for profile in bundle.catalog.coverage_profiles:
+            profile.temporal_coverage.valid_from = None
+            profile.temporal_coverage.valid_through = None
+        service = self.service(reseal(bundle))
+        for as_of in ("1990-01-01", "2026-09-24", "2099-12-31"):
+            with self.subTest(as_of=as_of):
+                result = service.resolve({**self.request, "as_of": as_of})
+                self.assertEqual(result.status, "SUPPORTED")
+                self.assertEqual([f.fact_id for f in result.supported_portions], ["fact-parent"])
+        # A source-stated commencement still excludes earlier applicability dates.
+        for profile in bundle.catalog.coverage_profiles:
+            profile.temporal_coverage.valid_from = "2021-01-01"
+        result = self.service(reseal(bundle)).resolve({**self.request, "as_of": "2020-12-31"})
+        self.assertEqual(result.status, "OUT_OF_COVERAGE")
+
     def test_federal_evidence_requires_published_rule(self):
         for evidence in self.bundle.evidence:
             evidence.jurisdiction.canton_code = None

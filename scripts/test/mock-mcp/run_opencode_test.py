@@ -29,10 +29,11 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
 MOCK_SERVER = Path(__file__).resolve().parent / "mock_residence_mcp.py"
-# Assistant-curated pilot release v2 (v1 plus the SEM free-movement FAQ concept on
-# the EU/EFTA registration deadline); override with --release-file/--release-id.
-PILOT_RELEASE = ROOT / ".local/mvp/residence-semantic-2026-09-11-v2/release.json"
-PILOT_RELEASE_ID = "hackathon-residence-semantic-2026-09-11-v2"
+# Assistant-curated pilot release v3: v2 (the SEM free-movement FAQ deadline concept)
+# rebuilt with unbounded validity unless the source states a date; override with
+# --release-file/--release-id.
+PILOT_RELEASE = ROOT / ".local/mvp/residence-semantic-2026-09-11-v3/release.json"
+PILOT_RELEASE_ID = "hackathon-residence-semantic-2026-09-11-v3"
 DEFAULT_MODEL = "opencode/ling-3.0-flash-fin-free"
 AGENT = "residence-assistant"
 # "mock" serves the hardcoded fact; "real" serves the assistant-curated 81-fact

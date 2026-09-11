@@ -50,6 +50,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Challenge audit and enhancement proposals - 11 September](docs/hackathon/2026-09-11-challenge-audit-and-enhancements.md)
 - [One-day team rebuild plan with the existing residence knowledge base](docs/hackathon/one-day-rebuild-plan.md)
 - [Residence MCP corpus continuation checkpoint - 11 September](docs/pilots/2026-09-11-residence-mcp-checkpoint.md)
+- [Unbounded validity rule and curated release v3 - 11 September](docs/pilots/2026-09-11-residence-v3-unbounded-validity.md)
 - [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Local ingestion GUI: sources, parsing, builds and draft review](apps/admin-console/README.md)
 - [Paused extraction experiment and resume checkpoint](docs/experiments/2026-09-10-extraction-pause-checkpoint.md)

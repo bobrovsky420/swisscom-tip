@@ -250,9 +250,7 @@ class KnowledgeService:
             return (place and item.citation.source_id in profile.source_ids
                     and item.effective_source_language in sources
                     and bool(set(item.canonical_concept_ids) & selected)
-                    and item.temporal_coverage.valid_from <= request.as_of
-                    and (item.temporal_coverage.valid_through is None
-                         or request.as_of <= item.temporal_coverage.valid_through))
+                    and item.temporal_coverage.covers(request.as_of))
 
         evidence = {e.evidence_id: e for e in bundle.evidence}
         evidence_by_ref = {e.identity: e.evidence_id for e in bundle.evidence}

@@ -23,9 +23,16 @@ def claim(statement, document, first, last=None):
     return dict(statement=statement, document_id=document, first_block=first, last_block=last or first)
 
 
-def concept(key, label, claims, *, canton=None, municipality=None, selector=None, intent='requirements', notes=None):
+def concept(key, label, claims, *, canton=None, municipality=None, selector=None, intent='requirements', notes=None,
+            validity=None):
+    """One curated operation.
+
+    `validity` holds a source-cited commencement or expiry (`valid_from`,
+    `valid_through`). Omitted bounds are unbounded: the knowledge base carries
+    no date limit unless the cited page states one.
+    """
     return dict(key=key, label=label, claims=claims, canton=canton, municipality=municipality,
-                selector=selector, intent=intent, notes=notes or [])
+                selector=selector, intent=intent, notes=notes or [], validity=dict(validity or {}))
 
 
 CONCEPTS = [
@@ -106,7 +113,10 @@ CONCEPTS = [
     concept('uk-new-employment', 'New short-term employment by UK nationals', [
         claim('UK nationals taking a Swiss job for up to three months cannot use the short-employment notification route; a work permit under the AIG is required.', NOTIFY, 181, 182),
         claim('The Swiss employer must submit that work-permit application to the competent cantonal authority.', NOTIFY, 181, 183),
-    ], selector=('population', 'uk_new'), notes=['New Swiss employment only; acquired rights and cross-border service agreements are separate.']),
+        claim('SEM states that after the United Kingdom left the EU, the free-movement agreement stopped applying to Switzerland-UK relations at the end of the transition period on 31 December 2020, and that since 1 January 2021 UK nationals no longer count as EU citizens; the separate temporary services-mobility agreement has applied since 1 January 2021 and remains valid until 31 December 2029.', NOTIFY, 176, 177),
+    ], selector=('population', 'uk_new'), validity=dict(valid_from='2021-01-01'),
+       notes=['New Swiss employment only; acquired rights and cross-border service agreements are separate.',
+              'Source-stated commencement: applies since 1 January 2021, the end of the Brexit transition period. The 31 December 2029 expiry cited for the services-mobility agreement does not limit this employment rule.']),
     concept('biometric-permit', 'Biometric residence-card data and issuance', [
         claim('SEM states that the biometric residence-card chip stores two digital fingerprints and a facial image. The data are retained for five years for reissuance without collecting them again.', BIO, 90),
         claim('The canton of residence sets the application and issuance procedure and collects the biometric data using the national passport for identification. Charges are separated into the permit procedure, card production and biometric-data collection.', BIO, 92),

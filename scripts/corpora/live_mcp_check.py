@@ -199,10 +199,10 @@ async def negatives(call, parts, fixtures, topics, active):
                phase='negative', label='stringified-object', expect='INVALID_ARGUMENT')
     await call('resolve', {**first['arguments'], 'release_id': 'missing-release'},
                phase='negative', label='resolve-unknown-release', expect='RELEASE_UNAVAILABLE')
-    await call('resolve', {**first['arguments'], 'as_of': '2026-09-12'},
-               phase='boundary', label='as-of-after-window')
-    await call('resolve', {**first['arguments'], 'as_of': '2026-09-10'},
-               phase='boundary', label='as-of-before-window')
+    await call('resolve', {**first['arguments'], 'as_of': '2099-12-31'},
+               phase='boundary', label='as-of-far-future')
+    await call('resolve', {**first['arguments'], 'as_of': '1990-01-01'},
+               phase='boundary', label='as-of-far-past')
     await call('resolve', {**first['arguments'], 'source_languages': ['xx']},
                phase='boundary', label='unsupported-source-language')
     await call('resolve', {**first['arguments'], 'max_evidence': 1},

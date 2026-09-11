@@ -728,11 +728,20 @@
     },
     "DateRange": {
       "additionalProperties": false,
+      "description": "Applicability window with open bounds by default.\n\nKnowledge carries no commencement or expiry date unless its cited source\nstates one (a treaty applied from a fixed date, a law in force from a\nfuture date). A missing bound is unbounded. Snapshot age is a separate\nfreshness concern recorded on each citation.",
       "properties": {
         "valid_from": {
-          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
-          "title": "Valid From",
-          "type": "string"
+          "anyOf": [
+            {
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Valid From"
         },
         "valid_through": {
           "anyOf": [
@@ -748,9 +757,6 @@
           "title": "Valid Through"
         }
       },
-      "required": [
-        "valid_from"
-      ],
       "title": "DateRange",
       "type": "object"
     },

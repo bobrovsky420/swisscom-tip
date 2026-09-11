@@ -23,7 +23,9 @@ from build_residence_mvp import ref
 INTERMEDIATE = ROOT/'.local/intermediate/hackathon-residence-all-languages-2026-09-11'
 SEMANTIC = ROOT/'.local/semantic/hackathon-residence-all-languages-2026-09-11'
 DEST = ROOT/'.local/mvp/residence-all-languages-2026-09-11-v1'
-WINDOW = dict(valid_from='2026-09-11', valid_through='2026-09-11')
+# Unbounded validity: source assertions carry no commencement or expiry unless the page states one.
+WINDOW = {}
+BUILD_DATE = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 NOTICE = 'Experimental automatically derived source assertions; no independent semantic or legal review.'
 CANTONS = 'AG AI AR BE BL BS FR GE GL GR JU LU NE NW OW SG SH SO SZ TG TI UR VD VS ZG ZH'.split()
 
@@ -258,7 +260,7 @@ def build_part(output,records,number,total,release_id=None):
                 fact_ids=row_facts[i:i+50]) for i in range(0,len(row_facts),50)]))
             request=StructuredGroundingRequest(schema_version='structured-grounding/v1',release_id=rid,knowledge_space_id='hackathon',domain_id='immigration',
                 topic_id='residence',concept_ids=[cid],intent='read-source-assertions',jurisdiction=scope,context={},
-                as_of='2026-09-11',scope_mode='exact',max_evidence=5)
+                as_of=BUILD_DATE,scope_mode='exact',max_evidence=5)
             requests.append(dict(tool='resolve',arguments=request.model_dump(exclude_none=True),source_url=d['source_url'],
                 evidence_ids=row_evidence,expected_note='Full source evidence is addressable in batches of at most five IDs.'))
         if number%100==0: print(json.dumps(dict(pack=rid,documents=number,total=len(records),facts=len(facts))),flush=True)
