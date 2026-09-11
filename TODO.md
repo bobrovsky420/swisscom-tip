@@ -1,5 +1,12 @@
 # Implementation alignment and validation plan
 
+Latest residence MVP activity: resume from the
+[11 September MCP corpus checkpoint](docs/pilots/2026-09-11-residence-mcp-checkpoint.md)
+for the completed nationwide test artifacts, the recorded
+[live MCP check](docs/pilots/2026-09-11-residence-live-mcp-check.md), the
+[download recovery](docs/pilots/2026-09-11-residence-download-recovery.md) and the
+remaining coverage/semantic gaps. The assessment below remains the earlier backlog.
+
 Assessment date: 2026-09-06. Baseline: [Product Specification V20](docs/product/product-functional-specification.md),
 [Technical Specification V11](docs/architecture/technical-specification.md), current
 source code and tests, and the recorded zh.ch experiment.

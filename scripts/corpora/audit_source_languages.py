@@ -250,7 +250,7 @@ class SafeRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, target)
 
 
-def download(target, hosts):
+def download(target, hosts, limit_bytes=40 * 1024 * 1024, host_delay=0.3):
     url = target['url']
     folder = OUT / 'pages' / target['url_id']
     folder.mkdir(parents=True, exist_ok=True)
@@ -261,13 +261,13 @@ def download(target, hosts):
         host_lock = HOST_LOCKS.setdefault(urlsplit(url).hostname, threading.Lock())
     try:
         with host_lock:
-            time.sleep(0.3)
+            time.sleep(host_delay)
             opener = urllib.request.build_opener(SafeRedirect(hosts))
             req = urllib.request.Request(url, headers={'User-Agent':'SwissTIP-Hackathon-SourceAudit/1.0', 'Accept':'text/html,application/pdf,*/*;q=0.5'})
             with opener.open(req, timeout=25) as response:
-                raw = response.read(40 * 1024 * 1024 + 1)
-                if len(raw) > 40 * 1024 * 1024:
-                    raise ValueError('Document exceeds 40 MiB; recorded for separate acquisition')
+                raw = response.read(limit_bytes + 1)
+                if len(raw) > limit_bytes:
+                    raise ValueError(f'Document exceeds {limit_bytes // (1024 * 1024)} MiB; recorded for separate acquisition')
                 final = response.geturl()
                 content_type = response.headers.get('Content-Type', '')
                 status_code = response.status
@@ -295,6 +295,7 @@ def main():
     parser.add_argument('--download', action='store_true')
     parser.add_argument('--batch-size', type=int, default=200, help='Resumable batch size, not a corpus completeness limit')
     parser.add_argument('--workers', type=int, default=8)
+    parser.add_argument('--host-delay', type=float, default=0.3, help='Seconds between requests to one host')
     parser.add_argument('--until-idle', action='store_true', help='Continue discovered-language/detail batches until the current frontier is empty')
     parser.add_argument('--rescan-host',action='append',default=[],help='Re-audit saved HTML on this host with the current discovery rules')
     args = parser.parse_args()
@@ -377,7 +378,7 @@ def download_batch(state,args):
         return False
     batch = pending[:args.batch_size]
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(download, t, state['hosts']):t for t in batch}
+        futures = {pool.submit(download, t, state['hosts'], host_delay=args.host_delay):t for t in batch}
         for index, future in enumerate(as_completed(futures), 1):
             target = futures[future]
             manifest, result = future.result()

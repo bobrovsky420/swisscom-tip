@@ -46,6 +46,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Hackathon operations, deployment and data transfer](docs/hackathon/hackathon-operations.md)
 - [Implementation gaps and validation plan](TODO.md)
 - [Pilot knowledge and lessons](docs/pilots/2026-09-08-retrieval-pilot.md)
+- [Residence MCP corpus continuation checkpoint - 11 September](docs/pilots/2026-09-11-residence-mcp-checkpoint.md)
 - [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Local ingestion GUI: sources, parsing, builds and draft review](apps/admin-console/README.md)
 - [Paused extraction experiment and resume checkpoint](docs/experiments/2026-09-10-extraction-pause-checkpoint.md)

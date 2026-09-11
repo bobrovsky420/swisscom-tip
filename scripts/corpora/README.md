@@ -237,3 +237,54 @@ only failed records in the selected shard; it does not discard successful record
 while rebuilding spans, annotations and publisher-first language assignments.
 Changed RTF text is classified afresh. Run the finalizer again after packaging
 to include the completed serving collection and latest OCR dispositions.
+
+## Paced retry of failed downloads
+
+`retry_failed_downloads.py` retries targets whose last attempt failed for a
+recoverable reason: rate limits, timeouts, refused connections, server errors,
+redirects that the host rules now allow, and a single fresh attempt for 404, 403,
+DNS and certificate failures. It processes one host at a time with `--host-delay`
+seconds between requests, backs off after HTTP 429 and pauses a host after
+repeated 429 responses. Mailto redirects, the defunct `bfm.admin.ch` host and
+documents over the size cap are listed as skipped unless `--oversized-limit`
+allows them. Certificate verification is never disabled.
+
+```shell
+./.venv/Scripts/python.exe scripts/corpora/retry_failed_downloads.py --dry-run
+./.venv/Scripts/python.exe scripts/corpora/retry_failed_downloads.py --host-delay 2 --backoff 45 --workers 6
+./.venv/Scripts/python.exe -m unittest discover -s scripts/corpora -p test_retry_failed_downloads.py
+```
+
+Recovered responses are new attempt folders under the same raw corpus; the
+audit state, plan and checked-in inventory are updated through the crawler's
+functions, and `<label>-results.json` records every outcome, remaining error and
+skipped target. Links discovered on recovered pages become pending targets for
+the next audit pass. Recovered raw responses are not yet in any intermediate,
+semantic or serving artifact: rebuild those as a new version before changing any
+published statistic.
+
+## Live MCP check
+
+`live_mcp_check.py` starts the server from a completed collection's
+`mcp-client.json` over MCP stdio and records real `get_coverage`, `resolve` and
+`get_evidence` outcomes, citations, limits and timings. It reads each part's
+`mcp-requests.json` as input only and leaves the release, the fixtures and their
+`executed` flags unchanged. It makes no extraction application, LLM, provider,
+database or network call. Pure validation and this live check remain separate
+records.
+
+```shell
+./.venv/Scripts/python.exe scripts/corpora/live_mcp_check.py --output .local/evaluations/residence-all-languages-2026-09-11-v1-live-mcp-check
+./.venv/Scripts/python.exe -m unittest discover -s scripts/corpora -p test_live_mcp_check.py
+```
+
+The output directory must not exist. `calls.jsonl` keeps every request and full
+response, `summary.json` the aggregates and `README.md` a readable digest. The
+check walks the catalog of every listed part, resolves a jurisdiction-balanced
+sample of fixture requests (one per canton or federal scope by default, plus a
+seeded random tail, within `--time-budget` seconds), reads the returned evidence
+back for parity, fetches one further batch of the remaining fixture evidence
+IDs, and records explicit negative and boundary cases. The script expects the
+expanded collection layout with `source_url` and `evidence_ids` per request; the
+earlier 81-fact pack uses a different fixture layout. Sample outcomes describe
+served fixtures only, not corpus completeness or semantic review.

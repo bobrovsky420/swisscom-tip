@@ -486,7 +486,9 @@ Snapshot: **2026-09-11**. Experimental collection: `residence-all-languages-2026
 | Validated MCP release parts | 2 |
 | Local OCR jobs completed / jobs producing text | 665 / 442 |
 
-**Validation:** 112 tests passed. Both release parts passed validation before and after serialization; all 11,728 intermediate records passed normalized-text hash and block-span checks. This preparation invoked neither the SwissTIP application nor another LLM. These results cover local artifacts and contracts; live MCP behavior and retrieval quality require separate evaluation.
+**Validation:** 112 tests passed. Both release parts passed validation before and after serialization; all 11,728 intermediate records passed normalized-text hash and block-span checks. This preparation invoked neither the SwissTIP application nor another LLM. These results cover local artifacts and contracts; retrieval quality requires separate evaluation.
+
+**Live MCP check (11 September):** a real stdio session against both release parts recorded 217 tool calls with no output-schema or content-parity failure, 12 of 12 negative expectations met, and 84 sampled resolves across all 26 cantons and the federal level returning cited original-language evidence (52 fully supported, 32 partially supported because the document has more than five evidence sections). Median latency was about 8 s per call because the runtime re-validates the pinned release on every request. Details: [live MCP check record](../pilots/2026-09-11-residence-live-mcp-check.md).
 
 **Coverage and review remain incomplete:** 475 downloads failed, 10,404 discovered links await scope review, and 534 assertions were excluded from serving because of unresolved language or broken native font mappings. OCR quality, translation equivalence and semantic interpretation remain unreviewed. Counts include contextual and archival material; quotation fragments are not counts of reviewed eligibility rules.
 
