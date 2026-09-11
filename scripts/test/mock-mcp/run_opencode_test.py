@@ -1,11 +1,13 @@
-"""Run the Zurich registration question through OpenCode with the mock MCP server.
+"""Run a standing caller integration case through OpenCode with an MCP server.
 
-Without --live the script only writes the OpenCode configuration and prints the
-commands. With --live it runs two OpenCode sessions (one per scenario). Each
-session sends the exact test question first, then answers the assistant's
-clarification with the scenario's arrival date and first working day, and the
-script reports which MCP tools were called and whether the final answer named
-the expected deadline. Transcripts are saved under .local/mock-mcp/runs/.
+Cases (--case): "zurich-registration" sends the Czech-citizen Zurich question and
+then the scenario's arrival date and first working day; "chinese-work-permit"
+sends a Chinese-language question on third-country work admission and then the
+applicant's profile. Without --live the script only writes the OpenCode
+configuration and prints the commands. With --live it runs one OpenCode session
+per scenario, reports which MCP tools were called and applies the case's
+heuristic assessment to the final answers. Transcripts are saved under
+.local/mock-mcp/runs/.
 
 The configuration is passed to the OpenCode child process only, through the
 OPENCODE_CONFIG and OPENCODE_CONFIG_CONTENT environment variables. The user's
@@ -46,6 +48,21 @@ SERVERS = {
 }
 QUESTION = ("I'm a Czech citizen and starting my work in Zurich next week. "
             "By when latest should I register my stay on the municipal authority?")
+# Chinese-language case: the release serves German and English sources and no term
+# routes, so the caller must translate on its own and must not tag retrieval terms
+# or source filters as "zh". Expected answer: docs/experiments/
+# 2026-09-11-opencode-chinese-work-permit-caller-test.md.
+CHINESE_QUESTION = "我是中国公民，我可以在瑞士工作吗？获得工作许可和居留许可需要哪些条件？"
+CHINESE_SCENARIOS = {
+    "qualified-employee": {
+        "followup": "我有硕士学位和六年软件工程师工作经验。苏黎世的一家公司想聘用我，合同是无固定期限的。",
+        "expected": "turn 1: admission only for well-qualified third-country nationals (managers, "
+                    "specialists, graduates with experience); employer must show no suitable candidate in "
+                    "Switzerland or the EU/EFTA; pay and conditions at local standards; employer applies for "
+                    "the permit; cantonal migration office issues it. turn 2: B permit for the open-ended "
+                    "contract, employer files in Zurich, no promise of approval",
+    },
+}
 BUILTIN_TOOLS_OFF = {name: False for name in (
     "bash", "edit", "write", "read", "glob", "grep", "list", "patch", "webfetch", "websearch",
     "todowrite", "todoread", "task", "skill", "lsp", "question")}
@@ -159,14 +176,32 @@ def run_turn(executable, env, workspace, args, message, transcript_path):
     errors = [e for e in events if e["type"] == "error"]
     return {"exit_code": code, "session_id": session_id, "events": len(events),
             "tool_calls": [{"tool": c.get("tool"), "status": c.get("state", {}).get("status"),
-                            "input": c.get("state", {}).get("input")} for c in calls],
+                            "input": c.get("state", {}).get("input"),
+                            "result": result_summary(c.get("state", {}).get("output"))} for c in calls],
             "texts": texts, "errors": errors, "raw_lines": len(lines)}
+
+
+def result_summary(output):
+    """Status or error code of a tool result, without keeping the payload."""
+    if not isinstance(output, str):
+        return None
+    try:
+        data = json.loads(output)
+    except ValueError:
+        return {"bytes": len(output)}
+    if not isinstance(data, dict):
+        return {"bytes": len(output)}
+    return {"bytes": len(output), "status": data.get("status"), "code": data.get("code"),
+            "fact_count": len(data["facts"]) if isinstance(data.get("facts"), list) else None,
+            "issues": [i.get("reason_code") for i in data.get("issues", []) if isinstance(i, dict)] or None}
 
 
 def summarize_turn(label, turn):
     print(f"\n=== {label}: exit {turn['exit_code']}, {turn['events']} events, session {turn['session_id']}")
     for call in turn["tool_calls"]:
-        print(f"  tool {call['tool']} [{call['status']}] {json.dumps(call['input'], ensure_ascii=True)}")
+        result = call.get("result") or {}
+        outcome = result.get("status") or result.get("code") or ""
+        print(f"  tool {call['tool']} [{call['status']}] {outcome} {json.dumps(call['input'], ensure_ascii=True)}")
     if turn["errors"]:
         print("  errors:", json.dumps(turn["errors"], ensure_ascii=True)[:800])
     final = turn["texts"][-1] if turn["texts"] else ""
@@ -174,7 +209,7 @@ def summarize_turn(label, turn):
     return final
 
 
-def assess(scenario, first, second, mcp_name):
+def assess_zurich(scenario, first, second, mcp_name):
     mcp_calls = [c for c in first["tool_calls"] if str(c["tool"]).startswith(mcp_name + "_")]
     final1 = first["texts"][-1] if first["texts"] else ""
     final2 = second["texts"][-1] if second and second["texts"] else ""
@@ -200,6 +235,71 @@ def assess(scenario, first, second, mcp_name):
     }
 
 
+def contains_any(text, words):
+    return any(w.lower() in text.lower() for w in words)
+
+
+def assess_chinese(scenario, first, second, mcp_name):
+    """Heuristic checks for the Chinese third-country work-permit case."""
+    calls = first["tool_calls"] + (second["tool_calls"] if second else [])
+    mcp_calls = [c for c in first["tool_calls"] if str(c["tool"]).startswith(mcp_name + "_")]
+    resolves = [c for c in first["tool_calls"] if c["tool"] == f"{mcp_name}_resolve"]
+
+    def concepts(call):
+        return (call.get("input") or {}).get("concept_ids") or []
+
+    def population(call):
+        return ((call.get("input") or {}).get("context") or {}).get("population")
+
+    def supported(call):
+        return (call.get("result") or {}).get("status") == "SUPPORTED"
+
+    third = [c for c in resolves if "residence-third-country-work" in concepts(c)]
+    work_permit = [c for c in resolves if "residence-aig-work-permit" in concepts(c)]
+    zh_tagged = [c for c in calls if "zh" in {
+        *[t.get("language") for t in (c.get("input") or {}).get("retrieval_terms") or [] if isinstance(t, dict)],
+        *((c.get("input") or {}).get("source_languages") or [])}]
+    language_errors = [c for c in calls if (c.get("result") or {}).get("code") == "UNSUPPORTED_LANGUAGE"]
+    final1 = first["texts"][-1] if first["texts"] else ""
+    final2 = second["texts"][-1] if second and second["texts"] else ""
+    visible = [ch for ch in final1 if not ch.isspace()]
+    cjk = sum("\u4e00" <= ch <= "\u9fff" for ch in visible)
+    refusal = bool(re.search(r"不(能|可以|允许|得)在瑞士(工作|就业)", final1)) and not contains_any(
+        final1, ["除非", "只有", "但", "前提"])
+    return {
+        "turn1_called_mcp": bool(mcp_calls),
+        "turn1_mcp_tools": [c["tool"] for c in mcp_calls],
+        "turn1_resolved_third_country_work": any(map(supported, third)),
+        "turn1_third_country_population": sorted({str(population(c)) for c in third}),
+        "turn1_resolved_aig_work_permit": any(map(supported, work_permit)),
+        "turn1_supported_concepts": sorted({cid for c in resolves if supported(c) for cid in concepts(c)}),
+        "zh_tagged_terms_or_source_filter": bool(zh_tagged),
+        "unsupported_language_errors": len(language_errors),
+        "turn1_answer_in_chinese": bool(visible) and cjk / len(visible) > 0.3,
+        "turn1_states_qualification_condition": contains_any(
+            final1, ["资质", "资格", "专家", "专业人员", "管理人员", "高校", "大学", "学位", "高素质",
+                     "qualified", "specialist"]),
+        "turn1_states_employer_priority_check": contains_any(final1, ["雇主", "employer"]) and contains_any(
+            final1, ["优先", "找不到", "没有合适", "无法找到", "不能找到", "无合适", "欧盟", "EU/EFTA", "EU"]),
+        "turn1_states_pay_and_conditions": contains_any(
+            final1, ["工资", "薪资", "薪酬", "薪水", "工作条件", "社会保险", "salary", "working conditions"]),
+        "turn1_cites_sem_third_country_page": "nicht-eu_efta-angehoerige" in final1,
+        "turn1_says_not_allowed": refusal,
+        "turn1_eu_only_contamination": contains_any(
+            final1, ["14天", "十四天", "14 天", "通报程序", "申报程序", "自由流动", "Meldeverfahren", "free movement"]),
+        "turn2_names_b_permit_and_employer": bool(final2) and bool(re.search(r"\bB\b|B ?许可|B ?类", final2))
+        and contains_any(final2, ["雇主", "employer"]),
+        "turn2_promises_approval": contains_any(final2, ["一定会", "肯定会", "必定", "保证获得", "guaranteed"]),
+        "expected": CHINESE_SCENARIOS[scenario]["expected"],
+    }
+
+
+CASES = {
+    "zurich-registration": {"question": QUESTION, "scenarios": SCENARIOS, "assess": assess_zurich},
+    "chinese-work-permit": {"question": CHINESE_QUESTION, "scenarios": CHINESE_SCENARIOS, "assess": assess_chinese},
+}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--live", action="store_true", help="Run OpenCode with the model; otherwise only prepare.")
@@ -209,11 +309,20 @@ def main():
                         help="mock: hardcoded server; real: SwissTIP MCP server on the curated pilot release.")
     parser.add_argument("--release-file", type=Path, default=PILOT_RELEASE, help="Release JSON for --server real.")
     parser.add_argument("--release-id", default=PILOT_RELEASE_ID, help="Active release ID for --server real.")
-    parser.add_argument("--scenario", choices=[*SCENARIOS, "both"], default="both")
+    parser.add_argument("--case", choices=list(CASES), default="zurich-registration",
+                        help="Standing integration case to run.")
+    parser.add_argument("--scenario", default="all", help="One scenario of the case, or 'all' (also 'both').")
     parser.add_argument("--no-followup", action="store_true", help="Send only the first question.")
     parser.add_argument("--prompt-file", type=Path, help="Replace the agent system prompt with this file's text.")
     parser.add_argument("--output", type=Path, default=ROOT / ".local/mock-mcp/runs")
     args = parser.parse_args()
+    case = CASES[args.case]
+    if args.scenario in ("all", "both"):
+        scenarios = list(case["scenarios"])
+    elif args.scenario in case["scenarios"]:
+        scenarios = [args.scenario]
+    else:
+        parser.error(f"--scenario must be one of {list(case['scenarios'])} or 'all' for case {args.case}")
 
     python = str(ROOT / ".venv/Scripts/python.exe") if os.name == "nt" else str(ROOT / ".venv/bin/python")
     if not Path(python).is_file():
@@ -229,7 +338,9 @@ def main():
     config = build_config(args.model, python, prompt, server)
 
     stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
-    folder = args.output / (f"run-{stamp}" if args.server == "mock" else f"run-{stamp}-{args.server}")
+    suffix = ("" if args.server == "mock" else f"-{args.server}") + (
+        "" if args.case == "zurich-registration" else f"-{args.case}")
+    folder = args.output / f"run-{stamp}{suffix}"
     folder.mkdir(parents=True, exist_ok=False)
     config_path = folder / "opencode.json"
     config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -244,7 +355,7 @@ def main():
     env["OPENCODE_CONFIG_CONTENT"] = json.dumps(config, ensure_ascii=False)
     executable = opencode_executable()
     summary = {"model": args.model, "server": args.server, "mcp_name": server["mcp_name"],
-               "config": str(config_path), "question": QUESTION,
+               "config": str(config_path), "case": args.case, "question": case["question"],
                "started_at": datetime.now(timezone.utc).isoformat(), "scenarios": {}}
     if sys.stdout and hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(errors="replace")
@@ -261,22 +372,21 @@ def main():
         (folder / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
         return 0
 
-    scenarios = list(SCENARIOS) if args.scenario == "both" else [args.scenario]
     for scenario in scenarios:
-        print(f"\n##### Scenario {scenario}: expected {SCENARIOS[scenario]['expected']}")
+        print(f"\n##### Scenario {scenario}: expected {case['scenarios'][scenario]['expected']}")
         first = run_turn(executable, env, workspace, ["--model", args.model, "--agent", AGENT,
-                                                      "--title", f"mock-mcp {scenario}"],
-                         QUESTION, folder / f"{scenario}-turn-1.jsonl")
+                                                      "--title", f"{args.case} {scenario}"],
+                         case["question"], folder / f"{scenario}-turn-1.jsonl")
         summarize_turn(f"{scenario} turn 1 (exact question)", first)
         second = None
         if not args.no_followup and first["session_id"]:
             second = run_turn(executable, env, workspace, ["--model", args.model, "--agent", AGENT,
                                                            "--session", first["session_id"]],
-                              SCENARIOS[scenario]["followup"], folder / f"{scenario}-turn-2.jsonl")
+                              case["scenarios"][scenario]["followup"], folder / f"{scenario}-turn-2.jsonl")
             summarize_turn(f"{scenario} turn 2 (dates supplied)", second)
         elif not args.no_followup:
             print("  no session ID found in the events; follow-up skipped")
-        verdict = assess(scenario, first, second or {"tool_calls": [], "texts": []}, server["mcp_name"])
+        verdict = case["assess"](scenario, first, second or {"tool_calls": [], "texts": []}, server["mcp_name"])
         summary["scenarios"][scenario] = {"turn_1": first, "turn_2": second, "assessment": verdict}
         print("\n  assessment: " + json.dumps(verdict, indent=2, ensure_ascii=True))
     summary["finished_at"] = datetime.now(timezone.utc).isoformat()

@@ -880,6 +880,36 @@ and expected answer as a regression test for every caller/release combination:
   guided tool descriptions; it failed against pilot v1, which lacks a fact
   stating both limits.
 
+**Second standing caller case: Chinese question, third-country work admission
+(added 11 September 2026).** Tests a question language the release does not
+hold and a non-EU/EFTA population:
+
+- Question, sent verbatim: `我是中国公民，我可以在瑞士工作吗？获得工作许可和居留许可需要哪些条件？`
+  ("I'm a Chinese citizen, am I allowed to work in Switzerland? What are the
+  conditions to get the work and residence permit?"). Follow-up: master's
+  degree, six years as a software engineer, open-ended contract with a Zurich
+  employer.
+- Expected behaviour: the caller resolves `residence-third-country-work` with
+  `population: third_country` and `residence-aig-work-permit`, answers in Chinese
+  from the served facts (admission only for well-qualified people; employer must
+  show no suitable candidate in Switzerland or the EU/EFTA; pay and conditions at
+  local standards; the employer applies; cantonal migration office issues the
+  permit; B permit for a stay over a year), cites the SEM non-EU/EFTA page and
+  AIG Article 11, and names quotas and the final decision as outside the data.
+  Turn 2: profile matches "well qualified", B permit, employer files in Zurich, no
+  promise of approval.
+- Failure signatures: `retrieval_terms` or `source_languages` tagged `zh`;
+  `population: eu_efta` or EU/EFTA-only rules (14 days, notification procedure)
+  applied to a Chinese citizen; a plain "no" or a "yes" without the conditions;
+  quotas, salary thresholds, visa steps or processing times from model knowledge
+  presented as served facts.
+- Harness and record: `scripts/test/mock-mcp/run_opencode_test.py --server real
+  --case chinese-work-permit --live`, results in
+  [the Chinese case note](docs/experiments/2026-09-11-opencode-chinese-work-permit-caller-test.md).
+  Ling 3.0 Flash passed on pilot release v2 with no language error; turn 2
+  over-applied the language-certificate fact and added two sentences of model
+  knowledge.
+
 Use at least 20 fully specified supported scenarios and separately labelled
 missing-context/coverage/failure cases. Count cold discovery, pagination, evidence
 inspection, resubmissions and warm resolution calls separately. Measure bytes,

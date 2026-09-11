@@ -56,6 +56,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [V3 and DeepSeek Flash switch with the prepared Zurich plan](docs/experiments/2026-09-10-v3-flash-switch.md)
 - [OpenCode caller test with a mock residence MCP server](docs/experiments/2026-09-11-opencode-mock-mcp-caller-test.md)
 - [OpenCode caller test with the real MCP server on the curated pilot release](docs/experiments/2026-09-11-opencode-real-mcp-caller-test.md)
+- [OpenCode caller test with a Chinese question on third-country work admission](docs/experiments/2026-09-11-opencode-chinese-work-permit-caller-test.md)
 - [Crawler and concept extraction demos](apps/knowledge-builder/README.md)
 - [Hackathon residence source catalogue and later crawl/extraction commands](config/catalogs/README.md)
 - [zh.ch Apertus 8B/70B experiment results](docs/experiments/2026-09-05-zhch-concept-extraction.md)

@@ -55,7 +55,26 @@ configuration is passed to the child process only (`OPENCODE_CONFIG` and
 OpenCode runs in a temporary workspace so the repository's `AGENTS.md` is not
 injected as instructions.
 
-Turn 1 sends exactly:
+The harness holds two standing cases, selected with `--case`:
+
+| Case | Turn 1 | Scenarios | Expected answer |
+| --- | --- | --- | --- |
+| `zurich-registration` (default) | Czech citizen, registration deadline in Zurich (English) | `work-first`, `fourteen-days-first` | below |
+| `chinese-work-permit` | Chinese citizen, work and residence permit conditions (Chinese) | `qualified-employee` | [Chinese case note](../../../docs/experiments/2026-09-11-opencode-chinese-work-permit-caller-test.md) |
+
+```shell
+./.venv/Scripts/python.exe scripts/test/mock-mcp/run_opencode_test.py --server real --case chinese-work-permit --live
+```
+
+The Chinese case checks cross-lingual discovery: the release serves German and
+English sources and no term routes, so the caller must translate on its own and
+must not tag `retrieval_terms` or `source_languages` as `zh`. The assessment
+checks that `residence-third-country-work` was resolved with
+`population: third_country`, that the answer is in Chinese, names the
+qualification, employer-priority and pay conditions, cites the SEM page, and
+carries no EU/EFTA-only rules.
+
+For `zurich-registration`, turn 1 sends exactly:
 
 > I'm a Czech citizen and starting my work in Zurich next week. By when latest
 > should I register my stay on the municipal authority?
