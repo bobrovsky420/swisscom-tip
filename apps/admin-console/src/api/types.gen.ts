@@ -43,6 +43,26 @@ export type Asset = {
      * Created At
      */
     created_at: string;
+    /**
+     * Corpus Id
+     */
+    corpus_id?: string | null;
+    /**
+     * Processing Eligible
+     */
+    processing_eligible?: boolean;
+    /**
+     * Processing Reason
+     */
+    processing_reason?: string;
+    /**
+     * Source Url
+     */
+    source_url?: string | null;
+    /**
+     * Title
+     */
+    title?: string | null;
 };
 
 /**
@@ -73,6 +93,30 @@ export type Catalog = {
      * Extraction Profile
      */
     extraction_profile: string;
+};
+
+/**
+ * Corpus
+ */
+export type Corpus = {
+    /**
+     * Corpus Id
+     */
+    corpus_id: string;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Metadata
+     */
+    metadata: {
+        [key: string]: unknown;
+    };
+    /**
+     * Imported At
+     */
+    imported_at: string;
 };
 
 /**
@@ -418,9 +462,23 @@ export type GetCatalogResponse = GetCatalogResponses[keyof GetCatalogResponses];
 export type GetAssetsData = {
     body?: never;
     path?: never;
-    query?: never;
+    query?: {
+        /**
+         * Corpus Id
+         */
+        corpus_id?: string | null;
+    };
     url: '/api/assets';
 };
+
+export type GetAssetsErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetAssetsError = GetAssetsErrors[keyof GetAssetsErrors];
 
 export type GetAssetsResponses = {
     /**
@@ -457,6 +515,24 @@ export type UploadAssetResponses = {
 };
 
 export type UploadAssetResponse = UploadAssetResponses[keyof UploadAssetResponses];
+
+export type GetCorporaData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/corpora';
+};
+
+export type GetCorporaResponses = {
+    /**
+     * Response Getcorpora
+     *
+     * Successful Response
+     */
+    200: Array<Corpus>;
+};
+
+export type GetCorporaResponse = GetCorporaResponses[keyof GetCorporaResponses];
 
 export type LoadPilotAssetsData = {
     body: ActionRequest;

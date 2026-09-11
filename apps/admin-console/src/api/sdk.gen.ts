@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddReviewData, AddReviewErrors, AddReviewResponses, CancelJobData, CancelJobErrors, CancelJobResponses, CreateJobData, CreateJobErrors, CreateJobResponses, GetAssetsData, GetAssetsResponses, GetCatalogData, GetCatalogResponses, GetJobData, GetJobErrors, GetJobResponses, GetJobsData, GetJobsResponses, GetReleaseEvidenceData, GetReleaseEvidenceErrors, GetReleaseEvidenceResponses, GetReleasesData, GetReleasesResponses, GetReviewsData, GetReviewsErrors, GetReviewsResponses, LoadPilotAssetsData, LoadPilotAssetsErrors, LoadPilotAssetsResponses, PreviewAssetData, PreviewAssetErrors, PreviewAssetResponses, UploadAssetData, UploadAssetErrors, UploadAssetResponses } from './types.gen';
+import type { AddReviewData, AddReviewErrors, AddReviewResponses, CancelJobData, CancelJobErrors, CancelJobResponses, CreateJobData, CreateJobErrors, CreateJobResponses, GetAssetsData, GetAssetsErrors, GetAssetsResponses, GetCatalogData, GetCatalogResponses, GetCorporaData, GetCorporaResponses, GetJobData, GetJobErrors, GetJobResponses, GetJobsData, GetJobsResponses, GetReleaseEvidenceData, GetReleaseEvidenceErrors, GetReleaseEvidenceResponses, GetReleasesData, GetReleasesResponses, GetReviewsData, GetReviewsErrors, GetReviewsResponses, LoadPilotAssetsData, LoadPilotAssetsErrors, LoadPilotAssetsResponses, PreviewAssetData, PreviewAssetErrors, PreviewAssetResponses, UploadAssetData, UploadAssetErrors, UploadAssetResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -26,7 +26,7 @@ export const getCatalog = <ThrowOnError extends boolean = false>(options?: Optio
 /**
  * Assets
  */
-export const getAssets = <ThrowOnError extends boolean = false>(options?: Options<GetAssetsData, ThrowOnError>): RequestResult<GetAssetsResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetAssetsResponses, unknown, ThrowOnError>({ url: '/api/assets', ...options });
+export const getAssets = <ThrowOnError extends boolean = false>(options?: Options<GetAssetsData, ThrowOnError>): RequestResult<GetAssetsResponses, GetAssetsErrors, ThrowOnError> => (options?.client ?? client).get<GetAssetsResponses, GetAssetsErrors, ThrowOnError>({ url: '/api/assets', ...options });
 
 /**
  * Upload Asset
@@ -39,6 +39,11 @@ export const uploadAsset = <ThrowOnError extends boolean = false>(options: Optio
         ...options.headers
     }
 });
+
+/**
+ * Corpora
+ */
+export const getCorpora = <ThrowOnError extends boolean = false>(options?: Options<GetCorporaData, ThrowOnError>): RequestResult<GetCorporaResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetCorporaResponses, unknown, ThrowOnError>({ url: '/api/corpora', ...options });
 
 /**
  * Load Pilot

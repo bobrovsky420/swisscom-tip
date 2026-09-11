@@ -19,6 +19,9 @@ an independent ranking service. No separate vector database is needed.
 | `swisstip.attachments` | Exact archived crawl pages, manifests, selected reports/transcripts and replay controls |
 | `swisstip.active_release` | Operational slot selection; not approval |
 | `swisstip.schema_migrations` | Applied migration names and checksums |
+| `swisstip.corpora` | Immutable acquisition run IDs, catalogue/inventory hashes and import counts |
+| `swisstip.corpus_files` | Every original file in an acquisition run, including failed-attempt manifests |
+| `swisstip.admin_assets` | Saved-page inventory, optional corpus ID, acquisition metadata and extraction eligibility |
 
 Imports validate the existing release contract before writes, then insert all
 components in one transaction. An identical import is idempotent. Different bytes
@@ -78,6 +81,49 @@ server backed by PostgreSQL for discovery/evidence/unknown-release checks.
 No live model calls occur. The notification vector predates the shortened query,
 and partial-answer ranking comes from an earlier ranking-only run; these are
 explicit storage-parity controls, not fresh semantic evaluations.
+
+## Import downloaded source corpora
+
+Raw acquisition runs can be loaded independently of serving releases:
+
+```shell
+./.venv/Scripts/python.exe scripts/storage/import_corpus.py --corpus .local/corpora/hackathon-residence-2026-09-10 --corpus-id hackathon-residence-2026-09-10 --title "Hackathon MVP - Residence permit in Switzerland" --report .local/database/corpus-hackathon-residence-2026-09-10.json
+```
+
+The importer verifies catalogue and snapshot hashes/sizes before writing. It
+archives all local files and creates saved-page entries for every manifest-backed
+download, in one transaction. All stored bytes are read back and verified. Same-ID,
+same-content imports are idempotent; changed input requires a new corpus ID.
+Existing assets, model jobs and serving releases remain separate historical records.
+Keep the import report outside the source directory so reruns see identical input.
+
+In **Saved pages**, use the **Corpus** selector to choose the new run or
+**Earlier attempts / ungrouped pages**. Cards show the corpus ID. New extraction
+jobs record their corpus IDs and restore the archived acquisition manifests so
+source/version/hash provenance and the corpus ID reach the standard extractor.
+PDFs, shells and other unsupported inputs remain visible as **Archive only** and
+cannot be submitted for extraction. Eligibility only checks format, size,
+encoding and acquisition flags; it does not certify substantive source content.
+
+The 2026-09-10 MVP import contains **121 snapshots** (111 HTML, 2 text, 8 PDF)
+and **415 archived files** totaling 23,032,644 bytes. There are 105 inputs eligible
+for extraction and 16 archive-only inputs (8 PDFs, 8 shells). Failure records for
+the 8 unavailable catalogue URLs are retained. The earlier 8 assets, 33 jobs,
+2 releases, 18 evidence records and 239 release attachments are preserved. No
+models ran and no evidence, embeddings or serving release was created.
+
+Example database filter:
+
+```sql
+SELECT source_id, filename, processing_eligible, processing_reason
+FROM swisstip.admin_assets
+WHERE corpus_id = 'hackathon-residence-2026-09-10';
+```
+
+`GET /api/corpora` lists runs and their counts. `GET /api/assets?corpus_id=...`
+filters before the 500-row display limit; `corpus_id=__legacy__` selects ungrouped
+assets. As with the existing launcher, restart the API/worker after installing
+updated code and build the frontend to expose new controls.
 
 ## Run MCP against the database
 

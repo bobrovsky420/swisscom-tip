@@ -27,17 +27,45 @@
       "get": {
         "summary": "Assets",
         "operationId": "getAssets",
+        "parameters": [
+          {
+            "name": "corpus_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Corpus Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/Asset"
                   },
-                  "type": "array",
                   "title": "Response Getassets"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -48,14 +76,14 @@
         "summary": "Upload Asset",
         "operationId": "uploadAsset",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UploadRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -74,6 +102,28 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/corpora": {
+      "get": {
+        "summary": "Corpora",
+        "operationId": "getCorpora",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Corpus"
+                  },
+                  "type": "array",
+                  "title": "Response Getcorpora"
                 }
               }
             }
@@ -499,6 +549,49 @@
             "type": "string",
             "format": "date-time",
             "title": "Created At"
+          },
+          "corpus_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Corpus Id"
+          },
+          "processing_eligible": {
+            "type": "boolean",
+            "title": "Processing Eligible",
+            "default": true
+          },
+          "processing_reason": {
+            "type": "string",
+            "title": "Processing Reason",
+            "default": ""
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
           }
         },
         "type": "object",
@@ -559,6 +652,36 @@
           "extraction_profile"
         ],
         "title": "Catalog"
+      },
+      "Corpus": {
+        "properties": {
+          "corpus_id": {
+            "type": "string",
+            "title": "Corpus Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "imported_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Imported At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "corpus_id",
+          "title",
+          "metadata",
+          "imported_at"
+        ],
+        "title": "Corpus"
       },
       "Evidence": {
         "properties": {

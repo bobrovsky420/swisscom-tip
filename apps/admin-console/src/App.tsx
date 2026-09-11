@@ -111,6 +111,7 @@ export function App() {
   const [search, setSearch] = useState("");
   const [sources, setSources] = useState<string[] | undefined>();
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+  const [corpusId, setCorpusId] = useState<string | null>(null);
   const [profile, setProfile] = useState<string | null>(null);
   const [previewAsset, setPreviewAsset] = useState<Asset | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
@@ -128,8 +129,13 @@ export function App() {
     queryFn: () => unwrap(api.getCatalog()),
   });
   const assets = useQuery({
-    queryKey: ["assets"],
-    queryFn: () => unwrap(api.getAssets()),
+    queryKey: ["assets", corpusId],
+    queryFn: () => unwrap(api.getAssets({ query: { corpus_id: corpusId } })),
+    refetchInterval: tab === "pages" ? 5000 : false,
+  });
+  const corpora = useQuery({
+    queryKey: ["corpora"],
+    queryFn: () => unwrap(api.getCorpora()),
     refetchInterval: tab === "pages" ? 5000 : false,
   });
   const jobs = useQuery({
@@ -196,8 +202,9 @@ export function App() {
     onSuccess: async (data) => {
       setNotice(data.message);
       setTab("pages");
+      setCorpusId("__legacy__");
       await cache.invalidateQueries({ queryKey: ["assets"] });
-      const saved = await unwrap(api.getAssets());
+      const saved = await unwrap(api.getAssets({ query: { corpus_id: "__legacy__" } }));
       const defaults = new Set(
         catalog.data?.sources.filter((s) => s.selected).map((s) => s.source_id),
       );
@@ -563,6 +570,29 @@ export function App() {
                       extraction run · No automatic provider retries
                     </Text>
                   </Paper>
+                  <Select
+                    label="Corpus"
+                    placeholder="All saved pages"
+                    clearable
+                    value={corpusId}
+                    onChange={(value) => {
+                      setCorpusId(value);
+                      setSelectedAssets([]);
+                    }}
+                    data={[
+                      ...(corpora.data || []).map((corpus) => ({
+                        value: corpus.corpus_id,
+                        label: `${corpus.title} (${corpus.corpus_id})`,
+                      })),
+                      { value: "__legacy__", label: "Earlier attempts / ungrouped pages" },
+                    ]}
+                  />
+                  {corpusId && corpusId !== "__legacy__" && (
+                    <Text size="sm" c="dimmed">
+                      {assets.data?.length || 0} saved files in this corpus. Archive-only
+                      files are retained but cannot be selected for extraction.
+                    </Text>
+                  )}
                   {!assets.data?.length ? (
                     <Empty
                       title="Your saved pages will appear here."
@@ -591,6 +621,7 @@ export function App() {
                             </div>
                             <Checkbox
                               aria-label={`Select page ${asset.source_id}`}
+                              disabled={!asset.processing_eligible}
                               checked={selectedAssets.includes(asset.asset_id)}
                               onChange={() =>
                                 toggle(
@@ -601,7 +632,23 @@ export function App() {
                               }
                             />
                           </Group>
-                          <h3>{asset.source_id}</h3>
+                          <h3>{asset.title || asset.source_id}</h3>
+                          <Badge variant="light" style={{ maxWidth: "100%" }}>
+                            {asset.corpus_id || "Earlier / ungrouped"}
+                          </Badge>
+                          <Text size="xs" c="dimmed" mt="xs">
+                            {asset.filename.split(".").pop()?.toUpperCase()}
+                            {!asset.processing_eligible && " - Archive only"}
+                          </Text>
+                          {!asset.processing_eligible && (
+                            <Text size="xs" c="orange">
+                              {asset.processing_reason === "javascript_application_shell"
+                                ? "Application shell; use the resolved document."
+                                : asset.processing_reason === "archived_format_without_text_extractor"
+                                  ? "This file format has no text extractor yet."
+                                  : asset.processing_reason}
+                            </Text>
+                          )}
                           <Text size="xs" c="dimmed">
                             {(asset.size / 1024).toFixed(1)} KB ·{" "}
                             {formatDate(asset.created_at)}
@@ -614,6 +661,7 @@ export function App() {
                             fullWidth
                             mt="lg"
                             onClick={() => setPreviewAsset(asset)}
+                            disabled={!asset.processing_eligible}
                           >
                             Inspect parsed text
                           </Button>
@@ -686,6 +734,9 @@ export function App() {
                           </Badge>
                         </Group>
                         <small>{formatDate(item.created_at)}</small>
+                        {Array.isArray(item.request.corpus_ids) && item.request.corpus_ids.length > 0 && (
+                          <Text size="xs" c="dimmed">{item.request.corpus_ids.join(", ")}</Text>
+                        )}
                       </button>
                     ))}
                   </Paper>

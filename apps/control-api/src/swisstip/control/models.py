@@ -45,6 +45,18 @@ class Asset(BaseModel):
     origin: str
     size: int
     created_at: datetime
+    corpus_id: str | None = None
+    processing_eligible: bool = True
+    processing_reason: str = ''
+    source_url: str | None = None
+    title: str | None = None
+
+
+class Corpus(BaseModel):
+    corpus_id: str
+    title: str
+    metadata: dict[str, Any]
+    imported_at: datetime
 
 
 class JobRequest(StrictModel):

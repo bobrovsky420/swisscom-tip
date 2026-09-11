@@ -5,6 +5,8 @@ import unittest
 import subprocess
 import sys
 import threading
+import tempfile
+from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
 import psycopg
@@ -12,7 +14,8 @@ from psycopg import sql
 from psycopg.conninfo import make_conninfo
 from psycopg.types.json import Jsonb
 from fastapi.testclient import TestClient
-from swisstip.runtime.postgres import migrate
+from swisstip.runtime.postgres import migrate, sha256
+from swisstip.runtime.corpus import prepare_corpus, import_corpus
 from swisstip.control.api import app
 from swisstip.control.store import rows
 from swisstip.control.worker import execute, clean_log
@@ -61,6 +64,45 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(sum(s['selected'] for s in response.json()['sources']), 3)
         self.assertNotIn(self.dsn, response.text)
+
+    def test_corpus_filter_archive_gate_and_worker_provenance(self):
+        corpus_id = 'test-corpus-' + uuid4().hex
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalogue = b'[Law](https://example.gov/law)'
+            (root / 'catalogue.md').write_bytes(catalogue)
+            (root / 'plan.json').write_text(json.dumps({'created_at': '2026-09-10T00:00:00Z',
+                                                       'catalogue_sha256': sha256(catalogue)}))
+            for suffix, raw in [('html', b'<h1>Permit</h1><p>Apply online.</p>'), ('pdf', b'%PDF-1.7 test')]:
+                folder = root / 'pages' / suffix / 'attempt-001'
+                folder.mkdir(parents=True)
+                path = folder / ('response.' + suffix)
+                path.write_bytes(raw)
+                manifest = dict(url='https://example.gov/law', references=[{'label': 'Law'}], status='saved',
+                                snapshots=[dict(relative_path=path.relative_to(root).as_posix(), sha256=sha256(raw),
+                                bytes_downloaded=len(raw), review_flags=[], requested_url='https://example.gov/law',
+                                final_url='https://example.gov/law', retrieved_at='2026-09-10T00:00:00Z',
+                                content_type='text/html' if suffix == 'html' else 'application/pdf')])
+                (folder / 'manifest.json').write_text(json.dumps(manifest))
+                (folder.parent / 'latest.json').write_text(json.dumps(manifest))
+            import_corpus(self.dsn, prepare_corpus(root, corpus_id, 'Corpus test'))
+        saved = self.client.get('/api/assets', params={'corpus_id': corpus_id}).json()
+        self.assertEqual(len(saved), 2)
+        self.assertTrue(all(a['corpus_id'] == corpus_id for a in saved))
+        self.assertIn(corpus_id, [c['corpus_id'] for c in self.client.get('/api/corpora').json()])
+        self.assertFalse(any(a['corpus_id'] for a in self.client.get('/api/assets?corpus_id=__legacy__').json()))
+        pdf = next(a for a in saved if not a['processing_eligible'])
+        html = next(a for a in saved if a['processing_eligible'])
+        self.assertEqual(self.post('/api/jobs', dict(kind='plan', asset_ids=[pdf['asset_id']])).status_code, 422)
+        self.assertEqual(self.client.get('/api/assets/' + pdf['asset_id'] + '/preview').status_code, 422)
+        self.assertEqual(self.client.get('/api/assets/' + html['asset_id'] + '/preview').status_code, 200)
+        created = self.post('/api/jobs', dict(kind='plan', asset_ids=[html['asset_id']])).json()
+        self.assertEqual(created['request']['corpus_ids'], [corpus_id])
+        execute(rows('SELECT * FROM swisstip.admin_jobs WHERE job_id=%s', (created['job_id'],))[0])
+        job = self.client.get('/api/jobs/' + created['job_id']).json()
+        self.assertEqual(job['status'], 'completed', job)
+        self.assertEqual(job['result']['model_requests_sent'], 0)
+        self.assertEqual(job['result']['pages'][0]['provenance']['corpus_id'], corpus_id)
 
     def test_cross_origin_and_bad_host_cannot_write(self):
         self.assertEqual(self.client.post('/api/assets/pilot', json={}).status_code, 403)

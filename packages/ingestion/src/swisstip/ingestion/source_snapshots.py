@@ -66,5 +66,8 @@ def normalize_source_snapshot(path: Path, *, plugins: PluginRegistry | None = No
         "resolution_metadata": metadata.get("resolution_metadata", []),
         "local_snapshot": str(path),
     }
+    if metadata.get("corpus_id"):
+        provenance["corpus_id"] = metadata["corpus_id"]
+        provenance["corpus_path"] = metadata.get("corpus_path")
     page = (plugin.normalize(path, provenance, **options) if plugin else normalize_downloaded_page(path, **options))
     return replace(page, source_sha256=digest, provenance=provenance)

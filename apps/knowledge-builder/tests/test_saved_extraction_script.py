@@ -84,6 +84,23 @@ class SavedExtractionScriptTests(unittest.TestCase):
         self.assertEqual(credentials, {TOKEN_NAME: "process-sentinel"})
         self.assertEqual(origin, "process")
 
+    def test_corpus_input_keeps_manifest_and_provenance_in_repeat(self):
+        target = self.job / 'asset-one'
+        target.mkdir()
+        path = target / 'response.html'
+        (self.job / 'page.html').rename(path)
+        snapshot = dict(relative_path='response.html', sha256=saved_extraction.digest(path.read_bytes()),
+                        requested_url='https://example.gov/permit', final_url='https://example.gov/permit',
+                        retrieved_at='2026-09-10T00:00:00Z', content_type='text/html', review_flags=[])
+        manifest = dict(corpus_id='hackathon-test', corpus_path='pages/test/attempt-001/response.html', snapshots=[snapshot])
+        (target / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
+        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+            self.assertEqual(saved_extraction.main(self.arguments('--dry-run')), 0)
+        result = json.loads((self.output / 'result.json').read_text())
+        self.assertEqual(result['pages'][0]['provenance']['corpus_id'], 'hackathon-test')
+        self.assertEqual(result['model_requests_sent'], 0)
+        self.assertEqual((self.output / 'inputs/asset-one/manifest.json').read_bytes(), (target / 'manifest.json').read_bytes())
+
     def test_env_credential_is_literal_and_only_selected_key_is_loaded(self):
         literal = "literal$(command)`other`"
         self.env_file.write_text('HF_TOKEN=ignored\nexport DEEPSEEK_API_KEY="' + literal +

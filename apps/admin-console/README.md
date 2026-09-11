@@ -46,6 +46,15 @@ credential presence, never values. Ollama still runs in WSL.
 
 ## Crawl and extract new material
 
+Downloaded corpora can be imported with the [corpus importer](../../docs/storage.md#import-downloaded-source-corpora).
+In **Saved pages**, choose **Corpus -> Hackathon MVP - Residence permit in Switzerland**
+(`hackathon-residence-2026-09-10`) to show its 121 downloaded files. Choose
+**Earlier attempts / ungrouped pages** to return to older assets. The 8 PDFs and
+8 application shells are marked **Archive only**; 105 HTML/text inputs pass the
+basic acquisition checks. New jobs and their extraction reports retain the corpus
+ID. Importing pages stores source material; processing and publication are later
+operations.
+
 - **Sources -> Review crawl -> Confirm crawl** fetches the selected allowlisted
   sources with the existing `smoke` crawl profile and robots enforcement. At most
   ten sources can be selected per job. Downloaded UTF-8 pages and crawl provenance

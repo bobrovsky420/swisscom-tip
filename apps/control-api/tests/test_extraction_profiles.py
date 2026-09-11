@@ -39,7 +39,8 @@ class ExtractionProfileTests(unittest.TestCase):
         self.root = Path(directory.name)
         (self.root / 'config').mkdir()
         self.config = load_model_config(ROOT / 'config/semantic-models.toml')
-        self.asset = dict(filename='residence.html', original_bytes=HTML, sha256=sha256(HTML))
+        self.asset = dict(asset_id='fixture-asset', filename='residence.html', original_bytes=HTML,
+                          sha256=sha256(HTML), processing_eligible=True, acquisition_metadata={})
         for module in (api, worker):
             root_patch = patch.object(module, 'ROOT', self.root)
             root_patch.start()

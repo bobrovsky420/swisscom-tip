@@ -80,7 +80,7 @@ class ModelConfigTests(unittest.TestCase):
             with self.subTest(selected=selected):
                 body = JobRequest(kind='plan', asset_ids=['fixture-asset'],
                                   **({} if selected is None else {'profile': selected}))
-                with patch.object(api, 'rows', return_value=[{'asset_id': 'fixture-asset'}]), patch.object(
+                with patch.object(api, 'rows', return_value=[{'asset_id': 'fixture-asset', 'processing_eligible': True}]), patch.object(
                     api, 'save_job', return_value={'job_id': 'fixture-job'}
                 ) as save_job:
                     api.create_job(body)

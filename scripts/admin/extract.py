@@ -124,6 +124,8 @@ def main(argv=None):
         config_path = original / "semantic-models.toml"
         document = load_model_config(config_path)
         sources = sorted(p for p in original.iterdir() if p.is_file() and p.suffix.lower() in SUPPORTED_PAGE_SUFFIXES)
+        sources += sorted(p for p in original.glob('*/response.*')
+                          if p.is_file() and p.suffix.lower() in SUPPORTED_PAGE_SUFFIXES)
         # Prompt overrides may live beside the saved input; they are not pages.
         prompt_files = {key: (original / document["extraction"][key]).resolve()
                         for key in ("extraction_prompt_file", "review_prompt_file") if document["extraction"].get(key)}
@@ -135,7 +137,11 @@ def main(argv=None):
         credentials, credential_source = load_credential(token_name, args.env_file)
         if not args.dry_run and credential_source == "missing":
             raise ValueError(f"Missing {token_name}; no model calls started")
-        source_bytes = {p.name: p.read_bytes() for p in sources}
+        source_bytes = {p.relative_to(original).as_posix(): p.read_bytes() for p in sources}
+        acquisition_manifests = {
+            (p.parent / 'manifest.json').relative_to(original).as_posix(): (p.parent / 'manifest.json').read_bytes()
+            for p in sources if p.parent != original and (p.parent / 'manifest.json').is_file()
+        }
         prompt_bytes = {key: path.read_bytes() for key, path in prompt_files.items()}
         folder = (args.output or ROOT / ".local/admin/cli-extractions" /
                   (datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ") + "-" + uuid4().hex[:8])).resolve()
@@ -146,6 +152,9 @@ def main(argv=None):
     inputs = folder / "inputs"
     inputs.mkdir()
     for name, raw in source_bytes.items():
+        (inputs / name).parent.mkdir(parents=True, exist_ok=True)
+        (inputs / name).write_bytes(raw)
+    for name, raw in acquisition_manifests.items():
         (inputs / name).write_bytes(raw)
     document.setdefault("recovery", {})["max_retries"] = 0
     for key, raw in prompt_bytes.items():

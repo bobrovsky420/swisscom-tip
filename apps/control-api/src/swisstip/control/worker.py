@@ -12,7 +12,7 @@ import time
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from swisstip.runtime.postgres import connect, sha256
-from .store import ROOT, add_asset, database_url, rows
+from .store import ROOT, add_asset, database_url, rows, materialize_asset
 
 
 def stopping():
@@ -54,11 +54,7 @@ def execute(job):
         paths = []
         for asset_id in request['asset_ids']:
             asset = rows('SELECT * FROM swisstip.admin_assets WHERE asset_id=%s', (asset_id,))[0]
-            raw = bytes(asset['original_bytes'])
-            if sha256(raw) != asset['sha256']:
-                raise ValueError('Input snapshot hash mismatch')
-            path = folder / (asset_id + Path(asset['filename']).suffix)
-            path.write_bytes(raw)
+            path = materialize_asset(asset, folder)
             paths.append(str(path))
         # The frozen config selects the extraction workflow, including older V4 jobs.
         command = prefix + ['swisstip.builder.concept_cli', *paths, '--config', str(config),

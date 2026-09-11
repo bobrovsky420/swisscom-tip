@@ -55,7 +55,31 @@ def add_asset(source_id, filename, raw, origin):
 
 def save_job(request, config_text):
     identifier = uuid4().hex
+    payload = request.model_dump()
     with connect(database_url()) as conn:
+        if request.asset_ids:
+            payload['corpus_ids'] = [r[0] for r in conn.execute(
+                'SELECT DISTINCT corpus_id FROM swisstip.admin_assets WHERE asset_id=ANY(%s) AND corpus_id IS NOT NULL '
+                'ORDER BY corpus_id', (request.asset_ids,)).fetchall()]
         conn.execute('INSERT INTO swisstip.admin_jobs (job_id,kind,status,request,config_text) VALUES (%s,%s,%s,%s,%s)',
-                     (identifier, request.kind, 'queued', Jsonb(request.model_dump()), config_text))
+                     (identifier, request.kind, 'queued', Jsonb(payload), config_text))
     return jobs(identifier)[0]
+
+
+def materialize_asset(asset, folder):
+    """Restore database bytes and the acquisition manifest for the standard extractor."""
+    if not asset.get('processing_eligible', True):
+        raise ValueError('Archive-only page: ' + asset.get('processing_reason', 'unsupported input'))
+    raw = bytes(asset['original_bytes'])
+    if sha256(raw) != asset['sha256']:
+        raise ValueError('Input snapshot hash mismatch')
+    metadata = asset.get('acquisition_metadata')
+    target = Path(folder) / asset['asset_id'] if metadata else Path(folder)
+    target.mkdir(parents=True, exist_ok=True)
+    path = target / (('response' if metadata else asset['asset_id']) + Path(asset['filename']).suffix)
+    path.write_bytes(raw)
+    if metadata:
+        snapshot = {**metadata['snapshots'][0], 'relative_path': path.name}
+        manifest = {**metadata, 'snapshots': [snapshot], 'corpus_id': asset.get('corpus_id')}
+        (target / 'manifest.json').write_text(json.dumps(manifest), encoding='utf-8')
+    return path

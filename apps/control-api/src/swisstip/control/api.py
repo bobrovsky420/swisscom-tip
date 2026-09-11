@@ -11,13 +11,14 @@ from fastapi.staticfiles import StaticFiles
 from psycopg.types.json import Jsonb
 from swisstip.builder.source_catalog import load_source_catalog, build_plan
 from swisstip.core.model_profiles import load_model_config
-from swisstip.ingestion.concepts import (normalize_downloaded_page, select_content_sections, CandidateConceptExtractor,
+from swisstip.ingestion.concepts import (select_content_sections, CandidateConceptExtractor,
                                         REVIEW_PROMPT_PROFILE, SPAN_PROMPT_PROFILE, STRUCTURED_PROMPT_PROFILE)
 from swisstip.ingestion.structured_extraction import StructuredExtraction
+from swisstip.ingestion.source_snapshots import normalize_source_snapshot
 from swisstip.runtime.postgres import connect, sha256
-from .models import (ActionRequest, Asset, Catalog, Evidence, Job, JobRequest, Message, Preview,
+from .models import (ActionRequest, Asset, Catalog, Corpus, Evidence, Job, JobRequest, Message, Preview,
                      Release, ReviewRequest, UploadRequest)
-from .store import ROOT, add_asset, database_url, jobs, result_hash, rows, save_job
+from .store import ROOT, add_asset, database_url, jobs, result_hash, rows, save_job, materialize_asset
 
 app = FastAPI(title='SwissTIP local control API', version='0.1.0')
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['127.0.0.1', 'localhost'])
@@ -92,9 +93,22 @@ def catalog():
 
 
 @app.get('/api/assets', response_model=list[Asset], operation_id='getAssets')
-def assets():
-    return rows('SELECT asset_id,source_id,filename,sha256,origin,octet_length(original_bytes) AS size,created_at '
-                'FROM swisstip.admin_assets ORDER BY created_at DESC LIMIT 500')
+def assets(corpus_id: str | None = None):
+    clause, params = '', ()
+    if corpus_id == '__legacy__':
+        clause = ' WHERE corpus_id IS NULL'
+    elif corpus_id:
+        clause, params = ' WHERE corpus_id=%s', (corpus_id,)
+    return rows('SELECT asset_id,source_id,filename,sha256,origin,octet_length(original_bytes) AS size,created_at,'
+                'corpus_id,processing_eligible,processing_reason,'
+                "COALESCE(acquisition_metadata->>'source_page_url',acquisition_metadata->>'url') AS source_url,"
+                "acquisition_metadata #>> '{references,0,label}' AS title "
+                'FROM swisstip.admin_assets' + clause + ' ORDER BY created_at DESC,asset_id LIMIT 500', params)
+
+
+@app.get('/api/corpora', response_model=list[Corpus], operation_id='getCorpora')
+def corpora():
+    return rows('SELECT corpus_id,title,metadata,imported_at FROM swisstip.corpora ORDER BY imported_at DESC')
 
 
 @app.post('/api/assets/pilot', response_model=Message, operation_id='loadPilotAssets')
@@ -127,7 +141,7 @@ def upload_asset(body: UploadRequest):
 
 @app.get('/api/assets/{identifier}/preview', response_model=Preview, operation_id='previewAsset')
 def preview(identifier: str):
-    found = rows('SELECT filename,original_bytes,sha256 FROM swisstip.admin_assets WHERE asset_id=%s', (identifier,))
+    found = rows('SELECT * FROM swisstip.admin_assets WHERE asset_id=%s', (identifier,))
     if not found:
         raise HTTPException(404, 'Page not found')
     raw = bytes(found[0]['original_bytes'])
@@ -136,10 +150,9 @@ def preview(identifier: str):
     config = load_model_config(ROOT / 'config/semantic-models.toml')
     profile = config['extraction']['prompt_profile']
     with tempfile.TemporaryDirectory() as folder:
-        path = Path(folder) / ('page' + Path(found[0]['filename']).suffix)
-        path.write_bytes(raw)
         try:
-            page = normalize_downloaded_page(path, preserve_structure=profile == REVIEW_PROMPT_PROFILE,
+            path = materialize_asset(found[0], folder)
+            page = normalize_source_snapshot(path, preserve_structure=profile == REVIEW_PROMPT_PROFILE,
                                              logical_blocks=profile == STRUCTURED_PROMPT_PROFILE)
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
@@ -183,9 +196,11 @@ def create_job(body: JobRequest):
     else:
         if not body.asset_ids or body.source_ids or len(set(body.asset_ids)) != len(body.asset_ids):
             raise HTTPException(422, 'Select 1-10 distinct saved pages')
-        found = rows('SELECT asset_id FROM swisstip.admin_assets WHERE asset_id=ANY(%s)', (body.asset_ids,))
+        found = rows('SELECT asset_id,processing_eligible FROM swisstip.admin_assets WHERE asset_id=ANY(%s)', (body.asset_ids,))
         if len(found) != len(body.asset_ids):
             raise HTTPException(422, 'Some selected pages are unavailable')
+        if any(not a['processing_eligible'] for a in found):
+            raise HTTPException(422, 'Selection includes archive-only files; choose supported pages without acquisition flags')
         if body.kind == 'extract':
             profile = tomllib.loads(config)['profiles'][body.profile]
             if profile.get('token_env') and not os.environ.get(profile['token_env']):
