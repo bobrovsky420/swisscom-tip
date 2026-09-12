@@ -1,8 +1,8 @@
 ﻿# Full Pitch Presentation - Swisscom Trusted Information Platform
 
-This deck describes the proposed product and acceptance evidence. It does not establish implementation validation. Slide 12 is optional P2 stretch material; slides 13-22 cover the future product. These appendix topics are outside P0/P1 acceptance scope.
+This deck describes the proposed product and acceptance evidence. It does not establish implementation validation, except where a slide says so: slide 10 reports the implemented and tested jurisdiction hierarchy as of 2026-09-12. Slide 13 is optional P2 stretch material; slides 14-23 cover the future product. These appendix topics are outside P0/P1 acceptance scope.
 
-Slide 25 adds measured corpus-preparation statistics as of 2026-09-11, with remaining coverage and review gaps.
+Slide 26 adds measured corpus-preparation statistics as of 2026-09-11, with remaining coverage and review gaps.
 
 ## Slide 1 - Trusted Information Infrastructure
 
@@ -229,7 +229,51 @@ This is a contract example, not an assertion about legal requirements in Zurich.
 
 ---
 
-## Slide 10 - Admin Control Plane
+## Slide 10 - Jurisdiction Hierarchy: Federal Rules Reach Every Canton
+
+Swiss public information is layered. Federal law and SEM guidance apply in
+every canton; cantons add their procedures; municipalities add appointments
+and document lists. TIP publishes each fact at the level where its source
+speaks and answers a request for any place inside that level.
+
+```mermaid
+flowchart TD
+    CH[Confederation CH: AIG and SEM guidance] --> ZH[Canton CH-ZH: migration office procedures]
+    CH --> BE[Canton CH-BE: migration office contact]
+    ZH --> City[Municipality 261: City of Zurich registration appointment]
+    Q[Request: EU/EFTA national starting work, place CH-ZH/261] -.->|served by| City
+    Q -.->|served by| ZH
+    Q -.->|served by| CH
+```
+
+| Rule | Behaviour |
+|---|---|
+| Containment, downward only | A coverage profile serves every place inside its own jurisdiction: a federal profile answers for any canton or municipality, a cantonal profile for its municipalities. Nothing flows upward or sideways: Zurich procedures never answer a Bern question or a country-only request |
+| Honest level | `requested_scope` keeps the caller's place; `executed_scope` reports the level that answered; a limitation states "Published for CH and applied to CH-BE because CH-BE lies inside CH; CH-BE specifics are not covered by this profile" |
+| Narrowest wins | Where a canton publishes its own version of a concept, it takes precedence over the federal one |
+| Named gaps | A refusal names its dimension and the published values that would match: `jurisdiction_not_covered` (CH-ZH), `more_specific_jurisdiction_required` (CH-ZH/261), `concept_set_not_published`, `scope_mode_not_offered`, `date_outside_coverage` (from 2021-01-01) |
+
+Example: "I am a Czech citizen starting work in Bern." The caller sends the
+federal registration-deadline concept and the cantonal contact concept with
+`CH-BE`. The first returns `SUPPORTED` at federal level with the caveat, the
+second returns Bern's migration office. Two calls, both cited, no cantonal
+rule invented.
+
+Measured on 12 September 2026 (release v4, OpenCode with Ling 3.0 Flash): the
+two standing Zurich scenarios pass every harness check with 5 and 6 calls in
+the first turn. Under the earlier exact-match rule the federal concept refused
+any request that named the canton.
+
+**Speaker note:** This slide reports implemented and tested behaviour, not
+intended behaviour; see the [containment record](../pilots/2026-09-12-jurisdiction-containment.md).
+The caveat is what keeps a federal answer honest: the assistant must say the
+rule is federal and name the cantonal office, which the 26 contact profiles
+supply. Leakage rules did not change; evidence still belongs to the profile
+that answered.
+
+---
+
+## Slide 11 - Admin Control Plane
 
 The P1 Admin UI makes planned release governance visible. These are review fields, not claims that a release has already passed:
 
@@ -247,7 +291,7 @@ Primary MVP operation: **Build / Full Reload**. Publication failures preserve th
 
 ---
 
-## Slide 11 - Arrival Checklist: A Direct Structured Client
+## Slide 12 - Arrival Checklist: A Direct Structured Client
 
 **P1 client:** formal fields construct the same request as the calling LLM.
 
@@ -273,7 +317,7 @@ Optional REST has the same structured request and result semantics. Requirements
 
 ---
 
-## Slide 12 - Optional P2 / Appendix: Swiss Hike Client
+## Slide 13 - Optional P2 / Appendix: Swiss Hike Client
 
 Swiss Hike is an optional P2 architecture demonstration, outside P0/P1 acceptance criteria. It can be attempted after those priorities are complete or deferred to later work. A typed client could supply origin, date, duration, difficulty, travel limit and preferences such as lakes, panorama or restaurants.
 
@@ -283,7 +327,7 @@ Caller applications would interpret any conversational request and supply struct
 
 ---
 
-## Slide 13 - Future / Appendix: Target Product Model
+## Slide 14 - Future / Appendix: Target Product Model
 
 These product hypotheses extend the evidence and release concepts of the planned vertical slice.
 
@@ -305,7 +349,7 @@ Optional AI for user interaction belongs in the caller; knowledge preparation an
 
 ---
 
-## Slide 14 - Future / Appendix: Value for Swisscom
+## Slide 15 - Future / Appendix: Value for Swisscom
 
 ```mermaid
 flowchart LR
@@ -318,7 +362,7 @@ The hypothesis is a reusable information layer connecting governed knowledge, AI
 
 ---
 
-## Slide 15 - Future / Appendix: Swisscom Economics
+## Slide 16 - Future / Appendix: Swisscom Economics
 
 Potential revenue sources:
 
@@ -331,7 +375,7 @@ These are business hypotheses requiring customer validation. No billing, meterin
 
 ---
 
-## Slide 16 - Future / Appendix: Publisher and Data Product Marketplace
+## Slide 17 - Future / Appendix: Publisher and Data Product Marketplace
 
 ```mermaid
 flowchart TD
@@ -348,7 +392,7 @@ Publisher onboarding, entitlement enforcement, metering and billing require sepa
 
 ---
 
-## Slide 17 - Future / Appendix: Commercial Models
+## Slide 18 - Future / Appendix: Commercial Models
 
 Possible publisher relationships:
 
@@ -362,7 +406,7 @@ These options need explicit rights, customer validation and commercial design be
 
 ---
 
-## Slide 18 - Future / Appendix: Swiss Hike Economics
+## Slide 19 - Future / Appendix: Swiss Hike Economics
 
 ```mermaid
 flowchart LR
@@ -380,7 +424,7 @@ Any early illustration uses **DEMO/MOCK** providers without asserting live cover
 
 ---
 
-## Slide 19 - Future / Appendix: Licensing and Entitlements
+## Slide 20 - Future / Appendix: Licensing and Entitlements
 
 A marketplace would need to determine whether a consumer may use a product for its declared purpose.
 
@@ -390,7 +434,7 @@ An entitlement is distinct from evidence applicability: permission to access an 
 
 ---
 
-## Slide 20 - Future / Appendix: Publisher Incentives
+## Slide 21 - Future / Appendix: Publisher Incentives
 
 | Publisher | Potential offering |
 |---|---|
@@ -403,7 +447,7 @@ Swisscom could provide governed distribution without authoring every source. Pub
 
 ---
 
-## Slide 21 - Future / Appendix: Autonomous Knowledge CI/CD
+## Slide 22 - Future / Appendix: Autonomous Knowledge CI/CD
 
 ```mermaid
 flowchart LR
@@ -421,7 +465,7 @@ Release pinning remains explicit: existing callers keep their requested release,
 
 ---
 
-## Slide 22 - Future / Appendix: Enterprise Reuse
+## Slide 23 - Future / Appendix: Enterprise Reuse
 
 Potential knowledge domains:
 
@@ -437,7 +481,7 @@ Reusable concepts include source, authority, applicability, evidence, version, c
 
 ---
 
-## Slide 23 - Focused Deliverable, Separate Future Horizon
+## Slide 24 - Focused Deliverable, Separate Future Horizon
 
 | Priority / horizon | Intended outcome |
 |---|---|
@@ -453,7 +497,7 @@ Server evaluation starts at the structured request. Caller integration evaluatio
 
 ---
 
-## Slide 24 - Closing
+## Slide 25 - Closing
 
 > **Beyond search and retrieval: governed knowledge for AI.**
 
@@ -467,7 +511,7 @@ Server evaluation starts at the structured request. Caller integration evaluatio
 
 ---
 
-## Slide 25 - Additional Info: Nationwide Residence-Permit Corpus
+## Slide 26 - Additional Info: Nationwide Residence-Permit Corpus
 
 **A larger evidence base for MCP testing: federal sources, including Fedlex, and substantive source material from all 26 cantons.**
 

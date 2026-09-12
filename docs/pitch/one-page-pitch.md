@@ -22,4 +22,4 @@ SwissTIP: trusted knowledge, reusable across AI.
 
 As of **2026-09-11**, the expanded residence-permit corpus contains **11,728 saved source responses**, with substantive material from **all 26 cantons** and federal sources including Fedlex. **Two validated MCP test release parts** contain **139,783 quotation fragments** backed by **96,197 evidence sections**.
 
-These are source-preparation statistics. Exhaustive coverage, semantic interpretation, translation equivalence and OCR review remain incomplete. [Full statistics and limitations](full-presentation.md#slide-25---additional-info-nationwide-residence-permit-corpus) are available as backup material outside the one-minute spoken script.
+These are source-preparation statistics. Exhaustive coverage, semantic interpretation, translation equivalence and OCR review remain incomplete. [Full statistics and limitations](full-presentation.md#slide-26---additional-info-nationwide-residence-permit-corpus) are available as backup material outside the one-minute spoken script.

@@ -207,4 +207,4 @@ Keep detailed crawler design, database schemas, Swiss Hike, autonomous refresh a
 
 The **2026-09-11** expansion saved **11,728 source responses**, with substantive material from **all 26 cantons** and federal sources including Fedlex. **Two validated MCP test release parts** contain **139,783 quotation fragments** backed by **96,197 evidence sections**.
 
-Use the [corpus statistics appendix](full-presentation.md#slide-25---additional-info-nationwide-residence-permit-corpus) as backup outside the timed seven-slide presentation. It records acquisition and local validation results alongside failed downloads and unfinished semantic, language and OCR review. These counts do not establish exhaustive coverage or end-to-end retrieval quality.
+Use the [corpus statistics appendix](full-presentation.md#slide-26---additional-info-nationwide-residence-permit-corpus) as backup outside the timed seven-slide presentation. It records acquisition and local validation results alongside failed downloads and unfinished semantic, language and OCR review. These counts do not establish exhaustive coverage or end-to-end retrieval quality.

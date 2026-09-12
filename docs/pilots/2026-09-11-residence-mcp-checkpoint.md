@@ -202,7 +202,7 @@ Update and test those settings when deliberately producing the next version.
 The [MVP status and plan](../hackathon/2026-09-11-mvp-status-and-plan.md) wraps up
 the 11 September work across the whole hackathon MVP and orders the next steps.
 
-[Full presentation, slide 25](../pitch/full-presentation.md#slide-25---additional-info-nationwide-residence-permit-corpus)
+[Full presentation, slide 25](../pitch/full-presentation.md#slide-26---additional-info-nationwide-residence-permit-corpus)
 contains these statistics and limitations. The one-minute pitch and first-round
 deck have linked Q&A summaries outside their timed scripts. Keep preparation
 metrics distinct from live MCP evaluation and reviewed semantic coverage.
