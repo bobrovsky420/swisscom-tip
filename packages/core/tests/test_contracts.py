@@ -15,6 +15,7 @@ from swisstip.core.contracts import (
     canonical_language_tag,
 )
 from swisstip.core.schemas import main as export_schemas, schema_documents
+from swisstip.core.contracts import ArtifactRef as _ArtifactRef, ScopeStatement
 
 
 def artifact(name="synthetic-artifact"):
@@ -215,6 +216,19 @@ class ContextSchemaTests(unittest.TestCase):
 
 
 class DiscoveryEvidenceAndSchemaTests(unittest.TestCase):
+    def test_scope_statement_requires_text_and_provenance(self):
+        source = _ArtifactRef(artifact_id="scope-source", version="1", sha256="a" * 64)
+        valid = ScopeStatement(statements={"en": dict(in_scope="Residence permits.", out_of_scope=["Taxes."])},
+                               provenance=[source])
+        self.assertEqual(valid.schema_version, "scope-statement/v1")
+        for patch in [dict(statements={}), dict(provenance=[]),
+                      dict(statements={"en": dict(in_scope="Residence permits.", out_of_scope=[])}),
+                      dict(statements={"en": dict(in_scope="", out_of_scope=["Taxes."])}),
+                      dict(statements={"en": dict(in_scope="x", out_of_scope=["Taxes."]),
+                                       "EN": dict(in_scope="y", out_of_scope=["Fees."])})]:
+            with self.subTest(patch=patch), self.assertRaises((ValidationError, ValueError)):
+                ScopeStatement.model_validate({**valid.model_dump(), **patch})
+
     def test_discovery_pin_required_for_children_and_cursors(self):
         self.assertEqual(GetCoverageRequest().limit, 20)
         for patch in ({"cursor": "opaque"}, {"parent_id": "synthetic-topic"}, {"limit": 101}):

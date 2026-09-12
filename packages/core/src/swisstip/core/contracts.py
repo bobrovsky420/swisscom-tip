@@ -390,6 +390,38 @@ class CoverageProfile(StrictModel):
         return self
 
 
+ScopeParagraph = Annotated[str, StringConstraints(min_length=1, max_length=2000)]
+
+
+class ScopeText(StrictModel):
+    """A curated statement of what a release covers and does not cover, in one language."""
+
+    in_scope: ScopeParagraph
+    out_of_scope: Annotated[list[ShortText], Field(min_length=1, max_length=30)]
+
+
+class ScopeStatement(StrictModel):
+    """Declared scope of a release, sealed with its catalog.
+
+    Served verbatim in the root coverage summary so that a caller can decline
+    a question outside the served coverage after one call. The curator writes
+    it next to the concepts; the builder records its provenance.
+    """
+
+    schema_version: Literal["scope-statement/v1"] = "scope-statement/v1"
+    statements: Annotated[dict[LanguageTag, ScopeText], Field(min_length=1, max_length=20)]
+    provenance: Annotated[list[ArtifactRef], Field(min_length=1, max_length=20)]
+
+    @field_validator("statements", mode="before")
+    @classmethod
+    def distinct_canonical_keys(cls, value: object) -> object:
+        if isinstance(value, dict) and all(isinstance(key, str) for key in value):
+            keys = [canonical_language_tag(key) for key in value]
+            if len(set(keys)) != len(keys):
+                raise ValueError("duplicate_canonical_statement_language")
+        return value
+
+
 class KnowledgeCatalog(StrictModel):
     schema_version: Literal["knowledge-catalog/v1"] = "knowledge-catalog/v1"
     identity: ArtifactRef
@@ -397,6 +429,7 @@ class KnowledgeCatalog(StrictModel):
     entries: Annotated[list[CatalogEntry], Field(min_length=1, max_length=10000)]
     context_schemas: Annotated[list[ContextSchema], Field(max_length=1000)] = Field(default_factory=list)
     coverage_profiles: Annotated[list[CoverageProfile], Field(max_length=10000)] = Field(default_factory=list)
+    scope: ScopeStatement | None = None
     language_policy_ref: ArtifactRef
     max_evidence: Annotated[int, Field(ge=1, le=5)] = 5
     discovery_default_limit: Annotated[int, Field(ge=1, le=100)] = 20
@@ -563,6 +596,56 @@ class GetCoverageRequest(StrictModel):
         return self
 
 
+class TopicSummary(StrictModel):
+    """One resolvable topic of a release, for the root coverage summary."""
+
+    knowledge_space_id: StableId
+    domain_id: StableId
+    topic_id: StableId
+    labels: Annotated[dict[LanguageTag, ShortText], Field(min_length=1, max_length=20)]
+    intents: Annotated[list[StableId], Field(max_length=50)] = Field(default_factory=list)
+    concept_count: Annotated[int, Field(ge=0)] = 0
+
+
+class JurisdictionCoverage(StrictModel):
+    """Places served at one level for one intent, each with the same number of concepts."""
+
+    jurisdictions: Annotated[list[Jurisdiction], Field(min_length=1, max_length=1000)]
+    intent: StableId
+    concept_count: Annotated[int, Field(ge=0)] = 0
+
+
+class LanguageCoverage(StrictModel):
+    evidence: Annotated[list[LanguageTag], Field(max_length=100)] = Field(default_factory=list)
+    labels: Annotated[list[LanguageTag], Field(max_length=20)] = Field(default_factory=list)
+    retrieval_terms: Annotated[list[LanguageTag], Field(max_length=6)] = Field(default_factory=list)
+
+
+class CoverageSummary(StrictModel):
+    """Declared scope of a release, for the root discovery page.
+
+    `scope` and `out_of_scope` repeat the release's sealed scope statement per
+    language and are empty when the release publishes none. Everything else is
+    computed from the catalog, the coverage profiles, the language policy and
+    the citations, so the two parts can be told apart: the curator wrote the
+    first, the server derived the second.
+    """
+
+    schema_version: Literal["coverage-summary/v1"] = "coverage-summary/v1"
+    scope: Annotated[dict[LanguageTag, ScopeParagraph], Field(max_length=20)] = Field(default_factory=dict)
+    out_of_scope: Annotated[dict[LanguageTag, Annotated[list[ShortText], Field(max_length=30)]],
+                            Field(max_length=20)] = Field(default_factory=dict)
+    out_of_scope_response: ShortText
+    topics: Annotated[list[TopicSummary], Field(max_length=1000)]
+    jurisdictions: Annotated[list[JurisdictionCoverage], Field(max_length=1000)]
+    jurisdiction_rule: ShortText
+    languages: LanguageCoverage
+    snapshot_from: DateString | None = None
+    snapshot_through: DateString | None = None
+    concept_count: Annotated[int, Field(ge=0)] = 0
+    derived_limits: Annotated[list[ShortText], Field(max_length=100)] = Field(default_factory=list)
+
+
 class GetCoverageResult(StrictModel):
     schema_version: Literal["get-coverage-result/v1"] = "get-coverage-result/v1"
     release_id: StableId
@@ -574,6 +657,7 @@ class GetCoverageResult(StrictModel):
     entries: Annotated[list[CatalogEntry], Field(max_length=100)]
     coverage_profiles: Annotated[list[CoverageProfile], Field(max_length=1000)]
     context_schemas: Annotated[list[ContextSchema], Field(max_length=1000)]
+    coverage_summary: CoverageSummary | None = None
     next_cursor: Annotated[str, StringConstraints(min_length=1, max_length=2000)] | None = None
     default_limit: Annotated[int, Field(ge=1, le=100)] = 20
     maximum_limit: Annotated[int, Field(ge=1, le=100)] = 100

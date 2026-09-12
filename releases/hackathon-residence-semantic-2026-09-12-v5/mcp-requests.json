@@ -4,7 +4,7 @@
     "tool": "get_coverage",
     "arguments": {
       "schema_version": "get-coverage/v1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "parent_id": "residence",
       "limit": 100
     }
@@ -27,7 +27,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -57,7 +57,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -89,7 +89,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "third_country"
         },
@@ -123,7 +123,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -155,7 +155,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -187,7 +187,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -219,7 +219,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -253,7 +253,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "third_country"
         },
@@ -287,7 +287,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -319,7 +319,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "sponsor_status": "swiss"
         },
@@ -351,7 +351,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "sponsor_status": "c"
         },
@@ -385,7 +385,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "sponsor_status": "b"
         },
@@ -419,7 +419,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -453,7 +453,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -483,7 +483,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "third_country"
         },
@@ -517,7 +517,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "third_country"
         },
@@ -551,7 +551,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -585,7 +585,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -615,7 +615,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -647,7 +647,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "uk_new"
         },
@@ -683,7 +683,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -715,7 +715,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -747,7 +747,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -778,7 +778,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -813,7 +813,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -846,7 +846,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -879,7 +879,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -912,7 +912,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -945,7 +945,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -978,7 +978,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "third_country"
         },
@@ -1012,7 +1012,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "arrival_origin": "abroad"
         },
@@ -1046,7 +1046,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "arrival_origin": "abroad"
         },
@@ -1078,7 +1078,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -1112,7 +1112,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "insurance_obligation": "applies"
         },
@@ -1147,7 +1147,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1178,7 +1178,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1209,7 +1209,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1240,7 +1240,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1271,7 +1271,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1302,7 +1302,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1333,7 +1333,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1364,7 +1364,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1395,7 +1395,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1426,7 +1426,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1457,7 +1457,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1488,7 +1488,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1519,7 +1519,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1550,7 +1550,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1581,7 +1581,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1612,7 +1612,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1643,7 +1643,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1674,7 +1674,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1705,7 +1705,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1736,7 +1736,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1767,7 +1767,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1798,7 +1798,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1829,7 +1829,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1860,7 +1860,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1891,7 +1891,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1922,7 +1922,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1955,7 +1955,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {},
         "retrieval_terms": [],
         "max_evidence": 5
@@ -1980,7 +1980,7 @@
         "as_of": "2026-09-12",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "eu_efta"
         },
@@ -2006,7 +2006,7 @@
         "as_of": "2020-12-31",
         "scope_mode": "exact",
         "schema_version": "structured-grounding/v1",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "context": {
           "population": "uk_new"
         },
@@ -2064,7 +2064,7 @@
     "tool": "get_evidence",
     "arguments": {
       "schema_version": "get-evidence/v1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "evidence_ids": [
         "mvp-evidence-permit-authority-1"
       ]

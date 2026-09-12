@@ -12,10 +12,11 @@ from collections.abc import Callable
 from pydantic import ValidationError
 
 from swisstip.core.contracts import (
-    Freshness, GetCoverageRequest, GetCoverageResult, GetEvidenceRequest,
+    CoverageSummary, Freshness, GetCoverageRequest, GetCoverageResult, GetEvidenceRequest,
+    JurisdictionCoverage, LanguageCoverage,
     GetEvidenceResult, MissingContextField, RetrievalTrace, ScopeSelection,
     StructuredGroundingRequest, StructuredGroundingResult, TermRoute, ToolError,
-    TrustEnvelope, UnresolvedPortion, ValidationIssue,
+    TopicSummary, TrustEnvelope, UnresolvedPortion, ValidationIssue,
 )
 from swisstip.core.validation import matches_condition, validate_request
 
@@ -25,6 +26,120 @@ from .retrieval import HybridRetriever, RetrievalFailure
 
 def _now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+_SHORT_TEXT = 500
+OUT_OF_SCOPE_RESPONSE = ("Say that this server does not cover the question, name the scope stated here, and stop; "
+                         "do not answer from general knowledge and do not call further tools.")
+JURISDICTION_RULE = ("A profile answers for every place inside its own jurisdiction: a country-level profile for any "
+                     "canton or municipality, a cantonal profile for its municipalities. The result reports the level "
+                     "that answered and adds a caveat when it is wider than the request.")
+
+
+def _sentence(prefix: str, items: list[str], fallback: str) -> str:
+    """One bounded statement; fall back to a generic one when the list is too long."""
+    text = prefix + ", ".join(items) + "."
+    return text if len(text) <= _SHORT_TEXT else fallback
+
+
+def _preferred_label(labels) -> str:
+    return (labels.get("en") or next(iter(labels.values()))).label
+
+
+def _jurisdiction_key(jurisdiction):
+    return (jurisdiction.specificity, jurisdiction.country_code, jurisdiction.canton_code or "",
+            int(jurisdiction.municipality_id or 0))
+
+
+def coverage_summary(bundle) -> CoverageSummary:
+    """Declared scope of one release, for the root discovery page.
+
+    The curated scope statement, when the catalog seals one, is repeated
+    verbatim. Topics come from the catalog, the jurisdiction rows from the
+    coverage profiles grouped by level, intent and concept count, languages
+    from the evidence and the language policy, snapshot dates from the
+    citations. Derived limits state what the data alone implies: retrieval
+    support, source-stated validity windows and, when no scope statement is
+    published, the complement of the listed topics, intents and places.
+    """
+    catalog, policy = bundle.catalog, bundle.language_policy
+    entries = {e.entry_id: e for e in catalog.entries}
+    profiles = catalog.coverage_profiles
+
+    def lineage(entry_id: str, kind: str) -> str | None:
+        pending = list(entries[entry_id].parent_ids)
+        while pending:
+            current = pending.pop(0)
+            parent = entries.get(current)
+            if parent is None:
+                continue
+            if parent.kind == kind:
+                return parent.entry_id
+            pending.extend(parent.parent_ids)
+        return None
+
+    topics = []
+    for entry in sorted((e for e in catalog.entries if e.kind == "topic"), key=lambda e: e.entry_id):
+        own = [p for p in profiles if p.topic_id == entry.entry_id]
+        domain = next((p.domain_id for p in own), None) or lineage(entry.entry_id, "domain")
+        space = next((p.knowledge_space_id for p in own), None) or lineage(entry.entry_id, "knowledge_space")
+        if domain is None or space is None:
+            continue
+        topics.append(TopicSummary(
+            knowledge_space_id=space, domain_id=domain, topic_id=entry.entry_id,
+            labels={language: meta.label for language, meta in entry.labels.items()},
+            intents=sorted({p.intent for p in own}),
+            concept_count=len({c for p in own for c in p.concept_ids})))
+    places, concepts_by_place = {}, {}
+    for profile in profiles:
+        key = profile.jurisdiction.model_dump_json()
+        places.setdefault(key, profile.jurisdiction)
+        concepts_by_place.setdefault(key, {}).setdefault(profile.intent, set()).update(profile.concept_ids)
+    groups: dict[tuple, list] = {}
+    for key, by_intent in concepts_by_place.items():
+        for intent, concepts in by_intent.items():
+            groups.setdefault((places[key].specificity, intent, len(concepts)), []).append(places[key])
+    jurisdictions = [JurisdictionCoverage(jurisdictions=sorted(members, key=_jurisdiction_key),
+                                          intent=intent, concept_count=count)
+                     for (_, intent, count), members in sorted(groups.items())]
+    accessed = sorted(e.citation.accessed_at[:10] for e in bundle.evidence)
+    intents = sorted({p.intent for p in profiles})
+    stated = sorted((p.concept_ids[0] if p.concept_ids else p.topic_id, p.temporal_coverage)
+                    for p in profiles if p.temporal_coverage.valid_from or p.temporal_coverage.valid_through)
+    limits = []
+    if catalog.scope is None:
+        countries = sorted({j.country_code for j in places.values()})
+        limits += [
+            _sentence("Topics other than: ",
+                      [f"{_preferred_label(entries[t.topic_id].labels)} ({t.topic_id})" for t in topics],
+                      "Topics other than those listed under topics."),
+            _sentence("Intents other than: ", intents, "Intents other than those listed under intents."),
+            _sentence("Countries other than: ", countries, "Countries other than those listed under jurisdictions."),
+            "Canton- or municipality-specific information for places not listed under jurisdictions.",
+        ]
+    if not policy.term_languages:
+        limits.append("Free-text retrieval terms are not supported: no term routes are published, so select "
+                      "concepts from the catalog instead.")
+    if stated:
+        windows = []
+        for concept, window in stated:
+            bounds = [f"before {window.valid_from}" if window.valid_from else None,
+                      f"after {window.valid_through}" if window.valid_through else None]
+            windows.append(f"{concept} " + " or ".join(b for b in bounds if b))
+        limits.append(_sentence("Dates outside source-stated validity: ", windows,
+                                "Dates outside the source-stated validity windows of some concepts."))
+    statements = catalog.scope.statements if catalog.scope else {}
+    return CoverageSummary(
+        scope={language: text.in_scope for language, text in statements.items()},
+        out_of_scope={language: list(text.out_of_scope) for language, text in statements.items()},
+        out_of_scope_response=OUT_OF_SCOPE_RESPONSE,
+        topics=topics, jurisdictions=jurisdictions, jurisdiction_rule=JURISDICTION_RULE,
+        languages=LanguageCoverage(
+            evidence=sorted({e.effective_source_language for e in bundle.evidence}),
+            labels=sorted({language for e in catalog.entries for language in e.labels}),
+            retrieval_terms=list(policy.term_languages)),
+        snapshot_from=accessed[0] if accessed else None, snapshot_through=accessed[-1] if accessed else None,
+        concept_count=len({c for p in profiles for c in p.concept_ids}), derived_limits=limits[:100])
 
 
 class KnowledgeService:
@@ -139,6 +254,9 @@ class KnowledgeService:
             coverage_profiles=profiles,
             context_schemas=sorted((s for s in catalog.context_schemas if s.identity in schema_refs),
                                    key=lambda s: s.identity.artifact_id),
+            # The declared scope travels with the root page only, where a caller
+            # decides whether to continue or to answer "not covered" at once.
+            coverage_summary=coverage_summary(bundle) if root is None else None,
             next_cursor=self._cursor(binding, page[-1].entry_id) if len(children) > limit else None,
             default_limit=catalog.discovery_default_limit, maximum_limit=catalog.discovery_max_limit)
 

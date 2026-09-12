@@ -5,7 +5,8 @@ import unittest
 from swisstip.core.contracts import (
     ArtifactRef, CatalogEntry, KnowledgeCatalog, LanguagePolicy, LocalizedMetadata,
 )
-from swisstip.core.identity import artifact_hash, seal_artifact, verify_artifact
+from swisstip.core.contracts import ArtifactRef, KnowledgeCatalog
+from swisstip.core.identity import artifact_hash, json_content_hash, seal_artifact, verify_artifact
 
 
 class ArtifactIdentityTests(unittest.TestCase):
@@ -48,6 +49,41 @@ class ArtifactIdentityTests(unittest.TestCase):
         policy = seal_artifact(self.policy())
         roundtrip = LanguagePolicy.model_validate_json(policy.model_dump_json(indent=2))
         self.assertTrue(verify_artifact(roundtrip))
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+
+class ExtensionFieldTests(unittest.TestCase):
+    """Optional fields added later must not change the hash of earlier artifacts."""
+
+    @staticmethod
+    def catalog(**extra):
+        ref = ArtifactRef(artifact_id="source", version="1", sha256="a" * 64)
+        return KnowledgeCatalog(
+            identity=ArtifactRef(artifact_id="catalog", version="1", sha256="0" * 64), release_id="release-a",
+            entries=[dict(entry_id="space", kind="knowledge_space",
+                          labels={"en": dict(label="Space", description="Synthetic.", provenance=[ref])})],
+            language_policy_ref=ref, **extra)
+
+    def test_null_scope_hashes_as_before_the_field_existed(self) -> None:
+        sealed = seal_artifact(self.catalog())
+        document = sealed.model_dump(mode="json")
+        del document["scope"]
+        del document["identity"]["sha256"]
+        self.assertEqual(sealed.identity.sha256, json_content_hash(document))
+        self.assertTrue(verify_artifact(sealed))
+        self.assertTrue(verify_artifact(KnowledgeCatalog.model_validate({**document, "identity": sealed.identity.model_dump()})))
+
+    def test_published_scope_is_part_of_the_hash(self) -> None:
+        scope = dict(statements={"en": dict(in_scope="Residence permits.", out_of_scope=["Taxes."])},
+                     provenance=[ArtifactRef(artifact_id="source", version="1", sha256="a" * 64)])
+        with_scope = seal_artifact(self.catalog(scope=scope))
+        self.assertTrue(verify_artifact(with_scope))
+        self.assertNotEqual(with_scope.identity.sha256, seal_artifact(self.catalog()).identity.sha256)
+        with_scope.scope.statements["en"].out_of_scope.append("Fees.")
+        self.assertFalse(verify_artifact(with_scope))
 
 
 if __name__ == "__main__":

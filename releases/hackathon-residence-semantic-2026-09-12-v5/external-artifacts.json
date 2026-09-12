@@ -3,7 +3,7 @@
     "identity": {
       "artifact_id": "mvp-curation-source",
       "version": "1",
-      "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+      "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
     },
     "path": "controls/residence_mvp_curated.py"
   },
@@ -35,7 +35,7 @@
     "identity": {
       "artifact_id": "mvp-contract-schema",
       "version": "1",
-      "sha256": "455c78042e715c4720a8e8b0dc9cf7ab546e4152025ece57eab85b6bed589d5e"
+      "sha256": "ffb5420e52af369e7f0811c13d46d72840264e600e541fcedc7c14cd8f69e20a"
     },
     "path": "controls/contracts-v1.schema.json"
   },

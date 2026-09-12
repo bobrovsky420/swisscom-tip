@@ -15,7 +15,8 @@ resolved in commit `fdd57a5`, the 30-day freshness finding is mitigated by the
 60-day policy of release v4, the jurisdiction finding (E6) is resolved by
 containment matching, and the repository blockers E2 and E3 are resolved by the
 bundled release, the quickstart README, the coverage and limitation pages and
-the licence; findings and proposals carry their status inline. Discovery size
+the licence, and the root coverage statement (E7) is served since the same
+day from release v5; findings and proposals carry their status inline. Discovery size
 (E5) and the missing HTTP transport (E4) remain the open blockers.
 
 ## 1. The published challenge
@@ -172,7 +173,7 @@ matter.
 
 | ID | Change | Why it moves the score | Where | Effort |
 | --- | --- | --- | --- | --- |
-| E7 | Coverage statement at the root: add an optional `coverage_summary` to the root `get_coverage` result (topics, jurisdictions, languages, snapshot date, explicit "not covered" list) and say in the tool description that questions outside it should be answered as not covered without further calls. | Honest unsupported handling with one call instead of a five-call walk; both are scored. | `contracts.py`, `service.py`, `server.py` | 3 h |
+| E7 | **Resolved 12 September** ([record](../pilots/2026-09-12-root-coverage-summary.md)). The catalog seals a curated scope statement (`KnowledgeCatalog.scope`: in-scope text and out-of-scope list), and the root `get_coverage` result serves it verbatim in `coverage_summary` together with an out-of-scope response instruction, the topics, the profile jurisdictions grouped by level and intent, languages, snapshot dates and derived limits. Release rebuilt and bundled as v5 (same snapshots and spans); the nationwide collection is rebuilt as v3 with a statement in every part. Root discovery is 5.7 KB; child pages are unchanged. COVERAGE.md prints the served statement. | Honest unsupported handling with one call instead of a five-call walk; both are scored. | `contracts.py`, `identity.py`, `service.py`, `server.py`, `residence_mvp_curated.py`, `build_residence_mvp.py`, `coverage_report.py` | Done |
 | E8 | A `find_concepts` tool: lexical search (the existing `tokens()` scorer or a small BM25) over concept labels, aliases, fact statements and excerpts of every loaded release, taking `query`, optional `language` and `jurisdiction`, returning candidate concept IDs with their profile scope and a snippet, never facts or evidence. The caller still resolves. | Cold path becomes search plus resolve; also the only practical way to expose the nationwide parts. | new method in `service.py`, `server.py` | 1 day |
 | E9 | One-call journeys: publish a topic-level profile per journey (`concept_selection_required=False`, `max_concepts` 5, one portion per concept) so "register after arriving in Zurich" resolves federal deadline, cantonal registration and city appointment together. Requires the validator to prefer the narrowest matching profile instead of returning `ambiguous_coverage_profiles` when a single-concept request also matches the topic profile. | Warm one-call target from the specification becomes true for the demo questions. | `residence_mvp_curated.py`, `build_residence_mvp.py`, `validation.py` | 1 day |
 | E10 | Coverage sprint through the existing curation path: (a) the arrival journey beyond permits from ch.ch and federal offices (municipal registration, AHV number, driving-licence exchange, tax at source, health insurance already present); (b) EU/EFTA registration and permit pages of the six to eight largest other cantons from the pages already saved; (c) label every concept with `de`, `fr` and `it` labels and aliases. Target 80 to 120 concepts, three to four topics, eight to ten cantons. Parallelisable per person; every claim keeps an exact span. | Directly scored breadth; multilingual labels let callers select concepts from German or French questions without translation. | `residence_mvp_curated.py` (data), saved corpus | 2 to 3 days |
@@ -204,7 +205,7 @@ matter.
 
 | Days | Work | Exit condition |
 | --- | --- | --- |
-| 12 Sep | E7 (E1, E2, E3 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
+| 12 Sep | E7 (done; E1, E2, E3 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
 | 13 to 15 Sep | E5, E4, E11 (E6 done) | Cold path under 25 KB per call; hosted URL answers the same question; federal plus canton request succeeds |
 | 16 Sep | Swisscom Q&A (section 6); adjust the plan | Open questions answered |
 | 16 to 20 Sep | E8, E9, E10, E12 in parallel | Search plus resolve in two calls; 80 or more concepts across three topics; German and French labels |

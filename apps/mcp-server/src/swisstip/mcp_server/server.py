@@ -25,7 +25,12 @@ from .bundled import bundled_releases
 TOOL_CONTRACTS = {
     "get_coverage": (GetCoverageRequest, GetCoverageResult,
                      "Discover the published catalog level by level. Call it first with no arguments to obtain "
-                     "the active release_id and the knowledge space entry; then repeat with that release_id and "
+                     "the active release_id, the knowledge space entry and coverage_summary: a scope statement, an "
+                     "out_of_scope list, the covered topics, the jurisdictions with their intents and concept counts, "
+                     "languages and source snapshot dates. If the user's question matches out_of_scope or is not "
+                     "inside scope (another topic, another country, a canton or municipality with no listed profile "
+                     "beyond federal rules), follow out_of_scope_response: say that this server does not cover it, "
+                     "quote the scope, and make no further calls. Otherwise repeat with that release_id and "
                      "parent_id set to an entry_id to list its children (knowledge space > domain > topic > "
                      "concepts). Topic and concept levels also return coverage_profiles and context_schemas: a "
                      "profile states, for its concept_ids, the exact intent, jurisdiction (country_code, "

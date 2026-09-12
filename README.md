@@ -49,7 +49,7 @@ clients. The server advertises three tools:
 
 | Tool | Purpose |
 | --- | --- |
-| `get_coverage` | Walk the catalog level by level; topic and concept levels include coverage profiles and context schemas |
+| `get_coverage` | Walk the catalog level by level; the root call also returns a `coverage_summary` with the release's scope statement and out-of-scope list, the covered topics and jurisdictions, languages and snapshot dates, so a caller can refuse an outside question after one call; topic and concept levels include coverage profiles and context schemas |
 | `resolve` | Return published facts, original excerpts and citations for one concept in a pinned release |
 | `get_evidence` | Read up to five original excerpts by evidence ID |
 
@@ -100,10 +100,11 @@ The full list of sources and concepts is generated from the bundled release in
 
 - **Implemented and tested:** versioned contracts with exported JSON Schema;
   a release reader that fails closed on any hash or span mismatch; discovery,
-  resolution and evidence tools over stdio with typed errors; jurisdiction
+  resolution and evidence tools over stdio with typed errors; a root coverage
+  summary with a scope statement sealed in the release; jurisdiction
   containment with named coverage gaps; unbounded validity with source-stated
   exceptions; a 60-day freshness policy; a bounded crawler with robots
-  enforcement per origin; 592 tests across seven suites.
+  enforcement per origin; 599 tests across seven suites.
 - **Demonstrated:** the Zurich registration question and a Chinese-language
   third-country work-permit question answered correctly through OpenCode with
   citations, recorded under `docs/experiments/`.

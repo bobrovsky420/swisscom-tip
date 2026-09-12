@@ -26,7 +26,10 @@ def copy_part(source, target):
     return 'copied'
 
 
-def assemble(output, parts, notes):
+DEFAULT_SCOPE = 'Unchanged v1 source-assertion parts plus parts built only from pages recovered on 2026-09-11.'
+
+
+def assemble(output, parts, notes, *, title='Residence serving collection v2', scope=DEFAULT_SCOPE, unchanged=''):
     output.mkdir(parents=True, exist_ok=True)
     reports, actions = [], {}
     for name, source in parts:
@@ -51,14 +54,14 @@ def assemble(output, parts, notes):
         'command': str(ROOT / '.venv/Scripts/python.exe'), 'args': server_args}}})
     collection = dict(schema_version='swisstip.experimental-release-collection/v1', assembled_at=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
                       parts=reports, part_actions=actions, application_calls=0, llm_calls=0, semantic_review_complete=False,
-                      scope='Unchanged v1 source-assertion parts plus parts built only from pages recovered on 2026-09-11.',
+                      scope=scope,
                       notes=notes,
                       acquisition_completeness='Serving validity does not establish corpus completeness; see the recovery record.')
     write(output / 'collection.json', collection)
-    lines = ['# Residence serving collection v2', '',
+    lines = ['# ' + title, '',
              'Every listed part is an app-ingestible `serving-release/v1` release, validated when built. Parts are',
              'loaded explicitly by the root `mcp-client.json`; requests pin one release ID and parts are never',
-             'implicitly combined. The v1 parts are byte-identical copies with unchanged hashes.', '',
+             'implicitly combined.' + (' ' + unchanged if unchanged else ''), '',
              '| Part | Release ID | Documents | Facts | Evidence | Concepts | Origin |', '| --- | --- | ---: | ---: | ---: | ---: | --- |']
     for report in reports:
         origin = notes.get(report['release_file'].split('/')[0], '')
@@ -76,9 +79,13 @@ if __name__ == '__main__':
     parser.add_argument('--part', action='append', required=True, metavar='NAME=DIR',
                         help='part name inside the collection and the validated part directory to copy')
     parser.add_argument('--note', action='append', default=[], metavar='NAME=TEXT', help='origin note per part')
+    parser.add_argument('--title', default='Residence serving collection v2', help='README title')
+    parser.add_argument('--scope', default=DEFAULT_SCOPE, help='one-line scope recorded in collection.json')
+    parser.add_argument('--unchanged', default='The v1 parts are byte-identical copies with unchanged hashes.',
+                        help='README sentence about parts copied from an earlier collection; empty to omit')
     args = parser.parse_args()
     parts = [(p.split('=', 1)[0], Path(p.split('=', 1)[1])) for p in args.part]
     notes = dict(n.split('=', 1) for n in args.note)
-    result = assemble(args.output.resolve(), parts, notes)
+    result = assemble(args.output.resolve(), parts, notes, title=args.title, scope=args.scope, unchanged=args.unchanged)
     print(json.dumps(dict(parts=[(r['release_id'], r['release_sha256'][:16], r['documents'], r['facts']) for r in result['parts']],
                           actions=result['part_actions']), indent=2))

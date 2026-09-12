@@ -79,6 +79,9 @@ class ConceptPackTests(unittest.TestCase):
             self.assertEqual(entries['candidate-0123456789abcdef']['parent_ids'], ['candidate-type-rule'])
             self.assertEqual(entries['candidate-type-rule']['parent_ids'], ['residence'])
             self.assertTrue(all(e['lifecycle'] == 'VERIFIED_AUTOMATIC' for e in bundle['catalog']['entries']))
+            scope = bundle['catalog']['scope']
+            self.assertIn('read-concept-candidates', scope['statements']['en']['in_scope'])
+            self.assertEqual(scope['provenance'][0]['artifact_id'], 'concept-build-source')
             requests = json.loads((output / 'mcp-requests.json').read_text(encoding='utf-8'))
             self.assertFalse(requests['executed'])
             self.assertEqual(requests['resolve'][0]['arguments']['intent'], 'read-concept-candidates')
@@ -86,7 +89,10 @@ class ConceptPackTests(unittest.TestCase):
                 build_concept_pack.build(root, output, 'concept-test-part')
 
             collection_dir = root / 'collection'
-            collection = assemble_collection.assemble(collection_dir, [('part-001', output)], {'part-001': 'test'})
+            collection = assemble_collection.assemble(collection_dir, [('part-001', output)], {'part-001': 'test'},
+                                                      title='Test collection', scope='Test scope.', unchanged='')
+            self.assertEqual(collection['scope'], 'Test scope.')
+            self.assertTrue((collection_dir / 'README.md').read_text(encoding='utf-8').startswith('# Test collection'))
             self.assertEqual(collection['part_actions'], {'part-001': 'copied'})
             self.assertEqual(collection['parts'][0]['release_file'], 'part-001/release.json')
             self.assertEqual(collection['parts'][0]['release_sha256'], sha((collection_dir / 'part-001' / 'release.json').read_bytes()))

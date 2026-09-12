@@ -190,3 +190,25 @@ SELECTOR_VALUES = {
     'arrival_origin': ['abroad', 'within_switzerland'],
     'insurance_obligation': ['applies', 'exempt', 'unknown'],
 }
+
+# Declared scope of the release, sealed into the catalog and served verbatim in
+# the root coverage summary so that a caller can refuse an outside question
+# after one call. Keep it true to CONCEPTS and CONTACT_ROWS above.
+SCOPE = dict(
+    in_scope=(
+        'Residence permits and registration for foreign nationals in Switzerland: the federal Foreign Nationals and '
+        'Integration Act (AIG) and State Secretariat for Migration (SEM) guidance on permit types, registration '
+        'deadlines, family reunification, integration criteria and short-term work notification; Canton Zurich and '
+        'City of Zurich procedures for EU/EFTA and third-country nationals; the migration-office contact of every '
+        'canton; and the compulsory health-insurance enrolment deadline.'),
+    out_of_scope=[
+        'Any topic other than residence permits and registration: taxes, driving licences, voting, schooling, '
+        'naturalisation, asylum, entry visas, and social insurance beyond the health-insurance enrolment deadline.',
+        'Fees, processing times and appointment availability for any permit.',
+        'Procedures of cantons other than Zurich beyond their migration-office contact, and municipal procedures '
+        'outside the City of Zurich; federal rules still apply there and are served with a caveat.',
+        'Eligibility decisions for a specific person: the published rules route population groups to pre-authored '
+        'statements and do not compute outcomes.',
+        'Any country other than Switzerland, including German and Austrian rules that look similar.',
+    ],
+)

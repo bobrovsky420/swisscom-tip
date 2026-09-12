@@ -32,7 +32,10 @@ The coverage itself is listed in [COVERAGE.md](COVERAGE.md).
 ## Interface
 
 - **Catalog-driven, no free-text search.** A caller discovers concepts through
-  `get_coverage` and resolves one concept per call. Retrieval terms return
+  `get_coverage` and resolves one concept per call. The root call returns a
+  `coverage_summary` with the release's scope statement and out-of-scope
+  list, so a question outside the served scope can be refused after one
+  call. Retrieval terms return
   `UNSUPPORTED_LANGUAGE` because no term routes are published for this release.
 - **Large discovery pages.** Topic-level discovery returns about 140 KB with
   every coverage profile and context schema inline. Clients with a small

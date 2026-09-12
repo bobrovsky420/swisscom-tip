@@ -28,6 +28,28 @@ WINDOW = {}
 BUILD_DATE = datetime.now(timezone.utc).strftime('%Y-%m-%d')
 NOTICE = 'Experimental automatically derived source assertions; no independent semantic or legal review.'
 CANTONS = 'AG AI AR BE BL BS FR GE GL GR JU LU NE NW OW SG SH SO SZ TG TI UR VD VS ZG ZH'.split()
+# Declared scope of every source-assertion part, sealed into its catalog and
+# served verbatim in the root coverage summary. Dates, languages and places are
+# reported next to it from the data, so the text names none of them.
+SCOPE = dict(
+    in_scope=(
+        'Exact original-language text assertions extracted automatically from official web pages and documents of '
+        'the Swiss federal administration and the cantons that were saved for the residence-permit crawl. Each saved '
+        'page is one concept under an automatic category; resolving it with intent read-source-assertions returns '
+        'the assertion spans of that page with citation, language and the jurisdiction of the publishing authority. '
+        'Content is served in the language of the source.'),
+    out_of_scope=[
+        'Normalized rules, eligibility decisions, deadlines computed for a person, or any statement that is not '
+        'present verbatim on a saved page.',
+        'Pages that were not saved, failed to download, or were excluded for unidentifiable language or quality; '
+        'serving validity does not establish corpus completeness.',
+        'Topics beyond what the residence-permit crawl collected; a page on another subject appears only because a '
+        'crawled site linked it, and its category label is automatic.',
+        'Any country other than Switzerland; the jurisdiction is inferred from the publishing domain and does not '
+        'decide which rule applies to a person.',
+        'Semantic search: concepts are selected by document from the catalog; retrieval terms are not supported.',
+    ],
+)
 
 
 def jurisdiction(url):
@@ -266,7 +288,8 @@ def build_part(output,records,number,total,release_id=None):
         if number%100==0: print(json.dumps(dict(pack=rid,documents=number,total=len(records),facts=len(facts))),flush=True)
     profiles,plans=merge_profiles(profiles,plans)
     catalog=seal_artifact(KnowledgeCatalog(identity=ref('expanded-catalog'),release_id=rid,
-        entries=sorted(entries,key=lambda e:e['entry_id']),context_schemas=[schema],coverage_profiles=profiles,language_policy_ref=policy.identity))
+        entries=sorted(entries,key=lambda e:e['entry_id']),context_schemas=[schema],coverage_profiles=profiles,language_policy_ref=policy.identity,
+        scope=dict(statements={'en':SCOPE},provenance=[build_ref])))
     graph=seal_artifact(ResolutionGraph(identity=ref('expanded-graph'),release_id=rid,plans=plans))
     release=seal_artifact(KnowledgeRelease(identity=ref(rid),release_id=rid,created_at=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
         catalog_ref=catalog.identity,context_schema_refs=[schema.identity],language_policy_ref=policy.identity,

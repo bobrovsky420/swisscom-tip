@@ -1,6 +1,6 @@
 # Experimental residence MCP test data
 
-Release: `hackathon-residence-semantic-2026-09-12-v4`. Classification: **experimental**.
+Release: `hackathon-residence-semantic-2026-09-12-v5`. Classification: **experimental**.
 
 84 assistant-curated facts, 84 exact source excerpts, 20 routing rules,
 35 concepts and 60 coverage profiles from 12 saved official pages.
@@ -15,7 +15,7 @@ is a readable semantic export; `provenance.json` maps facts to original blocks a
 Use `mcp-client.json` to configure a local MCP client, or run:
 
 ```shell
-./.venv/Scripts/python.exe -m swisstip.mcp_server.server --release .local/mvp/residence-semantic-2026-09-12-v4/release.json --active-release-id hackathon-residence-semantic-2026-09-12-v4
+./.venv/Scripts/python.exe -m swisstip.mcp_server.server --release .local/mvp/residence-semantic-2026-09-12-v5/release.json --active-release-id hackathon-residence-semantic-2026-09-12-v5
 ```
 
 `mcp-requests.json` supplies discovery, 60 resolve examples, 4 negative cases,

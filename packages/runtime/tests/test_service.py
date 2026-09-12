@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 import unittest
 
-from swisstip.core.contracts import ArtifactRef, FactConflict, StrictModel
+from swisstip.core.contracts import ArtifactRef, FactConflict, ScopeStatement, StrictModel
 from swisstip.core.identity import seal_artifact
 from swisstip.runtime import KnowledgeService, ReleaseStore
 from swisstip.runtime.fixture import fixture
@@ -263,6 +263,71 @@ class ServiceTests(unittest.TestCase):
         second = service.get_coverage({**request, "cursor": first.next_cursor})
         self.assertEqual([e.entry_id for e in first.entries + second.entries], ["fixture-parent", "fixture-sibling"])
         self.assertIsNone(second.next_cursor)
+
+    def test_root_coverage_summary_without_scope_statement_serves_derived_limits(self):
+        service = self.service()
+        root = service.get_coverage({})
+        summary = root.coverage_summary
+        self.assertEqual((summary.scope, summary.out_of_scope), ({}, {}))
+        self.assertIn("do not call further tools", summary.out_of_scope_response)
+        self.assertEqual([t.model_dump() for t in summary.topics], [dict(
+            knowledge_space_id="fixture-space", domain_id="fixture-domain", topic_id="fixture-topic",
+            labels={"en": "Synthetic topic"}, intents=["requirements"], concept_count=3)])
+        self.assertEqual([r.model_dump() for r in summary.jurisdictions], [dict(
+            jurisdictions=[dict(country_code="CH", canton_code="CH-ZH", municipality_id=None)],
+            intent="requirements", concept_count=3)])
+        self.assertIn("country-level profile", summary.jurisdiction_rule)
+        self.assertEqual(summary.languages.model_dump(), dict(evidence=["en"], labels=["en"], retrieval_terms=["en", "de"]))
+        self.assertEqual((summary.snapshot_from, summary.snapshot_through, summary.concept_count),
+                         ("2026-09-06", "2026-09-06", 3))
+        self.assertEqual(summary.derived_limits, [
+            "Topics other than: Synthetic topic (fixture-topic).",
+            "Intents other than: requirements.",
+            "Countries other than: CH.",
+            "Canton- or municipality-specific information for places not listed under jurisdictions.",
+            "Dates outside source-stated validity: fixture-parent before 2026-01-01 or after 2026-12-31.",
+        ])
+        # The summary travels with the root page only; every child page stays as before.
+        for payload in [dict(release_id=root.release_id, knowledge_space_id="fixture-space"),
+                        dict(release_id=root.release_id, parent_id="fixture-topic")]:
+            self.assertIsNone(service.get_coverage(payload).coverage_summary)
+        # Root discovery stays small enough for a default client output cap.
+        self.assertLess(len(root.model_dump_json()), 8000)
+
+    def test_sealed_scope_statement_is_served_verbatim_and_replaces_derived_complement(self):
+        self.bundle.catalog.scope = ScopeStatement(
+            statements={"en": dict(in_scope="Synthetic residence rules for group A.",
+                                   out_of_scope=["Taxes.", "Driving licences."])},
+            provenance=[ArtifactRef(artifact_id="fixture-review", version="1", sha256="a" * 64)])
+        service = self.service(reseal(self.bundle))
+        summary = service.get_coverage({}).coverage_summary
+        self.assertEqual(summary.scope, {"en": "Synthetic residence rules for group A."})
+        self.assertEqual(summary.out_of_scope, {"en": ["Taxes.", "Driving licences."]})
+        self.assertEqual(summary.derived_limits, [
+            "Dates outside source-stated validity: fixture-parent before 2026-01-01 or after 2026-12-31."])
+
+    def test_jurisdiction_rows_group_places_by_level_intent_and_count(self):
+        profile = self.bundle.catalog.coverage_profiles[0]
+        extra = []
+        for canton in ["CH-BE", "CH-AG"]:
+            extra.append(profile.model_copy(update={
+                "coverage_profile_id": "contacts-" + canton.lower(), "intent": "contacts",
+                "concept_ids": ["fixture-sibling"], "jurisdiction": dict(country_code="CH", canton_code=canton)}))
+        extra.append(profile.model_copy(update={"coverage_profile_id": "federal", "concept_ids": ["fixture-parent"],
+                                                "jurisdiction": dict(country_code="CH")}))
+        self.bundle.catalog.coverage_profiles = [profile, *extra]
+        # Every profile needs a resolution plan; one fact-free portion per profile satisfies the validator.
+        portion = self.bundle.graph.plans[0].portions[0]
+        self.bundle.graph.plans += [self.bundle.graph.plans[0].model_copy(update={
+            "coverage_profile_id": p.coverage_profile_id,
+            "portions": [portion.model_copy(update={"portion_id": "portion-" + p.coverage_profile_id,
+                                                    "concept_ids": list(p.concept_ids), "fact_ids": [],
+                                                    "evidence_ids": [], "rule_refs": []})]}) for p in extra]
+        summary = self.service(reseal(self.bundle)).get_coverage({}).coverage_summary
+        self.assertEqual([(len(r.jurisdictions), r.intent, r.concept_count,
+                           [j.canton_code for j in r.jurisdictions]) for r in summary.jurisdictions],
+                         [(1, "requirements", 1, [None]), (2, "contacts", 1, ["CH-AG", "CH-BE"]),
+                          (1, "requirements", 3, ["CH-ZH"])])
 
     def test_catalog_default_limit_applies_when_omitted(self):
         self.bundle.catalog.discovery_default_limit = 1

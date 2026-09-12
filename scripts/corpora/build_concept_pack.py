@@ -32,6 +32,22 @@ DEFAULT_WORKDIR = ROOT / '.local/extraction/assistant-v3-2026-09-11'
 NOTICE = ('Assistant-authored V3 concept candidates after the app\'s automated review; '
           'no human review, legal review or eligibility decision.')
 INTENT = 'read-concept-candidates'
+# Declared scope of the candidate part, sealed into its catalog and served in the root coverage summary.
+SCOPE = dict(
+    in_scope=(
+        'Assistant-authored concept candidates (procedures, rules and conditions, services, documents and forms, '
+        'organisations) proposed from official web pages about residence permits in Switzerland, each with the '
+        'cited quotation as exact evidence, after the automated review of the app. Resolving a candidate with intent '
+        'read-concept-candidates returns its statement and evidence.'),
+    out_of_scope=[
+        'Human-reviewed or legally checked knowledge: candidates are assistant proposals after an automated review, '
+        'not approved facts.',
+        'Pages other than those the extraction batches covered; no completeness for any canton or topic is implied.',
+        'Eligibility decisions for a person, fees, processing times, or anything not quoted from the cited page.',
+        'Any country other than Switzerland; the jurisdiction is inferred from the publishing domain.',
+        'Semantic search: candidates are selected from the catalog; retrieval terms are not supported.',
+    ],
+)
 TYPE_LABELS = dict(PROCESS='Procedures', RULE='Rules and conditions', SERVICE='Services',
                    DOCUMENT='Documents and forms', ENTITY='Organizations and entities', OTHER='Other concepts')
 
@@ -204,7 +220,8 @@ def build(workdir, output, release_id):
                                           routes=[], approval_status='APPROVED', evaluation_ref=evaluation))
     catalog = seal_artifact(KnowledgeCatalog(identity=ref('concept-catalog'), release_id=rid,
                                              entries=sorted(entries, key=lambda e: e['entry_id']), context_schemas=[schema],
-                                             coverage_profiles=profiles, language_policy_ref=policy.identity))
+                                             coverage_profiles=profiles, language_policy_ref=policy.identity,
+                                             scope=dict(statements={'en': SCOPE}, provenance=[build_ref])))
     graph = seal_artifact(ResolutionGraph(identity=ref('concept-graph'), release_id=rid, plans=plans))
     release = seal_artifact(KnowledgeRelease(
         identity=ref(rid), release_id=rid, created_at=datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),

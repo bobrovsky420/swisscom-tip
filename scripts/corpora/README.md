@@ -285,6 +285,25 @@ re-running it adds parts whose hashes are new and keeps identical ones.
 ./.venv/Scripts/python.exe scripts/corpora/assemble_collection.py --output .local/mvp/residence-all-languages-2026-09-11-v2 --part part-001=.local/mvp/residence-all-languages-2026-09-11-v1/part-001 --part part-002=.local/mvp/residence-all-languages-2026-09-11-v1/part-002 --part part-003=.local/mvp/residence-all-languages-2026-09-11-v2-part-003-build
 ```
 
+## Collection v3: scope statements in every part
+
+Every part builder seals a declared scope statement into its catalog
+(`KnowledgeCatalog.scope`: an in-scope paragraph and an out-of-scope list,
+`SCOPE` in `build_expanded_pack.py` and `build_concept_pack.py`), which the MCP
+server serves verbatim in the root `get_coverage` result. Collection v3 rebuilds
+all four parts from the unchanged 2026-09-11 inputs with that statement; the
+assembler records the collection title and scope:
+
+```shell
+./.venv/Scripts/python.exe scripts/corpora/build_expanded_pack.py --intermediate .local/intermediate/hackathon-residence-all-languages-2026-09-11 --semantic .local/semantic/hackathon-residence-all-languages-2026-09-11 --output .local/mvp/residence-all-languages-2026-09-11-v3-build --release-id hackathon-residence-all-languages-2026-09-11-v3
+./.venv/Scripts/python.exe scripts/corpora/build_expanded_pack.py --intermediate .local/intermediate/hackathon-residence-recovery-2026-09-11 --semantic .local/semantic/hackathon-residence-recovery-2026-09-11 --output .local/mvp/residence-all-languages-2026-09-11-v3-part-003-build --release-id hackathon-residence-all-languages-2026-09-11-v3-part-003
+./.venv/Scripts/python.exe scripts/corpora/build_concept_pack.py --output .local/mvp/residence-all-languages-2026-09-11-v3-part-004-build --release-id hackathon-residence-all-languages-2026-09-11-v3-part-004
+./.venv/Scripts/python.exe scripts/corpora/assemble_collection.py --output .local/mvp/residence-all-languages-2026-09-11-v3 --part part-001=.local/mvp/residence-all-languages-2026-09-11-v3-build/part-001 --part part-002=.local/mvp/residence-all-languages-2026-09-11-v3-build/part-002 --part part-003=.local/mvp/residence-all-languages-2026-09-11-v3-part-003-build --part part-004=.local/mvp/residence-all-languages-2026-09-11-v3-part-004-build --title "Residence serving collection v3" --scope "All four parts rebuilt from the 2026-09-11 inputs with a sealed scope statement in every catalog." --unchanged ""
+```
+
+The v2 parts still verify: a catalog without a scope statement hashes as it
+did before the field existed.
+
 ## Assistant-authored V3 concept extraction
 
 `assistant_extraction.py` runs the knowledge-builder's `swisstip.builder.concept_cli`

@@ -77,6 +77,10 @@ class ExpandedPackTests(unittest.TestCase):
             self.assertEqual(bundle['facts'][0]['statement'],text)
             self.assertEqual(bundle['evidence'][0]['effective_source_language'],'uk')
             self.assertEqual(len(bundle['catalog']['coverage_profiles']),1)
+            scope=bundle['catalog']['scope']
+            self.assertIn('read-source-assertions',scope['statements']['en']['in_scope'])
+            self.assertTrue(any('verbatim' in item for item in scope['statements']['en']['out_of_scope']))
+            self.assertEqual(scope['provenance'][0]['artifact_id'],'expanded-build-source')
             self.assertEqual(len(bundle['graph']['plans'][0]['portions']),2)
             first,second=bundle['graph']['plans'][0]['portions']
             self.assertTrue(set(first['concept_ids']).isdisjoint(second['concept_ids']))

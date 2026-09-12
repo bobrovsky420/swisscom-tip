@@ -2,17 +2,17 @@
   "schema_version": "serving-release/v1",
   "release": {
     "schema_version": "knowledge-release/v1",
-    "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+    "release_id": "hackathon-residence-semantic-2026-09-12-v5",
     "identity": {
-      "artifact_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "artifact_id": "hackathon-residence-semantic-2026-09-12-v5",
       "version": "1",
-      "sha256": "05567446ce111cdd333b2e969f724293987a4f82e0d1a840905421c6738c040d"
+      "sha256": "cd44a1a3b125e2b1985a287ee3b8417445eb946668988eba484e81132b277a9f"
     },
-    "created_at": "2026-09-12T06:36:51Z",
+    "created_at": "2026-09-12T08:42:40Z",
     "catalog_ref": {
       "artifact_id": "mvp-catalog",
       "version": "1",
-      "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+      "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
     },
     "context_schema_refs": [
       {
@@ -449,428 +449,428 @@
       {
         "artifact_id": "mvp-evidence-permit-authority-1",
         "version": "1",
-        "sha256": "86872fb3042747e080cb575366d6117bbd7efc0543a8abf04f9ed75e23019e30"
+        "sha256": "87d70259d47a91d2dadd4b7a9f26d123f08df44714b6122a4887961f2179e94e"
       },
       {
         "artifact_id": "mvp-evidence-aig-short-stay-1",
         "version": "1",
-        "sha256": "ed5e0b679cec07a78772fea970247827f283e234d40b66efd6d43a971849860e"
+        "sha256": "f817422ae709d4057a0dacdac4964e1eade03a667a0dd2712003d16829bbbf6b"
       },
       {
         "artifact_id": "mvp-evidence-aig-short-stay-2",
         "version": "1",
-        "sha256": "554070f17ec9c2fa82d752c9d19bad1f4f3e18b817bbdd7428c888dc6bf037af"
+        "sha256": "70b62bd4a7a81f2467670b037ab0ffe08f8ff463498dc2cfa67f9309f007a12a"
       },
       {
         "artifact_id": "mvp-evidence-aig-work-permit-1",
         "version": "1",
-        "sha256": "6ea966d9367b55a98e5f2a8d07815a1e83d2d5dafe94232906de0ab8a3b27d85"
+        "sha256": "ba5110da597adf1bb64c815d76b92a7d94e3e9be41ce518d0bec7d54605ab8b3"
       },
       {
         "artifact_id": "mvp-evidence-aig-work-permit-2",
         "version": "1",
-        "sha256": "3b2cbd9ad7217ec8bae1716a29dacdc31f68e6481cd2f51996bfa7faf6488430"
+        "sha256": "75673f0c09f64824074733d3268d4b74d53c343710611aa0065360de1c25fc93"
       },
       {
         "artifact_id": "mvp-evidence-aig-registration-1",
         "version": "1",
-        "sha256": "3f52b306004093d2b8d9c788482380383333078b442ca7ad1068cdfd9a5e1b3e"
+        "sha256": "bdd745eab5f88b795df3db4f8af544e9528c657150452069734d251cbf9cda46"
       },
       {
         "artifact_id": "mvp-evidence-aig-registration-2",
         "version": "1",
-        "sha256": "ebf8bdea926089bad98d37a1773864b4823ccdca283fd531dbac1a3e9018f295"
+        "sha256": "56a13a6bb180a49f620b12c41d52fd36b423ee8eb4a6c0c6584bb49dbe3f1168"
       },
       {
         "artifact_id": "mvp-evidence-permit-l-1",
         "version": "1",
-        "sha256": "1e49325956702eafdc076f5769ce50a35ca704c8336fb4159f09b8a207c95983"
+        "sha256": "b6a19ebe2329c4de83c5d75e0119612041198baa81e1b34b8a71b27d8535b541"
       },
       {
         "artifact_id": "mvp-evidence-permit-l-2",
         "version": "1",
-        "sha256": "016de30b99b2a76bafb2f2925601f17e409d0322142fbae1a1e77e4f072b143e"
+        "sha256": "65901a35174dd13027bdad9da4f9205bafc57fdbffd93b0d6f40d9e3bc19912b"
       },
       {
         "artifact_id": "mvp-evidence-permit-b-1",
         "version": "1",
-        "sha256": "01639cc84f62eef0d2e117ca804b9c1d47bd50f0412457ff97d64549e88ef70a"
+        "sha256": "9cc050645cbe1d118f95370738e4b4d5e5858b6de8d00637e60aa894977e0088"
       },
       {
         "artifact_id": "mvp-evidence-permit-b-2",
         "version": "1",
-        "sha256": "73835486c93b7aa173d797351938a6fb3ddaf8da06f60704ff9b8b428d276f7c"
+        "sha256": "42b5e1e5d91c14f5f2559622a6b743fc06897a07b3d4cfc7c05c5bdcb625f0c5"
       },
       {
         "artifact_id": "mvp-evidence-permit-c-1",
         "version": "1",
-        "sha256": "ae9fb37aba884319d18044a8789af8a6e7f30e87025ad49a73a293978d74fff5"
+        "sha256": "105ea952d7b4f1cd14a5ab80fd627462e6d65de55ac72466badbc0339c02487c"
       },
       {
         "artifact_id": "mvp-evidence-permit-c-2",
         "version": "1",
-        "sha256": "c8b6f4865f1276e74bdf0b9ec47d7b42e1460a45b314acc63f45e6a10b920c6c"
+        "sha256": "51be12e5b658dc1a189e8e59d023226db94f5fa2a1b73c1eb8316eff64a1fa13"
       },
       {
         "artifact_id": "mvp-evidence-permit-c-3",
         "version": "1",
-        "sha256": "094620ef504f69675b96c0b5e303d75a4f9be9d523c7c293e0dd528c4704f74e"
+        "sha256": "97a6b145dc5247de80c18eeee78a8ca2f4fdaf3981cfab019549946264faa1f2"
       },
       {
         "artifact_id": "mvp-evidence-aig-study-1",
         "version": "1",
-        "sha256": "8c7f9959d258c5375e5565ccbb11b2ae67df94548ccb3076c51e0d5a4daae399"
+        "sha256": "91d72cb2e23370f4a1c0dad14e08b57d3c4874e43226958047a21c45246e7db6"
       },
       {
         "artifact_id": "mvp-evidence-aig-study-2",
         "version": "1",
-        "sha256": "fa24d13df5d6c1d9e59fae990bd4a7faddde431ea61ad0a57dd0a4d1a8e7414d"
+        "sha256": "f90d6a8d4661f11a4b90a8f43cd133c4648ef15d23f94bd2a4b9e7a6c066ac2c"
       },
       {
         "artifact_id": "mvp-evidence-integration-criteria-1",
         "version": "1",
-        "sha256": "9bf92bc71f82cc45e2e21f93fd07425ccc2894e880d06c67c12e160eb7838b8c"
+        "sha256": "a414ad2b0c0c84e32fe4f3e286fdfe30c3839d121278f82ac08a0f46241894fb"
       },
       {
         "artifact_id": "mvp-evidence-integration-criteria-2",
         "version": "1",
-        "sha256": "e7dcdd0774ca0e92360b16342cff1930abd3b8db46fba6c5a29fe8721cf71222"
+        "sha256": "58e2e6300a3f70a65dd9e20a001ffbf9735cd0ea37039e7eaf933f3a3a4c8042"
       },
       {
         "artifact_id": "mvp-evidence-family-swiss-1",
         "version": "1",
-        "sha256": "0d387cb521d140acafae00edc49d20f7583db72f7eefade40de598b8a2d8991e"
+        "sha256": "df70fbe6324ae84a40690e56cd13d4300678d6c496bbbb426656f1127819c9ae"
       },
       {
         "artifact_id": "mvp-evidence-family-c-1",
         "version": "1",
-        "sha256": "42eb2d007811822a3e786c41990713068aa2313e251943eba23de46642c6bc99"
+        "sha256": "63197cf17b283e858cd782137f6b1c001c9883e2588a81c97f5ec45a8d8cd026"
       },
       {
         "artifact_id": "mvp-evidence-family-c-2",
         "version": "1",
-        "sha256": "0d4fadf2806ae81ab5efaec78df21970ca0e091bdf7d8ebf096be626220ba016"
+        "sha256": "c6d45bdeef16ef249b5a5f2e7c80965659d907b5c343c8407e4941cd3b15e8f1"
       },
       {
         "artifact_id": "mvp-evidence-family-b-1",
         "version": "1",
-        "sha256": "830b89ac46f5a9f5173d48f6e556d26c714555ac0c48af6ba40174398406a882"
+        "sha256": "3fe68573de29b49a78080d04c5098c8be1c9dad13312a9bd4f821bcfba8e3c8a"
       },
       {
         "artifact_id": "mvp-evidence-family-b-2",
         "version": "1",
-        "sha256": "97857c472c97a5c66dac3abdfcd9a5663c9d75e200c9f4016e8dfd788745035b"
+        "sha256": "aa398cc6530da3f6673ea7672907978956557323985416a002e47812e849bbdd"
       },
       {
         "artifact_id": "mvp-evidence-family-deadlines-1",
         "version": "1",
-        "sha256": "0d8ca307880dbc87e029f8b8d9032b621d5ba32ca6882dc970fb0660525ec357"
+        "sha256": "4f7d8b560f1c0eec304aef33aad7221a7165bd302e62073bd3b105cfd90fb804"
       },
       {
         "artifact_id": "mvp-evidence-family-deadlines-2",
         "version": "1",
-        "sha256": "05c2bc9306ca7b8ce3165271096aa001c2722dc907601fd88a957b846e905a9f"
+        "sha256": "0c78757527acd30c62aad6403c53d06d0ff383d525559e717e684e7e02f1f90a"
       },
       {
         "artifact_id": "mvp-evidence-family-deadlines-3",
         "version": "1",
-        "sha256": "e53736cfc2ac3e3c04f19917249ec96cb113133f42d605bd654e679e5e40c99b"
+        "sha256": "0a2fe7ccb50bb10c0c2564f623490b1ce5749f00425a102bc5af4f4b5408c2e6"
       },
       {
         "artifact_id": "mvp-evidence-family-separation-1",
         "version": "1",
-        "sha256": "893f16688de622032691c0dd0fe90b91305e3af6a9c5c653452e4d666d449ab5"
+        "sha256": "a1b485a921eea45bc534c982e05b51a770eab233f81c9cdf363c12802fa81fc9"
       },
       {
         "artifact_id": "mvp-evidence-canton-change-1",
         "version": "1",
-        "sha256": "4e389730866b6c913e2e83eed4db9416438e9f07896526106de06b0d3fec5203"
+        "sha256": "e5b762a3b844c5c318e0b06d67e2b309483e8639a4ef3e1bc6a059d5f5f003a1"
       },
       {
         "artifact_id": "mvp-evidence-canton-change-2",
         "version": "1",
-        "sha256": "588037e73a1e80df1bb890dc02a427cef3db8ddccc74dfdf5548e039af31215b"
+        "sha256": "f6d0953d0b635a0244243ebe5fea0af9acf7d1e5d507f1bdcd3a551adaa2bd55"
       },
       {
         "artifact_id": "mvp-evidence-third-country-work-1",
         "version": "1",
-        "sha256": "ff008aeae31d23a063bd76e11a405d2da9936d931509d469d2a0c8f8cd8c0496"
+        "sha256": "eaafd8e798af879f31e2b8ea70f1786fefbc5656b1ec660e5d95ef01470ef239"
       },
       {
         "artifact_id": "mvp-evidence-third-country-work-2",
         "version": "1",
-        "sha256": "b31c3a6eef6158c5375fd9becaf592f7dc4006b6f704acfaf32633b258c7ff6c"
+        "sha256": "e2ef6ef82c395f92132e46819820dccde762e919992f270d66055b86f5c701a9"
       },
       {
         "artifact_id": "mvp-evidence-eu-short-employment-1",
         "version": "1",
-        "sha256": "a27890d4c63c1526b131b5ecbee00f947789ad0fbfa28e32220dbf750f189bbc"
+        "sha256": "8daea501d95d9dfc1540277ef5cdd7e62f65242bb5420e1f4334d713f4505c30"
       },
       {
         "artifact_id": "mvp-evidence-eu-short-employment-2",
         "version": "1",
-        "sha256": "aa14aac5dd9f0c41e77c3dadc9dfeacaeaf5b01926233a64a6951bfd60d95685"
+        "sha256": "a6f82e93b2d4cbdfdb2ebca87ae4a1edf5a430086e20dbcf4fae2d9ec4c64c8b"
       },
       {
         "artifact_id": "mvp-evidence-notification-responsibility-1",
         "version": "1",
-        "sha256": "68822425754538fb1ad8fb8477484a916e8bb90c4a3d82b0cd91815cb1def061"
+        "sha256": "087dce3581335fab962158a116fdd556062351af522bf70a26926ad6448e926d"
       },
       {
         "artifact_id": "mvp-evidence-posted-service-notification-1",
         "version": "1",
-        "sha256": "899fb0b8d9085a877be0ae4ed7bf151413a878291fb588bd36dee08c7717f480"
+        "sha256": "e6af18c9a77a8ae3292ead090da2b32cd8c242ad658b67f272693aaaa31fa72a"
       },
       {
         "artifact_id": "mvp-evidence-posted-service-notification-2",
         "version": "1",
-        "sha256": "9d90922ab98df5b9edaa18aee22dafda2183b81f444b303d4ce9f2034cb6def9"
+        "sha256": "9ad6c8f4909134df890ea7ab24fc956101b2289e5c4926dbb0d124bc6c94e601"
       },
       {
         "artifact_id": "mvp-evidence-uk-new-employment-1",
         "version": "1",
-        "sha256": "d4c3ac694f27d549738630837f3feba55746b26b2c0944bc76ef1d5cd019d3fa"
+        "sha256": "084108c0322e94b72ae3a1d0e9163df328f8869c33a769c317e9f0dae0d9f6dd"
       },
       {
         "artifact_id": "mvp-evidence-uk-new-employment-2",
         "version": "1",
-        "sha256": "e5765312c0d317cdfc78b70a1ba51875c9a2bd22f419b3cfd7c8fc09d55e055c"
+        "sha256": "c92be4aeefcdada83153b4535957ee8ad91835342913ee51180ddd3ddb10016c"
       },
       {
         "artifact_id": "mvp-evidence-uk-new-employment-3",
         "version": "1",
-        "sha256": "d6adf19e2ee5dd33e615bf62c2a83e183feeccd4f6caee62f689973374cf9359"
+        "sha256": "dd9e8da5fd801229d5360a5070d082be39b33647145b44cc9563f1d9418f6189"
       },
       {
         "artifact_id": "mvp-evidence-biometric-permit-1",
         "version": "1",
-        "sha256": "5d49c0be206c8f884d5cee978aec4205b7e41c543954b74a512212deab0dfd86"
+        "sha256": "5c8b2ea1d6751ce694a8b49288a975e532a92e615b37321c1be01d07f249cbe6"
       },
       {
         "artifact_id": "mvp-evidence-biometric-permit-2",
         "version": "1",
-        "sha256": "9b9dfd0cd8f475760f5bfdee4ca48e3d4c1d8a6797f6d3c9d0447b3819f331ee"
+        "sha256": "500df670b03ea57c9bd79600f1c65018deca667404dad851e8877958f0b250b8"
       },
       {
         "artifact_id": "mvp-evidence-language-evidence-1",
         "version": "1",
-        "sha256": "7c1f60bbdb62336a61f23f15f8dc45d1b2c253e2b095d0b41d04072f253bd1b9"
+        "sha256": "f77960f8ee4ebe979d478836a769352eec5995d4b57d060626c22917742cd5ec"
       },
       {
         "artifact_id": "mvp-evidence-language-evidence-2",
         "version": "1",
-        "sha256": "64da3195c677c7267cb209ec223537ecae3d90f7742ddc25827a0bc1bab3af91"
+        "sha256": "eded14ebfa862fdab8779e37f5c1a3e0975d545b2625b069a4fbac1bc4d87150"
       },
       {
         "artifact_id": "mvp-evidence-social-assistance-review-1",
         "version": "1",
-        "sha256": "8e150d4865e269c30034aa4609155255599dd3a1f490dc56b4d8280ff7988920"
+        "sha256": "149bef206b5d9e4c54def8606547bf279d34bcea715d5a363d69df105da5ab2c"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-registration-1",
         "version": "1",
-        "sha256": "276d531a026a39bb3af42b01f04f32f36850bb049091e900867aad9bfe1727ed"
+        "sha256": "12c3948f4560edf2a913f1d9ebad66ecb8414677d919d0d03c7a5edb7f38aae8"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-registration-2",
         "version": "1",
-        "sha256": "66fda4d0d569def3c8cf103a250fbee6b48b97c5083327533b1c49f5adf659ef"
+        "sha256": "adc8d12f7d6302d8dfe83d0867235a277f6b5d2073a9e8ab15f24a219f0c3d34"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-l-1",
         "version": "1",
-        "sha256": "8a9d39de333ffb9ace1b26f3e40378ee502c93c440b6969bb1a618b11e4f92d1"
+        "sha256": "3ef2dad08d4aa8a22fa09bd9e4669ebca6b34c0767f61f05264d26584e655733"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-b-1",
         "version": "1",
-        "sha256": "3d0cc9261302551b19233d16fe562cf7b720df47c5e1c6f6bc224367ffc6cb3a"
+        "sha256": "540e842ceb225b44cdc383c05aef54dc9cb5f874d7fc90f0af858672bb33e0d1"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-self-employment-1",
         "version": "1",
-        "sha256": "c800c174c3aad7abc18a396cfeba5f8c6485ddb1b1d699e663b06979abe09786"
+        "sha256": "248c793eba945089129e802844a8a4be44c51557a4571d47fae7a006f5d9c72f"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-nonworking-1",
         "version": "1",
-        "sha256": "6aa788035c097363f3d0fb58cc4e65869c49906ef821d3fb93d813fe8dddc6a7"
+        "sha256": "522935c586f32e65a2af21a507c2c2bcda7d9d99fef80b7cd79eddf10fcc3a3c"
       },
       {
         "artifact_id": "mvp-evidence-zh-eu-family-documents-1",
         "version": "1",
-        "sha256": "4e19faec820e0d20ed7ae461496cb6a00a1b6718878547e22964993cd2e3f8b3"
+        "sha256": "afbd66897087bad06eca1bf6b1edb233b62f9d39741d1d8dc78e7946048442c2"
       },
       {
         "artifact_id": "mvp-evidence-zh-third-country-retirement-1",
         "version": "1",
-        "sha256": "5f824bbfe0a11cfb0381fab05ede4553c8ba1567a7c3c2c1bdd7723f0874e68e"
+        "sha256": "0ead03f79f3b80e03a37eca8da9c6874e65bdd865f9e6f9c1f4a07f9b4c47cb7"
       },
       {
         "artifact_id": "mvp-evidence-city-zurich-arrival-1",
         "version": "1",
-        "sha256": "9c462824640887977670c6700845d19de31115238188eddccd289ef4eacf6884"
+        "sha256": "430ca962901acd989ff9026a779ca0ed61341b8af8d392efc40764d47489fa04"
       },
       {
         "artifact_id": "mvp-evidence-city-zurich-arrival-documents-1",
         "version": "1",
-        "sha256": "2a9fa52dc2ed50d9b19d1c4fab08f98be12bcbc476c7c41fd9775a4ade82806b"
+        "sha256": "dc916f2ff750a7f4448e055ceeb88e81843aca949a06b4e7df909cfda2c95649"
       },
       {
         "artifact_id": "mvp-evidence-eu-employment-registration-deadline-1",
         "version": "1",
-        "sha256": "7e678c4b22c978f4b2f5ae3108371287ae9f65a643ba88f7233ea2c9a4c27a24"
+        "sha256": "ed44590fc0c974d4228d4d2688aadf59d9b6a6431b43d2c5d4527fe5d24c13a7"
       },
       {
         "artifact_id": "mvp-evidence-eu-employment-registration-deadline-2",
         "version": "1",
-        "sha256": "d1273665b8cff5698d96a470eeee52b77ce8412e46393add12628e2ea5e255a4"
+        "sha256": "4eb4ed4dac58b536165be5d9525258e119720bc6f1010d559c5cd21b8107b6a0"
       },
       {
         "artifact_id": "mvp-evidence-health-insurance-enrolment-1",
         "version": "1",
-        "sha256": "a8be1fdd18b33578c18320098bc3cbc1f52319526520bd39665674a8cf24aad8"
+        "sha256": "cfa288e789806c68e14dad9304c93368b2d679f081ae01279fe914ec580a1208"
       },
       {
         "artifact_id": "mvp-evidence-health-insurance-enrolment-2",
         "version": "1",
-        "sha256": "4cbc005e8a347db08e79a4b98572c8d4fae1ea958fdf085e723191c474e7f7f5"
+        "sha256": "3dd638ed0c0aa19a0424ad1e83e591cb4279e91f76ec44ff4e6a3fa4917d775a"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ag-1",
         "version": "1",
-        "sha256": "80a862f9e517be54cddb95efdc3dc15db10043aa82770fa9222a4b4d95e5ca05"
+        "sha256": "a2f339875ae6c26c1658a4cac16ab9820d6b3fe5759d8987de73182b1f8c2e58"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ai-1",
         "version": "1",
-        "sha256": "99b839cdb2a47f66cb4ac5a925667dd1047472e2e42192155f760c8495760685"
+        "sha256": "7eddaf5757fa03b982937904381eceab8f8710b8ba67e20d45e6e5d168d0d589"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ar-1",
         "version": "1",
-        "sha256": "3d1857e53aa798656405412475e2e657b10cbf4e4ad58fd4c5ad8ba2abba58c7"
+        "sha256": "31c6981b120c688d5a95754a083ef2a04c30afe00d964f5a0d6ef418b294faa9"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-be-1",
         "version": "1",
-        "sha256": "f8fd2d6dff7c64347bcbb75777d49f1b0f5fd873d415b562dea39e3f082a7baa"
+        "sha256": "9aaa952138b24443442d545aa34d9c6d18ebe6275e4d1170e8ad48763ebf8961"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-bl-1",
         "version": "1",
-        "sha256": "cbd58c682cb142de673782b1123c79188ea4fccc837ba3fd9875c7b5438d9192"
+        "sha256": "d903d7ccc88179260f37ad47eadf6ba2c39fb9033231c69037be5d5cc7f79202"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-bs-1",
         "version": "1",
-        "sha256": "d9f2c2d0916b10d98ff09321662dcb1ec7262590dab91df93840225b96c7f5df"
+        "sha256": "9a4a6e34ba8d2e0ee07ebadb9a6a9812d40b84908a2e60349523ef23f6a19a8a"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-fr-1",
         "version": "1",
-        "sha256": "23e6ae881a1213eb01bf9a0fd5134adb3a16272e2219317f98e7bccdda9326f7"
+        "sha256": "9922d3d8cf075159a9122afab62f09fed6326e382301fbee7489d99d0bd40e40"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ge-1",
         "version": "1",
-        "sha256": "1726eebde3bd34224084fdf8ae5a6c83cbfe852bcdacf0e284e86c7003973eef"
+        "sha256": "8a98332aeac4ad91fdeff7c7931c73c3b46487298e6b69de5e649b2f109fcaad"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-gl-1",
         "version": "1",
-        "sha256": "b4c4362b38680a889b530f87cf9ce40dec2df9cb11ffa4dc1225318b91cbe856"
+        "sha256": "87e56df740a7476f672f06a05b8bf238c192bcb90ef9c9a3be19398ae7990ca2"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-gr-1",
         "version": "1",
-        "sha256": "78ff113860215e1b97c2263ca9882b9de9273e251cf6b76ad91e7758c0c68667"
+        "sha256": "51968378baee1c97cf00af456bd7bfeb1bf1b1a3721e15831f36f0820d86b49c"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ju-1",
         "version": "1",
-        "sha256": "979f101032892f3142fd2e4ebd15ebd2cc941e4e9da1fb09d10ccedefa97b8ce"
+        "sha256": "d8e2fba22fdf141347041b083a2e4ce8a3d9818a8db4c8f52730080a41d1625b"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-lu-1",
         "version": "1",
-        "sha256": "efb98f475199f2f27f5dc8c2b81258ae1c00726ece02ec416168b35064ce259f"
+        "sha256": "c106f3db00b7280a712aacf5a9526ec60abffd5d2093c94e664bb6974bca8501"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ne-1",
         "version": "1",
-        "sha256": "e7002914520fad804a76bfe5354f3fbd794c0ab8e30151704f715fc3c2ced236"
+        "sha256": "bb50b4e0e08bb56fb8db79a7fe8146d3180d5c0e9a4763b34e7051315b7b66fe"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-nw-1",
         "version": "1",
-        "sha256": "94af1cc0975b2dc444060ab7e592e902d1be8d8ca318c103ce8de255e765c0e4"
+        "sha256": "7975ea64a822c23078c7854b222448fcbee6cf767f3fdabcd3877ff3c005b7c5"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ow-1",
         "version": "1",
-        "sha256": "ab4fcb90127451823b4be1fe7324c21c3ce7353f3ca666222a7956fd59d2bbf3"
+        "sha256": "b81fe7f0e72b78ae4c2c77341f17a02c54fd4026073dde65e275e9bb0aef4e9a"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sg-1",
         "version": "1",
-        "sha256": "e4f93ac012dba00a8a6289b215653664c4ec8e213e8736f93ac3cbb44358fcc3"
+        "sha256": "fdf97f6af22afb48d7c8a9e9cf23e96e1ac33d7e6b95f7da29410607e3401091"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sh-1",
         "version": "1",
-        "sha256": "cb74dec5e81ff3a1603a2beb96caef451555b988a98af07aca303d68dc5f5bcd"
+        "sha256": "b10b695a8dbb69611141db14cd1e30a969fb64383e88e662fae338966209cdb8"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-so-1",
         "version": "1",
-        "sha256": "0da8062b786c0be0ee82aacabec107c5f27dadeeb9771a9eb08af68a3280ccec"
+        "sha256": "d53bf8bfdeeebab1587a6e508d600d67521ae39a297f84496a98c89652abc136"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sz-1",
         "version": "1",
-        "sha256": "eaca95cf6831a991e1833106ea2ac585c47e981021ca5af5ca65db70a81f8518"
+        "sha256": "3569e0f9e9ec35279e4395e2512b776a41b22ee600bd4897a6deacd4b8e8531c"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-tg-1",
         "version": "1",
-        "sha256": "3afa9b747bbfadb749d883e4fb7f3c23b876fb223af0da737ce8048d27cc4d4a"
+        "sha256": "2d3dd8ff61afb3f3fabd03e1083d239826c283effd856f446e0152eea49edac1"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ti-1",
         "version": "1",
-        "sha256": "018cd4ef4cdf80920e2ce50a5d9238b6d611d82407ab468d08b35461fb8431fb"
+        "sha256": "36163796c804895d46a43c332a919f5a22905591a375478003acc23c8ee9a723"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ur-1",
         "version": "1",
-        "sha256": "a4a9c5e282cebc2972f32a9f4da7b882f9039f0817545d3d5a9a2fbe794e9fc4"
+        "sha256": "fb9a280ccd53982d8421101ae7f5add8e669c37a006e6ceb45805bfdf16c246f"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-vd-1",
         "version": "1",
-        "sha256": "bdbc3c90746acecc6750c054afd0cdd361efdc4b220ce54cf217f8e5b99fb1bc"
+        "sha256": "bdd2dc4f7cf07e11a5048bcf049df6ab4b798976727839af110d8a0eb0bab625"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-vs-1",
         "version": "1",
-        "sha256": "870bbca6474bdb9f94f5a913f43d8a6b20d4a77b0fe1a2eab60ac8603cdc06ad"
+        "sha256": "7fc75dfe933dae2c5bf84492f72471d058d64bc641fa6acaedabb75ac53f93bf"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-zg-1",
         "version": "1",
-        "sha256": "81fe174438d3d9160429a9c6a0697cee91e0936ace4b66080037669d6e7cd4bd"
+        "sha256": "036c4c9c9f609fdd8f4bce5b1546c1becceb5502b7346023d7219e353003775d"
       },
       {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-zh-1",
         "version": "1",
-        "sha256": "b2e45d10773fcb6e1bae2d9c01957a550a850f2f221c05f731fd88ece15d2e36"
+        "sha256": "1ba481ca6c9e381ffa2fde5ad91173328ddb7b46ba89199f499a84a45ae08055"
       }
     ],
     "concept_graph_ref": {
       "artifact_id": "mvp-graph",
       "version": "1",
-      "sha256": "76f2d17d75439f17a0e542f9ae6104c13f8d3f7f7b08ebe390a4829ce0f03810"
+      "sha256": "f3f755fd2fa22aab8b5b2b140e8481b19313ea1ecc0abb077d6acca8d14e7f98"
     },
     "terminology_refs": [],
     "fact_refs": [
@@ -1403,7 +1403,7 @@
       {
         "artifact_id": "mvp-contract-schema",
         "version": "1",
-        "sha256": "455c78042e715c4720a8e8b0dc9cf7ab546e4152025ece57eab85b6bed589d5e"
+        "sha256": "ffb5420e52af369e7f0811c13d46d72840264e600e541fcedc7c14cd8f69e20a"
       }
     ],
     "provider_configuration_ref": {
@@ -1427,9 +1427,9 @@
     "identity": {
       "artifact_id": "mvp-catalog",
       "version": "1",
-      "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+      "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
     },
-    "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+    "release_id": "hackathon-residence-semantic-2026-09-12-v5",
     "entries": [
       {
         "schema_version": "catalog-entry/v1",
@@ -1445,7 +1445,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1469,7 +1469,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1493,7 +1493,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1517,7 +1517,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1541,7 +1541,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1565,7 +1565,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1589,7 +1589,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1613,7 +1613,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1637,7 +1637,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1661,7 +1661,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1685,7 +1685,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1709,7 +1709,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1733,7 +1733,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1757,7 +1757,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1781,7 +1781,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1805,7 +1805,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1829,7 +1829,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1853,7 +1853,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1877,7 +1877,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1901,7 +1901,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1925,7 +1925,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1949,7 +1949,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1973,7 +1973,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -1997,7 +1997,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2021,7 +2021,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2045,7 +2045,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2069,7 +2069,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2093,7 +2093,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2117,7 +2117,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2141,7 +2141,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2165,7 +2165,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2189,7 +2189,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2213,7 +2213,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2237,7 +2237,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2261,7 +2261,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2285,7 +2285,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2309,7 +2309,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -2333,7 +2333,7 @@
               {
                 "artifact_id": "mvp-curation-source",
                 "version": "1",
-                "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+                "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
               }
             ]
           }
@@ -3423,11 +3423,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-permit-authority",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3487,11 +3487,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-aig-short-stay",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3552,11 +3552,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-aig-work-permit",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3623,11 +3623,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-aig-registration",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3687,11 +3687,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-permit-l",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3752,11 +3752,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-permit-b",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3816,11 +3816,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-permit-c",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3880,11 +3880,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-aig-study",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -3950,11 +3950,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-integration-criteria",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4014,11 +4014,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-family-swiss",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4085,11 +4085,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-family-c",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4155,11 +4155,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-family-b",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4225,11 +4225,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-family-deadlines",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4290,11 +4290,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-family-separation",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4355,11 +4355,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-canton-change",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4426,11 +4426,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-third-country-work",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4497,11 +4497,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-eu-short-employment",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4568,11 +4568,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-notification-responsibility",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4632,11 +4632,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-posted-service-notification",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4697,11 +4697,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-uk-new-employment",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4769,11 +4769,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-biometric-permit",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4833,11 +4833,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-language-evidence",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4898,11 +4898,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-social-assistance-review",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -4962,11 +4962,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-registration",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5032,11 +5032,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-l",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5102,11 +5102,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-b",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5172,11 +5172,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-self-employment",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5242,11 +5242,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-nonworking",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5312,11 +5312,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-eu-family-documents",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5383,11 +5383,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-zh-third-country-retirement",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5453,11 +5453,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-city-zurich-arrival",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5523,11 +5523,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-city-zurich-arrival-documents",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5593,11 +5593,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-eu-employment-registration-deadline",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5664,11 +5664,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-health-insurance-enrolment",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5735,11 +5735,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ag",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5799,11 +5799,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ai",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5863,11 +5863,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ar",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5927,11 +5927,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-be",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -5991,11 +5991,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-bl",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6055,11 +6055,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-bs",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6119,11 +6119,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-fr",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6183,11 +6183,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ge",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6247,11 +6247,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-gl",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6311,11 +6311,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-gr",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6375,11 +6375,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ju",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6439,11 +6439,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-lu",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6503,11 +6503,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ne",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6567,11 +6567,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-nw",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6631,11 +6631,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ow",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6695,11 +6695,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-sg",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6759,11 +6759,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-sh",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6823,11 +6823,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-so",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6887,11 +6887,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-sz",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -6951,11 +6951,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-tg",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7015,11 +7015,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ti",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7079,11 +7079,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-ur",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7143,11 +7143,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-vd",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7207,11 +7207,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-vs",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7271,11 +7271,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-zg",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7335,11 +7335,11 @@
       {
         "schema_version": "coverage-profile/v1",
         "coverage_profile_id": "mvp-profile-cantonal-migration-contact-zh",
-        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v5",
         "catalog_ref": {
           "artifact_id": "mvp-catalog",
           "version": "1",
-          "sha256": "9b6a8891b5e9efdcf75cd2358f91267c47b5b86f2c1586c764d34aa260701ebf"
+          "sha256": "48c3e6ff06ac35b0ca25659eba290dcfc38dc249fa3be00e2e6a46b3c78f8cc6"
         },
         "knowledge_space_id": "hackathon",
         "domain_id": "immigration",
@@ -7397,6 +7397,28 @@
         "approval_status": "APPROVED"
       }
     ],
+    "scope": {
+      "schema_version": "scope-statement/v1",
+      "statements": {
+        "en": {
+          "in_scope": "Residence permits and registration for foreign nationals in Switzerland: the federal Foreign Nationals and Integration Act (AIG) and State Secretariat for Migration (SEM) guidance on permit types, registration deadlines, family reunification, integration criteria and short-term work notification; Canton Zurich and City of Zurich procedures for EU/EFTA and third-country nationals; the migration-office contact of every canton; and the compulsory health-insurance enrolment deadline.",
+          "out_of_scope": [
+            "Any topic other than residence permits and registration: taxes, driving licences, voting, schooling, naturalisation, asylum, entry visas, and social insurance beyond the health-insurance enrolment deadline.",
+            "Fees, processing times and appointment availability for any permit.",
+            "Procedures of cantons other than Zurich beyond their migration-office contact, and municipal procedures outside the City of Zurich; federal rules still apply there and are served with a caveat.",
+            "Eligibility decisions for a specific person: the published rules route population groups to pre-authored statements and do not compute outcomes.",
+            "Any country other than Switzerland, including German and Austrian rules that look similar."
+          ]
+        }
+      },
+      "provenance": [
+        {
+          "artifact_id": "mvp-curation-source",
+          "version": "1",
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
+        }
+      ]
+    },
     "language_policy_ref": {
       "artifact_id": "mvp-language-policy",
       "version": "1",
@@ -7437,9 +7459,9 @@
     "identity": {
       "artifact_id": "mvp-graph",
       "version": "1",
-      "sha256": "76f2d17d75439f17a0e542f9ae6104c13f8d3f7f7b08ebe390a4829ce0f03810"
+      "sha256": "f3f755fd2fa22aab8b5b2b140e8481b19313ea1ecc0abb077d6acca8d14e7f98"
     },
-    "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+    "release_id": "hackathon-residence-semantic-2026-09-12-v5",
     "plans": [
       {
         "coverage_profile_id": "mvp-profile-permit-authority",
@@ -8768,10 +8790,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-authority-1",
         "version": "1",
-        "sha256": "86872fb3042747e080cb575366d6117bbd7efc0543a8abf04f9ed75e23019e30"
+        "sha256": "87d70259d47a91d2dadd4b7a9f26d123f08df44714b6122a4887961f2179e94e"
       },
       "evidence_id": "mvp-evidence-permit-authority-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-02369c71495279e06a62",
         "version": "1",
@@ -8817,7 +8839,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -8831,10 +8853,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-short-stay-1",
         "version": "1",
-        "sha256": "ed5e0b679cec07a78772fea970247827f283e234d40b66efd6d43a971849860e"
+        "sha256": "f817422ae709d4057a0dacdac4964e1eade03a667a0dd2712003d16829bbbf6b"
       },
       "evidence_id": "mvp-evidence-aig-short-stay-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -8878,7 +8900,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -8892,10 +8914,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-short-stay-2",
         "version": "1",
-        "sha256": "554070f17ec9c2fa82d752c9d19bad1f4f3e18b817bbdd7428c888dc6bf037af"
+        "sha256": "70b62bd4a7a81f2467670b037ab0ffe08f8ff463498dc2cfa67f9309f007a12a"
       },
       "evidence_id": "mvp-evidence-aig-short-stay-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -8939,7 +8961,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -8953,10 +8975,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-work-permit-1",
         "version": "1",
-        "sha256": "6ea966d9367b55a98e5f2a8d07815a1e83d2d5dafe94232906de0ab8a3b27d85"
+        "sha256": "ba5110da597adf1bb64c815d76b92a7d94e3e9be41ce518d0bec7d54605ab8b3"
       },
       "evidence_id": "mvp-evidence-aig-work-permit-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9000,7 +9022,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9014,10 +9036,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-work-permit-2",
         "version": "1",
-        "sha256": "3b2cbd9ad7217ec8bae1716a29dacdc31f68e6481cd2f51996bfa7faf6488430"
+        "sha256": "75673f0c09f64824074733d3268d4b74d53c343710611aa0065360de1c25fc93"
       },
       "evidence_id": "mvp-evidence-aig-work-permit-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9061,7 +9083,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9075,10 +9097,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-registration-1",
         "version": "1",
-        "sha256": "3f52b306004093d2b8d9c788482380383333078b442ca7ad1068cdfd9a5e1b3e"
+        "sha256": "bdd745eab5f88b795df3db4f8af544e9528c657150452069734d251cbf9cda46"
       },
       "evidence_id": "mvp-evidence-aig-registration-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9122,7 +9144,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9136,10 +9158,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-registration-2",
         "version": "1",
-        "sha256": "ebf8bdea926089bad98d37a1773864b4823ccdca283fd531dbac1a3e9018f295"
+        "sha256": "56a13a6bb180a49f620b12c41d52fd36b423ee8eb4a6c0c6584bb49dbe3f1168"
       },
       "evidence_id": "mvp-evidence-aig-registration-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9183,7 +9205,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9197,10 +9219,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-l-1",
         "version": "1",
-        "sha256": "1e49325956702eafdc076f5769ce50a35ca704c8336fb4159f09b8a207c95983"
+        "sha256": "b6a19ebe2329c4de83c5d75e0119612041198baa81e1b34b8a71b27d8535b541"
       },
       "evidence_id": "mvp-evidence-permit-l-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9244,7 +9266,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9258,10 +9280,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-l-2",
         "version": "1",
-        "sha256": "016de30b99b2a76bafb2f2925601f17e409d0322142fbae1a1e77e4f072b143e"
+        "sha256": "65901a35174dd13027bdad9da4f9205bafc57fdbffd93b0d6f40d9e3bc19912b"
       },
       "evidence_id": "mvp-evidence-permit-l-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9305,7 +9327,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9319,10 +9341,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-b-1",
         "version": "1",
-        "sha256": "01639cc84f62eef0d2e117ca804b9c1d47bd50f0412457ff97d64549e88ef70a"
+        "sha256": "9cc050645cbe1d118f95370738e4b4d5e5858b6de8d00637e60aa894977e0088"
       },
       "evidence_id": "mvp-evidence-permit-b-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9366,7 +9388,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9380,10 +9402,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-b-2",
         "version": "1",
-        "sha256": "73835486c93b7aa173d797351938a6fb3ddaf8da06f60704ff9b8b428d276f7c"
+        "sha256": "42b5e1e5d91c14f5f2559622a6b743fc06897a07b3d4cfc7c05c5bdcb625f0c5"
       },
       "evidence_id": "mvp-evidence-permit-b-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9427,7 +9449,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9441,10 +9463,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-c-1",
         "version": "1",
-        "sha256": "ae9fb37aba884319d18044a8789af8a6e7f30e87025ad49a73a293978d74fff5"
+        "sha256": "105ea952d7b4f1cd14a5ab80fd627462e6d65de55ac72466badbc0339c02487c"
       },
       "evidence_id": "mvp-evidence-permit-c-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9488,7 +9510,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9502,10 +9524,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-c-2",
         "version": "1",
-        "sha256": "c8b6f4865f1276e74bdf0b9ec47d7b42e1460a45b314acc63f45e6a10b920c6c"
+        "sha256": "51be12e5b658dc1a189e8e59d023226db94f5fa2a1b73c1eb8316eff64a1fa13"
       },
       "evidence_id": "mvp-evidence-permit-c-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9549,7 +9571,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9563,10 +9585,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-permit-c-3",
         "version": "1",
-        "sha256": "094620ef504f69675b96c0b5e303d75a4f9be9d523c7c293e0dd528c4704f74e"
+        "sha256": "97a6b145dc5247de80c18eeee78a8ca2f4fdaf3981cfab019549946264faa1f2"
       },
       "evidence_id": "mvp-evidence-permit-c-3",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9610,7 +9632,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9624,10 +9646,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-study-1",
         "version": "1",
-        "sha256": "8c7f9959d258c5375e5565ccbb11b2ae67df94548ccb3076c51e0d5a4daae399"
+        "sha256": "91d72cb2e23370f4a1c0dad14e08b57d3c4874e43226958047a21c45246e7db6"
       },
       "evidence_id": "mvp-evidence-aig-study-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9671,7 +9693,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9685,10 +9707,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-aig-study-2",
         "version": "1",
-        "sha256": "fa24d13df5d6c1d9e59fae990bd4a7faddde431ea61ad0a57dd0a4d1a8e7414d"
+        "sha256": "f90d6a8d4661f11a4b90a8f43cd133c4648ef15d23f94bd2a4b9e7a6c066ac2c"
       },
       "evidence_id": "mvp-evidence-aig-study-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9732,7 +9754,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9746,10 +9768,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-integration-criteria-1",
         "version": "1",
-        "sha256": "9bf92bc71f82cc45e2e21f93fd07425ccc2894e880d06c67c12e160eb7838b8c"
+        "sha256": "a414ad2b0c0c84e32fe4f3e286fdfe30c3839d121278f82ac08a0f46241894fb"
       },
       "evidence_id": "mvp-evidence-integration-criteria-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9793,7 +9815,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9807,10 +9829,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-integration-criteria-2",
         "version": "1",
-        "sha256": "e7dcdd0774ca0e92360b16342cff1930abd3b8db46fba6c5a29fe8721cf71222"
+        "sha256": "58e2e6300a3f70a65dd9e20a001ffbf9735cd0ea37039e7eaf933f3a3a4c8042"
       },
       "evidence_id": "mvp-evidence-integration-criteria-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9854,7 +9876,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9868,10 +9890,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-swiss-1",
         "version": "1",
-        "sha256": "0d387cb521d140acafae00edc49d20f7583db72f7eefade40de598b8a2d8991e"
+        "sha256": "df70fbe6324ae84a40690e56cd13d4300678d6c496bbbb426656f1127819c9ae"
       },
       "evidence_id": "mvp-evidence-family-swiss-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9915,7 +9937,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9929,10 +9951,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-c-1",
         "version": "1",
-        "sha256": "42eb2d007811822a3e786c41990713068aa2313e251943eba23de46642c6bc99"
+        "sha256": "63197cf17b283e858cd782137f6b1c001c9883e2588a81c97f5ec45a8d8cd026"
       },
       "evidence_id": "mvp-evidence-family-c-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -9976,7 +9998,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -9990,10 +10012,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-c-2",
         "version": "1",
-        "sha256": "0d4fadf2806ae81ab5efaec78df21970ca0e091bdf7d8ebf096be626220ba016"
+        "sha256": "c6d45bdeef16ef249b5a5f2e7c80965659d907b5c343c8407e4941cd3b15e8f1"
       },
       "evidence_id": "mvp-evidence-family-c-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10037,7 +10059,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10051,10 +10073,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-b-1",
         "version": "1",
-        "sha256": "830b89ac46f5a9f5173d48f6e556d26c714555ac0c48af6ba40174398406a882"
+        "sha256": "3fe68573de29b49a78080d04c5098c8be1c9dad13312a9bd4f821bcfba8e3c8a"
       },
       "evidence_id": "mvp-evidence-family-b-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10098,7 +10120,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10112,10 +10134,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-b-2",
         "version": "1",
-        "sha256": "97857c472c97a5c66dac3abdfcd9a5663c9d75e200c9f4016e8dfd788745035b"
+        "sha256": "aa398cc6530da3f6673ea7672907978956557323985416a002e47812e849bbdd"
       },
       "evidence_id": "mvp-evidence-family-b-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10159,7 +10181,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10173,10 +10195,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-deadlines-1",
         "version": "1",
-        "sha256": "0d8ca307880dbc87e029f8b8d9032b621d5ba32ca6882dc970fb0660525ec357"
+        "sha256": "4f7d8b560f1c0eec304aef33aad7221a7165bd302e62073bd3b105cfd90fb804"
       },
       "evidence_id": "mvp-evidence-family-deadlines-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10220,7 +10242,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10234,10 +10256,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-deadlines-2",
         "version": "1",
-        "sha256": "05c2bc9306ca7b8ce3165271096aa001c2722dc907601fd88a957b846e905a9f"
+        "sha256": "0c78757527acd30c62aad6403c53d06d0ff383d525559e717e684e7e02f1f90a"
       },
       "evidence_id": "mvp-evidence-family-deadlines-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10281,7 +10303,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10295,10 +10317,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-deadlines-3",
         "version": "1",
-        "sha256": "e53736cfc2ac3e3c04f19917249ec96cb113133f42d605bd654e679e5e40c99b"
+        "sha256": "0a2fe7ccb50bb10c0c2564f623490b1ce5749f00425a102bc5af4f4b5408c2e6"
       },
       "evidence_id": "mvp-evidence-family-deadlines-3",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10342,7 +10364,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10356,10 +10378,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-family-separation-1",
         "version": "1",
-        "sha256": "893f16688de622032691c0dd0fe90b91305e3af6a9c5c653452e4d666d449ab5"
+        "sha256": "a1b485a921eea45bc534c982e05b51a770eab233f81c9cdf363c12802fa81fc9"
       },
       "evidence_id": "mvp-evidence-family-separation-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10403,7 +10425,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10417,10 +10439,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-canton-change-1",
         "version": "1",
-        "sha256": "4e389730866b6c913e2e83eed4db9416438e9f07896526106de06b0d3fec5203"
+        "sha256": "e5b762a3b844c5c318e0b06d67e2b309483e8639a4ef3e1bc6a059d5f5f003a1"
       },
       "evidence_id": "mvp-evidence-canton-change-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10464,7 +10486,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10478,10 +10500,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-canton-change-2",
         "version": "1",
-        "sha256": "588037e73a1e80df1bb890dc02a427cef3db8ddccc74dfdf5548e039af31215b"
+        "sha256": "f6d0953d0b635a0244243ebe5fea0af9acf7d1e5d507f1bdcd3a551adaa2bd55"
       },
       "evidence_id": "mvp-evidence-canton-change-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
         "version": "1",
@@ -10525,7 +10547,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10539,10 +10561,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-third-country-work-1",
         "version": "1",
-        "sha256": "ff008aeae31d23a063bd76e11a405d2da9936d931509d469d2a0c8f8cd8c0496"
+        "sha256": "eaafd8e798af879f31e2b8ea70f1786fefbc5656b1ec660e5d95ef01470ef239"
       },
       "evidence_id": "mvp-evidence-third-country-work-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-d7e5fa9b1ea72ea04a52",
         "version": "1",
@@ -10588,7 +10610,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10602,10 +10624,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-third-country-work-2",
         "version": "1",
-        "sha256": "b31c3a6eef6158c5375fd9becaf592f7dc4006b6f704acfaf32633b258c7ff6c"
+        "sha256": "e2ef6ef82c395f92132e46819820dccde762e919992f270d66055b86f5c701a9"
       },
       "evidence_id": "mvp-evidence-third-country-work-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-d7e5fa9b1ea72ea04a52",
         "version": "1",
@@ -10651,7 +10673,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10665,10 +10687,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-eu-short-employment-1",
         "version": "1",
-        "sha256": "a27890d4c63c1526b131b5ecbee00f947789ad0fbfa28e32220dbf750f189bbc"
+        "sha256": "8daea501d95d9dfc1540277ef5cdd7e62f65242bb5420e1f4334d713f4505c30"
       },
       "evidence_id": "mvp-evidence-eu-short-employment-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -10714,7 +10736,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10728,10 +10750,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-eu-short-employment-2",
         "version": "1",
-        "sha256": "aa14aac5dd9f0c41e77c3dadc9dfeacaeaf5b01926233a64a6951bfd60d95685"
+        "sha256": "a6f82e93b2d4cbdfdb2ebca87ae4a1edf5a430086e20dbcf4fae2d9ec4c64c8b"
       },
       "evidence_id": "mvp-evidence-eu-short-employment-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -10777,7 +10799,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10791,10 +10813,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-notification-responsibility-1",
         "version": "1",
-        "sha256": "68822425754538fb1ad8fb8477484a916e8bb90c4a3d82b0cd91815cb1def061"
+        "sha256": "087dce3581335fab962158a116fdd556062351af522bf70a26926ad6448e926d"
       },
       "evidence_id": "mvp-evidence-notification-responsibility-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -10840,7 +10862,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10854,10 +10876,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-posted-service-notification-1",
         "version": "1",
-        "sha256": "899fb0b8d9085a877be0ae4ed7bf151413a878291fb588bd36dee08c7717f480"
+        "sha256": "e6af18c9a77a8ae3292ead090da2b32cd8c242ad658b67f272693aaaa31fa72a"
       },
       "evidence_id": "mvp-evidence-posted-service-notification-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -10903,7 +10925,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10917,10 +10939,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-posted-service-notification-2",
         "version": "1",
-        "sha256": "9d90922ab98df5b9edaa18aee22dafda2183b81f444b303d4ce9f2034cb6def9"
+        "sha256": "9ad6c8f4909134df890ea7ab24fc956101b2289e5c4926dbb0d124bc6c94e601"
       },
       "evidence_id": "mvp-evidence-posted-service-notification-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -10966,7 +10988,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -10980,10 +11002,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-uk-new-employment-1",
         "version": "1",
-        "sha256": "d4c3ac694f27d549738630837f3feba55746b26b2c0944bc76ef1d5cd019d3fa"
+        "sha256": "084108c0322e94b72ae3a1d0e9163df328f8869c33a769c317e9f0dae0d9f6dd"
       },
       "evidence_id": "mvp-evidence-uk-new-employment-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -11029,7 +11051,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11043,10 +11065,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-uk-new-employment-2",
         "version": "1",
-        "sha256": "e5765312c0d317cdfc78b70a1ba51875c9a2bd22f419b3cfd7c8fc09d55e055c"
+        "sha256": "c92be4aeefcdada83153b4535957ee8ad91835342913ee51180ddd3ddb10016c"
       },
       "evidence_id": "mvp-evidence-uk-new-employment-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -11092,7 +11114,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11106,10 +11128,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-uk-new-employment-3",
         "version": "1",
-        "sha256": "d6adf19e2ee5dd33e615bf62c2a83e183feeccd4f6caee62f689973374cf9359"
+        "sha256": "dd9e8da5fd801229d5360a5070d082be39b33647145b44cc9563f1d9418f6189"
       },
       "evidence_id": "mvp-evidence-uk-new-employment-3",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
         "version": "1",
@@ -11155,7 +11177,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11169,10 +11191,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-biometric-permit-1",
         "version": "1",
-        "sha256": "5d49c0be206c8f884d5cee978aec4205b7e41c543954b74a512212deab0dfd86"
+        "sha256": "5c8b2ea1d6751ce694a8b49288a975e532a92e615b37321c1be01d07f249cbe6"
       },
       "evidence_id": "mvp-evidence-biometric-permit-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-026495cd7a981ddc2584",
         "version": "1",
@@ -11218,7 +11240,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11232,10 +11254,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-biometric-permit-2",
         "version": "1",
-        "sha256": "9b9dfd0cd8f475760f5bfdee4ca48e3d4c1d8a6797f6d3c9d0447b3819f331ee"
+        "sha256": "500df670b03ea57c9bd79600f1c65018deca667404dad851e8877958f0b250b8"
       },
       "evidence_id": "mvp-evidence-biometric-permit-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-026495cd7a981ddc2584",
         "version": "1",
@@ -11281,7 +11303,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11295,10 +11317,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-language-evidence-1",
         "version": "1",
-        "sha256": "7c1f60bbdb62336a61f23f15f8dc45d1b2c253e2b095d0b41d04072f253bd1b9"
+        "sha256": "f77960f8ee4ebe979d478836a769352eec5995d4b57d060626c22917742cd5ec"
       },
       "evidence_id": "mvp-evidence-language-evidence-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-e4faac52bfd9dc95c90f",
         "version": "1",
@@ -11344,7 +11366,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11358,10 +11380,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-language-evidence-2",
         "version": "1",
-        "sha256": "64da3195c677c7267cb209ec223537ecae3d90f7742ddc25827a0bc1bab3af91"
+        "sha256": "eded14ebfa862fdab8779e37f5c1a3e0975d545b2625b069a4fbac1bc4d87150"
       },
       "evidence_id": "mvp-evidence-language-evidence-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-e4faac52bfd9dc95c90f",
         "version": "1",
@@ -11407,7 +11429,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11421,10 +11443,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-social-assistance-review-1",
         "version": "1",
-        "sha256": "8e150d4865e269c30034aa4609155255599dd3a1f490dc56b4d8280ff7988920"
+        "sha256": "149bef206b5d9e4c54def8606547bf279d34bcea715d5a363d69df105da5ab2c"
       },
       "evidence_id": "mvp-evidence-social-assistance-review-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-e4faac52bfd9dc95c90f",
         "version": "1",
@@ -11470,7 +11492,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11484,10 +11506,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-registration-1",
         "version": "1",
-        "sha256": "276d531a026a39bb3af42b01f04f32f36850bb049091e900867aad9bfe1727ed"
+        "sha256": "12c3948f4560edf2a913f1d9ebad66ecb8414677d919d0d03c7a5edb7f38aae8"
       },
       "evidence_id": "mvp-evidence-zh-eu-registration-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11533,7 +11555,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11547,10 +11569,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-registration-2",
         "version": "1",
-        "sha256": "66fda4d0d569def3c8cf103a250fbee6b48b97c5083327533b1c49f5adf659ef"
+        "sha256": "adc8d12f7d6302d8dfe83d0867235a277f6b5d2073a9e8ab15f24a219f0c3d34"
       },
       "evidence_id": "mvp-evidence-zh-eu-registration-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11596,7 +11618,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11610,10 +11632,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-l-1",
         "version": "1",
-        "sha256": "8a9d39de333ffb9ace1b26f3e40378ee502c93c440b6969bb1a618b11e4f92d1"
+        "sha256": "3ef2dad08d4aa8a22fa09bd9e4669ebca6b34c0767f61f05264d26584e655733"
       },
       "evidence_id": "mvp-evidence-zh-eu-l-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11659,7 +11681,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11673,10 +11695,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-b-1",
         "version": "1",
-        "sha256": "3d0cc9261302551b19233d16fe562cf7b720df47c5e1c6f6bc224367ffc6cb3a"
+        "sha256": "540e842ceb225b44cdc383c05aef54dc9cb5f874d7fc90f0af858672bb33e0d1"
       },
       "evidence_id": "mvp-evidence-zh-eu-b-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11722,7 +11744,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11736,10 +11758,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-self-employment-1",
         "version": "1",
-        "sha256": "c800c174c3aad7abc18a396cfeba5f8c6485ddb1b1d699e663b06979abe09786"
+        "sha256": "248c793eba945089129e802844a8a4be44c51557a4571d47fae7a006f5d9c72f"
       },
       "evidence_id": "mvp-evidence-zh-eu-self-employment-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11785,7 +11807,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11799,10 +11821,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-nonworking-1",
         "version": "1",
-        "sha256": "6aa788035c097363f3d0fb58cc4e65869c49906ef821d3fb93d813fe8dddc6a7"
+        "sha256": "522935c586f32e65a2af21a507c2c2bcda7d9d99fef80b7cd79eddf10fcc3a3c"
       },
       "evidence_id": "mvp-evidence-zh-eu-nonworking-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11848,7 +11870,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11862,10 +11884,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-eu-family-documents-1",
         "version": "1",
-        "sha256": "4e19faec820e0d20ed7ae461496cb6a00a1b6718878547e22964993cd2e3f8b3"
+        "sha256": "afbd66897087bad06eca1bf6b1edb233b62f9d39741d1d8dc78e7946048442c2"
       },
       "evidence_id": "mvp-evidence-zh-eu-family-documents-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
         "version": "1",
@@ -11911,7 +11933,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11925,10 +11947,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-zh-third-country-retirement-1",
         "version": "1",
-        "sha256": "5f824bbfe0a11cfb0381fab05ede4553c8ba1567a7c3c2c1bdd7723f0874e68e"
+        "sha256": "0ead03f79f3b80e03a37eca8da9c6874e65bdd865f9e6f9c1f4a07f9b4c47cb7"
       },
       "evidence_id": "mvp-evidence-zh-third-country-retirement-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-3198cb2abda7d67422f7",
         "version": "1",
@@ -11974,7 +11996,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -11988,10 +12010,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-city-zurich-arrival-1",
         "version": "1",
-        "sha256": "9c462824640887977670c6700845d19de31115238188eddccd289ef4eacf6884"
+        "sha256": "430ca962901acd989ff9026a779ca0ed61341b8af8d392efc40764d47489fa04"
       },
       "evidence_id": "mvp-evidence-city-zurich-arrival-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-34ef0ec737a996b68d08",
         "version": "1",
@@ -12037,7 +12059,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12051,10 +12073,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-city-zurich-arrival-documents-1",
         "version": "1",
-        "sha256": "2a9fa52dc2ed50d9b19d1c4fab08f98be12bcbc476c7c41fd9775a4ade82806b"
+        "sha256": "dc916f2ff750a7f4448e055ceeb88e81843aca949a06b4e7df909cfda2c95649"
       },
       "evidence_id": "mvp-evidence-city-zurich-arrival-documents-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-34ef0ec737a996b68d08",
         "version": "1",
@@ -12100,7 +12122,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12114,10 +12136,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-eu-employment-registration-deadline-1",
         "version": "1",
-        "sha256": "7e678c4b22c978f4b2f5ae3108371287ae9f65a643ba88f7233ea2c9a4c27a24"
+        "sha256": "ed44590fc0c974d4228d4d2688aadf59d9b6a6431b43d2c5d4527fe5d24c13a7"
       },
       "evidence_id": "mvp-evidence-eu-employment-registration-deadline-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-094ef42324485ec86493",
         "version": "1",
@@ -12163,7 +12185,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12177,10 +12199,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-eu-employment-registration-deadline-2",
         "version": "1",
-        "sha256": "d1273665b8cff5698d96a470eeee52b77ce8412e46393add12628e2ea5e255a4"
+        "sha256": "4eb4ed4dac58b536165be5d9525258e119720bc6f1010d559c5cd21b8107b6a0"
       },
       "evidence_id": "mvp-evidence-eu-employment-registration-deadline-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-094ef42324485ec86493",
         "version": "1",
@@ -12226,7 +12248,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12240,10 +12262,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-health-insurance-enrolment-1",
         "version": "1",
-        "sha256": "a8be1fdd18b33578c18320098bc3cbc1f52319526520bd39665674a8cf24aad8"
+        "sha256": "cfa288e789806c68e14dad9304c93368b2d679f081ae01279fe914ec580a1208"
       },
       "evidence_id": "mvp-evidence-health-insurance-enrolment-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-f09ebbb4481ad243ff38",
         "version": "1",
@@ -12289,7 +12311,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12303,10 +12325,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-health-insurance-enrolment-2",
         "version": "1",
-        "sha256": "4cbc005e8a347db08e79a4b98572c8d4fae1ea958fdf085e723191c474e7f7f5"
+        "sha256": "3dd638ed0c0aa19a0424ad1e83e591cb4279e91f76ec44ff4e6a3fa4917d775a"
       },
       "evidence_id": "mvp-evidence-health-insurance-enrolment-2",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-f09ebbb4481ad243ff38",
         "version": "1",
@@ -12352,7 +12374,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12366,10 +12388,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ag-1",
         "version": "1",
-        "sha256": "80a862f9e517be54cddb95efdc3dc15db10043aa82770fa9222a4b4d95e5ca05"
+        "sha256": "a2f339875ae6c26c1658a4cac16ab9820d6b3fe5759d8987de73182b1f8c2e58"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ag-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12415,7 +12437,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12429,10 +12451,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ai-1",
         "version": "1",
-        "sha256": "99b839cdb2a47f66cb4ac5a925667dd1047472e2e42192155f760c8495760685"
+        "sha256": "7eddaf5757fa03b982937904381eceab8f8710b8ba67e20d45e6e5d168d0d589"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ai-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12478,7 +12500,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12492,10 +12514,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ar-1",
         "version": "1",
-        "sha256": "3d1857e53aa798656405412475e2e657b10cbf4e4ad58fd4c5ad8ba2abba58c7"
+        "sha256": "31c6981b120c688d5a95754a083ef2a04c30afe00d964f5a0d6ef418b294faa9"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ar-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12541,7 +12563,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12555,10 +12577,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-be-1",
         "version": "1",
-        "sha256": "f8fd2d6dff7c64347bcbb75777d49f1b0f5fd873d415b562dea39e3f082a7baa"
+        "sha256": "9aaa952138b24443442d545aa34d9c6d18ebe6275e4d1170e8ad48763ebf8961"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-be-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12604,7 +12626,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12618,10 +12640,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-bl-1",
         "version": "1",
-        "sha256": "cbd58c682cb142de673782b1123c79188ea4fccc837ba3fd9875c7b5438d9192"
+        "sha256": "d903d7ccc88179260f37ad47eadf6ba2c39fb9033231c69037be5d5cc7f79202"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-bl-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12667,7 +12689,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12681,10 +12703,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-bs-1",
         "version": "1",
-        "sha256": "d9f2c2d0916b10d98ff09321662dcb1ec7262590dab91df93840225b96c7f5df"
+        "sha256": "9a4a6e34ba8d2e0ee07ebadb9a6a9812d40b84908a2e60349523ef23f6a19a8a"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-bs-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12730,7 +12752,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12744,10 +12766,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-fr-1",
         "version": "1",
-        "sha256": "23e6ae881a1213eb01bf9a0fd5134adb3a16272e2219317f98e7bccdda9326f7"
+        "sha256": "9922d3d8cf075159a9122afab62f09fed6326e382301fbee7489d99d0bd40e40"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-fr-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12793,7 +12815,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12807,10 +12829,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ge-1",
         "version": "1",
-        "sha256": "1726eebde3bd34224084fdf8ae5a6c83cbfe852bcdacf0e284e86c7003973eef"
+        "sha256": "8a98332aeac4ad91fdeff7c7931c73c3b46487298e6b69de5e649b2f109fcaad"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ge-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12856,7 +12878,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12870,10 +12892,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-gl-1",
         "version": "1",
-        "sha256": "b4c4362b38680a889b530f87cf9ce40dec2df9cb11ffa4dc1225318b91cbe856"
+        "sha256": "87e56df740a7476f672f06a05b8bf238c192bcb90ef9c9a3be19398ae7990ca2"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-gl-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12919,7 +12941,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12933,10 +12955,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-gr-1",
         "version": "1",
-        "sha256": "78ff113860215e1b97c2263ca9882b9de9273e251cf6b76ad91e7758c0c68667"
+        "sha256": "51968378baee1c97cf00af456bd7bfeb1bf1b1a3721e15831f36f0820d86b49c"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-gr-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -12982,7 +13004,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -12996,10 +13018,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ju-1",
         "version": "1",
-        "sha256": "979f101032892f3142fd2e4ebd15ebd2cc941e4e9da1fb09d10ccedefa97b8ce"
+        "sha256": "d8e2fba22fdf141347041b083a2e4ce8a3d9818a8db4c8f52730080a41d1625b"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ju-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13045,7 +13067,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13059,10 +13081,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-lu-1",
         "version": "1",
-        "sha256": "efb98f475199f2f27f5dc8c2b81258ae1c00726ece02ec416168b35064ce259f"
+        "sha256": "c106f3db00b7280a712aacf5a9526ec60abffd5d2093c94e664bb6974bca8501"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-lu-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13108,7 +13130,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13122,10 +13144,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ne-1",
         "version": "1",
-        "sha256": "e7002914520fad804a76bfe5354f3fbd794c0ab8e30151704f715fc3c2ced236"
+        "sha256": "bb50b4e0e08bb56fb8db79a7fe8146d3180d5c0e9a4763b34e7051315b7b66fe"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ne-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13171,7 +13193,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13185,10 +13207,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-nw-1",
         "version": "1",
-        "sha256": "94af1cc0975b2dc444060ab7e592e902d1be8d8ca318c103ce8de255e765c0e4"
+        "sha256": "7975ea64a822c23078c7854b222448fcbee6cf767f3fdabcd3877ff3c005b7c5"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-nw-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13234,7 +13256,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13248,10 +13270,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ow-1",
         "version": "1",
-        "sha256": "ab4fcb90127451823b4be1fe7324c21c3ce7353f3ca666222a7956fd59d2bbf3"
+        "sha256": "b81fe7f0e72b78ae4c2c77341f17a02c54fd4026073dde65e275e9bb0aef4e9a"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ow-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13297,7 +13319,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13311,10 +13333,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sg-1",
         "version": "1",
-        "sha256": "e4f93ac012dba00a8a6289b215653664c4ec8e213e8736f93ac3cbb44358fcc3"
+        "sha256": "fdf97f6af22afb48d7c8a9e9cf23e96e1ac33d7e6b95f7da29410607e3401091"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-sg-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13360,7 +13382,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13374,10 +13396,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sh-1",
         "version": "1",
-        "sha256": "cb74dec5e81ff3a1603a2beb96caef451555b988a98af07aca303d68dc5f5bcd"
+        "sha256": "b10b695a8dbb69611141db14cd1e30a969fb64383e88e662fae338966209cdb8"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-sh-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13423,7 +13445,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13437,10 +13459,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-so-1",
         "version": "1",
-        "sha256": "0da8062b786c0be0ee82aacabec107c5f27dadeeb9771a9eb08af68a3280ccec"
+        "sha256": "d53bf8bfdeeebab1587a6e508d600d67521ae39a297f84496a98c89652abc136"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-so-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13486,7 +13508,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13500,10 +13522,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-sz-1",
         "version": "1",
-        "sha256": "eaca95cf6831a991e1833106ea2ac585c47e981021ca5af5ca65db70a81f8518"
+        "sha256": "3569e0f9e9ec35279e4395e2512b776a41b22ee600bd4897a6deacd4b8e8531c"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-sz-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13549,7 +13571,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13563,10 +13585,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-tg-1",
         "version": "1",
-        "sha256": "3afa9b747bbfadb749d883e4fb7f3c23b876fb223af0da737ce8048d27cc4d4a"
+        "sha256": "2d3dd8ff61afb3f3fabd03e1083d239826c283effd856f446e0152eea49edac1"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-tg-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13612,7 +13634,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13626,10 +13648,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ti-1",
         "version": "1",
-        "sha256": "018cd4ef4cdf80920e2ce50a5d9238b6d611d82407ab468d08b35461fb8431fb"
+        "sha256": "36163796c804895d46a43c332a919f5a22905591a375478003acc23c8ee9a723"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ti-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13675,7 +13697,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13689,10 +13711,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-ur-1",
         "version": "1",
-        "sha256": "a4a9c5e282cebc2972f32a9f4da7b882f9039f0817545d3d5a9a2fbe794e9fc4"
+        "sha256": "fb9a280ccd53982d8421101ae7f5add8e669c37a006e6ceb45805bfdf16c246f"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-ur-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13738,7 +13760,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13752,10 +13774,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-vd-1",
         "version": "1",
-        "sha256": "bdbc3c90746acecc6750c054afd0cdd361efdc4b220ce54cf217f8e5b99fb1bc"
+        "sha256": "bdd2dc4f7cf07e11a5048bcf049df6ab4b798976727839af110d8a0eb0bab625"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-vd-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13801,7 +13823,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13815,10 +13837,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-vs-1",
         "version": "1",
-        "sha256": "870bbca6474bdb9f94f5a913f43d8a6b20d4a77b0fe1a2eab60ac8603cdc06ad"
+        "sha256": "7fc75dfe933dae2c5bf84492f72471d058d64bc641fa6acaedabb75ac53f93bf"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-vs-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13864,7 +13886,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13878,10 +13900,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-zg-1",
         "version": "1",
-        "sha256": "81fe174438d3d9160429a9c6a0697cee91e0936ace4b66080037669d6e7cd4bd"
+        "sha256": "036c4c9c9f609fdd8f4bce5b1546c1becceb5502b7346023d7219e353003775d"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-zg-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13927,7 +13949,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -13941,10 +13963,10 @@
       "identity": {
         "artifact_id": "mvp-evidence-cantonal-migration-contact-zh-1",
         "version": "1",
-        "sha256": "b2e45d10773fcb6e1bae2d9c01957a550a850f2f221c05f731fd88ece15d2e36"
+        "sha256": "1ba481ca6c9e381ffa2fde5ad91173328ddb7b46ba89199f499a84a45ae08055"
       },
       "evidence_id": "mvp-evidence-cantonal-migration-contact-zh-1",
-      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v5",
       "snapshot_ref": {
         "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
         "version": "1",
@@ -13990,7 +14012,7 @@
         {
           "artifact_id": "mvp-curation-source",
           "version": "1",
-          "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+          "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
         },
         {
           "artifact_id": "mvp-experimental-test-policy",
@@ -16084,7 +16106,7 @@
     {
       "artifact_id": "mvp-curation-source",
       "version": "1",
-      "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+      "sha256": "22f5106d812d580f875f11021301d37bebd6b7a9e167c34ab4d5b426aea9a2fc"
     },
     {
       "artifact_id": "mvp-experimental-test-policy",
@@ -16104,7 +16126,7 @@
     {
       "artifact_id": "mvp-contract-schema",
       "version": "1",
-      "sha256": "455c78042e715c4720a8e8b0dc9cf7ab546e4152025ece57eab85b6bed589d5e"
+      "sha256": "ffb5420e52af369e7f0811c13d46d72840264e600e541fcedc7c14cd8f69e20a"
     },
     {
       "artifact_id": "mvp-snapshot-doc-02369c71495279e06a62",

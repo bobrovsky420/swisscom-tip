@@ -12,17 +12,9 @@ from pathlib import Path
 
 from swisstip.mcp_server.bundled import bundled_releases, read_manifest, sha256
 from swisstip.runtime.release import ReleaseBundle
+from swisstip.runtime.service import coverage_summary
 
 ROOT = Path(__file__).resolve().parents[2]
-
-NOT_COVERED = [
-    "Topics other than residence permits and registration: taxes, driving licences, voting, schooling, "
-    "naturalisation, asylum, visas for entry, social insurance beyond the health-insurance enrolment deadline.",
-    "Fees and processing times for any permit.",
-    "Cantonal procedures outside Zurich beyond the migration-office contact; municipal procedures outside the City of Zurich.",
-    "Eligibility decisions for a specific person: the published rules route populations, they do not compute outcomes.",
-    "Free-text search: a caller selects a concept from the catalog; retrieval terms are not yet supported.",
-]
 
 CANTON_NAMES = {
     "CH-AG": "Aargau", "CH-AI": "Appenzell Innerrhoden", "CH-AR": "Appenzell Ausserrhoden", "CH-BE": "Bern",
@@ -162,10 +154,37 @@ def report(bundle: ReleaseBundle, release_sha: str, manifest_entry: dict | None,
                                                     f"through {w.valid_through}" if w.valid_through else None]))
             for concept, w in sorted(stated)) + ".")
     out("")
-    out("## Not covered")
+    out("## Scope")
     out("")
-    for item in NOT_COVERED:
+    summary = coverage_summary(bundle)
+    if summary.scope:
+        out("Declared in the release and served verbatim in `coverage_summary` of the root `get_coverage` result.")
+        for language, text in summary.scope.items():
+            out("")
+            out(f"**In scope ({language}).** {text}")
+            out("")
+            out(f"**Out of scope ({language}).**")
+            out("")
+            for item in summary.out_of_scope.get(language, []):
+                out(f"- {item}")
+    else:
+        out("This release publishes no scope statement; the root `get_coverage` result carries only derived limits.")
+    out("")
+    out("Derived limits, computed from the release at serving time:")
+    out("")
+    for item in summary.derived_limits:
         out(f"- {item}")
+    out("")
+    out("Served jurisdictions, grouped by level and intent:")
+    out("")
+    out("| Level | Intent | Concepts each | Places |")
+    out("| --- | --- | --- | --- |")
+    for row in summary.jurisdictions:
+        first = row.jurisdictions[0]
+        level = ("Federal" if first.specificity == 0 else "Canton" if first.specificity == 1 else "Municipality")
+        names = ", ".join(f"{j.canton_code}/{j.municipality_id}" if j.municipality_id else j.canton_code or j.country_code
+                          for j in row.jurisdictions)
+        out(f"| {level} | {row.intent} | {row.concept_count} | {names} |")
     out("")
     out("## Example request")
     out("")

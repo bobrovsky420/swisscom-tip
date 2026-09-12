@@ -22,10 +22,10 @@ from swisstip.core.identity import seal_artifact
 from swisstip.core.validation import validate_request
 from swisstip.runtime.release import ReleaseBundle, validate_release
 
-from residence_mvp_curated import CONCEPTS, CONTACT_ROWS, DIRECTORY, SELECTOR_VALUES, claim, concept
+from residence_mvp_curated import CONCEPTS, CONTACT_ROWS, DIRECTORY, SCOPE, SELECTOR_VALUES, claim, concept
 
 ROOT = Path(__file__).resolve().parents[2]
-RELEASE_ID = 'hackathon-residence-semantic-2026-09-12-v4'
+RELEASE_ID = 'hackathon-residence-semantic-2026-09-12-v5'
 # Default snapshot-age limit: a result whose oldest selected citation was saved
 # more than this many days before the read time is reported STALE.
 FRESHNESS_DAYS = 60
@@ -227,9 +227,11 @@ def build(intermediate, corpus, output):
         requests.append(dict(name=instance, tool='resolve', arguments=request.model_dump(exclude_none=True),
                              expected_fact_ids=fact_ids, expected_evidence_ids=[e.evidence_id for e in row_evidence]))
 
+    # The declared scope is sealed with the catalog and served verbatim at root discovery.
     catalog = seal_artifact(KnowledgeCatalog(identity=ref('mvp-catalog'), release_id=RELEASE_ID,
         entries=sorted(entries, key=lambda e: e['entry_id']), context_schemas=schemas,
-        coverage_profiles=profiles, language_policy_ref=policy.identity))
+        coverage_profiles=profiles, language_policy_ref=policy.identity,
+        scope=dict(statements={'en': SCOPE}, provenance=[curation_ref])))
     graph = seal_artifact(ResolutionGraph(identity=ref('mvp-graph'), release_id=RELEASE_ID, plans=plans))
     documents = list(document_models.values())
     release = seal_artifact(KnowledgeRelease(identity=ref(RELEASE_ID), release_id=RELEASE_ID,
@@ -360,7 +362,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--intermediate', type=Path, default=ROOT / '.local/intermediate/hackathon-residence-2026-09-11-v1')
     parser.add_argument('--corpus', type=Path, default=ROOT / '.local/corpora/hackathon-residence-2026-09-10')
-    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-12-v4')
+    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-12-v5')
     parser.add_argument('--release-id', default=RELEASE_ID,
                         help='Release identity; choose a new one together with --output when the curated selections change.')
     args = parser.parse_args()

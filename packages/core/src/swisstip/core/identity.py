@@ -19,11 +19,20 @@ from .contracts import StrictModel
 Artifact = TypeVar("Artifact", bound=StrictModel)
 
 
+# Optional fields added to a sealed contract after releases were first sealed.
+# A null value is omitted from the canonical document, so an artifact sealed
+# before the field existed keeps its hash; a published value is always hashed.
+_EXTENSION_FIELDS = {"knowledge-catalog/v1": ("scope",)}
+
+
 def _document(artifact: StrictModel) -> dict:
     document = artifact.model_dump(mode="json")
     identity = document.get("identity")
     if not isinstance(identity, dict) or not {"artifact_id", "version", "sha256"} <= identity.keys():
         raise ValueError("Contract does not carry an artifact identity")
+    for field in _EXTENSION_FIELDS.get(document.get("schema_version"), ()):
+        if document.get(field) is None:
+            document.pop(field, None)
     return document
 
 
