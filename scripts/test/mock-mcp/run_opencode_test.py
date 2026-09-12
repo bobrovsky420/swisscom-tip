@@ -29,11 +29,15 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[3]
 MOCK_SERVER = Path(__file__).resolve().parent / "mock_residence_mcp.py"
-# Assistant-curated pilot release v4: v2 (the SEM free-movement FAQ deadline concept)
-# rebuilt with unbounded validity unless the source states a date and a 60-day
-# freshness policy; override with --release-file/--release-id.
-PILOT_RELEASE = ROOT / ".local/mvp/residence-semantic-2026-09-12-v4/release.json"
-PILOT_RELEASE_ID = "hackathon-residence-semantic-2026-09-12-v4"
+# The release bundled with the MCP server package (hash-verified); override with
+# --release-file/--release-id. Falls back to the local v4 build if the bundle is absent.
+try:
+    from swisstip.mcp_server.bundled import bundled_releases as _bundled_releases
+    _bundled_paths, PILOT_RELEASE_ID = _bundled_releases()
+    PILOT_RELEASE = next(p for p in _bundled_paths if p.parent.name == PILOT_RELEASE_ID)
+except Exception:  # noqa: BLE001 - any bundle problem means "use the local build"
+    PILOT_RELEASE = ROOT / ".local/mvp/residence-semantic-2026-09-12-v4/release.json"
+    PILOT_RELEASE_ID = "hackathon-residence-semantic-2026-09-12-v4"
 DEFAULT_MODEL = "opencode/ling-3.0-flash-fin-free"
 AGENT = "residence-assistant"
 # "mock" serves the hardcoded fact; "real" serves the assistant-curated 81-fact

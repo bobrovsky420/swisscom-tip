@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import logging
 from pathlib import Path
+import sys
 
 from mcp import types
 from mcp.server.lowlevel import Server
@@ -17,6 +18,8 @@ from swisstip.core.contracts import (
 from swisstip.runtime import KnowledgeService, ReleaseStore
 from swisstip.runtime.providers import OllamaRetrievalProvider
 from swisstip.runtime.provider_config import load_provider_settings
+
+from .bundled import bundled_releases
 
 
 TOOL_CONTRACTS = {
@@ -128,11 +131,17 @@ async def serve(service: KnowledgeService):
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    storage = parser.add_mutually_exclusive_group(required=True)
+    storage = parser.add_mutually_exclusive_group()
     storage.add_argument("--release", type=Path, action="append",
-                        help="Serving release JSON; repeat to retain historical releases.")
+                        help="Serving release JSON; repeat to retain historical releases. "
+                             "Default: the hash-verified releases bundled with this package.")
     storage.add_argument('--database-dsn-env', help='Environment variable holding a PostgreSQL URL; uses pgvector scoring.')
-    parser.add_argument("--active-release-id", required=True)
+    parser.add_argument("--active-release-id",
+                        help="Release served by default. Required with --release or --database-dsn-env; "
+                             "otherwise the bundled manifest's active release.")
+    parser.add_argument("--releases-dir", type=Path,
+                        help="Folder holding MANIFEST.json and the bundled releases. Default: SWISSTIP_RELEASES_DIR, "
+                             "else the releases/ folder found by walking up from the package or the working directory.")
     parser.add_argument("--embedding-url", help="Opt-in Ollama embedding base URL; model is pinned by each release.")
     parser.add_argument("--ranking-url", help="Opt-in Ollama ranking base URL; model is pinned by each release.")
     parser.add_argument("--provider-timeout", type=float, help="Timeout for legacy Ollama URL flags; default 30 seconds.")
@@ -140,6 +149,16 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     if args.provider_config and (args.embedding_url or args.ranking_url or args.provider_timeout is not None):
         parser.error("--provider-config cannot be combined with provider URL or timeout flags")
+    if args.release is None and args.database_dsn_env is None:
+        try:
+            args.release, bundled_active = bundled_releases(args.releases_dir)
+        except (OSError, ValueError) as exc:
+            parser.error(f"No --release given and no bundled release is available: {exc}")
+        args.active_release_id = args.active_release_id or bundled_active
+        print(f"Serving bundled releases from {args.release[0].parent.parent} (active {args.active_release_id})",
+              file=sys.stderr)
+    if args.active_release_id is None:
+        parser.error("--active-release-id is required with --release or --database-dsn-env")
     try:
         vector_store = None
         if args.database_dsn_env:

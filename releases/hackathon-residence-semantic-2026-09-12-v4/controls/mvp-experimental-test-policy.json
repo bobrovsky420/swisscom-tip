@@ -1,0 +1,13 @@
+{
+  "classification": "experimental",
+  "authoring": "Assistant directly curated saved official source text.",
+  "human_review": false,
+  "legal_quality_evaluation": false,
+  "disclaimer": "Assistant-curated experimental MVP data; no independent human or legal review.",
+  "approval_status_semantics": "APPROVED flags satisfy the serving test-fixture contract only; no production approval is asserted.",
+  "temporal_coverage_semantics": "Unbounded unless the cited source states a commencement or expiry date; each citation records its snapshot time (accessed_at) and the freshness policy governs staleness.",
+  "freshness_policy_semantics": "Snapshot-age limit of 60 days, counted from the oldest accessed_at among the selected evidence to the read time; older results are reported STALE with their facts retained. The limit measures the age of the saved copy, not whether the page changed; refresh by re-downloading and rebuilding.",
+  "context_semantics": "Selectors route populations; they do not decide eligibility.",
+  "semantic_search": false,
+  "runtime_tests_executed": false
+}

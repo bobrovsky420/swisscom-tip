@@ -1,0 +1,138 @@
+[
+  {
+    "identity": {
+      "artifact_id": "mvp-curation-source",
+      "version": "1",
+      "sha256": "2fd29fd1e6c500b1c65eb6522db5a827bc446991e880f7bd80c2f8535b5436ea"
+    },
+    "path": "controls/residence_mvp_curated.py"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-experimental-test-policy",
+      "version": "1",
+      "sha256": "1f116d9c4c474404ca7d59c37b30c82e08d6188a2a41f2641e0270a6095d1914"
+    },
+    "path": "controls/mvp-experimental-test-policy.json"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-no-providers",
+      "version": "1",
+      "sha256": "b9d22a733b382e7b65a4e695bbf408ca49c55583648d0e10343fdc9f3949ef2f"
+    },
+    "path": "controls/mvp-no-providers.json"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-baseline-ranking",
+      "version": "1",
+      "sha256": "affad36e20a45977ee3c45e41949e3986a6b92fa19f5904706cff494c61e4f72"
+    },
+    "path": "controls/mvp-baseline-ranking.json"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-contract-schema",
+      "version": "1",
+      "sha256": "455c78042e715c4720a8e8b0dc9cf7ab546e4152025ece57eab85b6bed589d5e"
+    },
+    "path": "controls/contracts-v1.schema.json"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-02369c71495279e06a62",
+      "version": "1",
+      "sha256": "9efb7205274f13ea882b95ac8868310c7de7f9ba0cfdc8efaf94b3714d5f21d8"
+    },
+    "path": "sources/doc-02369c71495279e06a62.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-026495cd7a981ddc2584",
+      "version": "1",
+      "sha256": "fcc011b0296adfc78ab6935e60bac2edfd0cb767488528fa0763e31b122591d1"
+    },
+    "path": "sources/doc-026495cd7a981ddc2584.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-094ef42324485ec86493",
+      "version": "1",
+      "sha256": "23d63f2e62afba6b7b55fc49ae58c4b46909fd17a58d0cc440f637d84b7413fc"
+    },
+    "path": "sources/doc-094ef42324485ec86493.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-18355c7dc9a45a38b413",
+      "version": "1",
+      "sha256": "3d5949f81ab0fbee4005e48a208e39e5570dc8b8b192c77133766b9d816f6cd1"
+    },
+    "path": "sources/doc-18355c7dc9a45a38b413.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-3198cb2abda7d67422f7",
+      "version": "1",
+      "sha256": "2f0ec9381aa5213995bd3bddc6d8f4d7a1c78aef04d5db876532e7b113014686"
+    },
+    "path": "sources/doc-3198cb2abda7d67422f7.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-34ef0ec737a996b68d08",
+      "version": "1",
+      "sha256": "214b9204bd23205e9c76fd2e035d314b16a7cd61a8f7a091563cc363a230ac26"
+    },
+    "path": "sources/doc-34ef0ec737a996b68d08.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-6fc4e12e684157ef4978",
+      "version": "1",
+      "sha256": "e2262490fc097664c7bf536b1648f9abe5744c616f7df2483fa8e461874bcf16"
+    },
+    "path": "sources/doc-6fc4e12e684157ef4978.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-9b1cdec8a0d1eb938c6c",
+      "version": "1",
+      "sha256": "9e56eece6049cd1b5f91aeb431716cd52940e4a9f7a287abc97afa82232d95fb"
+    },
+    "path": "sources/doc-9b1cdec8a0d1eb938c6c.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-c9b704219cdcddd9107e",
+      "version": "1",
+      "sha256": "5fe1797774e434de92e917137f3b546ae02d1795bc3ab839b1c7b3d106d10df6"
+    },
+    "path": "sources/doc-c9b704219cdcddd9107e.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-d7e5fa9b1ea72ea04a52",
+      "version": "1",
+      "sha256": "60d0d2bf97f0b851da1857351b43602c90b808c24e25e42d46eec74764109521"
+    },
+    "path": "sources/doc-d7e5fa9b1ea72ea04a52.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-e4faac52bfd9dc95c90f",
+      "version": "1",
+      "sha256": "536db89115fbae2b37f29f61143f1a743608426503143ca1d4f2b5055026f9d2"
+    },
+    "path": "sources/doc-e4faac52bfd9dc95c90f.html"
+  },
+  {
+    "identity": {
+      "artifact_id": "mvp-snapshot-doc-f09ebbb4481ad243ff38",
+      "version": "1",
+      "sha256": "6604344cd2fa5cff437dd490d6f878dfa620bcb500fe9089a31dee653d386bb5"
+    },
+    "path": "sources/doc-f09ebbb4481ad243ff38.html"
+  }
+]

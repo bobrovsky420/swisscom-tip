@@ -110,7 +110,7 @@ The original source remains authoritative. A release freezes:
 - Typed applicability schemas, conditional required fields, temporal coverage and declared rules.
 - Evidence assignments, five-language metadata, language profiles and evaluated retrieval configurations.
 
-`swiss_information.get_coverage` supports bounded discovery by Knowledge Space or parent identifier. A caller can navigate `Immigration -> Residence -> Residence permit`, inspect supported operations and cache the result by immutable release identity. These labels illustrate catalog structure rather than declaring published coverage.
+`get_coverage` supports bounded discovery by Knowledge Space or parent identifier. A caller can navigate `Immigration -> Residence -> Residence permit`, inspect supported operations and cache the result by immutable release identity. These labels illustrate catalog structure rather than declaring published coverage.
 
 A topic's existence does not imply coverage of every operation. The caller selects from finite published intents such as `requirements`; it does not invent identifiers or submit a sentence as an intent.
 
@@ -165,7 +165,7 @@ Retrieval-term language is independent of source language. An English term can r
 
 ## Slide 8 - OpenCode: Discover, Request, Inspect, Explain
 
-OpenCode is an example standards-compatible MCP caller. It discovers identifiers and required fields through `swiss_information.get_coverage`, interprets the message, obtains facts and submits `swiss_information.resolve`.
+OpenCode is an example standards-compatible MCP caller. It discovers identifiers and required fields through `get_coverage`, interprets the message, obtains facts and submits `resolve`.
 
 The following request is illustrative after establishing Canton Zurich as the intended scope. Identifiers and required fields must come from the published catalog in a real demonstration.
 
@@ -194,7 +194,7 @@ The following request is illustrative after establishing Canton Zurich as the in
 
 The empty context records that no personal facts have yet been supplied. It does not invite TIP to infer them from the term or jurisdiction.
 
-The caller may inspect original evidence with `swiss_information.get_evidence` and composes the final answer with citations and limitations. A warm caller with a cached catalog and complete facts can normally use one resolution call; count discovery, clarification and evidence inspection separately.
+The caller may inspect original evidence with `get_evidence` and composes the final answer with citations and limitations. A warm caller with a cached catalog and complete facts can normally use one resolution call; count discovery, clarification and evidence inspection separately.
 
 ---
 

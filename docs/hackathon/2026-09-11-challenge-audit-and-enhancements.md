@@ -12,9 +12,11 @@ for one developer with an assistant, not commitments.
 
 Status, 12 September 2026: the date-window blocker (section 3.1, E1) is
 resolved in commit `fdd57a5`, the 30-day freshness finding is mitigated by the
-60-day policy of release v4, and the jurisdiction finding (E6) is resolved by
-containment matching; findings and proposals carry their status inline. The
-other four blockers remain open.
+60-day policy of release v4, the jurisdiction finding (E6) is resolved by
+containment matching, and the repository blockers E2 and E3 are resolved by the
+bundled release, the quickstart README, the coverage and limitation pages and
+the licence; findings and proposals carry their status inline. Discovery size
+(E5) and the missing HTTP transport (E4) remain the open blockers.
 
 ## 1. The published challenge
 
@@ -130,7 +132,7 @@ pipeline with checksums and ledgers.
 
 | Sev. | Finding | Evidence |
 | --- | --- | --- |
-| Blocker | No real release is in the repository; all of them live under Git-ignored `.local/`. A clean clone serves only the synthetic fixture, which the root `.local/opencode.json` still points to. Swisscom cannot evaluate what the team demonstrates. | `.gitignore`; `mcp-client.json` files with absolute Windows paths |
+| Resolved (was blocker) | No real release was in the repository; a clean clone served only the synthetic fixture. Resolved 12 September: release v4 is bundled in the top-level `releases/` folder with a hash-verified manifest, `swisstip-mcp` serves it with no arguments, `publish_release.py` is the only way to change it, and `print_config.py` prints client configurations with the checkout's own paths. | [README](../../README.md) quickstart; `releases/MANIFEST.json` |
 | Major | No refresh or drift procedure for a served release: re-downloading the 12 curated pages changes hashes, and the builder's intermediate-hash guard then refuses to build. Nothing reports that a source page changed. | `build_residence_mvp.py` line 63 |
 | Major | No monitoring or health surface: the server logs only exceptions; no per-call record of tool, status, bytes and latency; no health endpoint. | `server.py` |
 | Major | Release re-parsing per call makes large parts unusable (5 to 9 s per call); the MVP plan's step A1 is still open. | `release.py` lines 272 to 296 |
@@ -145,7 +147,7 @@ input schemas that survive weak tool parsers; SDK-level stdio tests.
 | Sev. | Finding | Evidence |
 | --- | --- | --- |
 | Blocker | stdio only. The SDK in use ships streamable HTTP, Starlette and uvicorn are installed, but there is no `--transport` option, no authentication and no hosted endpoint. "A server Swisscom can access" during the event most plausibly means a URL. | `server.py`; `mcp.server.streamable_http_manager` importable today |
-| Major | The README opens with a target-product description and "the planned MCP server"; the start command is three links deep; there is no licence, no coverage page and no example client configuration with portable paths. | `README.md`; MCP README |
+| Resolved (was major) | The README opened with the target product; no licence, coverage page or portable client configuration existed. Resolved 12 September: quickstart-first README, generated [COVERAGE.md](../../COVERAGE.md), hand-written [LIMITATIONS.md](../../LIMITATIONS.md), Apache-2.0 `LICENSE` with a `NOTICE` on quoted official texts, and the decks now use the advertised tool names. | Repository root |
 | Major | The contract is unforgiving for an unknown caller LLM: `release_id` required on every child discovery call, `schema_version` required, `as_of` required, exact jurisdiction, one concept per call. Only the guided descriptions made Ling pass; Swisscom's model is unknown. | Caller test attempt 1 versus 2 |
 | Minor | Decks and rationale name the tools `swiss_information.get_coverage`; the server advertises `get_coverage`. | Project review table |
 
@@ -160,8 +162,8 @@ matter.
 | ID | Change | Why it moves the score | Where | Effort |
 | --- | --- | --- | --- | --- |
 | E1 | **Resolved 11 September** (commit `fdd57a5`, [validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md)): both `DateRange` bounds optional with a shared `covers()` check; per-concept validity in the curated data, unbounded by default; release rebuilt as v3 with 84 facts and three temporal preflight checks. Still to do before the event: rebuild from fresh snapshots in the final week (the intermediate-hash guard must be updated deliberately). | Removed the `OUT_OF_COVERAGE` result for every request dated after 11 September; grounding tests can pass. | `contracts.py`, `validation.py`, `service.py`, `build_residence_mvp.py`, `residence_mvp_curated.py` | Done |
-| E2 | Ship the knowledge in Git: commit the curated `release.json` (1.2 MB) under `releases/`, optionally parts 003 and 004 (18.5 MB); make `swisstip-mcp` default to the bundled release when `--release` is omitted; regenerate `mcp-client.json` and `opencode.json` examples without machine-specific paths. | A clean clone answers real questions; this is the deliverable the challenge names. | `apps/mcp-server/server.py`, new `releases/` | 3 h |
-| E3 | Quickstart-first README, `LICENSE`, `COVERAGE.md`, `LIMITATIONS.md`: what it is in two sentences, one install and one start command, an OpenCode and a generic MCP client snippet, one worked question, the coverage table (topics, jurisdictions, sources, languages, snapshot date), and the limits. Move the product vision below the fold. | Required by the challenge text; the first thing manual review reads. | `README.md`, root | 4 h |
+| E2 | **Resolved 12 September.** Ship the knowledge in Git: commit the curated `release.json` (1.2 MB) under `releases/`, optionally parts 003 and 004 (18.5 MB); make `swisstip-mcp` default to the bundled release when `--release` is omitted; regenerate `mcp-client.json` and `opencode.json` examples without machine-specific paths. | A clean clone answers real questions; this is the deliverable the challenge names. | `releases/`, `apps/mcp-server/bundled.py`, `scripts/releases/`, `scripts/client/` | Done |
+| E3 | **Resolved 12 September.** Quickstart-first README, `LICENSE`, `COVERAGE.md`, `LIMITATIONS.md`: what it is in two sentences, one install and one start command, an OpenCode and a generic MCP client snippet, one worked question, the coverage table (topics, jurisdictions, sources, languages, snapshot date), and the limits. Move the product vision below the fold. | Required by the challenge text; the first thing manual review reads. | `README.md`, `COVERAGE.md`, `LIMITATIONS.md`, `LICENSE`, `NOTICE` | Done |
 | E4 | Streamable HTTP transport and a hosted endpoint: `--transport streamable-http --host --port --token-env` using the SDK's `StreamableHTTPSessionManager` behind Starlette and uvicorn; bearer token; `Dockerfile` (slim Python image, editable installs of core, runtime and mcp-server, `COPY releases/`); deploy to one small host and record the URL and token exchange in the setup notes. Keep stdio unchanged. | The harness and Swisscom experts can connect without cloning; standard clients support `type: remote`. | `server.py`, new `Dockerfile` | 1 day |
 | E5 | Compact discovery: at topic level return a profile summary (profile ID, concept IDs, intent, jurisdiction, required context fields with allowed values, temporal coverage, source IDs) and no inline context schemas; full profiles and schemas only at concept level (3.4 KB today) or on `detail: "full"`. Deduplicate exclusions and references into one block per result. Target under 25 KB. | Removes the truncation risk under a default client and cuts about 30,000 tokens from every cold path. | `packages/runtime/service.py` `get_coverage`, `contracts.py` `GetCoverageResult` | 1 day |
 | E6 | **Resolved 12 September** ([containment record](../pilots/2026-09-12-jurisdiction-containment.md)). Jurisdiction compatibility and diagnostics: accept a request jurisdiction that is more specific than the profile's (country profile accepts canton and municipality; canton profile accepts municipality), report the profile jurisdiction in `executed_scope` with a limitation note; when nothing matches, name the field that failed (date window, jurisdiction, concept set, scope mode) and the nearest profile IDs in `allowed_values`. | Unguided callers stop losing calls to trial and error; federal facts appear alongside cantonal ones. | `contracts.py`, `validation.py`, `service.py`, `server.py` | Done |
@@ -202,7 +204,7 @@ matter.
 
 | Days | Work | Exit condition |
 | --- | --- | --- |
-| 12 Sep | E2, E3, E7 (E1 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
+| 12 Sep | E7 (E1, E2, E3 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
 | 13 to 15 Sep | E5, E4, E11 (E6 done) | Cold path under 25 KB per call; hosted URL answers the same question; federal plus canton request succeeds |
 | 16 Sep | Swisscom Q&A (section 6); adjust the plan | Open questions answered |
 | 16 to 20 Sep | E8, E9, E10, E12 in parallel | Search plus resolve in two calls; 80 or more concepts across three topics; German and French labels |

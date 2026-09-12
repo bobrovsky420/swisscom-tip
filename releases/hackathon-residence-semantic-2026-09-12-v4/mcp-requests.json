@@ -1,0 +1,2073 @@
+{
+  "execution_status": "Prepared and schema-validated; not sent to an application.",
+  "discovery": {
+    "tool": "get_coverage",
+    "arguments": {
+      "schema_version": "get-coverage/v1",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "parent_id": "residence",
+      "limit": 100
+    }
+  },
+  "resolve": [
+    {
+      "name": "permit-authority",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-permit-authority"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-permit-authority-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-permit-authority-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "aig-short-stay",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-aig-short-stay"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-aig-short-stay-1",
+        "mvp-fact-aig-short-stay-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-aig-short-stay-1",
+        "mvp-evidence-aig-short-stay-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "aig-work-permit",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-aig-work-permit"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "third_country"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-aig-work-permit-1",
+        "mvp-fact-aig-work-permit-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-aig-work-permit-1",
+        "mvp-evidence-aig-work-permit-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "aig-registration",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-aig-registration"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-aig-registration-1",
+        "mvp-fact-aig-registration-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-aig-registration-1",
+        "mvp-evidence-aig-registration-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "permit-l",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-permit-l"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-permit-l-1",
+        "mvp-fact-permit-l-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-permit-l-1",
+        "mvp-evidence-permit-l-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "permit-b",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-permit-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-permit-b-1",
+        "mvp-fact-permit-b-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-permit-b-1",
+        "mvp-evidence-permit-b-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "permit-c",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-permit-c"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-permit-c-1",
+        "mvp-fact-permit-c-2",
+        "mvp-fact-permit-c-3"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-permit-c-1",
+        "mvp-evidence-permit-c-2",
+        "mvp-evidence-permit-c-3"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "aig-study",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-aig-study"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "third_country"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-aig-study-1",
+        "mvp-fact-aig-study-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-aig-study-1",
+        "mvp-evidence-aig-study-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "integration-criteria",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-integration-criteria"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-integration-criteria-1",
+        "mvp-fact-integration-criteria-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-integration-criteria-1",
+        "mvp-evidence-integration-criteria-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "family-swiss",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-family-swiss"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "sponsor_status": "swiss"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-family-swiss-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-family-swiss-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "family-c",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-family-c"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "sponsor_status": "c"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-family-c-1",
+        "mvp-fact-family-c-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-family-c-1",
+        "mvp-evidence-family-c-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "family-b",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-family-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "sponsor_status": "b"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-family-b-1",
+        "mvp-fact-family-b-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-family-b-1",
+        "mvp-evidence-family-b-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "family-deadlines",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-family-deadlines"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-family-deadlines-1",
+        "mvp-fact-family-deadlines-2",
+        "mvp-fact-family-deadlines-3"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-family-deadlines-1",
+        "mvp-evidence-family-deadlines-2",
+        "mvp-evidence-family-deadlines-3"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "family-separation",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-family-separation"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-family-separation-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-family-separation-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "canton-change",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-canton-change"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "third_country"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-canton-change-1",
+        "mvp-fact-canton-change-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-canton-change-1",
+        "mvp-evidence-canton-change-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "third-country-work",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-third-country-work"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "third_country"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-third-country-work-1",
+        "mvp-fact-third-country-work-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-third-country-work-1",
+        "mvp-evidence-third-country-work-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "eu-short-employment",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-eu-short-employment"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-eu-short-employment-1",
+        "mvp-fact-eu-short-employment-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-eu-short-employment-1",
+        "mvp-evidence-eu-short-employment-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "notification-responsibility",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-notification-responsibility"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-notification-responsibility-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-notification-responsibility-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "posted-service-notification",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-posted-service-notification"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-posted-service-notification-1",
+        "mvp-fact-posted-service-notification-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-posted-service-notification-1",
+        "mvp-evidence-posted-service-notification-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "uk-new-employment",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-uk-new-employment"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "uk_new"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-uk-new-employment-1",
+        "mvp-fact-uk-new-employment-2",
+        "mvp-fact-uk-new-employment-3"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-uk-new-employment-1",
+        "mvp-evidence-uk-new-employment-2",
+        "mvp-evidence-uk-new-employment-3"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "biometric-permit",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-biometric-permit"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-biometric-permit-1",
+        "mvp-fact-biometric-permit-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-biometric-permit-1",
+        "mvp-evidence-biometric-permit-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "language-evidence",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-language-evidence"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-language-evidence-1",
+        "mvp-fact-language-evidence-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-language-evidence-1",
+        "mvp-evidence-language-evidence-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "social-assistance-review",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-social-assistance-review"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-social-assistance-review-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-social-assistance-review-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-registration",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-registration"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-registration-1",
+        "mvp-fact-zh-eu-registration-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-registration-1",
+        "mvp-evidence-zh-eu-registration-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-l",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-l"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-l-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-l-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-b",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-b-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-b-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-self-employment",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-self-employment"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-self-employment-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-self-employment-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-nonworking",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-nonworking"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-nonworking-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-nonworking-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-eu-family-documents",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-family-documents"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-eu-family-documents-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-eu-family-documents-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "zh-third-country-retirement",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-third-country-retirement"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "third_country"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-zh-third-country-retirement-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-zh-third-country-retirement-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "city-zurich-arrival",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-city-zurich-arrival"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH",
+          "municipality_id": "261"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "arrival_origin": "abroad"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-city-zurich-arrival-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-city-zurich-arrival-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "city-zurich-arrival-documents",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-city-zurich-arrival-documents"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH",
+          "municipality_id": "261"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "arrival_origin": "abroad"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-city-zurich-arrival-documents-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-city-zurich-arrival-documents-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "eu-employment-registration-deadline",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-eu-employment-registration-deadline"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-eu-employment-registration-deadline-1",
+        "mvp-fact-eu-employment-registration-deadline-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-eu-employment-registration-deadline-1",
+        "mvp-evidence-eu-employment-registration-deadline-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "health-insurance-enrolment",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-health-insurance-enrolment"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "insurance_obligation": "applies"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-health-insurance-enrolment-1",
+        "mvp-fact-health-insurance-enrolment-2"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-health-insurance-enrolment-1",
+        "mvp-evidence-health-insurance-enrolment-2"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ag",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-AG"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ag-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ag-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ai",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-AI"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ai-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ai-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ar",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-AR"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ar-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ar-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-be",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-BE"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-be-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-be-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-bl",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-BL"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-bl-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-bl-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-bs",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-BS"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-bs-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-bs-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-fr",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-FR"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-fr-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-fr-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ge",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-GE"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ge-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ge-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-gl",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-GL"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-gl-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-gl-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-gr",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-GR"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-gr-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-gr-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ju",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-JU"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ju-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ju-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-lu",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-LU"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-lu-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-lu-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ne",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-NE"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ne-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ne-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-nw",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-NW"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-nw-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-nw-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ow",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-OW"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ow-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ow-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-sg",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-SG"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-sg-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-sg-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-sh",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-SH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-sh-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-sh-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-so",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-SO"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-so-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-so-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-sz",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-SZ"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-sz-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-sz-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-tg",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-TG"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-tg-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-tg-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ti",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-TI"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ti-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ti-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-ur",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-UR"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-ur-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-ur-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-vd",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-VD"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-vd-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-vd-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-vs",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-VS"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-vs-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-vs-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-zg",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZG"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-zg-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-zg-1"
+      ],
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "cantonal-migration-contact-zh",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-cantonal-migration-contact"
+        ],
+        "intent": "contacts",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "expected_fact_ids": [
+        "mvp-fact-cantonal-migration-contact-zh-1"
+      ],
+      "expected_evidence_ids": [
+        "mvp-evidence-cantonal-migration-contact-zh-1"
+      ],
+      "validated_preflight_status": "READY"
+    }
+  ],
+  "negative_cases": [
+    {
+      "name": "missing-population",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {},
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "validated_preflight_status": "NEEDS_CONTEXT"
+    },
+    {
+      "name": "outside-canton",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-GE"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "validated_preflight_status": "OUT_OF_COVERAGE"
+    },
+    {
+      "name": "before-source-stated-commencement",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-uk-new-employment"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH"
+        },
+        "as_of": "2020-12-31",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+        "context": {
+          "population": "uk_new"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "validated_preflight_status": "OUT_OF_COVERAGE"
+    },
+    {
+      "name": "wrong-release",
+      "tool": "resolve",
+      "arguments": {
+        "knowledge_space_id": "hackathon",
+        "domain_id": "immigration",
+        "topic_id": "residence",
+        "concept_ids": [
+          "residence-zh-eu-b"
+        ],
+        "intent": "requirements",
+        "jurisdiction": {
+          "country_code": "CH",
+          "canton_code": "CH-ZH"
+        },
+        "as_of": "2026-09-12",
+        "scope_mode": "exact",
+        "schema_version": "structured-grounding/v1",
+        "release_id": "unavailable-test-release",
+        "context": {
+          "population": "eu_efta"
+        },
+        "retrieval_terms": [],
+        "max_evidence": 5
+      },
+      "validated_preflight_status": "RELEASE_UNAVAILABLE"
+    }
+  ],
+  "temporal_checks": [
+    {
+      "name": "unbounded-far-past",
+      "as_of": "1990-01-01",
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "unbounded-far-future",
+      "as_of": "2099-12-31",
+      "validated_preflight_status": "READY"
+    },
+    {
+      "name": "commencement-day",
+      "as_of": "2021-01-01",
+      "validated_preflight_status": "READY"
+    }
+  ],
+  "evidence": {
+    "tool": "get_evidence",
+    "arguments": {
+      "schema_version": "get-evidence/v1",
+      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "evidence_ids": [
+        "mvp-evidence-permit-authority-1"
+      ]
+    }
+  }
+}

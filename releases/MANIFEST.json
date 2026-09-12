@@ -1,0 +1,40 @@
+{
+  "schema_version": "bundled-releases/v1",
+  "active_release_id": "hackathon-residence-semantic-2026-09-12-v4",
+  "releases": [
+    {
+      "release_id": "hackathon-residence-semantic-2026-09-12-v4",
+      "path": "hackathon-residence-semantic-2026-09-12-v4/release.json",
+      "sha256": "96a03b81321d01449a7b563ef9129f98a7cfce6f43ed94f0b176426b726d1170",
+      "created_at": "2026-09-12T06:36:51Z",
+      "snapshot_dates": [
+        "2026-09-10"
+      ],
+      "documents": 12,
+      "concepts": 35,
+      "facts": 84,
+      "evidence": 84,
+      "rules": 20,
+      "coverage_profiles": 60,
+      "freshness_days": [
+        60
+      ],
+      "temporal_coverage": {
+        "default": "unbounded",
+        "source_stated": [
+          {
+            "concept": "residence-uk-new-employment",
+            "valid_from": "2021-01-01"
+          }
+        ]
+      },
+      "published_at": "2026-09-12T07:34:02Z",
+      "source": ".local/mvp/residence-semantic-2026-09-12-v4",
+      "excluded": [
+        "sources/ (raw snapshots, hash-referenced provenance)",
+        "semantic-extraction.json (derived export)",
+        "mcp-client.json (machine-specific paths)"
+      ]
+    }
+  ]
+}

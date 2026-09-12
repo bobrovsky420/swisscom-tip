@@ -93,7 +93,7 @@ flowchart LR
     C --> O[Caller-composed answer or clarification]
 ```
 
-- **OpenCode:** a standards-compatible example client; show `swiss_information.get_coverage`, `resolve` and, when needed, `get_evidence`.
+- **OpenCode:** a standards-compatible example client; show `get_coverage`, `resolve` and, when needed, `get_evidence`.
 - **Arrival Checklist (P1):** supplies typed fields directly; renders available requirements and unresolved conditions.
 - **Admin Control Plane (P1):** exposes sources, catalog identifiers, context schemas, evidence, builds, evaluation and releases.
 

@@ -17,6 +17,28 @@ canonical core schema exports retain their shared definitions. Runtime validatio
 stays strict: stringified JSON objects are rejected. Restart connected MCP clients
 after updating the server so they reload the advertised schemas.
 
+## Bundled release
+
+The repository ships the curated residence release in the top-level
+[releases/](../../releases/) folder, listed in `MANIFEST.json` with its SHA-256.
+With no storage arguments the server locates that folder (`--releases-dir`, then
+`SWISSTIP_RELEASES_DIR`, then walking up from the package file or the working
+directory), verifies the hash, prints the folder it serves to stderr, and serves
+the manifest's active release; `--active-release-id` may select another bundled
+release. [COVERAGE.md](../../COVERAGE.md) describes what it contains.
+
+```shell
+./.venv/Scripts/python.exe -m pip install -e packages/core -e packages/runtime -e apps/mcp-server
+./.venv/Scripts/swisstip-mcp
+```
+
+Publish a newly built release with
+`./.venv/Scripts/python.exe scripts/releases/publish_release.py --source <release directory> --activate`;
+it re-validates the release, copies it without the raw snapshots, rewrites the
+manifest and regenerates `COVERAGE.md`.
+
+## Explicit releases and the synthetic fixture
+
 From the repository root:
 
 ```shell
