@@ -35,8 +35,17 @@ The coverage itself is listed in [COVERAGE.md](COVERAGE.md).
   `get_coverage` and resolves one concept per call. The root call returns a
   `coverage_summary` with the release's scope statement and out-of-scope
   list, so a question outside the served scope can be refused after one
-  call. Retrieval terms return
-  `UNSUPPORTED_LANGUAGE` because no term routes are published for this release.
+  call. There is no search tool: a term cannot find a concept.
+- **Retrieval terms rank within one language.** Optional `retrieval_terms`
+  are accepted in `de` and `en`, the languages of the cited pages. A term
+  ranks the evidence of the selected concept by word overlap with the
+  original excerpt, and only evidence written in the term's language; it
+  never changes scope, context or facts. A term in another language is
+  refused as `UNSUPPORTED_LANGUAGE` naming the accepted tags, and a German
+  term on a concept cited from English pages (or the reverse) is
+  `OUT_OF_COVERAGE` with `unevaluated_language_combination`. No translation,
+  projection or semantic model is involved; `coverage_summary.languages`
+  lists the term languages and `derived_limits` states the rule.
 - **Large discovery pages.** Topic-level discovery returns about 140 KB with
   every coverage profile and context schema inline. Clients with a small
   tool-output cap must raise it; the printed OpenCode configuration does so.

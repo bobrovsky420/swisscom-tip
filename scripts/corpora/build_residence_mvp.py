@@ -25,7 +25,7 @@ from swisstip.runtime.release import ReleaseBundle, validate_release
 from residence_mvp_curated import CONCEPTS, CONTACT_ROWS, DIRECTORY, SCOPE, SELECTOR_VALUES, claim, concept
 
 ROOT = Path(__file__).resolve().parents[2]
-RELEASE_ID = 'hackathon-residence-semantic-2026-09-12-v5'
+RELEASE_ID = 'hackathon-residence-semantic-2026-09-12-v6'
 # Default snapshot-age limit: a result whose oldest selected citation was saved
 # more than this many days before the read time is reported STALE.
 FRESHNESS_DAYS = 60
@@ -107,6 +107,7 @@ def build(intermediate, corpus, output):
         temporal_coverage_semantics='Unbounded unless the cited source states a commencement or expiry date; each citation records its snapshot time (accessed_at) and the freshness policy governs staleness.',
         freshness_policy_semantics=f'Snapshot-age limit of {FRESHNESS_DAYS} days, counted from the oldest accessed_at among the selected evidence to the read time; older results are reported STALE with their facts retained. The limit measures the age of the saved copy, not whether the page changed; refresh by re-downloading and rebuilding.',
         context_semantics='Selectors route populations; they do not decide eligibility.',
+        retrieval_terms_semantics='Optional relevance signals only; they never set or override scope, context, dates or facts. A term is accepted in each source language of the release and ranks, by lexical overlap with the original excerpt, only evidence written in that same language. No translation, projection or semantic model is involved, so a term in another language, or against sources in another language, is refused as unevaluated.',
         semantic_search=False, runtime_tests_executed=False))
     provider = control('mvp-no-providers', dict(mode='none', model_calls=0, embedding_calls=0))
     ranking = control('mvp-baseline-ranking', dict(mode='BUILD-03 deterministic concept/fact baseline', hybrid=False))
@@ -142,9 +143,15 @@ def build(intermediate, corpus, output):
                     for i in used_ids})
     saved_note = ('Curated from official pages saved on ' + saved[0] if len(saved) == 1
                   else 'Curated from official pages saved between ' + saved[0] + ' and ' + saved[-1]) + '; not complete Swiss legal coverage.'
+    # Same-language term routes only: a term tagged with a source language ranks
+    # evidence written in that language by lexical overlap with the original
+    # excerpt, which is its own complete projection. Cross-language routes would
+    # need projections and a hybrid configuration that this release does not have.
+    languages = sorted({m['language'] for m in metadata.values()})
     policy = seal_artifact(LanguagePolicy(identity=ref('mvp-language-policy'),
-        term_languages=[], source_languages=sorted({m['language'] for m in metadata.values()}),
-        projection_languages=[], routes=[], approval_status='APPROVED', evaluation_ref=evaluation))
+        term_languages=languages, source_languages=languages, projection_languages=languages,
+        routes=[dict(term_language=l, projection_language=l) for l in languages],
+        approval_status='APPROVED', evaluation_ref=evaluation))
     entries, schemas, profiles, plans, facts, rules, evidence, provenance, requests = [], [], [], [], [], [], [], [], []
 
     def entry(identifier, kind, parent, label):
@@ -215,6 +222,9 @@ def build(intermediate, corpus, output):
             context_schema_ref=schema.identity, scope_modes=['exact'], max_descendant_depth=0, max_concepts=1,
             source_ids=sorted({e.citation.source_id for e in row_evidence}),
             source_languages=sorted({e.effective_source_language for e in row_evidence}), temporal_coverage=validity,
+            term_routes=[dict(term_language=l, projection_language=l, source_languages=[l], evaluation_ref=evaluation)
+                         for l in sorted({e.effective_source_language for e in row_evidence})],
+            projection_languages_complete=sorted({e.effective_source_language for e in row_evidence}),
             rule_refs=rule_refs, evaluation_ref=evaluation, approval_status='APPROVED',
             exclusions=[DISCLAIMER, saved_note, *row['notes']],
             freshness_policy=dict(max_age_days=FRESHNESS_DAYS, policy_ref=evaluation)))
@@ -274,6 +284,24 @@ def build(intermediate, corpus, output):
         if assessment.status != 'READY':
             raise ValueError(f'{name}: expected READY, got {assessment}')
         temporal_checks.append(dict(name=name, as_of=as_of, validated_preflight_status=assessment.status))
+    # Same-language terms pass preflight; a term in another language is refused
+    # by name, and a term against sources in another language is out of coverage.
+    term_checks = []
+    # Profiles and prepared requests are appended in the same order.
+    by_language = {tuple(p['source_languages']): r for p, r in zip(profiles, requests)}
+    german, english = by_language[('de',)], by_language[('en',)]
+    for name, base, terms, expected, reason in [
+        ('german-term-on-german-sources', german['arguments'], [dict(text='Anmeldung Aufenthaltsbewilligung', language='de')], 'READY', None),
+        ('english-term-on-english-sources', english['arguments'], [dict(text='residence permit employer', language='en')], 'READY', None),
+        ('french-term-not-enabled', german['arguments'], [dict(text='permis de sejour', language='fr')], 'UNSUPPORTED_LANGUAGE', 'unsupported_term_language'),
+        ('german-term-on-english-sources', english['arguments'], [dict(text='Aufenthaltsbewilligung', language='de')], 'OUT_OF_COVERAGE', 'unevaluated_language_combination'),
+    ]:
+        assessment = validate_request({**deepcopy(base), 'retrieval_terms': terms}, catalog, policy)
+        if assessment.status != expected or (reason and assessment.issues[0].reason != reason):
+            raise ValueError(f'{name}: expected {expected} {reason}, got {assessment}')
+        term_checks.append(dict(name=name, tool='resolve', arguments={**deepcopy(base), 'retrieval_terms': terms},
+                                validated_preflight_status=assessment.status,
+                                **({'reason_code': reason} if reason else {})))
     source_stated = [dict(concept='residence-' + row['key'], **row['validity']) for row in selected if row.get('validity')]
     stated_note = ', '.join(s['concept'] + ' (' + ', '.join(f'{k}={v}' for k, v in s.items() if k != 'concept') + ')'
                             for s in source_stated) or 'none'
@@ -297,7 +325,7 @@ def build(intermediate, corpus, output):
     evidence_request = GetEvidenceRequest(release_id=RELEASE_ID, evidence_ids=[evidence[0].evidence_id])
     write_json(output / 'mcp-requests.json', dict(execution_status='Prepared and schema-validated; not sent to an application.',
         discovery=dict(tool='get_coverage', arguments=discovery.model_dump(exclude_none=True)),
-        resolve=requests, negative_cases=negative_requests, temporal_checks=temporal_checks,
+        resolve=requests, negative_cases=negative_requests, temporal_checks=temporal_checks, term_checks=term_checks,
         evidence=dict(tool='get_evidence', arguments=evidence_request.model_dump())))
     write_json(output / 'mcp-client.json', {'mcpServers': {'swisstip-residence-mvp': {
         'command': str(ROOT / '.venv/Scripts/python.exe'),
@@ -306,7 +334,8 @@ def build(intermediate, corpus, output):
         classification='experimental', validated=True, checks=['Existing validate_release before and after JSON serialization',
         'Raw snapshot and normalized source hashes', 'Exact evidence spans and block coordinates',
         'All packaged external dependency hashes', 'MCP request Pydantic schemas',
-        f'{len(requests)} positive, {len(negative_requests)} negative and {len(temporal_checks)} temporal core preflight checks'],
+        f'{len(requests)} positive, {len(negative_requests)} negative, {len(temporal_checks)} temporal and {len(term_checks)} retrieval-term core preflight checks'],
+        retrieval_term_languages=languages, retrieval_term_routing='same-language lexical overlap only',
         facts=len(facts), evidence=len(evidence), rules=len(rules), concepts=len(seen_concepts),
         coverage_profiles=len(profiles), curated_documents=len(documents), cantonal_contacts=len(contacts),
         prepared_resolve_requests=len(requests), negative_preflight_cases=len(negative_requests),
@@ -335,14 +364,17 @@ Use `mcp-client.json` to configure a local MCP client, or run:
 ```
 
 `mcp-requests.json` supplies discovery, {len(requests)} resolve examples, {len(negative_requests)} negative cases,
-{len(temporal_checks)} temporal checks and an evidence request. Select exactly one concept per resolve and supply the
+{len(temporal_checks)} temporal checks, {len(term_checks)} retrieval-term checks and an evidence request. Select exactly one concept per resolve and supply the
 listed context. `as_of` is the applicability date the caller asks about, normally today; the examples use the
 build date {BUILD_DATE}. Validity is unbounded unless the cited source states a commencement or expiry date.
 Source-stated limits in this release: {stated_note}.
 Each citation records when its page was saved (`accessed_at`; {', '.join(saved)}); the freshness policy reports
 results as STALE once that snapshot is older than {FRESHNESS_DAYS} days.
-The deterministic concept/fact baseline requires no models. Free-text semantic retrieval,
-embeddings, reranking and multilingual projections are outside this pack.
+The deterministic concept/fact baseline requires no models. Optional `retrieval_terms` are accepted in
+{' and '.join('`' + l + '`' for l in languages)} and rank evidence written in the same language by lexical overlap
+with the original excerpt; they never change scope, context or facts. A term in another language is refused
+(`UNSUPPORTED_LANGUAGE`), and a term against sources in another language is out of coverage. Semantic retrieval,
+embeddings, reranking and cross-language projections are outside this pack.
 
 {DISCLAIMER} Contract `APPROVED`/`CURATED` flags enable this experimental fixture to be
 loaded by the existing validator; they do not assert independent review or production approval.
@@ -362,7 +394,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--intermediate', type=Path, default=ROOT / '.local/intermediate/hackathon-residence-2026-09-11-v1')
     parser.add_argument('--corpus', type=Path, default=ROOT / '.local/corpora/hackathon-residence-2026-09-10')
-    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-12-v5')
+    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-12-v6')
     parser.add_argument('--release-id', default=RELEASE_ID,
                         help='Release identity; choose a new one together with --output when the curated selections change.')
     args = parser.parse_args()

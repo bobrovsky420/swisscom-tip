@@ -120,6 +120,11 @@ def coverage_summary(bundle) -> CoverageSummary:
     if not policy.term_languages:
         limits.append("Free-text retrieval terms are not supported: no term routes are published, so select "
                       "concepts from the catalog instead.")
+    elif routes := sorted({(r.term_language, s) for p in profiles for r in p.term_routes for s in r.source_languages}):
+        limits.append(_sentence("Retrieval terms are evaluated only for: ",
+                                [f"{term} terms against {source} sources" for term, source in routes],
+                                "Retrieval terms are evaluated only for the published routes.")
+                      + " Other term languages are refused and other term/source combinations are out of coverage.")
     if stated:
         windows = []
         for concept, window in stated:

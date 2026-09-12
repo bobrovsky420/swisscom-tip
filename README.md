@@ -92,7 +92,9 @@ The full list of sources and concepts is generated from the bundled release in
   independent human or legal review; not legal advice.
 - One topic; other cantons' procedures, fees and processing times are not
   covered, and the server says so with the published values that would match.
-- Catalog-driven: one concept per call, no free-text search yet.
+- Catalog-driven: one concept per call, no free-text search yet. Retrieval
+  terms in `de` or `en` rank the evidence of the chosen concept within the
+  same language; they never widen scope.
 - stdio only; no hosted endpoint yet.
 - Facts are English paraphrases; the original excerpt is authoritative.
 

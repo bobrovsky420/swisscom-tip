@@ -285,6 +285,8 @@ class ServiceTests(unittest.TestCase):
             "Intents other than: requirements.",
             "Countries other than: CH.",
             "Canton- or municipality-specific information for places not listed under jurisdictions.",
+            "Retrieval terms are evaluated only for: de terms against en sources, en terms against en sources. "
+            "Other term languages are refused and other term/source combinations are out of coverage.",
             "Dates outside source-stated validity: fixture-parent before 2026-01-01 or after 2026-12-31.",
         ])
         # The summary travels with the root page only; every child page stays as before.
@@ -304,6 +306,8 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(summary.scope, {"en": "Synthetic residence rules for group A."})
         self.assertEqual(summary.out_of_scope, {"en": ["Taxes.", "Driving licences."]})
         self.assertEqual(summary.derived_limits, [
+            "Retrieval terms are evaluated only for: de terms against en sources, en terms against en sources. "
+            "Other term languages are refused and other term/source combinations are out of coverage.",
             "Dates outside source-stated validity: fixture-parent before 2026-01-01 or after 2026-12-31."])
 
     def test_jurisdiction_rows_group_places_by_level_intent_and_count(self):

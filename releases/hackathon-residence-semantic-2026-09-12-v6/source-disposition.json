@@ -1,0 +1,728 @@
+[
+  {
+    "document_id": "doc-bd1162c5bb24cb097b1b",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/261/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-4458e986432c2d76f759",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/511/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-18355c7dc9a45a38b413",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/758/de",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-ba5ce5fb93c6bd0c2e2e",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/758/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-1ffac2af15adaabce92f",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/763/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c4dd255c4bfc0535a829",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/243/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-0333bc8738728eb97f96",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/493/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-28d51c53a0835abfa96a",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/759/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-3b8ce6dabe0de1a5df63",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/763/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-a6e99ee8d47bd727d65a",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/493/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-730073da64e914e68e99",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/511/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-57a4a128cf32a5f42e5f",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/243/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-b2a15fd2812658fb42f7",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/759/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-03f123d5023e61927220",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/261/de",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-5d7dc53918ecade79afb",
+    "source_url": "https://sh.ch/CMS/Webseite/Kanton-Schaffhausen/Beh-rde/Verwaltung/Volkswirtschaftsdepartement/Arbeitsamt/Arbeitgeber-und-Unternehmen/Arbeitsbewilligungen-und-Meldeverfahren-1546859-DE.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-5d1946efabecb3af34f4",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/faq.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-fe2c9abed56c29de5bf6",
+    "source_url": "https://www.sz.ch/behoerden/verwaltung/volkswirtschaftsdepartement/amt-fuer-arbeit.html/8756-8758-8802-10373-10896",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-e55e22b212d231795957",
+    "source_url": "https://www.jura.ch/fr/Autorites/Administration/DSJP/SPOP/Police-des-etrangers/Police-des-etrangers.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-f6146d6dca1b459a2c15",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-mit-erwerbstaetigkeit-fuer-drittstaatsangehoerige.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-f01f331d95c6d4f24f7c",
+    "source_url": "https://www.bvger.ch/de/rechtsprechung/entscheiddatenbank",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-14f2ca53c2eb831bf256",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt/familiennachzug-von-drittstaatsangehoerigen.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-4b5f225b781392bd0b0e",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/eu_efta.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-e9244a7babf978ab6410",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/sem/aktuell/ukraine-krieg.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-000201499dc728a2eec4",
+    "source_url": "https://www.zh.ch/de/migration-integration/willkommen/deutsch/aufenthalt-und-familiennachzug.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-b13c0d365efc2ab446a4",
+    "source_url": "https://www.zh.ch/de/wirtschaft-arbeit/erwerbstaetigkeit-auslaender.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-274c7cb3e4a6efd12a0c",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt/biometrische-auslaenderausweise.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-1c9623d1c7ea3f19aa17",
+    "source_url": "https://www.ge.ch/organisation/office-cantonal-population-migrations-ocpm",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-a4cf29d62a344b1b6ecd",
+    "source_url": "https://www.bwo.admin.ch/de/broschuere-wohnen-in-der-schweiz",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c6f128172a9456095f08",
+    "source_url": "https://www.mission-geneve.dfae.admin.ch/en/manual-members-of-family",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c023c3b6f3bfd49112e6",
+    "source_url": "https://www.fedlex.admin.ch/",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-1fecab1db69979bcc2ef",
+    "source_url": "https://www.awa.sg.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-bc7b3e6e28e31c53f689",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/763/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-f6e80531320dcdb5336c",
+    "source_url": "https://www.ur.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6024dc16f62d589572cb",
+    "source_url": "https://www.ar.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-44f186f5244aaee0ec11",
+    "source_url": "https://www.ge.ch/organisation/ocirt-office-cantonal-inspection-relations-du-travail",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-0bd62f17fcf8ebf2231f",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/publiservice/weisungen-kreisschreiben/integration.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-a1dc7c5a054861afd7ae",
+    "source_url": "https://www.ne.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-ab9ec584291bf66828a4",
+    "source_url": "https://www.fr.ch/de/sjsd/bma",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-9f1fd897356aa4dd86f0",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-026495cd7a981ddc2584",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/biometr_auslaenderausweis.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-2213431c804a71b4dc21",
+    "source_url": "https://so.ch/verwaltung/volkswirtschaftsdepartement/amt-fuer-wirtschaft-und-arbeit/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-4f1866e693fa0a37c4ed",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-4cee9fc4baaa315f59f2",
+    "source_url": "https://www.bs.ch/wsu/awa",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6e65b593ed3ae16b8ed3",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/493/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-456b765a4d1999f2b52d",
+    "source_url": "https://www.sem.admin.ch/sem/fr/home/themen/aufenthalt.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-d362b4e7e9fec9216410",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/261/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-530d46d577fc21eed6f1",
+    "source_url": "https://www.ai.ch/themen/auslaender/einreise-und-aufenthalt/gesuchformulare-merkblaetter-einreise-und-aufenthalt",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-d262274ffcd0aa77afec",
+    "source_url": "https://www.fr.ch/travail-et-entreprises/employeurs/main-doeuvre-etrangere",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-375eda7d377bd368e73d",
+    "source_url": "https://www.ow.ch/fachbereiche/1822",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-db4e91367b8cd9f9e947",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/758/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-8815296810c90e67a817",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/publiservice/weisungen-kreisschreiben/asylgesetz.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6a4f616da520564ef1c0",
+    "source_url": "https://www.nw.ch/online-schalter/5572/download",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-fc319456d22a0b7ff861",
+    "source_url": "https://www.ag.ch/de/themen/wirtschaft-arbeit",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-976cb22bb24f3986a9af",
+    "source_url": "https://www.vd.ch/population/population-etrangere/entree-et-sejour",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-3198cb2abda7d67422f7",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-ohne-erwerbstaetigkeit-fuer-drittstaatsangehoerige.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-06cffd17036764188982",
+    "source_url": "https://ar.ch/verwaltung/departement-inneres-und-sicherheit/amt-fuer-inneres/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c9b704219cdcddd9107e",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/sem/kontakt/kantonale_behoerden/adressen_kantone_und.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-d27853ddef259330a19e",
+    "source_url": "https://www.bs.ch/jsd/bdm/migrationsamt",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6fc4e12e684157ef4978",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt/aufenthalt-fuer-euefta-staatsangehoerige.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-02fc9ed3fb7ad1078e33",
+    "source_url": "https://www.vs.ch/de/web/spm/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-af6686d4becd8a980b51",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/nicht_eu_efta.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-34ef0ec737a996b68d08",
+    "source_url": "https://www.stadt-zuerich.ch/de/lebenslagen/einwohner-services/umziehen-melden/zuzug.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c1e5187384ad3e834176",
+    "source_url": "https://www.schweiz-deutschland.eda.admin.ch/en/documents-national-visa",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c7c12864ec79e8667059",
+    "source_url": "https://www.zh.ch/de/migration-integration/niederlassungsbewilligung.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-e4faac52bfd9dc95c90f",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/faq.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-094ef42324485ec86493",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/fza_schweiz-eu-efta/eu-efta_buerger_schweiz/faq.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-650b0b44cfd265de515a",
+    "source_url": "https://www.mission-geneve.dfae.admin.ch/en/manual-fdfa-legitimation-cards",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c38767db57a7f942ae21",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/uk/zulassung.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-2431622f226bb081a0e9",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/sans-papiers.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-26acc344dbf3d6f6a9be",
+    "source_url": "https://www.zh.ch/de/sicherheitsdirektion/migrationsamt/formulare-broschueren-weisungen-des-migrationsamts.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-dd5071b3361c3ca08f2b",
+    "source_url": "https://so.ch/verwaltung/departement-des-innern/migrationsamt/aufenthalt-und-integration/bewilligungen/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6698ed4ef8dad5cf83e4",
+    "source_url": "https://zg.ch/de/migration-integration/einreise-und-aufenthalt",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-051e552068e5dc556b69",
+    "source_url": "https://www.gr.ch/DE/institutionen/verwaltung/djsg/afm/dienstleistungen/Einreise_Aufenthalt/NAA/Seiten/default.aspx",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-d4d029f2f0254f654f63",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/aufenthalt/reisedokumente.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-9b1cdec8a0d1eb938c6c",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/fza_schweiz-eu-efta/meldeverfahren.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-01992cddf10dc3ca06f4",
+    "source_url": "https://www.vd.ch/economie/prestations-de-la-direction-generale-de-lemploi-et-du-marche-du-travail-dgem/permis-de-sejour-et-de-travail-pour-etrangers",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-0e88ce63f1e6a67e5729",
+    "source_url": "https://www.zh.ch/de/migration-integration/integration.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-160144fed53926107243",
+    "source_url": "https://migration.lu.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c53815bdbd1eecf7a4af",
+    "source_url": "https://www.eda.admin.ch/eda/de/home/einreise-und-aufenthaltinderschweiz/visa.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-2425f8e5aacbcbbf1611",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/publiservice/weisungen-kreisschreiben/auslaenderbereich.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-9606c641ff54112d819c",
+    "source_url": "https://www.sg.ch/sicherheit/einreise-aufenthalt-ausreise.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-f09ebbb4481ad243ff38",
+    "source_url": "https://www.bag.admin.ch/de/krankenversicherung-versicherungspflicht-fuer-in-der-schweiz-wohnhafte-versicherte",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-eff7d03b0454ac69f29e",
+    "source_url": "https://www.thun.ch/fachbereiche/32216",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-dbf2f30113add7e69bbf",
+    "source_url": "https://www.migration.sid.be.ch/de/start.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-9717f5b77ee48430afe0",
+    "source_url": "https://zg.ch/de/volkswirtschaftsdirektion/amt-fuer-wirtschaft-und-arbeit",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-a18f4f1ec15206476cca",
+    "source_url": "https://www.ai.ch/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-f7697f0191fbfd895f67",
+    "source_url": "https://www.sz.ch/behoerden/verwaltung/volkswirtschaftsdepartement/amt-fuer-migration.html/8756-8758-8802-10373-10961",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-22d2f124f73785c3190a",
+    "source_url": "https://www.bazg.admin.ch/de/vorgehen-umzug-in-die-schweiz",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-ed6b69a10db720b48ebf",
+    "source_url": "https://www4.ti.ch/di/spop/stranieri",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-592576cff632151bc6fd",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/einreise/faq.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-fe832024b5ac71e04686",
+    "source_url": "https://www.ow.ch/aemter/161",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-14109bfddb27520c92f3",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2018/511/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-fac0ba803b18f8be7b3a",
+    "source_url": "https://www.ur.ch/unterinstanzen/907",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-70680874a855723b3977",
+    "source_url": "https://www.estv.admin.ch/de/quellensteuer",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c65bac1908f3bf48a4b1",
+    "source_url": "https://integration.nw.ch/aufenthalt/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-81c89911e0e5549ab045",
+    "source_url": "https://www.eda.admin.ch/en/residence-in-switzerland",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-5c949d4f528bb281fd8a",
+    "source_url": "https://www.ch.ch/de/auslander-in-der-schweiz/in-der-schweiz-arbeiten/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-c7a0ef7827da2652c884",
+    "source_url": "https://sh.ch/CMS/Webseite/Kanton-Schaffhausen/Beh-rde/Verwaltung/Departement-des-Innern/Migrationsamt-und-Passb-ro-3454-DE.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-162e052a74ee5501463a",
+    "source_url": "https://www.lausanne.ch/officiel/administration/securite-et-economie/controle-des-habitants",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-19ce66fad307597adc71",
+    "source_url": "https://www.ag.ch/de/themen/migration-integration",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-644b526cde0c94e973ad",
+    "source_url": "https://www.jura.ch/fr/Autorites/Administration/DES/Economie-et-Emploi-SEE/Service-de-l-economie-et-de-l-emploi-SEE.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-d7e5fa9b1ea72ea04a52",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/nicht-eu_efta-angehoerige.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-2ff1064d08ba84610fa1",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/publiservice/weisungen-kreisschreiben/visa.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-535985558988b368e36d",
+    "source_url": "https://www.vs.ch/fr/web/sict",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-a924c01f3823eacbb696",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/uk/faq.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-795f0772d4a196d99bd1",
+    "source_url": "https://www.ch.ch/de/auslander-in-der-schweiz/einreise-in-die-schweiz/aufenthaltsbewilligung/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-e81407d2e060c27f9ec9",
+    "source_url": "https://www.kiga.gr.ch/",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-604f745127856696bd27",
+    "source_url": "https://www4.ti.ch/dfe/de/usml/home",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-83f2b5ab8a696ee30cba",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2007/759/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-caae4fae2cbb79a02c5f",
+    "source_url": "https://www.sem.admin.ch/sem/it/home/themen/aufenthalt.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-1da10a2a433d0d844a5b",
+    "source_url": "https://www.zh.ch/de/migration-integration/aufenthalt.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-f9d9f683bc501f7cca69",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/themen/arbeit/uk/erworbene-rechte.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-b7c451bf5193f385035f",
+    "source_url": "https://www.bsv.admin.ch/de/ahv-uebersicht",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-9bb74c3ed07fe7226f46",
+    "source_url": "https://www.nw.ch/arbeitsamt/314",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-02369c71495279e06a62",
+    "source_url": "https://www.sem.admin.ch/sem/en/home/themen/aufenthalt.html",
+    "disposition": "curated",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-22549eb17081ad93b5f3",
+    "source_url": "https://www.fedlex.admin.ch/eli/cc/2002/243/de",
+    "disposition": "excluded-response",
+    "intermediate_status": "excluded_source_response"
+  },
+  {
+    "document_id": "doc-a08d99dc3dcd83453f58",
+    "source_url": "https://www.sem.admin.ch/sem/de/home/publiservice/weisungen-kreisschreiben/fza.html",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-6e08794bf3e4f88940ae",
+    "source_url": "https://www.bger.ch/jurisdiction-recht",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-5306cf2d4a2eeb3364e2",
+    "source_url": "https://www.ne.ch/themes/migration-et-integration/sejour-et-etablissement/permis-de-sejour",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-2b65f0dd3bcea97174d2",
+    "source_url": "https://www.ch.ch/de/auslander-in-der-schweiz/einreise-in-die-schweiz/familiennachzug/",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  },
+  {
+    "document_id": "doc-b7e5bae259b875f6c0a2",
+    "source_url": "https://www.bern.ch/themen/auslanderinnen-und-auslander",
+    "disposition": "not-curated-in-this-MVP",
+    "intermediate_status": "extracted"
+  }
+]
