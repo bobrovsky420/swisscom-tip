@@ -18,7 +18,7 @@ from swisstip.core.identity import seal_artifact
 from swisstip.core.validation import validate_request
 from swisstip.runtime.release import ReleaseBundle, validate_release
 from audit_source_languages import ROOT, OUT, sha, write
-from build_residence_mvp import ref
+from build_residence_mvp import FRESHNESS_DAYS, ref
 
 INTERMEDIATE = ROOT/'.local/intermediate/hackathon-residence-all-languages-2026-09-11'
 SEMANTIC = ROOT/'.local/semantic/hackathon-residence-all-languages-2026-09-11'
@@ -255,7 +255,7 @@ def build_part(output,records,number,total,release_id=None):
                 context_schema_ref=schema.identity,scope_modes=['exact'],max_concepts=1,source_ids=[source_id],
                 source_languages=sorted({a['language']['effective_language'] for a in aa}),temporal_coverage=WINDOW,
                 evaluation_ref=evaluation,approval_status='APPROVED',exclusions=[NOTICE,'No normalized eligibility decision.'],
-                freshness_policy=dict(max_age_days=30,policy_ref=evaluation)))
+                freshness_policy=dict(max_age_days=FRESHNESS_DAYS,policy_ref=evaluation)))
             plans.append(dict(coverage_profile_id=pid,portions=[dict(portion_id=pid+f'-{i//50+1}',concept_ids=[cid],
                 fact_ids=row_facts[i:i+50]) for i in range(0,len(row_facts),50)]))
             request=StructuredGroundingRequest(schema_version='structured-grounding/v1',release_id=rid,knowledge_space_id='hackathon',domain_id='immigration',

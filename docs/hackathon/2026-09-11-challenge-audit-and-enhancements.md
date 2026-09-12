@@ -10,6 +10,11 @@ September 2026 (Kraftwerk Zurich, per zh.ai-weeks.ch), ordered by expected
 effect on the score per day of effort. Effort figures are working estimates
 for one developer with an assistant, not commitments.
 
+Status, 12 September 2026: the date-window blocker (section 3.1, E1) is
+resolved in commit `fdd57a5`, and the 30-day freshness finding is mitigated by
+the 60-day policy of release v4; findings and proposals carry their status
+inline. The other four blockers remain open.
+
 ## 1. The published challenge
 
 Source: <https://zh.ai-weeks.ch/challenges/swiss-grounding-mcp>, retrieved
@@ -89,15 +94,11 @@ answered correctly with SEM and Canton Zurich citations.
 
 | Sev. | Finding | Evidence |
 | --- | --- | --- |
-| Blocker | The curated release freezes `temporal_coverage` to 2026-09-10 through 2026-09-11. Any `resolve` with a later `as_of`, which is what a caller using today's date sends, returns `OUT_OF_COVERAGE`. On 24 September every honest caller gets no facts. | `build_residence_mvp.py` line 29 `WINDOW`; probed today: `as_of=2026-09-12` and `2026-09-25` both `OUT_OF_COVERAGE` |
+| Resolved (was blocker) | The curated release froze `temporal_coverage` to 2026-09-10 through 2026-09-11, so any `resolve` with a later `as_of` returned `OUT_OF_COVERAGE`. Resolved 11 September in release v3: validity is unbounded unless the cited source states a date; the UK employment concept keeps its source-stated 2021-01-01 commencement. Verified over stdio for 2026-09-11, 2026-09-25, 2099 and 1990. | Commit `fdd57a5`; [v3 validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md) |
 | Major | Federal profiles require the jurisdiction to equal `{country_code: CH}`. A caller that adds the user's canton, which every unguided run did, receives `OUT_OF_COVERAGE` with the message "No evaluated profile covers this combination and date", which names neither the field nor the fix. | `validation.py` line 422 exact equality; probed today with `CH-ZH` on the federal deadline concept |
-| Major | Snapshots were accessed on 2026-09-10 with a 30-day freshness policy: results flip to `STALE` on 10 October. Fine for 24 September, but the demo release should be rebuilt from fresh snapshots the week before. | `freshness_policy.max_age_days=30`; `citation.accessed_at` 2026-09-10 |
+| Mitigated (was major) | Snapshots were accessed on 2026-09-10 with a 30-day freshness policy, so results would have flipped to `STALE` on 10 October. On 12 September the default became 60 days and the release was rebuilt as v4 (same snapshots and spans): `STALE` now starts on the evening of 9 November 2026. The demo release should still be rebuilt from fresh snapshots the week before the event. | Commit pending; [v4 freshness record](../pilots/2026-09-12-residence-v4-freshness-60-days.md); `citation.accessed_at` 2026-09-10 |
 | Major | No human review of any served fact; every entry is assistant-authored and the release calls itself a test fixture with `APPROVED` flags "for the serving test-fixture contract only". The jury's manual review will read that wording. | Curated release README and `validation.json` |
 | Minor | `retrieval_terms` in any language return `UNSUPPORTED_LANGUAGE` on every real release because no term routes are published, while the pitch leads with five-language retrieval. | Probed today; live check record |
-
-Update, 11 September evening: the date-window blocker is fixed by E1; the
-[v3 validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md)
-has the rule, the rebuild and the verification.
 
 ### 3.2 Useful Swiss coverage
 
@@ -157,7 +158,7 @@ matter.
 
 | ID | Change | Why it moves the score | Where | Effort |
 | --- | --- | --- | --- | --- |
-| E1 | **Applied 11 September** as release v3, see the [validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md). Open the temporal window: `valid_through=None` in `WINDOW`, rebuild as `...-v3` with a new release ID, keep the 30-day freshness policy for staleness. Rebuild once more from fresh snapshots in the week before the event (the intermediate-hash guard must be updated deliberately). | Removes the `OUT_OF_COVERAGE` result for every request dated after 11 September; grounding tests can pass. | `scripts/corpora/build_residence_mvp.py` | 2 h plus rebuild |
+| E1 | **Resolved 11 September** (commit `fdd57a5`, [validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md)): both `DateRange` bounds optional with a shared `covers()` check; per-concept validity in the curated data, unbounded by default; release rebuilt as v3 with 84 facts and three temporal preflight checks. Still to do before the event: rebuild from fresh snapshots in the final week (the intermediate-hash guard must be updated deliberately). | Removed the `OUT_OF_COVERAGE` result for every request dated after 11 September; grounding tests can pass. | `contracts.py`, `validation.py`, `service.py`, `build_residence_mvp.py`, `residence_mvp_curated.py` | Done |
 | E2 | Ship the knowledge in Git: commit the curated `release.json` (1.2 MB) under `releases/`, optionally parts 003 and 004 (18.5 MB); make `swisstip-mcp` default to the bundled release when `--release` is omitted; regenerate `mcp-client.json` and `opencode.json` examples without machine-specific paths. | A clean clone answers real questions; this is the deliverable the challenge names. | `apps/mcp-server/server.py`, new `releases/` | 3 h |
 | E3 | Quickstart-first README, `LICENSE`, `COVERAGE.md`, `LIMITATIONS.md`: what it is in two sentences, one install and one start command, an OpenCode and a generic MCP client snippet, one worked question, the coverage table (topics, jurisdictions, sources, languages, snapshot date), and the limits. Move the product vision below the fold. | Required by the challenge text; the first thing manual review reads. | `README.md`, root | 4 h |
 | E4 | Streamable HTTP transport and a hosted endpoint: `--transport streamable-http --host --port --token-env` using the SDK's `StreamableHTTPSessionManager` behind Starlette and uvicorn; bearer token; `Dockerfile` (slim Python image, editable installs of core, runtime and mcp-server, `COPY releases/`); deploy to one small host and record the URL and token exchange in the setup notes. Keep stdio unchanged. | The harness and Swisscom experts can connect without cloning; standard clients support `type: remote`. | `server.py`, new `Dockerfile` | 1 day |
@@ -200,7 +201,7 @@ matter.
 
 | Days | Work | Exit condition |
 | --- | --- | --- |
-| 12 Sep | E1, E2, E3, E7 | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
+| 12 Sep | E2, E3, E7 (E1 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
 | 13 to 15 Sep | E5, E6, E4, E11 | Cold path under 25 KB per call; hosted URL answers the same question; federal plus canton request succeeds |
 | 16 Sep | Swisscom Q&A (section 6); adjust the plan | Open questions answered |
 | 16 to 20 Sep | E8, E9, E10, E12 in parallel | Search plus resolve in two calls; 80 or more concepts across three topics; German and French labels |

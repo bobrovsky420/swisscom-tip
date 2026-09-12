@@ -25,7 +25,10 @@ from swisstip.runtime.release import ReleaseBundle, validate_release
 from residence_mvp_curated import CONCEPTS, CONTACT_ROWS, DIRECTORY, SELECTOR_VALUES, claim, concept
 
 ROOT = Path(__file__).resolve().parents[2]
-RELEASE_ID = 'hackathon-residence-semantic-2026-09-11-v3'
+RELEASE_ID = 'hackathon-residence-semantic-2026-09-12-v4'
+# Default snapshot-age limit: a result whose oldest selected citation was saved
+# more than this many days before the read time is reported STALE.
+FRESHNESS_DAYS = 60
 # Validity is unbounded unless the cited source states a commencement or expiry
 # date; each concept in residence_mvp_curated.py may declare such a `validity`.
 BUILD_DATE = datetime.now(timezone.utc).strftime('%Y-%m-%d')
@@ -102,6 +105,7 @@ def build(intermediate, corpus, output):
         human_review=False, legal_quality_evaluation=False, disclaimer=DISCLAIMER,
         approval_status_semantics='APPROVED flags satisfy the serving test-fixture contract only; no production approval is asserted.',
         temporal_coverage_semantics='Unbounded unless the cited source states a commencement or expiry date; each citation records its snapshot time (accessed_at) and the freshness policy governs staleness.',
+        freshness_policy_semantics=f'Snapshot-age limit of {FRESHNESS_DAYS} days, counted from the oldest accessed_at among the selected evidence to the read time; older results are reported STALE with their facts retained. The limit measures the age of the saved copy, not whether the page changed; refresh by re-downloading and rebuilding.',
         context_semantics='Selectors route populations; they do not decide eligibility.',
         semantic_search=False, runtime_tests_executed=False))
     provider = control('mvp-no-providers', dict(mode='none', model_calls=0, embedding_calls=0))
@@ -213,7 +217,7 @@ def build(intermediate, corpus, output):
             source_languages=sorted({e.effective_source_language for e in row_evidence}), temporal_coverage=validity,
             rule_refs=rule_refs, evaluation_ref=evaluation, approval_status='APPROVED',
             exclusions=[DISCLAIMER, saved_note, *row['notes']],
-            freshness_policy=dict(max_age_days=30, policy_ref=evaluation)))
+            freshness_policy=dict(max_age_days=FRESHNESS_DAYS, policy_ref=evaluation)))
         plans.append(dict(coverage_profile_id=profile_id, portions=[dict(portion_id='mvp-portion-' + instance,
             concept_ids=[cid], fact_ids=[] if rule_refs else fact_ids, rule_refs=rule_refs)]))
         request = StructuredGroundingRequest(schema_version='structured-grounding/v1', release_id=RELEASE_ID,
@@ -334,7 +338,7 @@ listed context. `as_of` is the applicability date the caller asks about, normall
 build date {BUILD_DATE}. Validity is unbounded unless the cited source states a commencement or expiry date.
 Source-stated limits in this release: {stated_note}.
 Each citation records when its page was saved (`accessed_at`; {', '.join(saved)}); the freshness policy reports
-results as STALE once that snapshot is older than 30 days.
+results as STALE once that snapshot is older than {FRESHNESS_DAYS} days.
 The deterministic concept/fact baseline requires no models. Free-text semantic retrieval,
 embeddings, reranking and multilingual projections are outside this pack.
 
@@ -356,7 +360,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--intermediate', type=Path, default=ROOT / '.local/intermediate/hackathon-residence-2026-09-11-v1')
     parser.add_argument('--corpus', type=Path, default=ROOT / '.local/corpora/hackathon-residence-2026-09-10')
-    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-11-v3')
+    parser.add_argument('--output', type=Path, default=ROOT / '.local/mvp/residence-semantic-2026-09-12-v4')
     parser.add_argument('--release-id', default=RELEASE_ID,
                         help='Release identity; choose a new one together with --output when the curated selections change.')
     args = parser.parse_args()

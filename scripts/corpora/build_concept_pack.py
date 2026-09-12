@@ -24,7 +24,7 @@ from swisstip.core.identity import seal_artifact
 from swisstip.core.validation import validate_request
 from swisstip.runtime.release import ReleaseBundle, validate_release
 from audit_source_languages import ROOT, sha, write
-from build_residence_mvp import ref
+from build_residence_mvp import FRESHNESS_DAYS, ref
 from build_expanded_pack import BUILD_DATE, jurisdiction, merge_profiles, WINDOW
 from extract_expanded import language_hint
 
@@ -185,7 +185,7 @@ def build(workdir, output, release_id):
                                  source_ids=[source_id], source_languages=[lang], temporal_coverage=WINDOW,
                                  evaluation_ref=evaluation, approval_status='APPROVED',
                                  exclusions=[NOTICE, 'No normalized eligibility decision.'],
-                                 freshness_policy=dict(max_age_days=30, policy_ref=evaluation)))
+                                 freshness_policy=dict(max_age_days=FRESHNESS_DAYS, policy_ref=evaluation)))
             plans.append(dict(coverage_profile_id=pid, portions=[dict(portion_id=pid + '-1', concept_ids=[cid], fact_ids=[fid])]))
             request = StructuredGroundingRequest(schema_version='structured-grounding/v1', release_id=rid,
                                                  knowledge_space_id='hackathon', domain_id='immigration', topic_id='residence',

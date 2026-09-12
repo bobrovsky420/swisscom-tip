@@ -122,10 +122,12 @@ case should be rerun against v3 before the demonstration.
   example Article 58a since 1 January 2019). The curated AIG claims are served
   as current consolidated law without article-level commencement dates. A
   later refinement can read those footnotes into `valid_from`.
-- Freshness is unchanged: the snapshots date from 2026-09-10 and turn `STALE`
-  on 10 October 2026, so the release should be rebuilt from fresh snapshots in
-  the week before the event, with the intermediate-hash guard updated
-  deliberately.
+- Freshness was unchanged in v3: the snapshots date from 2026-09-10 and, with
+  the 30-day policy, turn `STALE` on 10 October 2026. Superseded on
+  12 September by release v4 with a 60-day policy, see the
+  [v4 freshness record](2026-09-12-residence-v4-freshness-60-days.md). The
+  release should still be rebuilt from fresh snapshots in the week before the
+  event, with the intermediate-hash guard updated deliberately.
 - Shipping v3 inside the repository (audit proposal E2) is still open; the
   release lives under Git-ignored `.local/`.
 
