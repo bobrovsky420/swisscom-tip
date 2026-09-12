@@ -197,6 +197,25 @@ class ServiceTests(unittest.TestCase):
         result = self.service(reseal(bundle)).resolve({**self.request, "as_of": "2020-12-31"})
         self.assertEqual(result.status, "OUT_OF_COVERAGE")
 
+    def test_federal_profile_serves_any_canton_and_reports_its_level(self):
+        bundle, _ = fixture()
+        for evidence in bundle.evidence:
+            evidence.jurisdiction.canton_code = None
+        for profile in bundle.catalog.coverage_profiles:
+            profile.jurisdiction.canton_code = None
+        service = self.service(reseal(bundle))
+        result = service.resolve({**self.request, "jurisdiction": {"country_code": "CH", "canton_code": "CH-BE"}})
+        self.assertEqual(result.status, "SUPPORTED")
+        self.assertEqual(result.requested_scope.jurisdiction.canton_code, "CH-BE")
+        self.assertIsNone(result.executed_scope.jurisdiction.canton_code)
+        self.assertEqual([f.fact_id for f in result.supported_portions], ["fact-parent"])
+        self.assertTrue(any("CH-BE specifics are not covered" in note for note in result.trust.limitations))
+        self.assertLessEqual(len(result.trust.limitations), 30)
+        gap = service.resolve({**self.request, "jurisdiction": {"country_code": "DE"}})
+        self.assertEqual(gap.status, "OUT_OF_COVERAGE")
+        self.assertEqual(gap.unresolved_portions[0].reason_code, "jurisdiction_not_covered")
+        self.assertIn("Published: CH.", gap.unresolved_portions[0].limitation)
+
     def test_federal_evidence_requires_published_rule(self):
         for evidence in self.bundle.evidence:
             evidence.jurisdiction.canton_code = None

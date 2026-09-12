@@ -193,9 +193,11 @@ class KnowledgeService:
             trust=TrustEnvelope(source_authorities=[], evaluation_ref=profile.evaluation_ref if profile else release.evaluation_ref,
                                 fact_support="NONE", limitations=[]), trace=None)
         if assessment.status != "READY":
-            result["unresolved_portions"] = [UnresolvedPortion(concept_ids=request.concept_ids,
-                                                              reason_code=i.reason, limitation=i.message)
-                                             for i in assessment.issues[:50]]
+            result["unresolved_portions"] = [UnresolvedPortion(
+                concept_ids=request.concept_ids, reason_code=i.reason,
+                limitation=(i.message + (" Published: " + ", ".join(str(v) for v in i.supported_values[:20]) + "."
+                                         if i.supported_values else ""))[:500])
+                for i in assessment.issues[:50]]
             return StructuredGroundingResult(**result)
 
         selected = set(assessment.executed_concept_ids)
@@ -206,7 +208,8 @@ class KnowledgeService:
                         and request.topic_id in e.parent_ids and e.entry_id in profile.concept_ids}
         if len(selected) > profile.max_concepts:
             return self._error("INVALID_ARGUMENT", "scope_mode", "traversal_limit", "Topic scope exceeds the published concept limit.", request.release_id)
-        result["executed_scope"] = scope.model_copy(update={"concept_ids": sorted(selected)})
+        result["executed_scope"] = scope.model_copy(update={"concept_ids": sorted(selected),
+                                                            "jurisdiction": profile.jurisdiction})
         plan = next(p for p in bundle.graph.plans if p.coverage_profile_id == profile.coverage_profile_id)
         portions = [p for p in plan.portions if
                     (bool(set(p.concept_ids) & selected) if p.concept_ids else not request.concept_ids)]
@@ -243,9 +246,11 @@ class KnowledgeService:
         wanted = set().union(*required.values()) if required else set()
 
         def eligible(item, *, federal_rule=False):
-            place = item.jurisdiction == request.jurisdiction
+            # Evidence belongs to the profile that answers; the request may sit
+            # anywhere inside that profile's jurisdiction.
+            place = item.jurisdiction == profile.jurisdiction
             if federal_rule:
-                place |= (item.jurisdiction.country_code == request.jurisdiction.country_code
+                place |= (item.jurisdiction.country_code == profile.jurisdiction.country_code
                           and item.jurisdiction.canton_code is None)
             return (place and item.citation.source_id in profile.source_ids
                     and item.effective_source_language in sources
@@ -325,6 +330,13 @@ class KnowledgeService:
         status = ("CONFLICTING_EVIDENCE" if conflict else "STALE" if stale else
                   "PARTIALLY_SUPPORTED" if supported and unresolved else "SUPPORTED" if supported else
                   "INSUFFICIENT_VERIFIED_EVIDENCE")
+        limitations = (["Legacy identifier/lexical release; no hybrid retrieval assets."]
+                       if bundle.retrieval_configuration is None else [])
+        if profile.jurisdiction != request.jurisdiction:
+            published, asked = profile.jurisdiction.describe(), request.jurisdiction.describe()
+            limitations.append(f"Published for {published} and applied to {asked} because {asked} lies inside {published}; "
+                               f"{asked} specifics are not covered by this profile.")
+        limitations = (limitations + list(profile.exclusions))[:30]
         trace_routes = []
         for route in assessment.term_routes:
             published = next(r for r in profile.term_routes if r.term_language == route.effective_term_language)
@@ -341,8 +353,7 @@ class KnowledgeService:
             trust=TrustEnvelope(source_authorities=sorted({e.citation.authority for e in chosen.values()}),
                                 evaluation_ref=profile.evaluation_ref,
                                 fact_support="PUBLISHED_FACTS_OR_RULES" if supported else "EXCERPTS_ONLY" if chosen else "NONE",
-                                limitations=(["Legacy identifier/lexical release; no hybrid retrieval assets."]
-                                             if bundle.retrieval_configuration is None else []) + profile.exclusions[:29]),
+                                limitations=limitations),
             trace=RetrievalTrace(term_routes=trace_routes, effective_source_languages=sorted(sources),
                                  channels=retrieval.channels,
                                  index_refs=release.index_refs[:20], provider_configuration_ref=release.provider_configuration_ref,

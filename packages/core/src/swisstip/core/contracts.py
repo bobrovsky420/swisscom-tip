@@ -156,6 +156,30 @@ class Jurisdiction(StrictModel):
             raise ValueError("municipality_requires_canton")
         return self
 
+    @property
+    def specificity(self) -> int:
+        """0 for a country, 1 for a canton, 2 for a municipality."""
+        return 2 if self.municipality_id is not None else 1 if self.canton_code is not None else 0
+
+    def contains(self, other: Jurisdiction) -> bool:
+        """Whether this scope covers `other`.
+
+        A country covers its cantons and municipalities and a canton covers its
+        municipalities. Nothing flows upward or sideways: a canton never covers
+        its country or another canton.
+        """
+        if self.country_code != other.country_code:
+            return False
+        if self.canton_code is not None and self.canton_code != other.canton_code:
+            return False
+        return self.municipality_id is None or self.municipality_id == other.municipality_id
+
+    def describe(self) -> str:
+        """Compact canonical form: CH, CH-ZH or CH-ZH/261."""
+        if self.canton_code is None:
+            return self.country_code
+        return self.canton_code if self.municipality_id is None else f"{self.canton_code}/{self.municipality_id}"
+
 
 class DateRange(StrictModel):
     """Applicability window with open bounds by default.

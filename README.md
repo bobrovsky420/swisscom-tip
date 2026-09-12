@@ -52,6 +52,7 @@ use synthetic releases; real reviewed coverage and live model qualification rema
 - [Residence MCP corpus continuation checkpoint - 11 September](docs/pilots/2026-09-11-residence-mcp-checkpoint.md)
 - [Unbounded validity rule and curated release v3 - 11 September](docs/pilots/2026-09-11-residence-v3-unbounded-validity.md)
 - [Freshness policy raised to 60 days and curated release v4 - 12 September](docs/pilots/2026-09-12-residence-v4-freshness-60-days.md)
+- [Jurisdiction containment and named coverage gaps - 12 September](docs/pilots/2026-09-12-jurisdiction-containment.md)
 - [PostgreSQL and pgvector setup, migration and smoke tests](docs/storage.md)
 - [Local ingestion GUI: sources, parsing, builds and draft review](apps/admin-console/README.md)
 - [Paused extraction experiment and resume checkpoint](docs/experiments/2026-09-10-extraction-pause-checkpoint.md)

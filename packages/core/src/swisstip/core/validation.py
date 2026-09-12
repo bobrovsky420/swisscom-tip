@@ -15,7 +15,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from .contracts import (
-    ArtifactRef, CatalogEntry, ContextCondition, ContextSchema, CoverageProfile,
+    ArtifactRef, CatalogEntry, ContextCondition, ContextSchema, CoverageProfile, DateRange,
     KnowledgeCatalog, LanguagePolicy, StructuredGroundingRequest,
 )
 from .identity import verify_artifact
@@ -374,6 +374,44 @@ def validate_context(
     return issues, list(unique_missing.values())
 
 
+def _window_text(window: DateRange) -> str:
+    if window.valid_from and window.valid_through:
+        return f"{window.valid_from} to {window.valid_through}"
+    if window.valid_from:
+        return f"from {window.valid_from}"
+    return f"through {window.valid_through}" if window.valid_through else "any date"
+
+
+def _coverage_gap(request: StructuredGroundingRequest, scoped: list[CoverageProfile], result: Any) -> ValidationAssessment:
+    """Name the first dimension that leaves no profile, with the published values that would match."""
+    if not scoped:
+        return result("OUT_OF_COVERAGE", "scope", "unsupported_combination", "No published profile offers this intent for the selected topic.")
+    requested = set(request.concept_ids or ())
+    by_concepts = [p for p in scoped if (not p.concept_selection_required or requested) and requested <= set(p.concept_ids)]
+    if not by_concepts:
+        related = sorted({p.coverage_profile_id for p in scoped if requested & set(p.concept_ids)})
+        return result("OUT_OF_COVERAGE", "concept_ids", "concept_set_not_published",
+                      "No single profile publishes this concept set; resolve the concepts of different profiles in separate calls.", related)
+    by_jurisdiction = [p for p in by_concepts if p.jurisdiction.contains(request.jurisdiction)]
+    if not by_jurisdiction:
+        narrower = sorted({p.jurisdiction.describe() for p in by_concepts if request.jurisdiction.contains(p.jurisdiction)})
+        if narrower:
+            return result("OUT_OF_COVERAGE", "jurisdiction", "more_specific_jurisdiction_required",
+                          "These concepts are published for a place inside the requested jurisdiction; request that place.", narrower)
+        return result("OUT_OF_COVERAGE", "jurisdiction", "jurisdiction_not_covered",
+                      "These concepts are published for other jurisdictions; a profile serves only places inside its own jurisdiction.",
+                      sorted({p.jurisdiction.describe() for p in by_concepts}))
+    by_mode = [p for p in by_jurisdiction if request.scope_mode in p.scope_modes]
+    if not by_mode:
+        return result("OUT_OF_COVERAGE", "scope_mode", "scope_mode_not_offered", "The matching profiles do not offer the requested scope mode.",
+                      sorted({mode for p in by_jurisdiction for mode in p.scope_modes}))
+    by_date = [p for p in by_mode if p.temporal_coverage.covers(request.as_of)]
+    if not by_date:
+        windows = sorted({_window_text(p.temporal_coverage) for p in by_mode})
+        return result("OUT_OF_COVERAGE", "as_of", "date_outside_coverage", "The matching profiles do not cover the requested applicability date.", windows)
+    return result("OUT_OF_COVERAGE", "scope", "unsupported_combination", "No evaluated profile covers this combination and date.")
+
+
 def validate_request(
     payload: Mapping[str, Any] | StructuredGroundingRequest,
     catalog: KnowledgeCatalog,
@@ -419,7 +457,8 @@ def validate_request(
     if request.intent not in intents:
         return result("INVALID_ARGUMENT", "intent", "unknown_intent", "Intent is not a published operation.", intents)
     scoped = [profile for profile in published if (profile.knowledge_space_id, profile.domain_id, profile.topic_id, profile.intent) == (request.knowledge_space_id, request.domain_id, request.topic_id, request.intent)]
-    applicable = [profile for profile in scoped if profile.jurisdiction == request.jurisdiction and request.scope_mode in profile.scope_modes and profile.temporal_coverage.covers(request.as_of)]
+    # A profile serves every place inside its own jurisdiction; nothing flows upward or sideways.
+    applicable = [profile for profile in scoped if profile.jurisdiction.contains(request.jurisdiction) and request.scope_mode in profile.scope_modes and profile.temporal_coverage.covers(request.as_of)]
     if applicable and not request.concept_ids and all(profile.concept_selection_required for profile in applicable):
         return result("INVALID_ARGUMENT", "concept_ids", "missing_concept_selector", "This operation requires a concept selector.")
     if request.max_evidence is not None and request.max_evidence > catalog.max_evidence:
@@ -434,7 +473,7 @@ def validate_request(
         return ValidationAssessment("INVALID_ARGUMENT", request=request, issues=tuple(context_checks[0][1]))
     matches = valid_context
     if not matches:
-        return result("OUT_OF_COVERAGE", "scope", "unsupported_combination", "No evaluated profile covers this combination and date.")
+        return _coverage_gap(request, scoped, result)
     accepted_terms = set(language_policy.term_languages) | set(language_policy.term_aliases)
     for index, term in enumerate(request.retrieval_terms or []):
         if term.language not in accepted_terms:
@@ -460,6 +499,10 @@ def validate_request(
             eligible.append((profile, missing, routes))
     if not eligible:
         return result("OUT_OF_COVERAGE", "retrieval_terms", "unevaluated_language_combination", "Term/source/projection combination has not passed this profile's evaluation.", effective_source_languages=source_filter)
+    if len(eligible) > 1:
+        # The narrowest published jurisdiction answers; equally specific overlaps stay ambiguous.
+        narrowest = max(item[0].jurisdiction.specificity for item in eligible)
+        eligible = [item for item in eligible if item[0].jurisdiction.specificity == narrowest]
     if len(eligible) > 1:
         return result("OUT_OF_COVERAGE", "scope", "ambiguous_coverage_profiles", "Multiple evaluated profiles match; catalog configuration must disambiguate them.", sorted(item[0].coverage_profile_id for item in eligible), effective_source_languages=source_filter)
     profile, missing, routes = eligible[0]

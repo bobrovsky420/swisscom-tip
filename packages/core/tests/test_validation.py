@@ -210,6 +210,52 @@ class StructuredValidationTests(FixtureTestCase):
         self.request["concept_ids"] = ["other-concept"]
         self.assert_status("OUT_OF_COVERAGE")
 
+    def test_wider_profile_serves_places_inside_its_jurisdiction(self):
+        profile = self.catalog_data["coverage_profiles"][0]
+        profile["jurisdiction"] = {"country_code": "CH"}
+        self.request["jurisdiction"] = {"country_code": "CH", "canton_code": "CH-BE"}
+        self.assertEqual(self.assert_status("READY").coverage_profile_ids, ("test-residence-profile",))
+        self.request["jurisdiction"] = {"country_code": "CH", "canton_code": "CH-ZH", "municipality_id": "261"}
+        self.assert_status("READY")
+        profile["jurisdiction"] = {"country_code": "CH", "canton_code": "CH-ZH"}
+        self.assert_status("READY")
+        self.request["jurisdiction"] = {"country_code": "CH"}
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values), ("more_specific_jurisdiction_required", ("CH-ZH",)))
+        self.request["jurisdiction"] = {"country_code": "CH", "canton_code": "CH-BE"}
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values), ("jurisdiction_not_covered", ("CH-ZH",)))
+
+    def test_narrowest_matching_profile_wins(self):
+        federal = copy.deepcopy(self.catalog_data["coverage_profiles"][0])
+        federal["coverage_profile_id"] = "test-federal-profile"
+        federal["jurisdiction"] = {"country_code": "CH"}
+        self.catalog_data["coverage_profiles"].append(federal)
+        self.assertEqual(self.assert_status("READY").coverage_profile_ids, ("test-residence-profile",))
+        self.request["jurisdiction"] = {"country_code": "CH", "canton_code": "CH-BE"}
+        self.assertEqual(self.assert_status("READY").coverage_profile_ids, ("test-federal-profile",))
+
+    def test_coverage_gaps_name_the_failing_dimension(self):
+        profile = self.catalog_data["coverage_profiles"][0]
+        profile["scope_modes"] = ["exact"]
+        self.request["scope_mode"] = "descendants"
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values), ("scope_mode_not_offered", ("exact",)))
+        self.request["scope_mode"] = "exact"
+        self.request["as_of"] = "2027-01-01"
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values), ("date_outside_coverage", ("2026-01-01 to 2026-12-31",)))
+        self.request["as_of"] = "2026-09-06"
+        second = copy.deepcopy(profile)
+        second["coverage_profile_id"] = "test-second-profile"
+        second["concept_ids"] = ["test-sibling"]
+        profile["concept_ids"] = ["test-concept"]
+        self.catalog_data["coverage_profiles"].append(second)
+        self.request["concept_ids"] = ["test-concept", "test-sibling"]
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values),
+                         ("concept_set_not_published", ("test-residence-profile", "test-second-profile")))
+
     def test_canonical_unconfigured_jurisdiction_is_out_of_coverage(self):
         self.request["jurisdiction"]["canton_code"] = "CH-BE"
         self.assert_status("OUT_OF_COVERAGE")
@@ -217,11 +263,12 @@ class StructuredValidationTests(FixtureTestCase):
             self.request["jurisdiction"]["canton_code"] = invalid
             self.assert_status("INVALID_ARGUMENT")
 
-    def test_no_jurisdiction_granularity_broadening(self):
+    def test_jurisdiction_never_broadens_upward(self):
+        # A canton profile serves its municipalities, never its country.
         self.request["jurisdiction"]["municipality_id"] = "261"
-        self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual(self.assert_status("READY").coverage_profile_ids, ("test-residence-profile",))
         self.request["jurisdiction"] = {"country_code": "CH"}
-        self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual(self.assert_status("OUT_OF_COVERAGE").issues[0].reason, "more_specific_jurisdiction_required")
 
     def test_other_jurisdiction_schema_cannot_validate_current_context(self):
         schema = copy.deepcopy(self.catalog_data["context_schemas"][0])
@@ -253,7 +300,8 @@ class StructuredValidationTests(FixtureTestCase):
             self.assert_status("READY")
         profile["temporal_coverage"] = {"valid_from": "2021-01-01"}
         self.request["as_of"] = "2020-12-31"
-        self.assertEqual(self.assert_status("OUT_OF_COVERAGE").issues[0].reason, "unsupported_combination")
+        gap = self.assert_status("OUT_OF_COVERAGE")
+        self.assertEqual((gap.issues[0].reason, gap.issues[0].supported_values), ("date_outside_coverage", ("from 2021-01-01",)))
         self.request["as_of"] = "2021-01-01"
         self.assert_status("READY")
         profile["temporal_coverage"] = {"valid_through": "2029-12-31"}

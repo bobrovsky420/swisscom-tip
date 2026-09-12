@@ -11,9 +11,10 @@ effect on the score per day of effort. Effort figures are working estimates
 for one developer with an assistant, not commitments.
 
 Status, 12 September 2026: the date-window blocker (section 3.1, E1) is
-resolved in commit `fdd57a5`, and the 30-day freshness finding is mitigated by
-the 60-day policy of release v4; findings and proposals carry their status
-inline. The other four blockers remain open.
+resolved in commit `fdd57a5`, the 30-day freshness finding is mitigated by the
+60-day policy of release v4, and the jurisdiction finding (E6) is resolved by
+containment matching; findings and proposals carry their status inline. The
+other four blockers remain open.
 
 ## 1. The published challenge
 
@@ -95,7 +96,7 @@ answered correctly with SEM and Canton Zurich citations.
 | Sev. | Finding | Evidence |
 | --- | --- | --- |
 | Resolved (was blocker) | The curated release froze `temporal_coverage` to 2026-09-10 through 2026-09-11, so any `resolve` with a later `as_of` returned `OUT_OF_COVERAGE`. Resolved 11 September in release v3: validity is unbounded unless the cited source states a date; the UK employment concept keeps its source-stated 2021-01-01 commencement. Verified over stdio for 2026-09-11, 2026-09-25, 2099 and 1990. | Commit `fdd57a5`; [v3 validity record](../pilots/2026-09-11-residence-v3-unbounded-validity.md) |
-| Major | Federal profiles require the jurisdiction to equal `{country_code: CH}`. A caller that adds the user's canton, which every unguided run did, receives `OUT_OF_COVERAGE` with the message "No evaluated profile covers this combination and date", which names neither the field nor the fix. | `validation.py` line 422 exact equality; probed today with `CH-ZH` on the federal deadline concept |
+| Resolved (was major) | Federal profiles required the jurisdiction to equal `{country_code: CH}`, so a caller that added the user's canton received `OUT_OF_COVERAGE` with a message that named neither the field nor the fix. Resolved 12 September: a profile serves every place inside its own jurisdiction (federal for any canton or municipality, cantonal for its municipalities, never upward or sideways), the answering level is reported in `executed_scope` with a caveat, the narrowest matching profile wins, and every coverage gap names its dimension with the published values. | Commit pending; [containment record](../pilots/2026-09-12-jurisdiction-containment.md); probed on v4 |
 | Mitigated (was major) | Snapshots were accessed on 2026-09-10 with a 30-day freshness policy, so results would have flipped to `STALE` on 10 October. On 12 September the default became 60 days and the release was rebuilt as v4 (same snapshots and spans): `STALE` now starts on the evening of 9 November 2026. The demo release should still be rebuilt from fresh snapshots the week before the event. | Commit pending; [v4 freshness record](../pilots/2026-09-12-residence-v4-freshness-60-days.md); `citation.accessed_at` 2026-09-10 |
 | Major | No human review of any served fact; every entry is assistant-authored and the release calls itself a test fixture with `APPROVED` flags "for the serving test-fixture contract only". The jury's manual review will read that wording. | Curated release README and `validation.json` |
 | Minor | `retrieval_terms` in any language return `UNSUPPORTED_LANGUAGE` on every real release because no term routes are published, while the pitch leads with five-language retrieval. | Probed today; live check record |
@@ -163,7 +164,7 @@ matter.
 | E3 | Quickstart-first README, `LICENSE`, `COVERAGE.md`, `LIMITATIONS.md`: what it is in two sentences, one install and one start command, an OpenCode and a generic MCP client snippet, one worked question, the coverage table (topics, jurisdictions, sources, languages, snapshot date), and the limits. Move the product vision below the fold. | Required by the challenge text; the first thing manual review reads. | `README.md`, root | 4 h |
 | E4 | Streamable HTTP transport and a hosted endpoint: `--transport streamable-http --host --port --token-env` using the SDK's `StreamableHTTPSessionManager` behind Starlette and uvicorn; bearer token; `Dockerfile` (slim Python image, editable installs of core, runtime and mcp-server, `COPY releases/`); deploy to one small host and record the URL and token exchange in the setup notes. Keep stdio unchanged. | The harness and Swisscom experts can connect without cloning; standard clients support `type: remote`. | `server.py`, new `Dockerfile` | 1 day |
 | E5 | Compact discovery: at topic level return a profile summary (profile ID, concept IDs, intent, jurisdiction, required context fields with allowed values, temporal coverage, source IDs) and no inline context schemas; full profiles and schemas only at concept level (3.4 KB today) or on `detail: "full"`. Deduplicate exclusions and references into one block per result. Target under 25 KB. | Removes the truncation risk under a default client and cuts about 30,000 tokens from every cold path. | `packages/runtime/service.py` `get_coverage`, `contracts.py` `GetCoverageResult` | 1 day |
-| E6 | Jurisdiction compatibility and diagnostics: accept a request jurisdiction that is more specific than the profile's (country profile accepts canton and municipality; canton profile accepts municipality), report the profile jurisdiction in `executed_scope` with a limitation note; when nothing matches, name the field that failed (date window, jurisdiction, concept set, scope mode) and the nearest profile IDs in `allowed_values`. | Unguided callers stop losing calls to trial and error; federal facts appear alongside cantonal ones. | `packages/core/validation.py` line 422 and line 437 | 4 h |
+| E6 | **Resolved 12 September** ([containment record](../pilots/2026-09-12-jurisdiction-containment.md)). Jurisdiction compatibility and diagnostics: accept a request jurisdiction that is more specific than the profile's (country profile accepts canton and municipality; canton profile accepts municipality), report the profile jurisdiction in `executed_scope` with a limitation note; when nothing matches, name the field that failed (date window, jurisdiction, concept set, scope mode) and the nearest profile IDs in `allowed_values`. | Unguided callers stop losing calls to trial and error; federal facts appear alongside cantonal ones. | `contracts.py`, `validation.py`, `service.py`, `server.py` | Done |
 
 ### Tier 2 - raise the criterion scores (pick by team size; each 0.5 to 3 days)
 
@@ -202,7 +203,7 @@ matter.
 | Days | Work | Exit condition |
 | --- | --- | --- |
 | 12 Sep | E2, E3, E7 (E1 done) | A stranger clones, installs, starts, and asks the Zurich question with today's date through OpenCode default settings |
-| 13 to 15 Sep | E5, E6, E4, E11 | Cold path under 25 KB per call; hosted URL answers the same question; federal plus canton request succeeds |
+| 13 to 15 Sep | E5, E4, E11 (E6 done) | Cold path under 25 KB per call; hosted URL answers the same question; federal plus canton request succeeds |
 | 16 Sep | Swisscom Q&A (section 6); adjust the plan | Open questions answered |
 | 16 to 20 Sep | E8, E9, E10, E12 in parallel | Search plus resolve in two calls; 80 or more concepts across three topics; German and French labels |
 | 21 to 22 Sep | E13, E14, E15, E16 | Evaluation table in the README; CI green; refresh procedure rehearsed |

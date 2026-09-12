@@ -133,6 +133,19 @@ class RequestContractTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             DateRange(valid_from="2026-9-6")
 
+    def test_jurisdiction_containment_flows_downward_only(self):
+        from swisstip.core.contracts import Jurisdiction
+        ch = Jurisdiction(country_code="CH")
+        zh = Jurisdiction(country_code="CH", canton_code="CH-ZH")
+        city = Jurisdiction(country_code="CH", canton_code="CH-ZH", municipality_id="261")
+        be = Jurisdiction(country_code="CH", canton_code="CH-BE")
+        self.assertTrue(ch.contains(ch) and ch.contains(zh) and ch.contains(city) and ch.contains(be))
+        self.assertTrue(zh.contains(zh) and zh.contains(city))
+        self.assertFalse(zh.contains(ch) or zh.contains(be) or city.contains(zh) or city.contains(ch))
+        self.assertFalse(Jurisdiction(country_code="DE").contains(ch))
+        self.assertEqual((ch.specificity, zh.specificity, city.specificity), (0, 1, 2))
+        self.assertEqual([ch.describe(), zh.describe(), city.describe()], ["CH", "CH-ZH", "CH-ZH/261"])
+
 
 class IdentifierAndLanguageTests(unittest.TestCase):
     def test_artifact_ref_is_pinned_and_frozen(self):
